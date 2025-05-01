@@ -23,19 +23,20 @@
 #'    (prob. yes, b/c both are helpful); if so, come up w/ better name than 'location'
 #' - make sure anchor_sites_ids.csv fields are defined in README 
 
-# moved to config.yml
-data_dir <- "/projectnb2/dietzelab/ccmmf/data"
-raw_data_dir <- "/projectnb2/dietzelab/ccmmf/data_raw"
-ca_albers_crs <- 3310
+# TODO move to config.yml / Renviron
+source("000-config.R")
+
+# Handle packages w/ renv
+library(caladaptr) 
 
 PEcAn.logger::logger.info("Starting Data Preparation Workflow")
 
 #' ### CADWR LandIQ Polygons
+#' TODO: update with newer version
 ca_fields_gpkg <- file.path(data_dir, 'ca_fields.gpkg')
-ca_attributes_csv = file.path(data_dir, 'ca_field_attributes.csv')
+ca_attributes_csv <- file.path(data_dir, 'ca_field_attributes.csv')
 
-ca_fields <- sf::st_read(ca_fields_gpkg) |>
-  sf::st_transform(crs = ca_albers_crs)
+ca_fields <- sf::st_read(ca_fields_gpkg)
 ca_attributes <- readr::read_csv(ca_attributes_csv)
 
 #' ### Convert Polygons to Points.
@@ -50,7 +51,6 @@ ca_fields_pts <- ca_fields |>
   dplyr::select(site_id, crop, pft, geom)
 
 #' ## Assemble Environmental Covariates
-
 
 #' ### SoilGrids
 
@@ -68,7 +68,7 @@ soilgrids_north_america_ocd_tif <- '/projectnb/dietzelab/dongchen/anchorSites/NA
 soilgrids_north_america_clay_rast <- terra::rast(soilgrids_north_america_clay_tif)
 soilgrids_north_america_ocd_rast <- terra::rast(soilgrids_north_america_ocd_tif)
 
-#' 
+
 #' #### Extract clay and carbon stock from SoilGrids
 #' 
 ## ----sg-clay-ocd--------------------------------------------------------------
@@ -87,11 +87,6 @@ ocd <- terra::extract(
   dplyr::select(-ID) |>
   dplyr::pull()
 
-ca_fields_pts_clay_ocd <- cbind(ca_fields_pts,
-                               clay = clay,
-                               ocd = ocd)
-
-#' 
 #' ### Topographic Wetness Index
 #' 
 ## ----twi----------------------------------------------------------------------
@@ -104,9 +99,6 @@ twi <- terra::extract(
     sf::st_transform(crs = sf::st_crs(twi_rast)))) |>
   dplyr::select(-ID) |>
   dplyr::pull()
-
-ca_fields_pts_clay_ocd_twi <- cbind(ca_fields_pts_clay_ocd, twi = twi)
-
 #' 
 #' ### ERA5 Met Data
 #' 
@@ -140,9 +132,9 @@ extract_clim <- function(raster, points_sf) {
       sf::st_transform(crs = sf::st_crs(raster))
     ) |>
     tibble::as_tibble() |>
-    select(-ID) |>
-    mutate(site_id = points_sf$site_id) |>
-    select(site_id, temp, prec, srad, vapr)
+    dplyr::select(-ID) |>
+    dplyr::mutate(site_id = points_sf$site_id) |>
+    dplyr::select(site_id, temp, prec, srad, vapr)
 }
 
 .tmp <-  rasters_list |>
@@ -153,7 +145,7 @@ extract_clim <- function(raster, points_sf) {
 
 clim_summaries <- .tmp |>
   dplyr::mutate(
-    precip = PEcAn.utils::ud_convert(prec, "second-1", "year-1")
+    precip = units::ud_convert(prec, "second-1", "year-1")
 ) |>
   dplyr::group_by(site_id) |>
   dplyr::summarise(
@@ -163,16 +155,6 @@ clim_summaries <- .tmp |>
     vapr = mean(vapr)
   )
 
-#' 
-## ----join_and_subset----------------------------------------------------------
-.all <- clim_summaries  |>
-  dplyr::left_join(ca_fields_pts_clay_ocd_twi, by = "site_id")
-
-assertthat::assert_that(
-  nrow(.all) == nrow(clim_summaries) &&
-    nrow(.all) == nrow(ca_fields_pts_clay_ocd_twi),
-  msg = "join was not 1:1 as expected"
-)
 
 #' Append CA Climate Region
 #'
@@ -181,7 +163,7 @@ assertthat::assert_that(
 #' ### Cal-Adapt Climate Regions
 #'
 #' Climate Region will be used as a factor
-#' in the hierarchical clustering step. 
+#' in the hierarchical clustering step.
 ## ----caladapt_climregions-----------------------------------------------------
 
 ca_field_climregions <- ca_fields |>
@@ -194,134 +176,34 @@ ca_field_climregions <- ca_fields |>
     site_id,
     climregion_id = id,
     climregion_name = name
-  )
+  ) |>
+  sf::st_drop_geometry()
 
-# This returns a point geometry. 
-# To return the **polygon** geometry from ca_fields, 
-# drop geometry from .all instead of from ca_field_climregions
-.all2 <- .all |>
+
+assertthat::assert_that(
+  all(ca_fields_pts$site_id == clim_summaries$site_id),
+  all(ca_fields_pts$site_id == ca_field_climregions$site_id)
+)
+
+site_covariates <- cbind(
+  ca_fields_pts,
+  clay = clay,
+  ocd = ocd,
+  twi = twi
+) |>
   dplyr::left_join(
-    ca_field_climregions  |> st_drop_geometry(),
+    clim_summaries,
     by = "site_id"
-  )
-
-site_covariates <- .all2 |>
+  ) |>
+  dplyr::left_join(
+    ca_field_climregions,
+    by = "site_id"
+  ) |>
   na.omit() |>
-  mutate(across(where(is.numeric), ~ signif(., digits = 3))) 
+  dplyr::mutate(across(where(is.numeric), ~ signif(., digits = 3)))
 
 PEcAn.logger::logger.info(
   round(100 * (1 - nrow(site_covariates) / nrow(ca_fields)), 0), "% of LandIQ polygons (sites) have at least one missing environmental covariate"
 )
 
-# takes a long time
-# knitr::kable(skimr::skim(site_covariates))
-
 readr::write_csv(site_covariates, file.path(data_dir, "site_covariates.csv"))
-
-#'
-#' ## Anchor Sites
-#'
-## ----anchor-sites-------------------------------------------------------------
-# Anchor sites from UC Davis, UC Riverside, and Ameriflux.
-# TODO rename raw_data/anchor_sites --> anchor_locations.csv 
-anchor_sites <- readr::read_csv("data_raw/anchor_sites.csv")
-anchor_sites_pts <- anchor_sites |>
-  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
-  sf::st_transform(crs = ca_albers_crs)
-
-# Join with ca_fields: keep only the rows associated with anchor sites
-# spatial join find ca_fields that contain anchor site points
-#     takes ~ 1 min on BU cluster w/ "Intel(R) Xeon(R) CPU E5-2670 0 @ 2.60GHz"
-
-# Note: in the next step, pfts are removed from the anchorsites dataframe 
-# and kept pfts from site_covariates 
-# the ones in the sites_covariates were generated by the landiq2std function
-# TODO we will need to make sure that pfts are consistent b/w landiq and anchorsites
-# by identifying and investigating discrepancies
-
-# First subset ca_fields to only include those with covariates
-
-ca_fields_with_covariates <- ca_fields |>
-  dplyr::right_join(site_covariates |> select(site_id), by = "site_id")
-
-anchor_sites_with_ids <- anchor_sites_pts |>
-  sf::st_join(ca_fields_with_covariates,
-    join = sf::st_within
-  )
-
-# Handle unmatched anchor sites
-unmatched_anchor_sites <- anchor_sites_with_ids |>
-  dplyr::filter(is.na(site_id))
-matched_anchor_sites <- anchor_sites_with_ids |>
-  dplyr::filter(!is.na(site_id))
-
-if (nrow(unmatched_anchor_sites) > 0) {
-  # TODO Consider if it is more efficient and clear to match all anchor sites using 
-  # st_nearest_feature rather than st_within
-  nearest_indices <- sf::st_nearest_feature(unmatched_anchor_sites, ca_fields)
-
-  # Get nearest ca_fields
-  nearest_ca_fields <- ca_fields |> dplyr::slice(nearest_indices)
-
-  # Assign site_id and calculate distances
-  unmatched_anchor_sites <- unmatched_anchor_sites |>
-    dplyr::mutate(
-      site_id = nearest_ca_fields$site_id,
-      lat = nearest_ca_fields$lat,
-      lon = nearest_ca_fields$lon,
-      distance_m = sf::st_distance(geometry, nearest_ca_fields, by_element = TRUE)
-    )
-  threshold <- units::set_units(250, "m")
-  if (any(unmatched_anchor_sites$distance_m > threshold)) {
-    PEcAn.logger::logger.warn(
-      "The following anchor sites are more than 250 m away from the nearest landiq field:",
-      paste(unmatched_anchor_sites |> filter(distance_m > threshold) |> pull(site_name), collapse = ", "),
-      "Please check the distance_m column in the unmatched_anchor_sites data.",
-      "Consider dropping these sites or expanding the threshold."
-    )
-  }
-
-  # Combine matched and unmatched anchor sites
-  anchor_sites_with_ids <- dplyr::bind_rows(
-    matched_anchor_sites,
-    unmatched_anchor_sites |> select(-distance_m)
-  )
-}
-
-# Check for missing site_id, lat, or lon
-if (any(is.na(anchor_sites_with_ids |> select(site_id, lat, lon)))) {
-  PEcAn.logger::logger.warn(
-    "Some anchor sites **still** have missing site_id, lat, or lon!"
-  )
-}
-
-# Check for anchor sites with any covariate missing
-n_missing <- anchor_sites_with_ids |>
-  left_join(site_covariates, by = "site_id") |>
-  dplyr::select(
-    site_id, lat, lon,
-    clay, ocd, twi, temp, precip
-  ) |>
-  filter(if_any(
-    everything(),
-    ~ is.na(.x)
-  )) |> nrow()
-
-if (n_missing > 0) {
-  PEcAn.logger::logger.warn(
-    "Some anchor sites have missing environmental covariates!"
-  )
-}
-
-
-# Save processed anchor sites
-anchor_sites_with_ids |>
-  sf::st_drop_geometry() |>
-  dplyr::select(site_id, lat, lon, external_site_id, site_name, crops, pft) |>
-  # save lat, lon with 5 decimal places 
-  dplyr::mutate(
-    lat = round(lat, 5),
-    lon = round(lon, 5)
-  ) |>
-  readr::write_csv(file.path(data_dir, "anchor_sites.csv"))
-
