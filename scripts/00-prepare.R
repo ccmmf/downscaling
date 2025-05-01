@@ -13,106 +13,47 @@
 #' - Use LandIQ to query covariates from SoilGrids and CalAdapt and create a table that includes crop type, soil properties, and climatology for each woody crop field
 #' 
 #' ## TODO
-#' 
 #' - Use consistent projection(s):
 #'   - California Albers EPSG:33110 for joins and spatial operations
-#'   - WGS84 EPSG:4326 for plotting, subsetting rasters?
+#'   - WGS84 EPSG:4326 for plotting, subsetting rasters
 #' - Clean up domain code
 #' - Create a bunch of tables and join all at once at the end
 #' - Disambiguate the use of 'ca' in object names; currently refers to both California and Cal-Adapt
 #' - decide if we need both Ameriflux shortnames and full names in anchor_sites.csv
 #'    (prob. yes, b/c both are helpful); if so, come up w/ better name than 'location'
 #' - make sure anchor_sites_ids.csv fields are defined in README 
-library(tidyverse)
-library(sf)
-library(terra)
-library(caladaptr)
 
-# moved to 000-config.R?
+# moved to config.yml
 data_dir <- "/projectnb2/dietzelab/ccmmf/data"
 raw_data_dir <- "/projectnb2/dietzelab/ccmmf/data_raw"
 ca_albers_crs <- 3310
 
 PEcAn.logger::logger.info("Starting Data Preparation Workflow")
 
-#source(here::here("downscale", "000-config.R"), local = TRUE)
-#' ### LandIQ Woody Polygons
-#' 
-#' The first step is to convert LandIQ to a open and standard (TBD) format.
-#' 
-#' We will use a GeoPackage file to store geospatial information and 
-#' associated CSV files to store attributes associated with the LandIQ fields.
-#' 
-#' The `site_id` field is the unique identifier for each field.
-#' 
-#' The landiq2std function will be added to the PEcAn.data.land package, and has been implemented in a Pull Request https://github.com/PecanProject/pecan/pull/3423. The function is a work in progress. Two key work to be done. First `landiq2std` does not currently perform all steps to get from the original LandIQ format to the standard format - some steps related to harmonizing LandIQ across years have been completed manually. Second, the PEcAn 'standard' for such data is under development as we migrate from a Postgres database to a more portable GeoPackage + CSV format.
-#' 
-## Convert SHP to Geotiff`
-
-input_file = file.path(raw_data_dir, 'i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp')
+#' ### CADWR LandIQ Polygons
 ca_fields_gpkg <- file.path(data_dir, 'ca_fields.gpkg')
 ca_attributes_csv = file.path(data_dir, 'ca_field_attributes.csv')
-if(!file.exists(ca_fields_gpkg) & !file.exists(ca_attributes_csv)) {
-  landiq2std(input_file, ca_fields_gpkg, ca_attributes_csv) # if landiq2std isnt available, see software section of README
-  PEcAn.logger::logger.info(paste0("Created ca_fields.gpkg and ca_field_attributes.csv in ", data_dir))
-} else {
-   PEcAn.logger::logger.info("ca_fields.gpkg and ca_field_attributes.csv already exist in ", data_dir)
-}
 
 ca_fields <- sf::st_read(ca_fields_gpkg) |>
   sf::st_transform(crs = ca_albers_crs)
 ca_attributes <- readr::read_csv(ca_attributes_csv)
 
-#' ##### Subset Woody Perennial Crop Fields
-#'
-#' Phase 1 focuses on Woody Perennial Crop fields.
-#'
-#' Next, we will subset the LandIQ data to only include woody perennial crop fields.
-#' At the same time we will calculate the total percent of California Croplands that are woody perennial crop.
-#'
-## -----------------------------------------------------------------------------
-
-ca_woody_gpkg <- file.path(data_dir, 'ca_woody.gpkg')
-if(!file.exists(ca_woody_gpkg)) {
-  ca_fields |>
-    left_join(
-      ca_attributes |>
-        filter(pft == "woody perennial crop") |>
-        select(site_id, pft),
-      by = c("site_id")
-    ) |>
-    sf::st_transform(crs = ca_albers_crs) |>
-    dplyr::select(site_id, geom) |>
-    sf::st_write(
-      file.path(data_dir, 'ca_woody.gpkg'),
-      delete_dsn = TRUE
-    )
-  PEcAn.logger::logger.info("Created ca_woody.gpkg with woody perennial crop fields in ", data_dir)
-} else {
-  PEcAn.logger::logger.info("ca_woody.gpkg already exists in ", data_dir)
-}
-
-#' ### Create California bounding box and polygon for clipping
-#'  
-
 #' ### Convert Polygons to Points.
-#'
-#' For Phase 1, we will use points to query raster data.
-#' In later phases we will evaluate the performance of polygons and how querying environmental data using polygons will affect the performance of clustering and downscaling algorithms.
-#'
+
+# Using centroids to query raster data.
 
 ca_fields_pts <- ca_fields |>
   dplyr::select(-lat, -lon) |>
-  left_join(ca_attributes, by = "site_id") |>
+  dplyr::left_join(ca_attributes, by = "site_id") |>
   sf::st_centroid() |>
   # and keep only the columns we need
   dplyr::select(site_id, crop, pft, geom)
 
-#' 
-#' ## Environmental Covariates
-#' 
+#' ## Assemble Environmental Covariates
+
+
 #' ### SoilGrids
-#' 
+
 #' #### Load Prepared Soilgrids GeoTIFF
 #' 
 #' Using already prepared SoilGrids layers. 
