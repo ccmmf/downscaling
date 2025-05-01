@@ -1,0 +1,14 @@
+project:
+  execute-dir: project  # Run qmd files from directory containing _quarto.yml
+date: today
+format: 
+  html:
+    code-fold: true
+execute:
+  cache: true
+  default-options:
+    echo: true
+    message: false
+    warning: false
+
+# Quarto YAML Options https://quarto.org/docs/reference/formats/html.html
