@@ -1,5 +1,5 @@
 ---
-title: "Downscaling Workflow Documentation"
+title: "Downscaling Results and Analysis"
 author: "David LeBauer"
 date: "`r Sys.Date()`"
 format:
@@ -12,227 +12,52 @@ execute:
   echo: false
 ---
 
-<!--
-quarto render downscale/04_downscaling_documentation_results.qmd --to html
--->
-
 # Overview
 
-The downscaling workflow is used to predict carbon pools (Soil Organic Carbon and Aboveground Biomass) for cropland fields in California and then aggregate these predictions to the county scale.
+This document presents the results of downscaling workflow: soil carbon stocks and aboveground biomass in California cropland fields, aggregated to the county level.
 
-It uses an ensemble based approach to uncertainty propagation and analysis.
+For detailed information about methods and workflow, please see the [Workflow Documentation](../docs/workflow_documentation.qmd).
 
-This multi-step approach facilitates uncertainty quantification by maintaining ensemble structure to propagate errors through the prediction and aggregation processes.
+## Design Point Distribution
 
-**Definitions**
-
-- **Design Points**: Fields chosen via stratified random sampling - using k-means clustering on environmental data layers - across all of California crop fields.
-- **Crop Fields**: These are all of the croplands in the LandIQ dataset.
-- **Anchor Sites:** These are sites that will be used as ground truth for calibration and validation. These include UC research stations and Ameriflux sites with high quality data.
-
-
-**Steps**
-
-* **Data Preparation**: Prepares data for clustering and downscaling process.
-* **Design Point Selection**: Uses k-means clustering to select a representative set of fields that represent environmental space, and add these to the anchor sites.
-* **SIPNET Model Runs**: A separate workflow prepares inputs and runs SIPNET simulations for the design points.
-* **Extract SIPNET Output**: Extracts ensemble SIPNET outputs for the design points and converts them into NetCDF, array, and long formats.
-* **Downscale and Aggregate SIPNET Output**: Builds a Random Forest model for each ensemble member to predict SOC and AGB, downscales the predictions to the full set of fields, and aggregates predictions to county-level estimates to produce maps and summary statistics.
-
-## Data Preparation
-
-```sh
-Rscript downscale/00_prepare.R
-```
-
-This script prepares data for clustering and downscaling process.
-
-It reads in the LandIQ crop map, anchor sites, and environmental covariates, and creates a table of environmental covariates for each field in the LandIQ crop map. It also links a table of anchor sites to their corresponding LandIQ fields so that these can be used in downstream analyses.
-
-- Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes from the LandIQ dataset.
-- Extracts environmental covariates (clay, organic carbon, topographic wetness, temperature, precipitation, solar radiation, vapor pressure) for each field in the LandIQ dataset.
-- Groups fields into Cal-Adapt climate regions.
-- Assigns anchor sites to fields.
-
-
-**Inputs:**
-
-- **LandIQ Crop Map**
-  - `data_raw/i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp`. This is a manually curated and harmonized version of the 2016 LandIQ crop map for California.
-- **Soilgrids**
-  - `clay_0-5cm_mean.tif` and `ocd_0-5cm_mean.tif` are rasters that have been downloaded and prepared for efficient data extraction.
-- **Topographic Wetness Index (TWI)**
-  - `TWI/TWI_resample.tiff`
-- **ERA5 Climatological Means**
-  - Available for years 2012-2024 in `GridMET/` folder in files named `ERA5_met_<YYYY>.tiff`. Currently only using means of each variable across all years. Variables include:
-    - temperature
-    - precipitation
-    - solar radiation
-    - vapor pressure deficit
-- **Anchor Sites:**
-  - `data_raw/anchor_sites.csv`: anchor sites (sites with validation data)
-  - external_site_id: Ameriflux site ID or other unique ID, not to be confused with `site_id`.
-  - lat, lon, crops, pft.
-
-Future design point selection factors will include management practices (crop, cropping system (cycle, mixtures), irrigation, tillage, C&N ammendments).
-
-**Outputs:** 
-
-- `ca_fields.gpkg` contains spatial information from LandIQ including: `site_id`, `lat`, `lon`, `area` (ha), `county`, and `geom`. Lat and Lon are centroids of the geom field.
-- `ca_field_attributes.csv` contains site_id, lat, lon, year, crop, pft, source, and notes. The crop and pft associated with each field may differ from those in anchor sites, because they come from different sources.
-- `site_covariates.csv` is a table of environmental covariates for each field in the LandIQ crop map. 
-  - site_id, temp, precip, srad, vapr, crop, pft, clay, ocd, twi.
-- `anchor_sites_ids.csv`.
-  - site_id, lat, lon, external_site_id, site_name, crops, pft.
-  - (note that lat, lon are the centroid of the field, not the original values in `data_raw/anchor_sites.csv`).
-
-Below is a map of the Anchor Sites and Climate Regions of California.
-
-![Anchor Sites](figures/anchor_sites.png)
-
-## Design Point Selection
-
-```sh
-Rscript downscale/01_cluster_and_select_design_points.R
-```
-
-Use k-means clustering to select a representative set of 75 fields that represent environmental space, and add these to the 23 distinct[^1^] anchor sites.
-
-[^1^]: There are 25 anchor sites but two have duplicate lat / lon coordinates. This will be addressed in future iterations of the analysis.
-
-These are the sites where the SIPNET crop and biogeochemistry model will be run. Currently we are running SIPNET for 98 total sites, which includes 75 design points and 23 anchor sites. 
-
-**Steps**
-
-- Subsample LandIQ fields and include anchor sites for clustering.
-- Select cluster number based on the Elbow Method.
-  - Plot within-cluster sum of squares (WCSS) against the number of clusters and identify the point where adding more clusters yields diminishing returns.
-  - Also evaluates silhouette scores; and future iterations may use multiple methods to select cluster number.
-- Cluster fields using k-means clustering to cluster the fields based on environmental covariates.
-- Select design points from clusters for SIPNET simulation.
-
-**Inputs:**
-
-- `data/site_covariates.csv`
-- `data/anchor_sites_ids.csv`
-
-**Output:** 
-
-- `data/design_points.csv`.
-
-
-**Results:**
-
-**A map of design points.** Showing their geographic distribution across California and relative to croplands. Grey areas are the LandIQ fields, and the boundaries are CalAdapt Climate Zones.
+**Map of Selected Design Points:** Shows the geographic distribution across California, relative to croplands. Grey areas are LandIQ fields, and boundaries are CalAdapt Climate Zones.
 
 ![Clustered Design Points](figures/design_points.png)
 
-
-The next two plots show the show the environmental characteristics of clusters - what makes them different, to help assess the clustering process.
-
-**Second is a pairs plot of the environmental covariates.** This plot shows the relationships between the covariates used for clustering, and colors indicate cluster membership.
+**Environmental Covariate Relationships:** This pairs plot shows the relationships between covariates used for clustering, with colors indicating cluster membership.
 
 ![Clustered Pairs Plot](figures/cluster_pairs.png)
 
-**Third is a summary of the normalized mean values of environmental covariates by cluster.** This plot illustrates the environmental characteristics of the clusters.
+**Environmental Cluster Characteristics:** This plot illustrates the normalized mean values of environmental covariates by cluster.
 
 ![Cluster Summary](figures/cluster_plot.png)
 
-## SIPNET Model Runs
-
-These are produced by the Modeling Workflow
-[Link to Modeling Workflow]
-
-**Steps:**
-
-- Prepare inputs and run SIPNET simulations for the design points.
-
-**Inputs**
-
-- `design_points.csv`
-- Initial Conditions (described in modeling workflow)
-
-**Outputs:**
-
-- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc` 
-  - These are NetCDF files that contain the SIPNET outputs for each site in a standardized format.
-  - Currently, <ensemble_number> is a value from 1 to 20 ensemble members, and there are 98 values of <site_id> that identify the design points. For final runs, these numbers may be closer to 100 ensemble members and 10k design points.
-
-## Extract SIPNET Output
-
-```sh
-Rscript downscale/02_extract_sipnet_output.R
-```
-
-This step extracts ensemble SIPNET outputs for the design points and converts them into NetCDF, array, and long formats. 
-
-**Steps:**
-
-- Extract output variables (AGB, TotSoilCarb) from SIPNET simulations
-- Aggregate site-level ensemble outputs into long and 4D array formats.
-- Save CSV and NetCDF files for downstream use in formats that follow EFI standards for forecasts (Dietze et. al. 2023).
-
-**Inputs:**
-
-- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`
-
-**Outputs:**
-
-- `out/efi_ens_long.csv`: long format.
-- `out/efi_forecast.nc`: arrays in NetCDF format
-
-
-### Downscale and Aggregate SIPNET Output
-
-```sh
-Rscript downscale/03_downscale_and_aggregate.R
-```
-
-Builds a Random Forest model for each ensemble member of each output to predict SIPNET SOC and AGB.
-
-**Steps:**
-
-- Train models on SIPNET ensemble runs at design point in order to predict for all California fields.
-- Use environmental covariates extracted in the data preparation step to downscale the predictions to the full set of fields, including all woody crop fields.
-- Aggregate predictions to county-level estimates to produce maps and summary statistics.
-- Output maps and statistics of carbon density and totals.
-
-**Inputs:**
-
-- `out/efi_ens_long.csv`: long format SIPNET outputs for ensemble runs at design points.
-- `data/site_covariates.csv`: environmental covariates for each field in the LandIQ crop map.
-
-**Outputs:** 
-
-- County-level statistics for each variable as tables and maps.
-- `out/county_total_AGB.png`: county-level AGB predictions.
-- `out/county_total_TotSoilCarb.png`: county-level SOC predictions.
-- `out/county_summaries.csv`: summary statistics for each county.
-
-## Results
-
-### County-Level Carbon Stock and Density Maps
+## County-Level Carbon Stocks and Density
 
 The following maps illustrate the spatial variation and uncertainty (mean and standard deviation) of the predicted carbon pools at the county level. 
 
-#### County Carbon Stock for TotSoilCarb
+### Soil Carbon (TotSoilCarb)
+
+#### Carbon Stock by County
 
 ![](figures/county_TotSoilCarb_carbon_stock.png)
 
-#### County Carbon Density for TotSoilCarb
+#### Carbon Density by County
 
 ![](figures/county_TotSoilCarb_carbon_density.png)
 
-#### County Carbon Stock for AGB
+### Aboveground Biomass (AGB)
+
+#### Carbon Stock by County
 
 ![](figures/county_AGB_carbon_stock.png)
 
-#### County Carbon Density for AGB
+#### Carbon Density by County
 
 ![](figures/county_AGB_carbon_density.png)
 
 ### Variable Importance and Partial Dependence
-
+D
 The following plots show the variable importance from the random forest models used for downscaling, along with partial dependence plots for the top two predictors.
 
 Variable importance quantifies how useful each covariate is in predicting the carbon stock<!-- or ghg flux-->. Partial dependence plots show the marginal effect of individual predictors on model response after averaging over the other predictors.

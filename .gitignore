@@ -9,7 +9,8 @@
 /.quarto/
 /_site/
 /_book/
-/docs/
+*/docs/
+!/docs/**
 /_freeze/
 /_files/
 
