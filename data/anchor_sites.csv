@@ -1,26 +1,26 @@
-id,lat,lon,location,site_name,distance,geometry
-2e11530b93cd492f,36.177799888824005,-120.2041070387766,US-ASH,San Joaquin Valley Almond High Salinity,0,"c(-18200.4533456107, -204351.896427268)"
-3747151a269036b7,36.94728213363369,-120.10533383829694,US-ASL,San Joaquin Valley Almond Low Salinity,0,"c(-9106.72692414989, -118913.170740419)"
-2e11530b93cd492f,36.177799888824005,-120.2041070387766,US-ASM,San Joaquin Valley Almond Medium Salinity,0,"c(-18200.4533456107, -204351.896427268)"
-e07417e56c78efbc,36.82778534752612,-120.13964104692187,US-PSH,San Joaquin Valley Pistachio High Salinity,0,"c(-12443.4766403388, -132135.913488504)"
-e07417e56c78efbc,36.82778534752612,-120.13964104692187,US-PSL,San Joaquin Valley Pistachio Low Salinity,0,"c(-12443.4766403388, -132135.913488504)"
-278cc612aa84983a,38.099349553216186,-121.5015478519803,US-Bi1,Bouldin Island Alfalfa,0,"c(-131305.841205359, 10246.5206530676)"
-dce435941adb4679,38.109586695737626,-121.53611176665588,US-Bi2,Bouldin Island Corn,0,"c(-134423.030434314, 11397.1114464211)"
-3cea434df9ea5a61,32.81280501889075,-115.44206224718269,US-Dea,UC Desert REC Alfalfa,0,"c(427219.032719703, -567399.727086836)"
-aec9f214083b8f69,38.131541484694665,-121.55191049337776,US-DS1,Staten Corn 1,0,"c(-134720.473528729, 14114.7427923167)"
-713f08eb3322d4df,38.134598947289916,-121.51170668226486,US-DS2,Staten Corn 2,0,"c(-132525.126666226, 14524.1023560269)"
-175358d15d27e2f2,38.12345747466536,-121.54982768148254,US-DS3,Staten Rice 1,0,"c(-135613.932821504, 13017.4923524545)"
-bfee4301f7c99060,36.35733308587667,-119.09282519975774,US-Lin,Lindcove Orchard,0,"c(81360.1815020208, -184101.87965719)"
-86e23fd30a7c0360,39.577102324150175,-121.86224204465502,US-RGB,Butte County Rice Farm,0,"c(-159486.330544182, 175158.013580008)"
-e34fd28a6e4fabee,37.69947277766893,-121.1391060770639,US-RGF,Stanislaus Forage Farm,0,"c(-100102.043437352, -34624.8600835721)"
-62b121132228b0f8,39.59613673857021,-122.02261183095081,US-RGG,Glenn County Rice Farm,0,"c(-173815.733795438, 177251.993701875)"
-7a561525ca4933d3,39.678693479807265,-122.00275036599245,US-RGO,Glenn County Organic Rice,1.48947665615348,"c(-171665.812216293, 186775.251166129)"
-528fcb9581143cf5,38.167462870628164,-121.50580831669866,US-Si1,Staten Island Fallow,0,"c(-131645.501113361, 18645.981438884)"
-38f1738eb5750e06,38.16651300978058,-121.52120421290903,US-Si2,Staten Island Flooded,0,"c(-132693.326336371, 18784.9819894633)"
-5628e37756df9d41,38.10355405637426,-121.6381351773307,US-Tw2,Twitchell Corn,0,"c(-143324.768603639, 10189.6513305134)"
-66de78917c6222b0,38.1157201973455,-121.64507432545884,US-Tw3,Twitchell Alfalfa,0,"c(-144200.168244178, 12239.4602416055)"
-0fb8904477a3d0ce,38.10812386794265,-121.65528241872406,US-Twt,Twitchell Island,0,"c(-144755.572864808, 11526.4416088737)"
-93d63eb396c4fcf9,38.54295166338029,-121.87235457852974,russell-ranch,Russell Ranch,0.20145926374138,"c(-163142.459970614, 60154.8849130729)"
-106ced48ab2599e0,36.34077318361296,-120.10544017924985,west-side,West Side Research Center,55.7382484621095,"c(-9681.32377587362, -186108.326980472)"
-04681ffea182d977,38.50242041442077,-121.97641993262302,wolfskill,Wolfskill Experimental Orchards,0,"c(-172200.763852519, 55891.621553943)"
-9c562bb603f3b156,33.96726803332844,-117.34048733581272,ucr-citrus,UC Riverside Citrus Research,0,"c(245813.938552732, -446378.780685794)"
+site_id,lat,lon,external_site_id,site_name,crops,pft
+4dcd647e0e5fb644,36.17085,-120.20107,US-ASH,San Joaquin Valley Almond High Salinity,Almond,woody perennial crop
+ba932a17e397a5ab,36.94728,-120.10533,US-ASL,San Joaquin Valley Almond Low Salinity,Almond,woody perennial crop
+519a39273f58c38a,36.1778,-120.20411,US-ASM,San Joaquin Valley Almond Medium Salinity,Almond,woody perennial crop
+0e853a4b67fbebfd,36.23738,-119.92758,US-PSH,San Joaquin Valley Pistachio High Salinity,Pistachio,woody perennial crop
+c5cd6e437c6b4eff,36.82779,-120.13964,US-PSL,San Joaquin Valley Pistachio Low Salinity,Pistachio,woody perennial crop
+626d806ed58c27c2,38.09935,-121.50155,US-Bi1,Bouldin Island Alfalfa,Alfalfa,herbaceous crop
+2ea9e600ef527bce,38.10959,-121.53611,US-Bi2,Bouldin Island Corn,Corn,herbaceous crop
+344afeac305e3eba,32.81281,-115.44206,US-Dea,UC Desert REC Alfalfa,Alfalfa,herbaceous crop
+6f65ce60c48d0a87,38.13154,-121.55191,US-DS1,Staten Corn 1,Corn,herbaceous crop
+a03775f1eb85f5df,38.1346,-121.51171,US-DS2,Staten Corn 2,Corn,herbaceous crop
+efd6b700d6e0b595,38.12346,-121.54983,US-DS3,Staten Rice 1,Rice,herbaceous crop
+9d15f87028f09307,36.35733,-119.09283,US-Lin,Lindcove Orchard,Oranges,woody perennial crop
+8d82a419baadc2c3,39.5771,-121.86224,US-RGB,Butte County Rice Farm,Rice,herbaceous crop
+f91e6681521476ce,37.69947,-121.13911,US-RGF,Stanislaus Forage Farm,Forage crops,herbaceous crop
+96228f7999ed281d,39.59614,-122.02261,US-RGG,Glenn County Rice Farm,Rice,herbaceous crop
+dfea14ebb55d1e81,38.16746,-121.50581,US-Si1,Staten Island Fallow,Fallow,non crop
+ffe92a1a31a8750b,38.16651,-121.5212,US-Si2,Staten Island Flooded,Rice,herbaceous crop
+f8f4e63a8e9f227a,38.10355,-121.63814,US-Tw2,Twitchell Corn,Corn,herbaceous crop
+c3e9295555ef591a,38.11572,-121.64507,US-Tw3,Twitchell Alfalfa,Alfalfa,herbaceous crop
+1d40d5cfb2bb8122,38.10812,-121.65528,US-Twt,Twitchell Island,NA,non crop
+58dc4eae0f480217,38.50242,-121.97642,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
+9a4c7e47fc0297bb,33.96727,-117.34049,ucr-citrus,UC Riverside Citrus Research,Citrus variety collection,woody perennial crop
+242c6c0992817300,39.67869,-122.00275,US-RGO,Glenn County Organic Rice,Organic rice,herbaceous crop
+ec0e8b4d92044f52,38.54295,-121.87235,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
+2ef544c85524ff53,36.34077,-120.10544,west-side,West Side Research Center,Row crops including cotton,herbaceous crop
