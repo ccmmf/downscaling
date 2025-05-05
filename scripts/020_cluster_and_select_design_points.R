@@ -72,7 +72,7 @@ if (length(missing_covariates) > 0) {
 #   readr::write_csv("data/woody_design_points_1b.csv")
 
 # select anchor sites not already in design points
-woody_design_points <- readr::read_csv("data/woody_design_points_1b.csv")
+woody_design_points <- readr::read_csv("data/woody_design_points.csv")
 anchor_sites <- readr::read_csv("data/anchor_sites.csv")
 woody_anchor_sites <- anchor_sites |>
   dplyr::filter(pft == "woody perennial crop")
@@ -276,17 +276,12 @@ herb_design_points <- herb_design_points_ids |>
 #readr::write_csv(all_design_points, file.path("data", "design_points.csv"))
 
 readr::write_csv(herb_design_points, "data/herbaceous_design_points.csv")
-readr::write_csv(woody_design_points, "data/woody_design_points.csv")
 
 PEcAn.logger::logger.info("design points for Herbaceous PFT written to data/herbaceous_design_points.csv")
-PEcAn.logger::logger.info("design points for Woody PFT written to data/woody_design_points.csv")
 
+######### Cluster Diagnostics ################
+#### TODO - also need to conduct per PFT ####
 
-######### Diagnostics ##############
-
-#' ### Check Clustering
-#'
-## ----check-clustering---------------------------------------------------------
 # Summarize clusters
 cluster_summary <- sites_clustered |>
   dplyr::group_by(cluster) |>
