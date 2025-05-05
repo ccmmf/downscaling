@@ -26,17 +26,25 @@
 # TODO move to config.yml / Renviron
 source("000-config.R")
 
-# Handle packages w/ renv
-library(caladaptr) 
+# TODO Handle packages w/ renv
+library(caladaptr)
 
-PEcAn.logger::logger.info("Starting Data Preparation Workflow")
+PEcAn.logger::logger.info("***Starting Data Preparation Workflow***")
 
 #' ### CADWR LandIQ Polygons
+#' Convert pre-processed LandIQ SHP files to more standardized GeoPackage
+# library(PEcAn.data.land)
+# input_file <- file.path(raw_data_dir, "i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp")
+# ca_fields_gpkg <- file.path(data_dir, "ca_fields.gpkg")
+# ca_attributes_csv <- file.path(data_dir, "ca_field_attributes.csv")
+# landiq2std(input_file, ca_fields_gpkg, ca_attributes_csv)
+
+
 #' TODO: update with newer version
 ca_fields_gpkg <- file.path(data_dir, 'ca_fields.gpkg')
-ca_attributes_csv <- file.path(data_dir, 'ca_field_attributes.csv')
-
 ca_fields <- sf::st_read(ca_fields_gpkg)
+
+ca_attributes_csv <- file.path(data_dir, 'ca_field_attributes.csv')
 ca_attributes <- readr::read_csv(ca_attributes_csv)
 
 #' ### Convert Polygons to Points.
@@ -161,10 +169,6 @@ clim_summaries <- .tmp |>
 ## Add Climregions
 # load climate regions for mapping
 #' ### Cal-Adapt Climate Regions
-#'
-#' Climate Region will be used as a factor
-#' in the hierarchical clustering step.
-## ----caladapt_climregions-----------------------------------------------------
 
 ca_field_climregions <- ca_fields |>
   sf::st_join(
@@ -179,31 +183,37 @@ ca_field_climregions <- ca_fields |>
   ) |>
   sf::st_drop_geometry()
 
-
-assertthat::assert_that(
-  all(ca_fields_pts$site_id == clim_summaries$site_id),
-  all(ca_fields_pts$site_id == ca_field_climregions$site_id)
-)
-
 site_covariates <- cbind(
   ca_fields_pts,
   clay = clay,
   ocd = ocd,
   twi = twi
 ) |>
-  dplyr::left_join(
+  dplyr::inner_join(
     clim_summaries,
-    by = "site_id"
+    by = "site_id",
+    # enforce 1:1 maping
+    unmatched = "error",
+    relationship = "one-to-one" 
   ) |>
-  dplyr::left_join(
+  dplyr::inner_join(
     ca_field_climregions,
-    by = "site_id"
+    by = "site_id",
+    unmatched = "error",
+    relationship = "one-to-one"
   ) |>
   na.omit() |>
-  dplyr::mutate(across(where(is.numeric), ~ signif(., digits = 3)))
+  dplyr::mutate(
+    climregion_id = as.integer(climregion_id),
+    across(where(is.numeric), ~ signif(., digits = 3))
+  ) |> 
+  sf::st_drop_geometry()
 
 PEcAn.logger::logger.info(
   round(100 * (1 - nrow(site_covariates) / nrow(ca_fields)), 0), "% of LandIQ polygons (sites) have at least one missing environmental covariate"
 )
 
 readr::write_csv(site_covariates, file.path(data_dir, "site_covariates.csv"))
+PEcAn.logger::logger.info(
+  "Saved site covariates to ", file.path(data_dir, "site_covariates.csv")
+)
