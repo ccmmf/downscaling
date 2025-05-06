@@ -1,32 +1,4 @@
-#' ---
-#' title: "Cluster and Select Design Points"
-#' author: "David LeBauer"
-#' ---
-#'
-#' # Overview
-#'
-#' This workflow will:
-#'
-#' - Read in a dataset of site environmental data
-#' - Perform K-means clustering to identify clusters
-#' - Select design points for each cluster
-#' - create design_points.csv and anchor_sites.csv
-#'
-#'
-#' ## Setup
-# general utilities
-# spatial
-# library(sf)
-# library(terra)
-# library(caladaptr) # to plot climate regions
-# # parallel computing
-# library(furrr)
-# library(doParallel)
-# # analysis
-# library(cluster)
-# library(factoextra)
 library(ggplot2)
-
 # settings
 source("000-config.R")
 
@@ -34,7 +6,7 @@ source("000-config.R")
 #'
 #' Environmental data was pre-processed in the previous workflow 00-prepare.qmd.
 #'
-#' Below is a sumary of the covariates dataset
+#' Below is a summary of the covariates dataset
 #'
 #' - site_id: Unique identifier for each polygon
 #' - crop: Crop type
@@ -135,6 +107,12 @@ anchor_sites_for_clust <- herbaceous_anchor_site_ids |>
 #'
 ## ----subset-for-clustering----------------------------------------------------
 # Define sample size for testing and production
+#'
+#' For phase 2a we are generating design points for herbaceous crops.
+#' For development we will use 100 design points from the clustered dataset.
+#'
+#' For the final high resolution runs we expect to use approximately 10,000 design points.
+#' These will be divided among PFTs proportional to their area
 
 sample_size <- 10000 # Use 10,000 **per PFT** for production
 design_points_per_pft <- 100 # we have 100 for woody; woody ~ 30% of area
@@ -257,6 +235,11 @@ perform_clustering <- function(data, k_range = 2:20) {
 
 #' ### Perform Clustering
 sites_clustered <- perform_clustering(data_for_clust, k_range = 2:20)
+#' ### Save Clustering Results For Diagnostics
+saveRDS(
+  sites_clustered,
+  file.path(cache_dir, "sites_clustered.rds")
+)
 
 # Subsample new design points from clustered data
 herb_design_points_ids <- sites_clustered |>
@@ -278,167 +261,3 @@ herb_design_points <- herb_design_points_ids |>
 readr::write_csv(herb_design_points, "data/herbaceous_design_points.csv")
 
 PEcAn.logger::logger.info("design points for Herbaceous PFT written to data/herbaceous_design_points.csv")
-
-######### Cluster Diagnostics ################
-#### TODO - also need to conduct per PFT ####
-
-# Summarize clusters
-cluster_summary <- sites_clustered |>
-  dplyr::group_by(cluster) |>
-  dplyr::summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
-
-knitr::kable(cluster_summary, digits = 0)
-
-# Plot all pairwise numeric variables
-ggpairs_plot <- sites_clustered |>
-  dplyr::select(-site_id) |>
-  # need small # pfts for ggpairs
-  dplyr::sample_n(1000) |>
-  GGally::ggpairs(
-    # plot all values except site_id and cluster
-    columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
-    mapping = aes(color = as.factor(cluster), alpha = 0.8)
-  ) +
-  theme_minimal()
-ggsave(ggpairs_plot,
-  filename = "figures/cluster_pairs.png",
-  dpi = 300, width = 10, height = 10, units = "in"
-)
-
-# scale and reshape to long for plotting
-
-# Normalize the cluster summary data
-scaled_cluster_summary <- cluster_summary |>
-  dplyr::mutate(across(-cluster, scale)) |>
-  tidyr::pivot_longer(
-    cols = -cluster,
-    names_to = "variable",
-    values_to = "value"
-  )
-
-cluster_plot <- ggplot(
-  scaled_cluster_summary,
-  aes(x = factor(variable), y = value)
-) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~cluster) +
-  coord_flip() +
-  labs(x = "Variable", y = "Normalized Value") +
-  theme_minimal()
-
-ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300)
-
-#'
-#' #### Stratification by Crops and Climate Regions
-#'
-## ----check-stratification-----------------------------------------------------
-# Check stratification of clusters by categorical factors
-
-# cols should be character, factor
-crop_ids <- readr::read_csv(
-  file.path(data_dir, "crop_ids.csv"),
-  col_types = cols(
-    crop_id = col_factor(),
-    crop = col_character()
-  )
-)
-
-climregion_ids <- readr::read_csv(
-  file.path(data_dir, "climregion_ids.csv"),
-  col_types = cols(
-    climregion_id = col_factor(),
-    climregion_name = col_character()
-  )
-)
-
-## ----stratification-----------------------------------------------------------
-# The goal here is to check the stratification of the clusters by crop and climregion
-# to ensure that the clusters are not dominated by a single crop or climregion
-# BUT probably best to normalize by the total number of fields in each cluster
-# if this is to be useful
-# is this useful?
-
-# ca_attributes <- read_csv(file.path(data_dir, "ca_field_attributes.csv"))
-# site_covariates <- read_csv(file.path(data_dir, "site_covariates.csv"))
-
-# sites_clustered <- sites_clustered |>
-#   left_join(ca_attributes, by = "site_id") |>
-#   left_join(site_covariates, by = "site_id")
-
-# factor_stratification <- list(
-#     crop_id = table(sites_clustered$cluster, sites_clustered$crop),
-#     climregion_id = table(sites_clustered$cluster, sites_clustered$climregion_name))
-
-# normalize <- function(x) {
-#   round(100 * x / rowSums(x), 1)
-# }
-# normalized_stratification <- lapply(factor_stratification, normalize)
-# lapply(normalized_stratification, knitr::kable)
-
-#'
-#' ## Design Point Selection
-#'
-#' For phase 1b we need to supply design points for SIPNET runs.
-#' For development we will use 100 design points from the clustered dataset that are _not_ already anchor sites.
-#'
-#' For the final high resolution runs we expect to use approximately 10,000 design points.
-#' For woody croplands, we will start with a number proportional to the total number of sites with woody perennial pfts.
-#'
-#'
-
-#'
-#' ### How Many Design Points?
-#'
-#' Calculating Woody Cropland Proportion
-#'
-#' Here we calculate percent of California croplands that are woody perennial crops,
-#' in order to estimate the number of design points that will be selected in the clustering step
-#' This is commented out because it takes a while and the number won't change
-# ca_attributes <- read_csv(file.path(data_dir, "ca_field_attributes.csv"))
-## --- By area & number of fields ---
-# ca_fields |>
-#   left_join(ca_attributes, by = "site_id") |>
-#   dplyr::select(site_id, pft, area_ha) |>
-#   dtplyr::lazy_dt() |>
-#   dplyr::mutate(woody_indicator = ifelse(pft == "woody perennial crop", 1L, 0L)) |>
-#   dplyr::group_by(woody_indicator) |>
-#   dplyr::summarize(field_count = dplyr::n(),
-#                    pft_area = sum(area_ha)) |>
-#   dplyr::mutate(pft_area_pct = pft_area / sum(pft_area) * 100,
-#                 field_count_pct = field_count / sum(field_count) * 100)
-
-# knitr::kable(pft_area, digits = 0)
-# answer: 17% of California croplands were woody perennial crops in the
-# 2016 LandIQ dataset
-# So ... if we want to ultimately have 2000 design points, we should have ~ 400
-# design points for woody perennial crops
-
-
-#' ### Design Point Map
-#'
-#' Now some analysis of how these design points are distributed
-#'
-## ----design-point-map---------------------------------------------------------
-# plot map of california and climregions
-
-design_points_clust <- design_points |>
-  dplyr::left_join(sites_clustered, by = "site_id") |>
-  dplyr::select(site_id, lat, lon, cluster) |>
-  dplyr::drop_na(lat, lon) |>
-  dplyr::mutate(cluster = as.factor(cluster)) |>
-  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-ca_fields_pts <- ca_fields |>
-  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-design_pt_plot <- ggplot() +
-  geom_sf(data = ca_climregions, fill = "white") +
-  theme_minimal() +
-  geom_sf(data = ca_fields, fill = "lightgrey", color = "lightgrey", alpha = 0.25) +
-  geom_sf(data = design_points_clust) +
-  geom_text(
-    data = design_points_clust, aes(label = cluster, geometry = geometry),
-    size = 2, stat = "sf_coordinates"
-  )
-
-ggsave(design_pt_plot, filename = "figures/design_points.png", dpi = 300, bg = "white")

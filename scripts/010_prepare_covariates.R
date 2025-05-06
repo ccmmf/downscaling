@@ -58,6 +58,22 @@ ca_fields_pts <- ca_fields |>
   # and keep only the columns we need
   dplyr::select(site_id, crop, pft, geom)
 
+#' ### Summarize fields by PFT
+#' Here we calculate percent (by area and number) of California croplands that are associated 
+#' with each PFT in order to estimate the number of design points that will be selected 
+#' for in the clustering 
+## --- By area & number of fields ---
+PEcAn.logger::logger.info("California cropland field number and area by PFT")
+ca_fields_pts |>
+  dplyr::select(site_id, pft, area_ha) |>
+  dtplyr::lazy_dt() |>
+  dplyr::group_by(pft) |>
+  dplyr::summarize(field_count = dplyr::n(),
+                   pft_area = sum(area_ha)) |>
+  dplyr::mutate(pft_area_pct = pft_area / sum(pft_area) * 100,
+                field_count_pct = field_count / sum(field_count) * 100) |>
+  knitr::kable(digits = 0)  
+
 #' ## Assemble Environmental Covariates
 
 #' ### SoilGrids
