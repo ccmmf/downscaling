@@ -251,7 +251,8 @@ herb_design_points_ids <- sites_clustered |>
 # Update design points
 herb_design_points <- herb_design_points_ids |>
   dplyr::left_join(site_covariates, by = "site_id") |>
-  dplyr::select(site_id, lat, lon, pft)
+  dplyr::select(site_id, lat, lon, pft) |>
+  mutate(across(c(lat, lon), ~ round(.x, 5))) 
 
 # Combine woody + herbaceous design points and write out
 #all_design_points <- woody_design_points |>
