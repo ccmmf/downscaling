@@ -25,7 +25,9 @@ ca_fields <- sf::st_read(file.path(data_dir, "ca_fields.gpkg"))
 
 site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
 site_covariates <- readr::read_csv(site_covariates_csv) |>
-  dplyr::left_join(ca_fields  |> dplyr::select(site_id, lat, lon), by = "site_id")
+  dplyr::left_join(
+    ca_fields  |> dplyr::select(site_id, lat, lon),
+    by = "site_id")
 
 
 # Check that all selected_covariates are present, otherwise stop.
