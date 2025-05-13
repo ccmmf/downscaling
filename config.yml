@@ -1,0 +1,16 @@
+default:
+  # root data dir comes from env-var; falls back if unset
+  ccmmf_dir: !expr Sys.getenv("CCMMF_DIR", "../ccmmf")
+
+  # shared renv cache  (rarely referenced in code, but recorded here)
+  renv_cache: !expr Sys.getenv(
+      "RENV_PATHS_CACHE",
+      file.path(config::get("data_dir"), "cache/renv")
+    )
+
+  paths:
+    data_raw: !expr file.path(config::get("ccmmf_dir"), "data_raw")
+    data:     !expr file.path(config::get("ccmmf_dir"), "data")
+    output:   !expr file.path(config::get("ccmmf_dir"), "output")
+    cache:    !expr file.path(config::get("ccmmf_dir"), "cache")
+
