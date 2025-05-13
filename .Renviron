@@ -1,7 +1,7 @@
 ## Change ONLY if the canonical location moves, or override at the shell
 
 # Root for all CCMMF shared data & caches (absolute or relative)
-CCMMF_DIR="../ccmmf"               # overridden by shell export if set
+CCMMF_DIR="/projectnb/dietzelab/ccmmf" # overridden by shell export if set
 
 # renv's global cache and library paths
 RENV_PATHS_CACHE="${CCMMF_DIR}/renv-cache"
