@@ -3,9 +3,6 @@
 # Root for all CCMMF shared data & caches (absolute or relative)
 CCMMF_DIR="../ccmmf"               # overridden by shell export if set
 
-# renv’s global cache lives here
-RENV_PATHS_CACHE="${CCMMF_DIR}/renv-cache"
-
-## Local cache for renv
+# renv's global cache and library paths
 RENV_PATHS_CACHE="${CCMMF_DIR}/renv-cache"
 RENV_PATHS_LIBRARY="${CCMMF_DIR}/renv-library"
