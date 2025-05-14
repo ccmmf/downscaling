@@ -29,7 +29,7 @@ source("000-config.R")
 # TODO Handle packages w/ renv
 library(caladaptr)
 
-PEcAn.logger::logger.info("***Starting Data Preparation Workflow***")
+PEcAn.logger::logger.info("***Starting Data Preparation***")
 
 #' ### CADWR LandIQ Polygons
 #' Convert pre-processed LandIQ SHP files to more standardized GeoPackage
