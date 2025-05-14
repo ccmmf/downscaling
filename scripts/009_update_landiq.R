@@ -10,6 +10,7 @@ dwr_2018 <- terra::vect(
 
 design_points <- read.csv("data/design_points.csv") |>
   select(-UniqueID)
+
 design_points_vect <- design_points |>
   terra::vect(geom = c("lon", "lat"), crs = "epsg:4326") |>
   terra::project("epsg:3310")
@@ -19,9 +20,7 @@ design_points_ids <- terra::intersect(dwr_2018, design_points_vect) |>
   terra::project("epsg:4326") |>
   as.data.frame(geom = "xy") |> 
   select(contains("id"), x, y) |>
-  # Rename x,y to lon,lat immediately for clarity
   rename(lon = x, lat = y) |>
-  # Round to 5 decimal places (approx. 1 meter precision)
   mutate(
     lon = round(lon, 5),
     lat = round(lat, 5),
