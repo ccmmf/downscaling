@@ -1,21 +1,131 @@
-library(tidyverse)
+## One off code used to fix LandIQ data has been moved to a gist:.groups
+##  https://gist.github.com/dlebauer/c7e16a0f8c741a85c8ff7794c002a558
 
-load("~/ccmmf/LandIQ_data/crops_all_years.RData")
+
+## Make sure that LandIQ data in data_raw/ is up to date
+## rsync -av --exclude='crops_all_years.RData' --exclude='crops_all_years.csv' ~/ccmmf/LandIQ_data/ ~/ccmmf/data_raw/cadwr_land_use/
+## rsync -av ~/ccmmf/LandIQ_data/crops_all_years.csv ~/ccmmf/data/cadwr_land_use/
+
+library(tidyverse)
+source(here::here("000-config.R")) # later can be replaced w/ config.yml or pecan.xml
+
+crops_all <- data.table::fread( # ~50% faster than load!
+  file.path(data_dir, "cadwr_land_use", "crops_all_years.csv")
+) |> 
+  mutate(
+    SUBCLASS = replace_na(SUBCLASS, 0)
+  )
+
+pft_map <- readr::read_csv(
+  file.path(raw_data_dir, "cadwr_land_use", "CARB_PFTs_table.csv")
+) 
+
+crops_all_pft <- crops_all |>
+  left_join(
+    pft_map,
+    by = c(
+      "CLASS" = "crop_type",
+      "SUBCLASS" = "crop_code"
+    )
+  ) 
+
+# count the number of records in each value of MULTIUSE
+crops_all |>
+  group_by(MULTIUSE) |>
+  summarize(
+    n = n(),
+    .groups = "drop"
+  ) |>
+  arrange(desc(n))
+
+# Find fields with multiple PFTs
+
+# First try, too slow!!!
+# multi_pft_fields <- crops_all_pft |>
+#   group_by(UniqueID, year, season) |>
+#   summarize(
+#     n_pft = n_distinct(pft_group, na.rm = TRUE),
+#     pft_types = paste(unique(pft_group), collapse = ", ")
+#   )  |> filter(n_pft > 1)
+
+library(multidplyr)
+cl <- new_cluster(parallel::detectCores() - 1) # recommended in multidplyr intro
+cluster_library(cl, c("dplyr"))
+
+# Split by year and season
+crops_all_pft_x <- crops_all_pft |>
+  as_tibble() |>
+  group_by(year, season) |>
+  partition(cluster = cl)
+
+summary_df <- crops_all_pft_x |>
+  filter(!is.na(pft_group)) |>
+  summarize(
+    n_pft     = n_distinct(pft_group, na.rm = TRUE),
+    pft_types = paste(unique(pft_group), collapse = ", "),
+    n_fields  = n_distinct(UniqueID)
+) |> 
+  filter(n_pft > 1) |>
+  ungroup() 
+res <- collect(summary_df)
+res |>
+  arrange(year, season, desc(n_fields)) |>
+  # select(-n_pft)
+  pull(n_pft) |>
+  unique()
+
+woody_herb_summary <- crops_all_pft_x |>
+  filter(!is.na(pft_group)) |>
+  # group at the field <U+00D7> year <U+00D7> season level
+  group_by(UniqueID, year, season) |>
+  summarise(
+    n_pft = n_distinct(pft_group),
+    woody_pcnt = sum(PCNT[pft_group == "woody"], na.rm = TRUE),
+    herb_pcnt = sum(PCNT[pft_group == "herbaceous"], na.rm = TRUE)
+  ) |>
+  ungroup() |> 
+  filter(n_pft == 2)  
+  
+z <- woody_herb_summary |>
+  collect() |>
+  #filter(woody_pcnt > 0, herb_pcnt > 0) |>
+  mutate(
+    total_pcnt = woody_pcnt + herb_pcnt
+  )
+
+z |>
+  group_by(woody_pcnt, herb_pcnt) |>
+  summarize(
+    n_occurances = n()
+  ) |>
+  arrange(desc(n_occurances)) |>
+  print(n = 50)
+### Trying reconcile 2016 and 2018 LandIQ data 
+
+crops_all_2016 <- crops_all |>
+  filter(year == 2016)
+
+crops_all_2018 <- crops_all |>
+  filter(year == 2018)
 
 dwr_2018 <- terra::vect(
-  "~/ccmmf/LandIQ_data/LandIQ_shapefiles/i15_Crop_Mapping_2018_SHP/i15_Crop_Mapping_2018.shp"
+  file.path(raw_data_dir, "cadwr_land_use", "LandIQ_shapefiles", "i15_Crop_Mapping_2018_SHP", "i15_Crop_Mapping_2018.shp")
 )  |> 
   terra::project("epsg:3310")
-  
 
-design_points <- read.csv("data/design_points.csv") |>
-  select(-UniqueID)
-
-design_points_vect <- design_points |>
-  terra::vect(geom = c("lon", "lat"), crs = "epsg:4326") |>
+dwr_2016 <- terra::vect(
+  file.path(raw_data_dir, "cadwr_land_use", "LandIQ_shapefiles", "i15_Crop_Mapping_2016_SHP", "i15_Crop_Mapping_2016.shp")
+) |>
   terra::project("epsg:3310")
 
-design_points_ids <- terra::intersect(dwr_2018, design_points_vect) |>
+## Get overlapping points
+dwr_x <- terra::intersect(dwr_2018, dwr_2016)
+
+## Goal is to reconcile dwr_2016 Unique_ID with dwr_2018 UniqueID
+## join them by geometry, creating id_2016 and id_2018
+## find where UniqueID has changed (or not)
+## where 2016 is missing from 2018, find nearest polygon and calculate distance 
+dwr_merged <- terra::intersect(dwr_2018, dwr_2016) |>
   # Project to WGS84 (decimal degrees) before converting to dataframe
   terra::project("epsg:4326") |>
   as.data.frame(geom = "xy") |> 
@@ -29,7 +139,6 @@ design_points_ids <- terra::intersect(dwr_2018, design_points_vect) |>
 
 unmatched <- anti_join(design_points, design_points_ids, by = "site_id") |>
   distinct()
-
 # Find nearest polygons for unmatched points
 # Then append to the design_points_ids
 if (nrow(unmatched) > 0) {
@@ -78,7 +187,7 @@ write.csv(design_points_ids_updated |>
       select(site_id, pft),
     by = "site_id") |>
   arrange(pft, lat, lon),
-  "data/design_points.csv",
+  here::here("data/design_points.csv"),
   row.names = FALSE
 )
 
