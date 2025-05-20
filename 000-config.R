@@ -1,18 +1,41 @@
+### Workflow Configuration Settings ### 
 
-options(readr.show_col_types = FALSE)
-set.seed(42)
-
-ca_albers_crs <- 3310
-
+# **set ccmmf_dir and pecan_outdir**
 ccmmf_dir    <- "/projectnb2/dietzelab/ccmmf"
+pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250516")
+
+# **Is this a test or production run?**
+PRODUCTION <- FALSE
+PEcAn.logger::logger.info("Running in", ifelse(PRODUCTION, "**production**", "**development**"), "mode")
+
+### Configuration Settings that can be set to default ###
+
+# Assume consistent directory structure for other directories
 data_dir     <- file.path(ccmmf_dir, "data")
 raw_data_dir <- file.path(ccmmf_dir, "data_raw")
-cache_dir    <- file.path(ccmmf_dir, "cache")
-modeloutdir  <- file.path(ccmmf_dir, "ccmmf_phase_1b_20250319064759_14859")
+cache_dir <- file.path(ccmmf_dir, "cache")
+model_outdir  <- file.path(pecan_outdir, "out")
 
-PEcAn.logger::logger.info("`ca_albers_crs` set to 3310, which is NAD83 / California Albers")
-PEcAn.logger::logger.info("CCMMF directory set to ", ccmmf_dir)
-PEcAn.logger::logger.info("`data_dir` set to ", data_dir)
-PEcAn.logger::logger.info("`cache_dir` set to ", cache_dir)
-PEcAn.logger::logger.info("`raw_data_dir` set to ", raw_data_dir)
-PEcAn.logger::logger.info("`modeloutdir` set to ", modeloutdir)
+# Suppress readr::read_csv messages
+options(readr.show_col_types = FALSE)
+
+# Misc
+set.seed(42)
+ca_albers_crs <- 3310
+
+#### Messagees ####
+PEcAn.logger::logger.info("\n",
+    "### Directory Settings ###\n",
+	"CCMMF directory:", ccmmf_dir, "\n",
+	"data_dir:", data_dir, "\n",
+	"cache_dir:", cache_dir, "\n",
+	"raw_data_dir:", raw_data_dir, "\n",
+	"pecan_outdir:", pecan_outdir, "\n",
+	"model_outdir:", model_outdir, "\n",
+	"### Other Settings ###\n",
+	"ca_albers_crs:", ca_albers_crs, 
+       ifelse(ca_albers_crs == 3310, "which is NAD83 / California Albers", ""), "\n",
+
+    wrap = FALSE
+  )
+
