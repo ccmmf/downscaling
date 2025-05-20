@@ -1,25 +1,22 @@
 # Load required libraries
-library(ggplot2)
-library(dplyr)
-library(randomForest)
-library(pdp)
-library(here)
-
-outdir <- "/projectnb/dietzelab/ccmmf/ccmmf_phase_1b_20250319064759_14859/output/out"
-load(file.path(outdir, "checkpoint.RData"))
-cpools <- c("TotSoilCarb", "AGB")
+source("000-config.R")
+# library(ggplot2)
+# library(dplyr)
+# library(randomForest)
+# library(pdp)
+# library(here)
 
 ## ALE Plots
 # robust marginal effect estimates even with correlated predictors.
-library(iml)
+# library(iml)
 
 PEcAn.logger::logger.info("Starting ALE plots")
-for (cp in cpools) {
-  model <- downscale_output_list[[cp]][["model"]][[1]]
+for (output in outputs_to_extract) {
+  model <- downscale_output_list[[output]][["model"]][[1]]
   cov_df <- covariates_df
 
   top_predictors <- importance_summary |>
-    filter(carbon_pool == cp) |>
+    filter(carbon_pool == output) |>
     arrange(desc(median_importance)) |>
     slice_head(n = 2) |>
     pull(predictor)
