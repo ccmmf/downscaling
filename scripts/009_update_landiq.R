@@ -7,27 +7,96 @@
 ## rsync -av ~/ccmmf/LandIQ_data/crops_all_years.csv ~/ccmmf/data/cadwr_land_use/
 
 library(tidyverse)
-source(here::here("000-config.R")) # later can be replaced w/ config.yml or pecan.xml
+library(multidplyr)
+cl <- new_cluster(parallel::detectCores() - 1)
+cluster_library(cl, "dplyr")
 
-crops_all <- data.table::fread( # ~50% faster than load!
+## Load Configuration
+##   later can be replaced w/ config.yml or pecan.xml
+config_file <- here::here("000-config.R") 
+if (file.exists(config_file)) {
+  source(config_file)
+} else {
+  PEcAn.logger::logger.error(
+    "Config file not found, are you in the correct directory?", getwd()
+  )
+}
+
+crops_all <- data.table::fread(
   file.path(data_dir, "cadwr_land_use", "crops_all_years.csv")
-) |> 
+) |>
+  filter(!is.na(CLASS)) |>
   mutate(
     SUBCLASS = replace_na(SUBCLASS, 0)
-  )
-
-pft_map <- readr::read_csv(
+  )   
+  
+crop_pft_map <- readr::read_csv(
   file.path(raw_data_dir, "cadwr_land_use", "CARB_PFTs_table.csv")
-) 
+) |>
+  filter(pft_group %in% c("herbaceous", "woody"))
 
+# Look at # records per CLASS each year
+PEcAn.logger::logger.info(
+  "\nNumber of records per CLASS each year:\n"
+)
+crops_all |>
+  filter(CLASS %in% crop_pft_map$crop_type) |>
+  group_by(year, CLASS) |>
+  summarize(
+    n = n()
+  ) |>
+  arrange(year, CLASS) |>
+  pivot_wider(
+    names_from = year,
+    values_from = n,
+    values_fill = 0
+  )
+  
+# Perform join to map PFTs
 crops_all_pft <- crops_all |>
   left_join(
-    pft_map,
+    crop_pft_map,
     by = c(
-      "CLASS" = "crop_type",
+      "CLASS"    = "crop_type",
       "SUBCLASS" = "crop_code"
     )
-  ) 
+  )  
+# Split into multidplyr_df by year and season
+# For parallel dplyr
+crops_all_pft_x <- crops_all_pft |>
+  as_tibble() |>
+  group_by(year, season) |>
+  partition(cluster = cl)
+
+# 1) How many rows lost pft_group (i.e. join failures) by year/season?
+crops_all_pft_x |>
+  summarise(n_total = n(),
+            n_missing = sum(is.na(pft_group)),
+            pct_missing = round(n_missing / n_total * 100)) |>
+  collect() |>
+  print(n = Inf)
+
+# Which CLASS/SUBCLASS combinations never matched?
+missing_keys <- crops_all |>
+  distinct(CLASS, SUBCLASS) |>
+  anti_join(
+    crop_pft_map,
+    by = c("CLASS" = "crop_type", "SUBCLASS" = "crop_code")
+  )
+PEcAn.logger::logger.info(
+  "\nUnmatched CLASS/SUBCLASS pairs:\n",
+  "Expect YP, X, U, NR, I, UL (non-croplands)",
+  wrap = FALSE
+)
+knitr::kable(missing_keys)
+
+
+# How common are those bad combinations in the raw data?
+crops_all |>
+  semi_join(missing_keys, by = c("CLASS", "SUBCLASS")) |>
+  count(CLASS, SUBCLASS, name = "freq") |>
+  arrange(desc(freq)) |>
+  print(n = Inf)
 
 # count the number of records in each value of MULTIUSE
 crops_all |>
@@ -38,41 +107,34 @@ crops_all |>
   ) |>
   arrange(desc(n))
 
+# Unique fields with MULTIUSE == "I"
+crops_all |>
+  filter(MULTIUSE %in% c("M", "I")) |>
+  group_by(MULTIUSE) |>
+  summarize(n_unique_id = n_distinct(UniqueID))
+
 # Find fields with multiple PFTs
 
-# First try, too slow!!!
-# multi_pft_fields <- crops_all_pft |>
-#   group_by(UniqueID, year, season) |>
-#   summarize(
-#     n_pft = n_distinct(pft_group, na.rm = TRUE),
-#     pft_types = paste(unique(pft_group), collapse = ", ")
-#   )  |> filter(n_pft > 1)
-
-library(multidplyr)
-cl <- new_cluster(parallel::detectCores() - 1) # recommended in multidplyr intro
-cluster_library(cl, c("dplyr"))
-
-# Split by year and season
-crops_all_pft_x <- crops_all_pft |>
-  as_tibble() |>
-  group_by(year, season) |>
-  partition(cluster = cl)
-
+# Summarize only those fields that have both woody & herbaceous PFTs in the same year & season
 summary_df <- crops_all_pft_x |>
   filter(!is.na(pft_group)) |>
+  group_by(UniqueID, year, season) |>
   summarize(
-    n_pft     = n_distinct(pft_group, na.rm = TRUE),
-    pft_types = paste(unique(pft_group), collapse = ", "),
+    has_woody      = any(pft_group == "woody"),
+    has_herbaceous = any(pft_group == "herbaceous")
+  ) |>
+  filter(has_woody & has_herbaceous) |>
+  group_by(year, season) |>
+  summarize(
+    n_pft     = 2,
+    pft_types = "herbaceous, woody",
     n_fields  = n_distinct(UniqueID)
-) |> 
-  filter(n_pft > 1) |>
-  ungroup() 
+  )
+
 res <- collect(summary_df)
+
 res |>
-  arrange(year, season, desc(n_fields)) |>
-  # select(-n_pft)
-  pull(n_pft) |>
-  unique()
+  arrange(year, season, desc(n_fields))
 
 woody_herb_summary <- crops_all_pft_x |>
   filter(!is.na(pft_group)) |>
@@ -100,6 +162,25 @@ z |>
   ) |>
   arrange(desc(n_occurances)) |>
   print(n = 50)
+
+# Find all fields with both woody and herbaceous PFTs in the same year and season
+woody_herb_fields_by_year_season <- crops_all_pft_x |>
+  filter(!is.na(pft_group)) |>
+  group_by(UniqueID, year, season) |>
+  summarize(
+    has_woody = any(pft_group == "woody"),
+    has_herbaceous = any(pft_group == "herbaceous")
+  ) |>
+  filter(has_woody & has_herbaceous) |>
+  select(-has_woody, -has_herbaceous) |>
+  collect()
+
+# To see how many unique fields per year/season:
+woody_herb_fields_by_year_season |>
+  group_by(year, season) |>
+  summarize(n_fields = n_distinct(UniqueID)) |>
+  arrange(year, season)
+
 ### Trying reconcile 2016 and 2018 LandIQ data 
 
 crops_all_2016 <- crops_all |>

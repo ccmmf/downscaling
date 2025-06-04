@@ -25,6 +25,51 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 
 ## Workflow Steps
 
+### Configuration
+
+Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
+The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
+
+#### Configuration setup
+
+**Required changes**
+
+- `.Renviron` 
+  - `CCMMF_DIR` should point to the shared CCMMF directory. 
+    This is the location where data, inputs, and outputs will be stored, 
+    as well as the location of the `renv` cache and library
+  - `RENV_PATHS_CACHE` and `RENV_PATHS_LIBRARY` store the `renv` cache and library in the CCMMF directory.
+    These are in a subdirectory of the CCMMF directory in order to make them available across all users 
+    (and because on some computers, they exceed allocated space in the home directory).
+- `000-config.R`
+  - set `pecan_outdir` based on the CCMMF_DIR.
+  - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
+- For testing, keep `PRODUCTION` set to `FALSE`. This is _much_ faster and 
+  requires fewer computing resources. Once a test run is successful,
+  set `PRODUCTION` to `TRUE` to run the full workflow.
+
+**Others:**
+
+_these shouldn't need to be changed unless you want to change the default behavior of the workflow_
+
+- `.future.R` defines parallel processing when the future package is loaded. 
+  - set to `available cores - 1` by default
+- `renv.lock` is used for package management with `renv`. 
+See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
+See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
+
+**UdUnits dependency**
+
+install units package
+
+```r
+install.packages(
+  "units",
+  configure.args = "--with-udunits2-lib=/share/pkg.8/udunits/2.2.28/install/lib --with-udunits2-include=/share/pkg.8/udunits/2.2.28/install/include"
+)
+```
+
+
 ### 1. Data Preparation
 
 ```sh
@@ -82,7 +127,54 @@ A separate workflow prepares inputs and runs SIPNET simulations for the design p
 - Initial conditions (from modeling workflow)
 
 **Outputs:**
-- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`: NetCDF files with SIPNET outputs
+- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`: NetCDF files containing SIPNET outputs, in PEcAn standard model output format. 
+- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc.var`: List of variables included in SIPNET output (see table below)
+
+ **Available Variables**
+
+Each output file named `YYYY.nc` contains an associated file named `YYYY.nc.var`. 
+This file contains a list of variables included in the output.
+SIPNET outputs have been converted to PEcAn standard units and stored in PEcAn standard 
+NetCDF files. 
+PEcAn standard units are SI, following the Climate Forecasting standards: 
+
+- Mass pools: kg / m2
+  - TotSoilCarb: Total Soil Carbon
+  - AbvGrndWood: Above ground woody biomass
+- Mass fluxes: kg / m2 / s-1
+  - GPP: Gross Primary Productivity
+  - NPP: Net Primary Productivity
+- Energy fluxes: W / m2
+- Other: 
+   - LAI: m2 / m2
+
+ | Variable                      | Description                              |
+ |-------------------------------|------------------------------------------|
+ | GPP                           | Gross Primary Productivity               |
+ | NPP                           | Net Primary Productivity                 |
+ | TotalResp                     | Total Respiration                        |
+ | AutoResp                      | Autotrophic Respiration                  |
+ | HeteroResp                    | Heterotrophic Respiration                |
+ | SoilResp                      | Soil Respiration                         |
+ | NEE                           | Net Ecosystem Exchange                   |
+ | AbvGrndWood                   | Above ground woody biomass               |
+ | leaf_carbon_content           | Leaf Carbon Content                      |
+ | TotLivBiom                    | Total living biomass                     |
+ | TotSoilCarb                   | Total Soil Carbon                        |
+ | Qle                           | Latent heat                              |
+ | Transp                        | Total transpiration                      |
+ | SoilMoist                     | Average Layer Soil Moisture              |
+ | SoilMoistFrac                 | Average Layer Fraction of Saturation     |
+ | SWE                           | Snow Water Equivalent                    |
+ | litter_carbon_content         | Litter Carbon Content                    |
+ | litter_mass_content_of_water  | Average layer litter moisture            |
+ | LAI                           | Leaf Area Index                          |
+ | fine_root_carbon_content      | Fine Root Carbon Content                 |
+ | coarse_root_carbon_content    | Coarse Root Carbon Content               |
+ | GWBI                          | Gross Woody Biomass Increment            |
+ | AGB                           | Total aboveground biomass                |
+ | time_bounds                   | history time interval endpoints          |
+
 
 ### 4. Extract SIPNET Output
 

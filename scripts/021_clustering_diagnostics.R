@@ -1,5 +1,9 @@
 source("000-config.R")
-library(readr)
+PEcAn.logger::logger.info("***Starting Clustering Diagnostics***")
+library(ggplot2)
+
+ca_fields <- sf::st_read(file.path(data_dir, "ca_fields.gpkg"))
+ca_climregions <- sf::st_read(file.path(data_dir, "ca_climregions.gpkg"))
 
 ######### Cluster Diagnostics ################
 
@@ -15,7 +19,7 @@ knitr::kable(cluster_summary, digits = 0)
 ggpairs_plot <- sites_clustered |>
   dplyr::select(-site_id) |>
   # need small # pfts for ggpairs
-  dplyr::sample_n(1000) |>
+  dplyr::sample_n(min(nrow(sites_clustered), 1000)) |>
   GGally::ggpairs(
     # plot all values except site_id and cluster
     columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
@@ -48,7 +52,7 @@ cluster_plot <- ggplot(
   labs(x = "Variable", y = "Normalized Value") +
   theme_minimal()
 
-ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300)
+ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300, bg = "white")
 
 #'
 #' #### Stratification by Crops and Climate Regions
@@ -59,17 +63,17 @@ ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300)
 # cols should be character, factor
 crop_ids <- readr::read_csv(
   file.path(data_dir, "crop_ids.csv"),
-  col_types = cols(
-    crop_id = col_factor(),
-    crop = col_character()
+  col_types = readr::cols(
+    crop_id = readr::col_factor(),
+    crop = readr::col_character()
   )
 )
 
 climregion_ids <- readr::read_csv(
   file.path(data_dir, "climregion_ids.csv"),
-  col_types = cols(
-    climregion_id = col_factor(),
-    climregion_name = col_character()
+  col_types = readr::cols(
+    climregion_id = readr::col_factor(),
+    climregion_name = readr::col_character()
   )
 )
 
@@ -103,6 +107,8 @@ climregion_ids <- readr::read_csv(
 #'
 ## ----design-point-map---------------------------------------------------------
 # plot map of california and climregions
+
+design_points <- readr::read_csv(here::here("data", "design_points.csv"))
 
 design_points_clust <- design_points |>
   dplyr::left_join(sites_clustered, by = "site_id") |>

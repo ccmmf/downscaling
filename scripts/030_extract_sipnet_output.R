@@ -25,7 +25,7 @@ library(furrr)
 
 ## Second, make sure ccmmf_dir and pecan_outdir are defined in the config file
 source("000-config.R")
-
+PEcAn.logger::logger.info("***Starting SIPNET output extraction***")
 # Read settings file and extract run information
 settings <- PEcAn.settings::read.settings(file.path(pecan_outdir, "pecan.CONFIGS.xml"))
 
@@ -40,22 +40,22 @@ end_year <- lubridate::year(end_date)
 # design points for 1b
 # data/design_points.csv
 design_pt_csv <- "data/design_points.csv"
-design_points <- readr::read_csv(design_pt_csv) |>
-    dplyr::distinct()
-
-# Variables to extract
-variables <- c("AGB", "TotSoilCarb")
+design_points <- readr::read_csv(design_pt_csv)  |> 
+    dplyr::filter(pft == "annual crop")
 
 site_ids <- design_points |>
     dplyr::pull(site_id) |>
     unique()
 ens_ids <- 1:ensemble_size
 
+variables <- outputs_to_extract # TODO standardize this name; variables is ambiguous
+
 if(!PRODUCTION) {
   ##-----TESTING SUBSET----##
   site_ids   <- site_ids[1:5]
   ens_ids    <- ens_ids[1:5]
   start_year <- end_year - 1
+  variables  <- variables[1]
 }
 
 ens_dirs <- expand.grid(
@@ -72,7 +72,7 @@ if (!all(existing_dirs)) {
     missing_dirs <- ens_dirs[!existing_dirs]
     PEcAn.logger::logger.warn("Missing expected ensemble directories: ", paste(missing_dirs, collapse = ", "))
 } else {
-    PEcAn.logger::logger.info("Found all expected ensemble directories.")
+    PEcAn.logger::logger.info("Success: Found all expected ensemble directories.")
 }
 
 ### Check that each ensemble directory has expected files 
@@ -91,6 +91,7 @@ check_files <- expand.grid(dir = ens_dirs$dir, file = expected_files) |>
         exists = file.exists(full_file)
     ) |>
     dplyr::arrange(dir, file)
+
 if(any(!check_files$exists)) {
     missing_files <- check_files |>
         filter(!exists)

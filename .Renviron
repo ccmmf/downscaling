@@ -1,0 +1,13 @@
+## Change ONLY if the canonical location moves, or override at the shell
+
+# Root for all CCMMF shared data & caches (absolute or relative)
+# Can be overridden by shell export (`export CCMMF_DIR="/path/to/...") if set
+CCMMF_DIR="/projectnb/dietzelab/ccmmf"
+
+# renv's global cache and library paths
+RENV_PATHS_CACHE="${CCMMF_DIR}/renv-cache"
+RENV_PATHS_LIBRARY="${CCMMF_DIR}/renv-library"
+
+# udunits
+UDUNITS2_LIBS="-L/share/pkg.8/udunits/2.2.28/install/lib -ludunits2"
+UDUNITS2_INCLUDE="-I/share/pkg.8/udunits/2.2.28/install/include"

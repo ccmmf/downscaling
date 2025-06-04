@@ -1,62 +1,71 @@
-#' ---
-#' Title: Downscale and Aggregate Woody Crop SOC stocks
-#' author: "David LeBauer"
-#' ---
-#'
-
-#'
-#' # Overview
-#'
-#' This workflow will:
-#'
-#' - Use environmental covariates to predict SIPNET estimated SOC for each woody crop field in the LandIQ dataset
-#'   - Uses Random Forest [may change to CNN later] trained on site-scale model runs.
-#'   - Build a model for each ensemble member
-#' - Write out a table with predicted biomass and SOC to maintain ensemble structure, ensuring correct error propagation and spatial covariance.
-#' - Aggregate County-level biomass and SOC inventories
-#'
+# This workflow does the following:
+#
+# - Use environmental covariates to predict SIPNET estimated SOC for each field in the LandIQ dataset
+#   - Uses Random Forest [may change to CNN later] trained on site-scale model runs.
+#   - Build a model for each ensemble member
+# - Write out a table with predicted biomass and SOC to maintain ensemble structure, ensuring correct error propagation and spatial covariance.
+# - Aggregates County-level biomass and SOC inventories
+#
 ## ----setup--------------------------------------------------------------------
-library(tidyverse)
-library(sf)
-library(terra)
-library(furrr)
+
+source("000-config.R")
+PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
+# library(tidyverse)
+# library(sf)
+# library(terra)
+# library(furrr)
 library(patchwork) # for combining plots
 
-library(PEcAnAssimSequential)
-datadir <- "/projectnb/dietzelab/ccmmf/data"
-basedir <- "/projectnb/dietzelab/ccmmf/ccmmf_phase_1b_20250319064759_14859"
-settings <- PEcAn.settings::read.settings(file.path(basedir, "settings.xml"))
-outdir <- file.path(basedir, settings$modeloutdir)
-options(readr.show_col_types = FALSE)
+settings <- PEcAn.settings::read.settings(file.path(pecan_outdir, "pecan.CONFIGS.xml"))
 
-
-#' ## Get Site Level Outputs
-ensemble_file <- file.path(outdir, "efi_ens_long.csv")
+ensemble_file <- file.path(model_outdir, "ensemble_output.csv")
 ensemble_data <- readr::read_csv(ensemble_file) 
 
-#' ### Random Forest using PEcAn downscale workflow
+### Random Forest using PEcAn downscale workflow
 ## -----------------------------------------------------------------------------
-design_pt_csv <- "https://raw.githubusercontent.com/ccmmf/workflows/46a61d58a7b0e43ba4f851b7ba0d427d112be362/data/design_points.csv"
-design_points <- read_csv(design_pt_csv) |> #read_csv(here::here("data/design_points.csv")) |>
-  dplyr::distinct()
+design_pt_csv <- "data/design_points.csv"
+design_points <- readr::read_csv(design_pt_csv)  |> 
+  dplyr::filter(pft == "annual crop")
 
-covariates_csv <- file.path(datadir, "site_covariates.csv")
-covariates <- read_csv(covariates_csv) |>
-  select(
+covariates_csv <- file.path(data_dir, "site_covariates.csv")
+covariates <- readr::read_csv(covariates_csv) |>
+  dplyr::select(
     site_id, where(is.numeric),
     -climregion_id
   )
 
-downscale_carbon_pool <- function(date, carbon_pool) {
-  filtered_ens_data <- subset_ensemble(
+covariate_names <- names(covariates |>
+  dplyr::select(where(is.numeric)))
+
+design_covariates <- design_points |>
+  dplyr::left_join(covariates, by = "site_id") |>
+  dplyr::select(site_id, dplyr::all_of(covariate_names)) |>
+  # randomForest pkg requires data frame
+  as.data.frame() |>
+  # scale covariates as for consistency with model
+  dplyr::mutate(dplyr::across(dplyr::all_of(covariate_names), scale))
+
+##### Subset data for plotting (speed + visible rug plots) #######
+# Subset data for testing / speed purposes
+if (!PRODUCTION) {
+  outputs_to_extract <- c("AGB")
+  if(!exists(".Random.seed")) set.seed(123)
+  covariate_subset <- covariates |>
+    dplyr::anti_join(design_points, by = "site_id") |>
+    dplyr::slice_sample(n = 10000) # limit to 10k sites with reproducible sampling
+}
+
+## TODO migrate to PEcAnAssimSequential
+downscale_model_output <- function(date, model_output) {
+  filtered_ens_data <- PEcAnAssimSequential::subset_ensemble(
     ensemble_data = ensemble_data,
     site_coords   = design_points,
     date          = date,
-    carbon_pool   = carbon_pool
+    carbon_pool   = model_output
   )
 
   # Downscale the data
-  downscale_output <- ensemble_downscale(
+  downscale_output <- PEcAnAssimSequential::ensemble_downscale(
     ensemble_data = filtered_ens_data,
     site_coords   = design_points,
     covariates    = covariates,
@@ -65,38 +74,44 @@ downscale_carbon_pool <- function(date, carbon_pool) {
   return(downscale_output)
 }
 
-cpools <- c("TotSoilCarb", "AGB")
-
-downscale_output_list <- purrr::map( # not using furrr b/c it is used inside downscale
-  cpools,
-  ~ downscale_carbon_pool(date = "2018-12-31", carbon_pool = .x)
+# not using furrr b/c it is used inside downscale
+downscale_output_list <- purrr::map(
+  outputs_to_extract,
+  ~ {
+    PEcAn.logger::logger.info("Starting downscaling for", .x)
+    result <- downscale_model_output(date = "2018-12-31", model_output = .x)
+    PEcAn.logger::logger.info("Downscaling complete for", .x)
+    result
+  }
 ) |>
-  purrr::set_names(cpools)
-
+purrr::set_names(outputs_to_extract)
+PEcAn.logger::logger.info("Downscaling complete for all model outputs")
 ## Check variable importance
 
 ## Save to make it easier to restart
 # saveRDS(downscale_output, file = here::here("cache/downscale_output.rds"))
-PEcAn.logger::logger.info("Downscaling complete")
 
 PEcAn.logger::logger.info("Downscaling model results for each ensemble member:")
-metrics <- lapply(downscale_output_list, downscale_metrics)
-knitr::kable(metrics)
+metrics <- lapply(downscale_output_list, PEcAnAssimSequential::downscale_metrics)
+for (name in names(metrics)) {
+  cat("\n\n###", name)
+  print(knitr::kable(metrics[[name]]))
+}
 
 median_metrics <- purrr::map(metrics, function(m) {
   m |>
-    select(-ensemble) |>
-    summarise(#do equivalent of colmeans but for medians)
-      across(
-        everything(),
-        list(median = ~ median(.x)),
+    dplyr::select(-ensemble) |>
+    dplyr::summarise( # do equivalent of colmeans but for medians
+      dplyr::across(
+        .cols = dplyr::everything(),
+        .fns = list(median = ~ median(.x)),
         .names = "{col}"
       )
     )
 })
 
 PEcAn.logger::logger.info("Median downscaling model metrics:")
-bind_rows(median_metrics, .id = "carbon_pool") |>
+dplyr::bind_rows(median_metrics, .id = "model_output") |>
   knitr::kable()
 
 #'
@@ -110,109 +125,114 @@ bind_rows(median_metrics, .id = "carbon_pool") |>
 #   rename(site = id)
 PEcAn.logger::logger.info("Aggregating to County Level")
 
-ca_fields_full <- sf::read_sf(file.path(datadir, "ca_fields.gpkg"))
+ca_fields_full <- sf::read_sf(file.path(data_dir, "ca_fields.gpkg"))
 
 ca_fields <- ca_fields_full |>
-  dplyr::select(site_id, county, area_ha)  
+  dplyr::select(site_id, county, area_ha)
+
+if(!PRODUCTION) {
+  # For testing, use a subset of fields
+  # could be even faster if we did this in sf::read_sf(..., sql = "SELECT * FROM ca_fields WHERE site_id IN (...)")
+  ca_fields <- ca_fields |>
+    dplyr::left_join(covariates, by = "site_id") 
+}
 
 # Convert list to table with predictions and site identifier
 get_downscale_preds <- function(downscale_output_list) {
   purrr::map(
     downscale_output_list$predictions,
-    ~ tibble(site_id = covariates$site_id, prediction = .x)
+    ~ tibble::tibble(site_id = covariates$site_id, prediction = .x)
   ) |>
-    bind_rows(.id = "ensemble") |>
-    left_join(ca_fields, by = "site_id") 
+    dplyr::bind_rows(.id = "ensemble") |>
+    dplyr::left_join(ca_fields, by = "site_id") 
 }
 
 downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
-  dplyr::bind_rows(.id = "carbon_pool") |>
+  dplyr::bind_rows(.id = "model_output") |>
   # Convert kg/m2 to Mg/ha using PEcAn.utils::ud_convert
-  mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
+  dplyr::mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
   # Calculate total Mg per field: c_density_Mg_ha * area_ha
-  mutate(total_c_Mg = c_density_Mg_ha * area_ha)
+  dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha)
 
 ens_county_preds <- downscale_preds |>
   # Now aggregate to get county level totals for each pool x ensemble
-  group_by(carbon_pool, county, ensemble) |>
-  summarize(
-    n = n(),
-    total_c_Mg = sum(total_c_Mg),      # total Mg C per county
-    total_ha = sum(area_ha)
+  dplyr::group_by(model_output, county, ensemble) |>
+  dplyr::summarize(
+    n = dplyr::n(),
+    total_c_Mg = sum(total_c_Mg), # total Mg C per county
+    total_ha = sum(area_ha),
+    .groups = "drop_last"
   ) |>
-  ungroup() |>
-  mutate(
+  dplyr::ungroup() |>
+  # counties with no fields will result in NA below
+  dplyr::filter(total_ha > 0) |>
+  dplyr::mutate(
     total_c_Tg = PEcAn.utils::ud_convert(total_c_Mg, "Mg", "Tg"),
     mean_c_density_Mg_ha = total_c_Mg / total_ha
   ) |>
-  arrange(carbon_pool, county, ensemble)
+  dplyr::arrange(model_output, county, ensemble)
 
-# Check number of ensemble members per county/carbon_pool
 ens_county_preds |>
-  group_by(carbon_pool, county) |>
-  summarize(n_vals = n_distinct(total_c_Mg)) |>
-  pull(n_vals) |>
+  dplyr::group_by(model_output, county) |>
+  dplyr::summarize(n_vals = dplyr::n_distinct(total_c_Mg), .groups = "drop") |>
+  dplyr::pull(n_vals) |>
   unique()
 
-
 county_summaries <- ens_county_preds |>
-    group_by(carbon_pool, county) |>
-    summarize(
+    dplyr::group_by(model_output, county) |>
+    dplyr::summarize(
       n = max(n), # Number of fields in county should be same for each ensemble member
-      co_mean_c_total_Tg = mean(total_c_Tg),
-      co_sd_c_total_Tg = sd(total_c_Tg),
-      co_mean_c_density_Mg_ha = mean(mean_c_density_Mg_ha),
-      co_sd_c_density_Mg_ha = sd(mean_c_density_Mg_ha)
+      mean_total_c_Tg = mean(total_c_Tg),
+      sd_total_c_Tg = sd(total_c_Tg),
+      mean_c_density_Mg_ha = mean(mean_c_density_Mg_ha),
+      sd_c_density_Mg_ha = sd(mean_c_density_Mg_ha),
+      .groups = "drop"
     )
-
+    
 readr::write_csv(
   county_summaries,
-  file.path(outdir, "county_summaries.csv")
+  file.path(model_outdir, "county_summaries.csv")
 )
-PEcAn.logger::logger.info("County summaries written to", file.path(outdir, "county_summaries.csv"))
+PEcAn.logger::logger.info("County summaries written to", file.path(model_outdir, "county_summaries.csv"))
 
-## Plot the results!
-PEcAn.logger::logger.info("Plotting County Level Summaries")
-county_boundaries <- st_read(here::here("data/counties.gpkg")) |>
-  filter(state_name == "California") |>
-  select(name)
+county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"))
 
 co_preds_to_plot <- county_summaries |>
-  right_join(county_boundaries, by = c("county" = "name")) |>
-  arrange(county, carbon_pool) |>
-  pivot_longer(
+  dplyr::right_join(county_boundaries, by = "county") |>
+  dplyr::arrange(county, model_output) |>
+  tidyr::pivot_longer(
     cols = c(mean_total_c_Tg, sd_total_c_Tg, mean_c_density_Mg_ha, sd_c_density_Mg_ha),
     names_to = "stat",
     values_to = "value"
   ) |>
-  mutate(units = case_when(
-    str_detect(stat, "total_c") ~ "Carbon Stock (Tg)",
-    str_detect(stat, "c_density") ~ "Carbon Density (Mg/ha)"
-  ), stat = case_when(
-    str_detect(stat, "mean") ~ "Mean",
-    str_detect(stat, "sd") ~ "SD"
+  dplyr::mutate(units = dplyr::case_when(
+    stringr::str_detect(stat, "total_c") ~ "Carbon Stock (Tg)",
+    stringr::str_detect(stat, "c_density") ~ "Carbon Density (Mg/ha)"
+  ), stat = dplyr::case_when(
+    stringr::str_detect(stat, "mean") ~ "Mean",
+    stringr::str_detect(stat, "sd") ~ "SD"
   ))
 
-# now plot map of county-level predictions with total carbon
-units <- rep(unique(co_preds_to_plot$units), each = length(cpools))
+units <- rep(unique(co_preds_to_plot$units), each = length(outputs_to_extract))
 pool_x_units <- co_preds_to_plot |>
-  select(carbon_pool, units) |>
-  distinct() |>
+  dplyr::select(model_output, units) |>
+  dplyr::distinct() |>
   # remove na
-  filter(!is.na(carbon_pool)) |> # why is one field in SF county NA?
-  arrange(carbon_pool, units)
+  dplyr::filter(!is.na(model_output)) |> # why is one field in SF county NA?
+  dplyr::arrange(model_output, units) |> 
+  dplyr::filter(!is.na(model_output))
 
-p <- purrr::map2(pool_x_units$carbon_pool, pool_x_units$units, function(pool, unit) {
-  .p <- ggplot(
-    co_preds_to_plot |> filter(carbon_pool == pool & units == unit),
-    aes(geometry = geom, fill = value)
+p <- purrr::map2(pool_x_units$model_output, pool_x_units$units, function(pool, unit) {
+  .p <- ggplot2::ggplot(
+    dplyr::filter(co_preds_to_plot, model_output == pool & units == unit),
+    ggplot2::aes(geometry = geom, fill = value)
   ) +
-    geom_sf(data = county_boundaries, fill = "lightgrey", color = "black") +
-    geom_sf() +
-    scale_fill_viridis_c(option = "plasma") +
-    theme_minimal() +
-    facet_grid(carbon_pool ~ stat) +
-    labs(
+    ggplot2::geom_sf(data = county_boundaries, fill = "lightgrey", color = "black") +
+    ggplot2::geom_sf() +
+    ggplot2::scale_fill_viridis_c(option = "plasma") +
+    ggplot2::theme_minimal() +
+    ggplot2::facet_grid(model_output ~ stat) +
+    ggplot2::labs(
       title = paste("County-Level Predictions for", pool, unit),
       fill = "Value"
     )
@@ -221,9 +241,9 @@ p <- purrr::map2(pool_x_units$carbon_pool, pool_x_units$units, function(pool, un
     ifelse(unit == "Carbon Density (Mg/ha)", "density", NA)
   )
 
-  plotfile <- here::here("downscale/figures", paste0("county_", pool, "_carbon_", unit, ".png"))
-  print(plotfile)
-  ggsave(
+  plotfile <- here::here("figures", paste0("county_", pool, "_carbon_", unit, ".png"))
+  PEcAn.logger::logger.info("Creating county-level plot for", pool, unit)
+  ggplot2::ggsave(
     plot = .p,
     filename = plotfile,
     width = 10, height = 5,
@@ -233,97 +253,76 @@ p <- purrr::map2(pool_x_units$carbon_pool, pool_x_units$units, function(pool, un
 })
 
 # Variable Importance and Partial Dependence Plots
-
-# First, calculate variable importance summary as before
-importance_summary <- map_dfr(cpools, function(cp) {
+importance_summary <- purrr::map_dfr(outputs_to_extract, function(output) {
   # Extract the importance for each ensemble model in the carbon pool
-  importances <- map(1:20, function(i) {
-    model <- downscale_output_list[[cp]][["model"]][[i]]
+  importances <- purrr::map(1:20, function(i) {
+    model <- downscale_output_list[[output]][["model"]][[i]]
     randomForest::importance(model)[, "%IncMSE"]
   })
 
   # Turn the list of importance vectors into a data frame
-  importance_df <- map_dfr(importances, ~ tibble(importance = .x), .id = "ensemble") |>
-    group_by(ensemble) |>
-    mutate(predictor = names(importances[[1]])) |>
-    ungroup()
+  importance_df <- purrr::map_dfr(importances, ~ tibble::tibble(importance = .x), .id = "ensemble") |>
+    dplyr::group_by(ensemble) |>
+    dplyr::mutate(predictor = names(importances[[1]])) |>
+    dplyr::ungroup()
 
   # Now summarize median and IQR for each predictor across ensembles
   summary_df <- importance_df |>
-    group_by(predictor) |>
-    summarize(
+    dplyr::group_by(predictor) |>
+    dplyr::summarize(
       median_importance = median(importance, na.rm = TRUE),
       lcl_importance = quantile(importance, 0.25, na.rm = TRUE),
-      ucl_importance = quantile(importance, 0.75, na.rm = TRUE)
+      ucl_importance = quantile(importance, 0.75, na.rm = TRUE),
+      .groups = "drop"
     ) |>
-    mutate(carbon_pool = cp)
+    dplyr::mutate(model_output = output)
 
   summary_df
 })
 
-# TODO consider separating out plotting 
-####---Create checkpoint---####
-# system.time(save(downscale_output_list, importance_summary, covariates, cpools# these are ~500MB
-#   file = file.path(outdir, "checkpoint.RData"),
+
+# TODO consider separating out plotting
+#### ---Create checkpoint---####
+# system.time(save(downscale_output_list, importance_summary, covariates, outputs_to_extract# these are ~500MB
+#   file = file.path(cache_dir, "checkpoint.RData"),
 #   compress = FALSE
 # ))
-# outdir <- "/projectnb/dietzelab/ccmmf/ccmmf_phase_1b_20250319064759_14859/output/out"
-# load(file.path(outdir, "checkpoint.RData"))
-#### ---End checkpoint---####
 
-covariate_names <- names(covariates |> select(where(is.numeric)))
-covariates_df <- as.data.frame(covariates) |>
-  # TODO pass scaled covariates from ensemble_downscale function
-  #    this will ensure that the scaling is the same.
-  mutate(covariates, across(all_of(covariate_names), scale))
-
-##### Subset data for plotting (speed + visible rug plots) #######
-subset_inputs <- TRUE
-# Subset data for testing / speed purposes
-if (subset_inputs) {
-  # cpools <- c("AGB")
-
-  # Subset covariates for testing (take only a small percentage of rows)
-  n_test_samples <- min(5000, nrow(covariates_df))
-  set.seed(123) # For reproducibility
-  test_indices <- sample(1:nrow(covariates_df), n_test_samples)
-  covariates_full <- covariates_df
-  covariates_df <- covariates_df[test_indices, ]
-
-  # For each model, subset the predictions to match the test indices
-  for (cp in cpools) {
-    if (length(downscale_output_list[[cp]]$predictions) > 0) {
-      downscale_output_list[[cp]]$predictions <-
-        lapply(downscale_output_list[[cp]]$predictions, function(x) x[test_indices])
-    }
-  }
-}
-
-##### End Subsetting Code#######
 
 ##### Importance Plots #####
 
+for (output in outputs_to_extract) {
+  # Top 2 predictors for this carbon pool
+  top_predictors <- importance_summary |>
+    filter(model_output == output) |>
+    arrange(desc(median_importance)) |>
+    slice_head(n = 2) |>
+    pull(predictor)
 
-for (cp in cpools) {
+  # Prepare model and subset of covariates for plotting
+  model <- downscale_output_list[[output]][["model"]][[1]]
+
+  # Set up PNG for three panel plot
   png(
-    filename = here::here("downscale/figures", paste0(cp, "_importance_partial_plots.png")),
+    filename = here::here("figures", paste0(output, "_importance_partial_plots.png")),
     width = 14, height = 6, units = "in", res = 300, bg = "white"
   )
+  par(mfrow = c(1, 3))
 
-  # Variable importance plot
-  cp_importance <- importance_summary |>
-    filter(carbon_pool == cp)
+  # Panel 1: Variable importance plot
+  output_importance <- importance_summary |> filter(model_output == output)
+  par(mar = c(5, 10, 4, 2))
   with(
-    cp_importance,
+    output_importance,
     dotchart(median_importance,
       labels = reorder(predictor, median_importance),
       xlab = "Median Increase MSE (SD)",
-      main = paste("Importance -", cp),
+      main = paste("Importance -", output),
       pch = 19, col = "steelblue", cex = 1.2
     )
   )
   with(
-    cp_importance,
+    output_importance,
     segments(lcl_importance,
       seq_along(predictor),
       ucl_importance,
@@ -331,37 +330,64 @@ for (cp in cpools) {
       col = "gray50"
     )
   )
-  dev.off()
+
+  # Panel 2: Partial plot for top predictor
+  par(mar = c(5, 5, 4, 2))
+  randomForest::partialPlot(model,
+    pred.data = design_covariates,
+    x.var = top_predictors[1],
+    main = paste("Partial Dependence -", top_predictors[1]),
+    xlab = top_predictors[1],
+    ylab = paste("Predicted", output),
+    col = "steelblue",
+    lwd = 2
+  )
+
+  # Panel 3: Partial plot for second predictor
+  randomForest::partialPlot(model,
+    pred.data = design_covariates,
+    x.var = top_predictors[2],
+    main = paste("Partial Dependence -", top_predictors[2]),
+    xlab = top_predictors[2],
+    ylab = paste("Predicted", output),
+    col = "steelblue",
+    lwd = 2
+  )
+  dev.off() # Save combined figure
+  PEcAn.logger::logger.info("Saved importance and partial plots for", output)
 }
+
+PEcAn.logger::logger.info("***Finished downscaling and aggregation***")
+
 
 ##### Importance and Partial Plots #####
 
 ## Using pdp + ggplot2
 # # Loop over carbon pools
-# for (cp in cpools) {
+# for (output in outputs_to_extract) {
 #   # Top 2 predictors for this carbon pool
 #   top_predictors <- importance_summary |>
-#     filter(carbon_pool == cp) |>
+#     filter(model_output == output) |>
 #     arrange(desc(median_importance)) |>
 #     slice_head(n = 2) |>
 #     pull(predictor)
 
 #   # Retrieve model and covariate data
-#   model <- downscale_output_list[[cp]][["model"]][[1]]
-#   cov_df <- covariates_df # Already scaled
+#   model <- downscale_output_list[[output]][["model"]][[1]]
+#   design_covariates <- covariates_df # Already scaled
 
 #   ## 1. Create Variable Importance Plot with ggplot2
-#   cp_importance <- importance_summary |>
-#     filter(carbon_pool == cp)
+#   output_importance <- importance_summary |>
+#     filter(model_output == output)
 
-#   p_importance <- ggplot(cp_importance, aes(x = median_importance, y = reorder(predictor, median_importance))) +
+#   p_importance <- ggplot(output_importance, aes(x = median_importance, y = reorder(predictor, median_importance))) +
 #     geom_point(color = "steelblue", size = 3) +
 #     geom_errorbarh(aes(xmin = lcl_importance, xmax = ucl_importance),
 #       height = 0.2,
 #       color = "gray50"
 #     ) +
 #     labs(
-#       title = paste("Importance -", cp),
+#       title = paste("Importance -", output),
 #       x = "Median Increase in MSE (SD)",
 #       y = ""
 #     ) +
@@ -371,21 +397,21 @@ for (cp in cpools) {
 #   pd_data1 <- pdp::partial(
 #     object = model,
 #     pred.var = top_predictors[1],
-#     pred.data = cov_df,
-#     train = cov_df,
+#     pred.data = design_covariates,
+#     train = design_covariates,
 #     plot = FALSE
 #   )
 #   ## Partial dependence for predictor 1
 #   p_partial1 <- ggplot(pd_data1, aes_string(x = top_predictors[1], y = "yhat")) +
 #     geom_line(color = "steelblue", size = 1.2) +
 #     geom_rug(
-#       data = cov_df, aes_string(x = top_predictors[1]),
+#       data = design_covariates, aes_string(x = top_predictors[1]),
 #       sides = "b", alpha = 0.5
 #     ) +
 #     labs(
 #       title = paste("Partial Dependence -", top_predictors[1]),
 #       x = top_predictors[1],
-#       y = paste("Predicted", cp)
+#       y = paste("Predicted", output)
 #     ) +
 #     theme_minimal()
 
@@ -393,28 +419,28 @@ for (cp in cpools) {
 #   pd_data2 <- pdp::partial(
 #     object = model,
 #     pred.var = top_predictors[2],
-#     pred.data = cov_df,
+#     pred.data = design_covariates,
 #     plot = TRUE,
-#     train = cov_df,
+#     train = design_covariates,
 #     parallel = TRUE
 #   )
 
 #   p_partial2 <- ggplot(pd_data2, aes_string(x = top_predictors[2], y = "yhat")) +
 #     geom_line(color = "steelblue", size = 1.2) +
 #     geom_rug(
-#       data = cov_df, aes_string(x = top_predictors[2]),
+#       data = design_covariates, aes_string(x = top_predictors[2]),
 #       sides = "b", alpha = 0.5
 #     ) +
 #     labs(
 #       title = paste("Partial Dependence -", top_predictors[2]),
 #       x = top_predictors[2],
-#       y = paste("Predicted", cp)
+#       y = paste("Predicted", output)
 #     ) +
 #     theme_minimal()
 
 #   combined_plot <- p_importance + p_partial1 + p_partial2 + plot_layout(ncol = 3)
 
-#   output_file <- here("downscale/figures", paste0(cp, "_importance_partial_plots.png"))
+#   output_file <- here("downscale/figures", paste0(output, "_importance_partial_plots.png"))
 #   ggsave(
 #     filename = output_file,
 #     plot = combined_plot,
@@ -424,7 +450,7 @@ for (cp in cpools) {
 #   # also save pdp-generated plot 
 #   pdp_plots <- p_data1 + p_data2
 #   ggsave(pdp_plots,
-#     filename = here::here("downscale/figures", paste0(cp, "_PDP_", 
+#     filename = here::here("downscale/figures", paste0(output, "_PDP_", 
 #       top_predictors[1], "_", top_predictors[2], ".png")),
 #     width = 6, height = 4, dpi = 300, bg = "white"
 #   )
@@ -434,39 +460,38 @@ for (cp in cpools) {
 # Combined importance + partial plots for each carbon pool
 
 
-# for (cp in cpools) {
+# for (output in outputs_to_extract) {
 #   # Top 2 predictors for this carbon pool
 #   top_predictors <- importance_summary |>
-#     filter(carbon_pool == cp) |>
+#     filter(model_output == output) |>
 #     arrange(desc(median_importance)) |>
 #     slice_head(n = 2) |>
 #     pull(predictor)
 
 #   # Prepare model and subset of covariates for plotting
-#   model <- downscale_output_list[[cp]][["model"]][[1]]
-#   cov_df <- covariates_df
+#   model <- downscale_output_list[[output]][["model"]][[1]]
 
 #   # Set up PNG for three panel plot
 #   png(
-#     filename = here::here("downscale/figures", paste0(cp, "_importance_partial_plots.png")),
+#     filename = here::here("downscale/figures", paste0(output, "_importance_partial_plots.png")),
 #     width = 14, height = 6, units = "in", res = 300, bg = "white"
 #   )
 #   par(mfrow = c(1, 3))
 
 #   # Panel 1: Variable importance plot
-#   cp_importance <- importance_summary |> filter(carbon_pool == cp)
+#   output_importance <- importance_summary |> filter(model_output == output)
 #   par(mar = c(5, 10, 4, 2))
 #   with(
-#     cp_importance,
+#     output_importance,
 #     dotchart(median_importance,
 #       labels = reorder(predictor, median_importance),
 #       xlab = "Median Increase MSE (SD)",
-#       main = paste("Importance -", cp),
+#       main = paste("Importance -", output),
 #       pch = 19, col = "steelblue", cex = 1.2
 #     )
 #   )
 #   with(
-#     cp_importance,
+#     output_importance,
 #     segments(lcl_importance,
 #       seq_along(predictor),
 #       ucl_importance,
@@ -478,22 +503,22 @@ for (cp in cpools) {
 #   # Panel 2: Partial plot for top predictor
 #   par(mar = c(5, 5, 4, 2))
 #   randomForest::partialPlot(model,
-#     pred.data = cov_df,
+#     pred.data = design_covariates,
 #     x.var = top_predictors[1],
 #     main = paste("Partial Dependence -", top_predictors[1]),
 #     xlab = top_predictors[1],
-#     ylab = paste("Predicted", cp),
+#     ylab = paste("Predicted", output),
 #     col = "steelblue",
 #     lwd = 2
 #   )
 
 #   # Panel 3: Partial plot for second predictor
 #   randomForest::partialPlot(model,
-#     pred.data = cov_df,
+#     pred.data = design_covariates,
 #     x.var = top_predictors[2],
 #     main = paste("Partial Dependence -", top_predictors[2]),
 #     xlab = top_predictors[2],
-#     ylab = paste("Predicted", cp),
+#     ylab = paste("Predicted", output),
 #     col = "steelblue",
 #     lwd = 2
 #   )

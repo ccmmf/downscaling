@@ -26,13 +26,42 @@
 # TODO move to config.yml / Renviron
 source("000-config.R")
 
-# TODO Handle packages w/ renv
-library(caladaptr)
-
 PEcAn.logger::logger.info("***Starting Data Preparation***")
 
-#' ### CADWR LandIQ Polygons
-#' Convert pre-processed LandIQ SHP files to more standardized GeoPackage
+## California County Boundaries
+
+ca_counties_gpkg <- file.path(data_dir, "ca_counties.gpkg")
+if(!file.exists(ca_counties_gpkg)) {
+  ca_counties <- caladaptr::ca_aoipreset_geom("counties") |>
+  dplyr::filter(state_name == "California") |>
+  dplyr::select(
+    county = name,
+    state_name = state_name,
+    fips = fips,
+    geom
+  )
+
+ca_climregions_gpkg <- file.path(data_dir, "ca_climregions.gpkg")
+if (!file.exists(ca_climregions_gpkg)) {
+  ca_climregions <- caladaptr::ca_aoipreset_geom("climregions") |>
+    dplyr::select(
+      climregion_id = id,
+      climregion_name = name,
+      geom
+    )
+  sf::st_write(ca_climregions, ca_climregions_gpkg)
+} else {
+   ca_climregions <- sf::st_read(ca_climregions_gpkg)
+}
+  sf::st_write(ca_counties, ca_counties_gpkg, delete_dsn = TRUE)
+  PEcAn.logger::logger.info("Created ", ca_counties_gpkg, "from Cal-Adapt counties.")
+} else {
+  PEcAn.logger::logger.info("Using existing California counties GeoPackage:" , ca_counties_gpkg)
+}
+
+
+### CADWR LandIQ Polygons
+# Convert pre-processed LandIQ SHP files to more standardized GeoPackage
 # library(PEcAn.data.land)
 # input_file <- file.path(raw_data_dir, "i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp")
 # ca_fields_gpkg <- file.path(data_dir, "ca_fields.gpkg")

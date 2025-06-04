@@ -6,5 +6,3 @@ no_cores <- max(future::availableCores( ) - 1, 1)
 future::plan(future::multicore, workers = no_cores)
 
 PEcAn.logger::logger.info(paste("Using", no_cores, "cores for parallel processing"))
-
-PEcAn.logger::logger.warn(paste("Using", no_cores, "cores for parallel processing"))

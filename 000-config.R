@@ -1,12 +1,19 @@
 ### Workflow Configuration Settings ### 
 
 # **set ccmmf_dir and pecan_outdir**
-ccmmf_dir    <- "/projectnb2/dietzelab/ccmmf"
-pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250516")
+# Define the CCMMF directory from environment variable
+ccmmf_dir <- Sys.getenv("CCMMF_DIR")
+pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
 
 # **Is this a test or production run?**
-PRODUCTION <- FALSE
-PEcAn.logger::logger.info("Running in", ifelse(PRODUCTION, "**production**", "**development**"), "mode")
+PRODUCTION <- TRUE
+
+# **Variables to extract**
+# see docs/workflow_documentation.qmd for complete list of outputs
+outputs_to_extract <- c(
+    "TotSoilCarb", 
+	"AGB"
+)
 
 ### Configuration Settings that can be set to default ###
 
@@ -24,18 +31,20 @@ set.seed(42)
 ca_albers_crs <- 3310
 
 #### Messagees ####
-PEcAn.logger::logger.info("\n",
+PEcAn.logger::logger.info("\n\n",
+    "##### SETTINGS SUMMARY #####\n\n",
+    "Running in", ifelse(PRODUCTION, "**production**", "**development**"), "mode\n\n",
     "### Directory Settings ###\n",
-	"CCMMF directory:", ccmmf_dir, "\n",
-	"data_dir:", data_dir, "\n",
-	"cache_dir:", cache_dir, "\n",
-	"raw_data_dir:", raw_data_dir, "\n",
-	"pecan_outdir:", pecan_outdir, "\n",
-	"model_outdir:", model_outdir, "\n",
+	"- CCMMF directory:", ccmmf_dir, "\n",
+	"- data_dir       :", data_dir, "\n",
+	"- cache_dir      :", cache_dir, "\n",
+	"- raw_data_dir.  :", raw_data_dir, "\n",
+	"- pecan_outdir.  :", pecan_outdir, "\n",
+	"- model_outdir.  :", model_outdir, "\n\n",
 	"### Other Settings ###\n",
-	"ca_albers_crs:", ca_albers_crs, 
-       ifelse(ca_albers_crs == 3310, "which is NAD83 / California Albers", ""), "\n",
-
+	"- will extract variables:", paste(outputs_to_extract, collapse = ", "), "\n",
+	"- ca_albers_crs  :", ca_albers_crs, 
+       ifelse(ca_albers_crs == 3310, ", which is NAD83 / California Albers", ""), "\n",
     wrap = FALSE
   )
 

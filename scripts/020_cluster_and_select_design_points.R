@@ -1,7 +1,7 @@
 library(ggplot2)
 # settings
 source("000-config.R")
-
+PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***")
 #' ## Load Site Environmental Data Covariates
 #'
 #' Environmental data was pre-processed in the previous workflow 00-prepare.qmd.
@@ -22,6 +22,8 @@ source("000-config.R")
 selected_covariates <- c("temp", "precip", "srad", "vapr", "clay", "ocd", "twi")
 
 ca_fields <- sf::st_read(file.path(data_dir, "ca_fields.gpkg"))
+ca_climregions <- caladaptr::ca_aoipreset_geom("climregions") |>
+  dplyr::rename(climregion_name = name, climregion_id = id)
 
 site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
 site_covariates <- readr::read_csv(site_covariates_csv) |>
@@ -39,14 +41,10 @@ if (length(missing_covariates) > 0) {
 }
 
 #' ## Load Design Points
-# readr::read_csv("/usr2/collab/dlebaue1/ccmmf/ccmmf_phase_1b_20250319064759_14859/site_info.csv") |>
-#   select(site_id = id, lat, lon) |>
-#   mutate(pft = "woody perennial crop") |>
-#   mutate(across(c(lat, lon), ~ round(.x, 5))) |>
-#   readr::write_csv("data/woody_design_points_1b.csv")
 
 # select anchor sites not already in design points
-woody_design_points <- readr::read_csv("data/woody_design_points.csv")
+woody_design_points <- readr::read_csv("data/design_points.csv") |>
+  dplyr::filter(pft == "woody perennial crop")
 anchor_sites <- readr::read_csv("data/anchor_sites.csv")
 woody_anchor_sites <- anchor_sites |>
   dplyr::filter(pft == "woody perennial crop")
@@ -109,15 +107,18 @@ anchor_sites_for_clust <- herbaceous_anchor_site_ids |>
 #'
 ## ----subset-for-clustering----------------------------------------------------
 # Define sample size for testing and production
-#'
-#' For phase 2a we are generating design points for herbaceous crops.
-#' For development we will use 100 design points from the clustered dataset.
-#'
-#' For the final high resolution runs we expect to use approximately 10,000 design points.
+#' For testing / development use 100 design points from the clustered dataset.
+#' For high resolution "Production" runs we expect to use approximately 10,000 design points.
 #' These will be divided among PFTs proportional to their area
 
-sample_size <- 10000 # Use 10,000 **per PFT** for production
-design_points_per_pft <- 100 # we have 100 for woody; woody ~ 30% of area
+if (!PRODUCTION) {
+  sample_size <- 100 # Use 100 for testing
+  design_points_per_pft <- 10 # we have 100 for woody; woody ~ 30% of area
+} else {
+  sample_size <- 100 # Use 10,000 **per PFT** for final production
+                     # Until we do a full "PRODUCTION" inventory, keep limited number of sites
+  design_points_per_pft <- 100 # we have 100 for woody; woody ~ 30% of area
+}
 
 # Randomly sample site_covariates for clustering
 pft_to_cluster <- "annual crop"
@@ -254,13 +255,11 @@ herb_design_points_ids <- sites_clustered |>
 herb_design_points <- herb_design_points_ids |>
   dplyr::left_join(site_covariates, by = "site_id") |>
   dplyr::select(site_id, lat, lon, pft) |>
-  mutate(across(c(lat, lon), ~ round(.x, 5))) 
+  dplyr::mutate(dplyr::across(c(lat, lon), ~ round(.x, 5))) 
 
 # Combine woody + herbaceous design points and write out
-#all_design_points <- woody_design_points |>
-#  dplyr::bind_rows(herb_design_points)  
-#readr::write_csv(all_design_points, file.path("data", "design_points.csv"))
+all_design_points <- woody_design_points |>
+  dplyr::bind_rows(herb_design_points)  
+readr::write_csv(all_design_points, here::here("data", "design_points.csv"))
 
-readr::write_csv(herb_design_points, "data/herbaceous_design_points.csv")
-
-PEcAn.logger::logger.info("design points for Herbaceous PFT written to data/herbaceous_design_points.csv")
+PEcAn.logger::logger.info("design points written to data/design_points.csv")

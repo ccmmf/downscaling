@@ -2,6 +2,8 @@
 # https://github.com/UCANR-IGIS/caladaptr/issues/5
 library(caladaptr)
 library(ggplot2)
+source("000-config.R")
+PEcAn.logger::logger.info("***Preparing anchor sites for California LandIQ fields***")
 
 ## Anchor Sites
 anchor_sites <- readr::read_csv("data_raw/anchor_site_locations.csv")
