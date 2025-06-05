@@ -32,6 +32,13 @@ The configuration script reads the CCMMF directory from the environment variable
 
 #### Configuration setup
 
+**Clone**
+
+```
+git clone git@github.com:ccmmf/downscaling
+cd downscaling
+```
+
 **Required changes**
 
 - `.Renviron` 
@@ -48,15 +55,25 @@ The configuration script reads the CCMMF directory from the environment variable
   requires fewer computing resources. Once a test run is successful,
   set `PRODUCTION` to `TRUE` to run the full workflow.
 
-**Others:**
+**other configuration files:**
 
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
 
 - `.future.R` defines parallel processing when the future package is loaded. 
   - set to `available cores - 1` by default
-- `renv.lock` is used for package management with `renv`. 
-See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
-See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
+
+**setup renv environment**
+
+`renv.lock` is used for package management with `renv`. 
+See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for instructions.
+
+To setup your R environment use
+
+```r
+renv::restore()
+# 🤞
+```
+
 
 **UdUnits dependency**
 
