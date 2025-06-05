@@ -55,7 +55,7 @@ cd downscaling
   requires fewer computing resources. Once a test run is successful,
   set `PRODUCTION` to `TRUE` to run the full workflow.
 
-**other configuration files:**
+**Parallel processing:**
 
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
 
