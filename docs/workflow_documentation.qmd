@@ -90,7 +90,9 @@ install.packages(
 ### 1. Data Preparation
 
 ```sh
-Rscript scripts/00-prepare.R
+Rscript scripts/009_update_landiq.R
+Rscript scripts/010_prepare_covariates.R
+Rscript scripts/011_prepare_anchor_sites.R
 ```
 
 This script prepares data for clustering and downscaling:
@@ -115,10 +117,24 @@ This script prepares data for clustering and downscaling:
 - `site_covariates.csv`: Environmental covariates for each field
 - `anchor_sites_ids.csv`: Anchor site information
 
+
+**Environmental Covariates**
+
+| Variable | Description | Source | Units |
+|----------|-------------|--------|-------|
+| temp | Mean annual temperature | ERA5 | °C |
+| precip | Mean annual precipitation | ERA5 | mm/year |
+| srad | Solar radiation | ERA5 | W/m² |
+| vapr | Vapor pressure deficit | ERA5 | kPa |
+| clay | Clay content | SoilGrids | % |
+| ocd | Organic carbon density | SoilGrids | g/kg |
+| twi | Topographic wetness index | SRTM-derived | - |
+
 ### 2. Design Point Selection
 
 ```sh
-Rscript scripts/01_cluster_and_select_design_points.R
+Rscript scripts/020_cluster_and_select_design_points.R
+Rscript scripts/021_clustering_diagnostics.R
 ```
 
 Uses k-means clustering to select representative fields plus anchor sites:
@@ -196,7 +212,7 @@ PEcAn standard units are SI, following the Climate Forecasting standards:
 ### 4. Extract SIPNET Output
 
 ```sh
-Rscript scripts/02_extract_sipnet_output.R
+Rscript scripts/030_extract_sipnet_output.R
 ```
 
 Extracts and formats SIPNET outputs for downscaling:
@@ -215,7 +231,8 @@ Extracts and formats SIPNET outputs for downscaling:
 ### 5. Downscale and Aggregate SIPNET Output
 
 ```sh
-Rscript scripts/03_downscale_and_aggregate.R
+Rscript scripts/040_downscale_and_aggregate.R
+Rscript scripts/041_downscale_analysis.R
 ```
 
 Builds Random Forest models to predict carbon pools for all fields:
@@ -226,7 +243,7 @@ Builds Random Forest models to predict carbon pools for all fields:
 - Output maps and statistics of carbon density and totals
 
 **Inputs:**
-- `out/efi_ens_long.csv`: SIPNET outputs
+- `out/ensemble_output.csv`: SIPNET outputs
 - `data/site_covariates.csv`: Environmental covariates
 
 **Outputs:** 
@@ -238,19 +255,9 @@ Builds Random Forest models to predict carbon pools for all fields:
 
 ### Ensemble Structure
 
-Each ensemble member represents a plausible realization given parameter uncertainty. We maintain this ensemble structure throughout the workflow to properly propagate uncertainty.
+Each ensemble member represents a plausible realization given parameter and meteorological uncertainty. This ensemble structure is maintained throughout the workflow to properly propagate uncertainty. For example, downscaling is done for each ensemble member separately, and then the results are aggregated to county-level statistics.
 
-### Environmental Covariates
 
-| Variable | Description | Source | Units |
-|----------|-------------|--------|-------|
-| temp | Mean annual temperature | ERA5 | °C |
-| precip | Mean annual precipitation | ERA5 | mm/year |
-| srad | Solar radiation | ERA5 | W/m² |
-| vapr | Vapor pressure deficit | ERA5 | kPa |
-| clay | Clay content | SoilGrids | % |
-| ocd | Organic carbon density | SoilGrids | g/kg |
-| twi | Topographic wetness index | SRTM-derived | - |
 
 # References
 
