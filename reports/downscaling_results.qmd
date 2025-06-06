@@ -78,22 +78,22 @@ The plots below compare different methods for interpreting our predictive models
 
 #### Total Soil Carbon
 
-::: {layout-ncol=2}
+::: {layout-ncol=1}
 ##### Partial Dependence vs ALE for Top Predictor
 
-![Partial Dependence Plot](../figures/TotSoilCarb_PDP_predictor1.png)
+<!--[Partial Dependence Plot](../figures/TotSoilCarb_PDP_predictor1.png)-->
 
 ![ALE Plot](../figures/TotSoilCarb_ALE_predictor1.png)
 :::
-
+ 
 ::: {layout-ncol=2}
 ##### Partial Dependence vs ALE for Second Predictor  
 
-![Partial Dependence Plot](../figures/TotSoilCarb_PDP_predictor2.png)
+<!--![Partial Dependence Plot](../figures/TotSoilCarb_PDP_predictor2.png)-->
 
 ![ALE Plot](../figures/TotSoilCarb_ALE_predictor2.png)
 :::
-
+ 
 #### Individual Conditional Expectation (ICE) Plots
 
 ICE plots show how predictions change for individual observations:
@@ -109,7 +109,7 @@ ICE plots show how predictions change for individual observations:
 ::: {layout-ncol=2}
 ##### Partial Dependence vs ALE for Top Predictor
 
-![Partial Dependence Plot](../figures/AGB_PDP_predictor1.png)
+<!--![Partial Dependence Plot](../figures/AGB_PDP_predictor1.png)-->
 
 ![ALE Plot](../figures/AGB_ALE_predictor1.png)
 :::
@@ -129,10 +129,28 @@ ICE plots show how predictions change for individual observations:
 
 ![ICE Plot - Second Predictor](../figures/AGB_ICE_predictor2.png)
 :::
+#### ALE Plots
 
+The following plots show the Accumulated Local Effects (ALE) for the top two predictors of each model.
+
+::: {layout-ncol=2}
+**Total Soil Carbon**
+
+![ALE Plot - Top Predictor](../figures/TotSoilCarb_ALE_predictor1.png)
+![ALE Plot - Second Predictor](../figures/TotSoilCarb_ALE_predictor2.png)
 :::
 
+::: {layout-ncol=2}
+**Aboveground Biomass (AGB)**
+
+![ALE Plot - Top Predictor](../figures/AGB_ALE_predictor1.png)
+![ALE Plot - Second Predictor](../figures/AGB_ALE_predictor2.png)
+:::
+:::
+
+<!--
 **Note**: While Partial Dependence Plots (PDP) show the average effect of a predictor on model output, Accumulated Local Effects (ALE) plots handle correlated predictors better. Individual Conditional Expectation (ICE) plots reveal how predictions change for individual observations.
+-->
 
 ### Searchable Table
 
