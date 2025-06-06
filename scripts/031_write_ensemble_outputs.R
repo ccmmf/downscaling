@@ -1,17 +1,59 @@
+## Create Ensemble Output For Downscaling
+## Below, three different output formats are created:
+## 1. 4-D array (time, site, ensemble, variable)
+## 2. long format data frame (time, site, ensemble, variable)
+## 3. NetCDF file (time, site, ensemble, variable)
+
 source("000-config.R")
 PEcAn.logger::logger.info("***Starting Write Ensemble Outputs***")
 
-cached_output_file <- file.path(cache_dir, "ensemble_output.rds")
-ens_arrays <- readRDS(cached_output_file)
+cached_output_file <- file.path(cache_dir, "ensemble_results.csv")
+ens_arrays <- readr::read_csv(cached_output_file)
 
 output_format <- "long" # "netcdf", "rds"
+
+# --- 1. Create 4-D array ---
 if ("rds" %in% output_format) {
-    file.copy(
-        cached_output_file,
-        file.path(model_outdir, "ensemble_output.rds"),
-        overwrite = TRUE
-    )
-    PEcAn.logger::logger.info("Ensemble output RDS file copied to model_outdir.")
+    # Add a time dimension (even if of length 1) so that dimensions are: [time, site, ensemble, variable]
+    unique_times <- sort(unique(ens_results$time))
+    if (length(unique_times) != length(start_year:end_year)) {
+        # --> if code above including group_by(.., year) is changed,
+        # this check may fail if we are using > one time point per year
+        PEcAn.logger::logger.warn(
+            "there should only be one unique time per year",
+            "unless we are doing a time series with multiple time points per year"
+        )
+    }
+
+    # Create a list to hold one 3-D array per variable
+    ens_arrays <- list()
+    for (var in variables) {
+        # Preallocate 3-D array for time, site, ensemble for each variable
+        arr <- array(NA,
+            dim = c(length(unique_times), length(site_ids), length(ens_ids)),
+            dimnames = list(
+                datetime = as.character(unique_times),
+                site_id = site_ids,
+                ensemble = as.character(ens_ids)
+            )
+        )
+
+        # Get rows corresponding to the current variable
+        subset_idx <- which(ens_results$variable == var)
+        if (length(subset_idx) > 0) {
+            i_time <- match(ens_results$time[subset_idx], unique_times)
+            i_site <- match(ens_results$site_id[subset_idx], site_ids)
+            i_ens <- match(ens_results$ensemble[subset_idx], ens_ids)
+            arr[cbind(i_time, i_site, i_ens)] <- ens_results$prediction[subset_idx]
+        }
+
+        ens_arrays[[var]] <- arr
+    }
+
+    # ens_arrays: three dimensions [time, site, ensemble]
+    rds_file <- file.path(cache_dir, "ensemble_output.rds")
+    saveRDS(ens_arrays, file = rds_file)
+    PEcAn.logger::logger.info("Ensemble output arrays written to model_outdir.")
 }
 
 if ("long" %in% output_format) {
@@ -20,6 +62,17 @@ if ("long" %in% output_format) {
         dplyr::rename(datetime = time) |>
         dplyr::select(datetime, site_id, ensemble, variable, prediction)
     readr::write_csv(efi_long, file.path(model_outdir, "ensemble_output.csv"))
+
+    # Debugging: Check if all site_ids are included in ensemble_output.csv
+    missing_site_ids <- setdiff(site_ids, unique(efi_long$site_id))
+    if (length(missing_site_ids) > 0) {
+        PEcAn.logger::logger.warn(
+            "Missing site IDs in ensemble_output.csv:\n",
+            paste(missing_site_ids, collapse = ", ")
+        )
+    } else {
+        PEcAn.logger::logger.info("All site IDs are included in ensemble_output.csv.")
+    }
 }
 
 if ("netcdf" %in% output_format) {

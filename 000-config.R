@@ -6,14 +6,18 @@ ccmmf_dir <- Sys.getenv("CCMMF_DIR")
 pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
 
 # **Is this a test or production run?**
-PRODUCTION <- TRUE
+PRODUCTION <- FALSE
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
 outputs_to_extract <- c(
-    "TotSoilCarb", 
-	"AGB"
+    "TotSoilCarb",
+    "AGB"
 )
+
+if(!PRODUCTION) {
+  outputs_to_extract <- outputs_to_extract[1]
+}
 
 ### Configuration Settings that can be set to default ###
 
