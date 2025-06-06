@@ -40,8 +40,7 @@ end_year <- lubridate::year(end_date)
 # design points for 1b
 # data/design_points.csv
 design_pt_csv <- "data/design_points.csv"
-design_points <- readr::read_csv(design_pt_csv)  |> 
-    dplyr::filter(pft == "annual crop")
+design_points <- readr::read_csv(design_pt_csv) 
 
 site_ids <- design_points |>
     dplyr::pull(site_id) |>
@@ -50,81 +49,145 @@ ens_ids <- 1:ensemble_size
 
 variables <- outputs_to_extract # TODO standardize this name; variables is ambiguous
 
-if(!PRODUCTION) {
-  ##-----TESTING SUBSET----##
-  site_ids   <- site_ids[1:5]
-  ens_ids    <- ens_ids[1:5]
-  start_year <- end_year - 1
-  variables  <- variables[1]
+if (!PRODUCTION) {
+    ## -----TESTING SUBSET----##
+    site_ids <- site_ids[1:5]
+    ens_ids <- ens_ids[1:5]
+    start_year <- end_year - 1
+    variables <- variables[1]
 }
 
-ens_dirs <- expand.grid(
+
+ens_run_dirs <- tibble::tibble(dir = readr::read_lines(
+    file.path(pecan_outdir, "run", "runs.txt")
+)) |>
+    tidyr::separate(
+        col = "dir",
+        into = c("prefix", "ens", "site_id"),
+        sep = "-",
+        remove = FALSE
+    ) |>
+    dplyr::select(-prefix) 
+
+expected_out_dirs <- expand.grid(
     ens = PEcAn.utils::left.pad.zeros(ens_ids),
     site_id = site_ids,
     stringsAsFactors = FALSE
 ) |>
-    dplyr::mutate(dir = as.character(file.path(model_outdir, paste("ENS", ens, site_id, sep = "-"))))
+    dplyr::mutate(dir = paste("ENS", ens, site_id, sep = "-"))
 
-### Check that all ens dirs exist
+### Check that all expected ensemble directories are present
+### Some of these tests like identical(runs.txt, actual_dirs) could be done
+### when files are written out
+check_dirs_and_files <- FALSE
+if (check_dirs_and_files) {
+    # directories based on ensemble and site_id
+    ens_run_dirs <- sort(ens_run_dirs$dir)
+    expected_dirs <- sort(expected_out_dirs$dir)
+    actual_dirs <- sort(dir(model_outdir, pattern = "^ENS-\\d+-"))
 
-existing_dirs <- dir.exists(ens_dirs$dir)
-if (!all(existing_dirs)) {
-    missing_dirs <- ens_dirs[!existing_dirs]
-    PEcAn.logger::logger.warn("Missing expected ensemble directories: ", paste(missing_dirs, collapse = ", "))
-} else {
-    PEcAn.logger::logger.info("Success: Found all expected ensemble directories.")
-}
-
-### Check that each ensemble directory has expected files 
-years <- start_year:end_year
-expected_files <- dplyr::bind_rows(
-    tidyr::expand_grid(year = years, ext = c(".nc", ".nc.var")) |>
-        dplyr::mutate(file = paste0(year, ext)),
-    tibble::tibble(file = c("logfile.txt", "README.txt", "sipnet.out"))
-) |>
-    dplyr::pull(file)
-
-check_files <- expand.grid(dir = ens_dirs$dir, file = expected_files) |>
-    dplyr::mutate(full_file = file.path(dir, file)) |>
-    dplyr::rowwise() |>
-    dplyr::mutate( # check if file exists
-        exists = file.exists(full_file)
-    ) |>
-    dplyr::arrange(dir, file)
-
-if(any(!check_files$exists)) {
-    missing_files <- check_files |>
-        filter(!exists)
-
-    percent_missing <- check_files |>
-        dplyr::group_by(dir) |>
-        dplyr::summarise(
-            percent_missing = sum(!exists) / dplyr::n() * 100
-        ) |>
-        dplyr::mutate(
-            dir = basename(as.character(dir))
+    ## Check that runs.txt matches the expected ensemble directories
+    if (identical(ens_run_dirs, actual_dirs)) {
+        PEcAn.logger::logger.info("Success: Exact match between runs.txt and output directories")
+    } else {
+        PEcAn.logger::logger.warn(
+            "Mismatch between output directories and in runs.txt.\n"
+            # next time this messes up, add more informative diagnostics, like what is missing
         )
+    }
+    if (PRODUCTION) {
+        if (identical(expected_dirs, actual_dirs)) {
+            PEcAn.logger::logger.info("Success: model output directory matches expanded based on ensemble x site_id")
+        } else {
+            PEcAn.logger::logger.warn(
+                "Mismatch between expected ensemble directories and actual directories."
+            )
+        }
+    } else {
+        # expect that expected_dirs is a subset of actual_dirs
+        if (all(expected_dirs %in% model_runs)) {
+            PEcAn.logger::logger.info("Success: All expected ensemble directories found in model output directory")
+        } else {
+            PEcAn.logger::logger.warn(
+                "Some expected ensemble directories are missing from model output directory."
+            )
+        }
+    }
 
-    PEcAn.logger::logger.warn(
-        "Missing ", nrow(missing_files), "expected files\n",
-        "these directories have missing files:\n"
-    )
-    knitr::kable(
-        percent_missing  |> 
-          dplyr::filter(percent_missing > 0),
-        digits = 0,
-        col.names = c("Directory", "Percent Missing")
-    )
-} else {
-    PEcAn.logger::logger.info("Found all expected PEcAn output files.")
+    if (!all(actual_dirs)) {
+        # identify missing basenames and reconstruct full paths for warning
+        missing_basenames <- expected_basenames[!actual_dirs]
+        missing_dirs <- file.path(model_outdir, missing_basenames)
+        PEcAn.logger::logger.warn(
+            "Missing ", length(missing_dirs), " of ", nrow(expected_dirs),
+            " expected ensemble directories:\n  ",
+            paste(missing_basenames, collapse = ", ")
+        )
+    } else {
+        PEcAn.logger::logger.info("Success: Found all expected ensemble directories.")
+    }
+
+    ### Check that each ensemble directory has expected files
+    years <- start_year:end_year
+    expected_files <- dplyr::bind_rows(
+        tidyr::expand_grid(year = years, ext = c(".nc", ".nc.var")) |>
+            dplyr::mutate(file = paste0(year, ext)),
+        tibble::tibble(file = c("logfile.txt", "README.txt", "sipnet.out"))
+    ) |>
+        dplyr::pull(file)
+
+    check_files <- expand.grid(dir = actual_dirs, file = expected_files) |>
+        dplyr::mutate(full_file = file.path(dir, file)) |>
+        dplyr::rowwise() |>
+        dplyr::mutate( # check if file exists
+            exists = file.exists(full_file)
+        ) |>
+        dplyr::arrange(dir, file)
+
+    if (any(!check_files$exists)) {
+        missing_files <- check_files |>
+            filter(!exists)
+
+        percent_missing <- check_files |>
+            dplyr::group_by(dir) |>
+            dplyr::summarise(
+                percent_missing = sum(!exists) / dplyr::n() * 100
+            ) |>
+            dplyr::mutate(
+                dir = basename(as.character(dir))
+            )
+
+        PEcAn.logger::logger.warn(
+            "Missing ", nrow(missing_files), "expected files\n",
+            "these directories have missing files:\n"
+        )
+        knitr::kable(
+            percent_missing |>
+                dplyr::filter(percent_missing > 0),
+            digits = 0,
+            col.names = c("Directory", "Percent Missing")
+        )
+    } else {
+        PEcAn.logger::logger.info("Found all expected PEcAn output files.")
+    }
 }
 
+# Debugging: Check if all site_ids are present in SIPNET outputs
+missing_site_ids <- setdiff(site_ids, ens_run_dirs$site_id)
+if (length(missing_site_ids) > 0) {
+    PEcAn.logger::logger.warn(
+        "Missing site IDs in SIPNET outputs:\n",
+        paste(missing_site_ids, collapse = ", ")
+    )
+} else {
+    PEcAn.logger::logger.info("All site IDs are present in SIPNET outputs.")
+}
 
 # extract output via PEcAn.utils::read.output
 # temporarily suppress logging or else it will print a lot of file names
 logger_level <- PEcAn.logger::logger.setLevel("OFF")
 ens_results <- furrr::future_pmap_dfr(
-    ens_dirs,
+    ens_run_dirs,
     function(ens, site_id, dir) {
         out_df <- PEcAn.utils::read.output(
             runid = paste(ens, site_id, sep = "-"),
@@ -154,49 +217,3 @@ ens_results <- furrr::future_pmap_dfr(
 
 # restore logging
 logger_level <- PEcAn.logger::logger.setLevel(logger_level)
-
-## Create Ensemble Output For Downscaling
-## Below, three different output formats are created:
-## 1. 4-D array (time, site, ensemble, variable)
-## 2. long format data frame (time, site, ensemble, variable)
-## 3. NetCDF file (time, site, ensemble, variable)
-
-# --- 1. Create 4-D array ---
-# Add a time dimension (even if of length 1) so that dimensions are: [time, site, ensemble, variable]
-unique_times <- sort(unique(ens_results$time))
-if(length(unique_times) != length(start_year:end_year)){
-    # --> if code above including group_by(.., year) is changed,
-    # this check may fail if we are using > one time point per year
-    PEcAn.logger::logger.warn( 
-        "there should only be one unique time per year",
-        "unless we are doing a time series with multiple time points per year"
-    )
-}
-
-# Create a list to hold one 3-D array per variable
-ens_arrays <- list()
-for (var in variables) {
-    # Preallocate 3-D array for time, site, ensemble for each variable
-    arr <- array(NA,
-        dim = c(length(unique_times), length(site_ids), length(ens_ids)),
-        dimnames = list(
-            datetime = as.character(unique_times),
-            site_id = site_ids,
-            ensemble = as.character(ens_ids)
-        )
-    )
-    
-    # Get rows corresponding to the current variable
-    subset_idx <- which(ens_results$variable == var)
-    if (length(subset_idx) > 0) {
-        i_time <- match(ens_results$time[subset_idx], unique_times)
-        i_site <- match(ens_results$site_id[subset_idx], site_ids)
-        i_ens <- match(ens_results$ensemble[subset_idx], ens_ids)
-        arr[cbind(i_time, i_site, i_ens)] <- ens_results$prediction[subset_idx]
-    }
-    
-    ens_arrays[[var]] <- arr
-}
-
-# ens_arrays: three dimensions [time, site, ensemble]
-saveRDS(ens_arrays, file = file.path(cache_dir, "ensemble_output.rds"))
