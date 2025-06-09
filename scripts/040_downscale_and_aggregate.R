@@ -92,20 +92,34 @@ downscale_output_list <- purrr::map(
     result
   }
 ) |>
-purrr::set_names(outputs_to_extract)
+  purrr::set_names(outputs_to_extract)
+
 PEcAn.logger::logger.info("Downscaling complete for all model outputs")
 
-## Check variable importance
-
 ## Save to make it easier to restart
-# saveRDS(downscale_output, file = here::here("cache/downscale_output.rds"))
+#### ---Create checkpoint for downstream analysis---####
+checkpoint_file <- file.path(cache_dir, "downscaling_output.RData")
+start_end <- system.time(
+  save(downscale_output_list, covariates, design_points, design_covariates, ensemble_ids,
+    file = checkpoint_file,
+    compress = FALSE
+  )
+)
+PEcAn.logger::logger.info(
+  "Downscaling output objects saved to", checkpoint_file,
+  "\nIt took", round(start_end[3] / 60, 2), "minutes"
+)
+
+PEcAn.logger::logger.info(
+  "🌟🌟🌟Finished downscaling🌟🌟🌟",
+  "\n\nCongratulations! You are almost there!\n\n",
+  rep("🚀", 10)
+)
+
+###--- Print Metrics for Each Ensemble Member ---####
 
 PEcAn.logger::logger.info("Downscaling model results for each ensemble member:")
 metrics <- lapply(downscale_output_list, PEcAnAssimSequential::downscale_metrics)
-for (name in names(metrics)) {
-  cat("\n\n###", name)
-  print(knitr::kable(metrics[[name]]))
-}
 
 median_metrics <- purrr::map(metrics, function(m) {
   m |>
@@ -123,15 +137,9 @@ PEcAn.logger::logger.info("Median downscaling model metrics:")
 dplyr::bind_rows(median_metrics, .id = "model_output") |>
   knitr::kable()
 
-#'
-#'
-#' ## Aggregate to County Level
-#'
-## -----------------------------------------------------------------------------
+#### ---- Aggregate to County Level ---- ####
+#### TODO Split into separate script?
 
-# ca_fields <- readr::read_csv(here::here("data/ca_field_attributes.csv")) |>
-#   dplyr::select(id, lat, lon) |>
-#   rename(site = id)
 PEcAn.logger::logger.info("Aggregating to County Level")
 
 ca_fields_full <- sf::read_sf(file.path(data_dir, "ca_fields.gpkg"))
@@ -164,6 +172,23 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
   # Calculate total Mg per field: c_density_Mg_ha * area_ha
   dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha)
 
+### TODO Debug and catch if it appears again
+na_summary <- downscale_preds |>
+  dplyr::summarise(dplyr::across(dplyr::everything(), ~ sum(is.na(.x)))) |>
+  tidyr::pivot_longer(dplyr::everything(), names_to = "column", values_to = "n_na") |>
+  dplyr::filter(n_na > 0)
+
+if (nrow(na_summary) > 0) {
+  ## concise log message
+  PEcAn.logger::logger.warn(
+    "YOU NEED TO DEBUG THIS!!!\n\n", 
+    "NA values detected in `downscale_preds`:\n"
+  )
+  knitr::kable(na_summary, format = "simple")
+  # remove all rows with NA values
+  downscale_preds <- tidyr::drop_na(downscale_preds)
+}
+
 ens_county_preds <- downscale_preds |>
   # Now aggregate to get county level totals for each pool x ensemble
   dplyr::group_by(model_output, county, ensemble) |>
@@ -178,15 +203,26 @@ ens_county_preds <- downscale_preds |>
   dplyr::filter(total_ha > 0) |>
   dplyr::mutate(
     total_c_Tg = PEcAn.utils::ud_convert(total_c_Mg, "Mg", "Tg"),
-    mean_c_density_Mg_ha = total_c_Mg / total_ha
+    c_density_Mg_ha = total_c_Mg / total_ha
   ) |>
   dplyr::arrange(model_output, county, ensemble)
 
-ens_county_preds |>
+ens_members_by_county <- ens_county_preds |>
   dplyr::group_by(model_output, county) |>
-  dplyr::summarize(n_vals = dplyr::n_distinct(total_c_Mg), .groups = "drop") |>
-  dplyr::pull(n_vals) |>
-  unique()
+  dplyr::summarize(n_vals = dplyr::n_distinct(total_c_Mg), .groups = "drop")
+
+if(all(ens_members_by_county$n_vals == length(ensemble_ids))) {
+  PEcAn.logger::logger.info("All counties have the correct number of ensemble members: (", length(ensemble_ids), ")")
+} else {
+    z <- ens_members_by_county |>
+      dplyr::group_by(county) |>
+      dplyr::summarise(n = mean(n_vals))
+    PEcAn.logger::logger.error(
+    sum(z$n != length(ensemble_ids)) / length(z$n),
+    "counties have the wrong number of ensemble members after downscaling.",
+    "Check ens_county_preds object."
+  )
+}
 
 county_summaries <- ens_county_preds |>
   dplyr::group_by(model_output, county) |>
@@ -195,8 +231,8 @@ county_summaries <- ens_county_preds |>
     n = max(n),
     mean_total_c_Tg = mean(total_c_Tg),
     sd_total_c_Tg = sd(total_c_Tg),
-    mean_c_density_Mg_ha = mean(mean_c_density_Mg_ha),
-    sd_c_density_Mg_ha = sd(mean_c_density_Mg_ha),
+    mean_c_density_Mg_ha = mean(c_density_Mg_ha),
+    sd_c_density_Mg_ha = sd(c_density_Mg_ha),
     .groups = "drop"
   ) |>
   dplyr::mutate(
@@ -206,24 +242,15 @@ county_summaries <- ens_county_preds |>
       .fns = ~ signif(.x, 3)
     )
   )
-    
+
 readr::write_csv(
   county_summaries,
   file.path(model_outdir, "county_summaries.csv")
 )
 PEcAn.logger::logger.info("County summaries written to", file.path(model_outdir, "county_summaries.csv"))
 
-#### ---Create checkpoint for downstream analysis---####
-checkpoint_file <- file.path(cache_dir, "design_checkpoint.RData")
-start_end <- system.time(
-  save(downscale_output_list, covariates, design_points, design_covariates, ensemble_ids,
-    file = checkpoint_file,
-    compress = FALSE
-  )
-)
 PEcAn.logger::logger.info(
-  "Downscaling output objects saved to", checkpoint_file,
-  "\nIt took", round(start_end[3]/60, 2), "minutes"
+   rep("🌟🌟🌟  ", 5), "\n\n",
+  "Finished aggregation to County level", "\n\n",
+  rep("🌟🌟🌟  ", 5)
 )
-
-PEcAn.logger::logger.info("***Finished downscaling and aggregation***")
