@@ -9,16 +9,19 @@ co_preds_to_plot <- county_summaries |>
   dplyr::arrange(county, model_output) |>
   tidyr::pivot_longer(
     cols = c(mean_total_c_Tg, sd_total_c_Tg, mean_c_density_Mg_ha, sd_c_density_Mg_ha),
-    names_to = "stat",
+    names_to  = "stat",
     values_to = "value"
   ) |>
-  dplyr::mutate(units = dplyr::case_when(
-    stringr::str_detect(stat, "total_c") ~ "Carbon Stock (Tg)",
-    stringr::str_detect(stat, "c_density") ~ "Carbon Density (Mg/ha)"
-  ), stat = dplyr::case_when(
-    stringr::str_detect(stat, "mean") ~ "Mean",
-    stringr::str_detect(stat, "sd") ~ "SD"
-  ))
+  dplyr::mutate(
+    units = dplyr::case_when(
+      stringr::str_detect(stat, "total_c")    ~ "Carbon Stock (Tg)",
+      stringr::str_detect(stat, "c_density") ~ "Carbon Density (Mg/ha)"
+    ),
+    stat = dplyr::case_when(
+      stringr::str_detect(stat, "mean") ~ "Mean",
+      stringr::str_detect(stat, "sd")   ~ "SD"
+    )
+  )
 
 units <- rep(unique(co_preds_to_plot$units), each = length(outputs_to_extract))
 pool_x_units <- co_preds_to_plot |>

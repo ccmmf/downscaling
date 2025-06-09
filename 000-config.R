@@ -1,12 +1,24 @@
-### Workflow Configuration Settings ### 
+### Workflow Configuration Settings ###
+
+## Global configuration settings for logging
+
+options(
+  # Print all tibble columns
+  tibble.width = Inf,
+  # Suppress readr::read_csv messages
+  readr.show_col_types = FALSE
+)
 
 # **set ccmmf_dir and pecan_outdir**
 # Define the CCMMF directory from environment variable
 ccmmf_dir <- Sys.getenv("CCMMF_DIR")
+if (ccmmf_dir == "") {
+  ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
+}
 pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
 
 # **Is this a test or production run?**
-PRODUCTION <- FALSE
+PRODUCTION <- TRUE
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
@@ -26,9 +38,6 @@ data_dir     <- file.path(ccmmf_dir, "data")
 raw_data_dir <- file.path(ccmmf_dir, "data_raw")
 cache_dir <- file.path(ccmmf_dir, "cache")
 model_outdir  <- file.path(pecan_outdir, "out")
-
-# Suppress readr::read_csv messages
-options(readr.show_col_types = FALSE)
 
 # Misc
 set.seed(42)
