@@ -4,7 +4,7 @@ source("000-config.R")
 PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***")
 #' ## Load Site Environmental Data Covariates
 #'
-#' Environmental data was pre-processed in the previous workflow 00-prepare.qmd.
+#' Environmental data was pre-processed in the previous workflows.
 #'
 #' Below is a summary of the covariates dataset
 #'
