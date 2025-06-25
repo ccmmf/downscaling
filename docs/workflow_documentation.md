@@ -71,6 +71,8 @@ See [renv package documentation](https://rstudio.github.io/renv/articles/renv.ht
 
 **UdUnits dependency**
 
+If you get an error installing the units package, this - or something similar - may help. 
+We are working on an alternative to renv that will bundle system dependencies and hopefully make this and related challenges unnecessary.
 install units package
 
 ```r
