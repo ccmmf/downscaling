@@ -107,7 +107,7 @@ These are the locations where SIPNET is run to produce outputs later used in dow
 We used clustering to select design points that represent the range of environmental conditions across California croplands. 
 The following figures illustrate the distribution of these design points, which were clustered based on environmental covariates.
 
-The environmental covariates used for clustering include:
+The environmental covariates used for clustering are:
 
 
 | Variable | Description | Source | Units |
