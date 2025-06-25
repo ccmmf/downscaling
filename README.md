@@ -92,6 +92,8 @@ qrsh -l h_rt=3:00:00 -pe omp 16 -l buyin
 
 ### Job Submission
 
+This is an example of how a script can be run on an HPC
+
 ```sh
 qsub \
   -l h_rt=1:00:00 \
