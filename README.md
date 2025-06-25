@@ -48,7 +48,7 @@ cd downscale
 R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); renv::restore()'
 
 # Run the pipeline [Not implemented]
-R -e 'targets::tar_make()'
+# R -e 'targets::tar_make()'
 ```
 
 ## Running the Workflow
