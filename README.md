@@ -27,11 +27,10 @@ The downscaling workflow predicts carbon pools (SOC and AGB) for California crop
 ## Environment and Setup
 
 
-### Key Files
+### Key Configuration Files
 
 - `.future.R` - Sets up parallel processing
 - `000-config.R` - Configuration file for the workflow (called in each workflow script)
-- `renv.lock` - File for package management using `renv`
 
 ## Quick start
 
