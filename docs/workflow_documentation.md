@@ -28,6 +28,11 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 ### Configuration
 
 Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
+<!-- TODO: check why CCMMF_DIR is handled separately; 
+     I think there were two related motivations
+        1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
+        2. renv directories are set there, using the CCMMF_DIR variable. 
+           but also not sure why those wouldn't be in there.
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
 
 #### Configuration setup
