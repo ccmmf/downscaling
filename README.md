@@ -100,5 +100,5 @@ qsub \
   -pe omp 8 \
   -o logs/03.out \
   -e logs/03.err \
-  -b y Rscript downscale/03_downscale_and_aggregate.R
+  -b y Rscript downscale/999_workflow_step.R
 ```
