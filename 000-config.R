@@ -18,6 +18,10 @@ if (ccmmf_dir == "") {
 pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
 
 # **Is this a test or production run?**
+# Set to FALSE during testing and development
+#
+# Global switch to toggle between fast, small scale runs for development and testing 
+# and full-scale production runs. Works by subsetting various data objects. 
 PRODUCTION <- TRUE
 
 # **Variables to extract**
