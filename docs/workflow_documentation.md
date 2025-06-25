@@ -37,7 +37,13 @@ The configuration script reads the CCMMF directory from the environment variable
 
 #### Configuration setup
 
-**Required changes**
+
+To set up this workflow to run on your system, follow the following steps.
+
+**Clone Repository**
+
+```sh
+git clone git@github.com:ccmmf/downscaling
 
 - `.Renviron` 
   - `CCMMF_DIR` should point to the shared CCMMF directory. 
