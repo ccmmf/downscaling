@@ -56,7 +56,8 @@ git clone git@github.com:ccmmf/downscaling
   - set `pecan_outdir` based on the CCMMF_DIR.
   - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
 - For testing, keep `PRODUCTION` set to `FALSE`. This is _much_ faster and 
-  requires fewer computing resources. Once a test run is successful,
+  requires fewer computing resources because it subsets large datasets. 
+  Once a test run is successful,
   set `PRODUCTION` to `TRUE` to run the full workflow.
 
 **Others:**
