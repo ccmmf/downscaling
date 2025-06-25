@@ -75,7 +75,7 @@ Rscript scripts/030_extract_sipnet_output.R
 Rscript scripts/040_downscale_and_aggregate.R
 
 # 7. Downscale analysis and interpretation
-Rscript scripts/031_downscale_analysis.R
+Rscript scripts/041_downscale_analysis.R
 
 # 8. Generate results documentation
 quarto render reports/downscaling_results.qmd
