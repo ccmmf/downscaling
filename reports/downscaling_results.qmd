@@ -163,9 +163,6 @@ Variable importance quantifies how useful each covariate is in predicting the ca
 
 ![](../figures/AGB_importance_partial_plots.png)
 
-<!--
-**Note**: While Partial Dependence Plots (PDP) show the average effect of a predictor on model output, Accumulated Local Effects (ALE) plots handle correlated predictors better. Individual Conditional Expectation (ICE) plots reveal how predictions change for individual observations.
--->
 
 # References
 

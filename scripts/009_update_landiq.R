@@ -1,3 +1,8 @@
+# This script is used to explore LandIQ data 
+# and reconcile design points generated in previous iterations 
+# with updated LandIQ data. 
+# Will be obsolete once we re-generate new design points in phase 3
+
 ## One off code used to fix LandIQ data has been moved to a gist:.groups
 ##  https://gist.github.com/dlebauer/c7e16a0f8c741a85c8ff7794c002a558
 

@@ -111,7 +111,7 @@ ens_results <- furrr::future_pmap_dfr(
         ) |>
             dplyr::mutate(
                 site_id = .env$site_id,
-                ensemble = as.numeric(.env$ens)
+                parameter = as.numeric(.env$ens)
             ) |>
             dplyr::rename(time = posix)
     },
@@ -120,12 +120,12 @@ ens_results <- furrr::future_pmap_dfr(
     # .Bug report: https://github.com/r-quantities/units/issues/409
     .options = furrr::furrr_options(seed = TRUE)
 ) |>
-    dplyr::group_by(ensemble, site_id, year) |>
+    dplyr::group_by(parameter, site_id, year) |>
     # filter(year <= end_year) |> # not sure why this was necessary;
     # should be taken care of by read.output
     dplyr::filter(time == max(time)) |> # only take last value
     dplyr::ungroup() |>
-    dplyr::arrange(ensemble, site_id, year) |>
+    dplyr::arrange(parameter, site_id, year) |>
     tidyr::pivot_longer(
         cols = all_of(variables),
         names_to = "variable",
@@ -133,7 +133,7 @@ ens_results <- furrr::future_pmap_dfr(
     ) |>
     dplyr::rename(datetime = time) |>
     dplyr::left_join(design_points, by = "site_id") |> 
-    dplyr::select(datetime, site_id, lat, lon, pft, ensemble, variable, prediction)
+    dplyr::select(datetime, site_id, lat, lon, pft, parameter, variable, prediction)
 
 
 # After extraction, ens_results$prediction is in kg C m-2 for both AGB and TotSoilCarb

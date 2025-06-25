@@ -208,8 +208,7 @@ Extracts and formats SIPNET outputs for downscaling:
 - `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`
 
 **Outputs:**
-- `out/efi_ens_long.csv`: Long format data
-- `out/efi_forecast.nc`: NetCDF arrays
+- `out/ensemble_output.csv`: Long format data
 
 ### 5. Downscale and Aggregate SIPNET Output
 
