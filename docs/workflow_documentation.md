@@ -92,7 +92,7 @@ Rscript scripts/010_prepare_covariates.R
 Rscript scripts/011_prepare_anchor_sites.R
 ```
 
-This script prepares data for clustering and downscaling:
+These scripts prepare data for clustering and downscaling:
 
 - Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes
 - Extracts environmental covariates (clay, organic carbon, topographic wetness, temperature, precipitation, solar radiation, vapor pressure)
