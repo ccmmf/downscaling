@@ -103,6 +103,7 @@ These scripts prepare data for clustering and downscaling:
 
 - **LandIQ Crop Map**: `data_raw/i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp`
 - **Soilgrids**: `clay_0-5cm_mean.tif` and `ocd_0-5cm_mean.tif`
+  Consider aggregating 0-5,5-15,15-30 into a single 0-30 cm layer 
 - **TWI**: `TWI/TWI_resample.tiff`
 - **ERA5 Met Data**: Files in `GridMET/` folder named `ERA5_met_<YYYY>.tiff`
 - **Anchor Sites**: `data_raw/anchor_sites.csv`
