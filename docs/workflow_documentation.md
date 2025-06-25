@@ -163,7 +163,7 @@ A separate workflow prepares inputs and runs SIPNET simulations for the design p
 
  **Available Variables**
 
-Each output file named `YYYY.nc` contains an associated file named `YYYY.nc.var`. 
+Each output file named `YYYY.nc` has an associated file named `YYYY.nc.var`. 
 This file contains a list of variables included in the output.
 SIPNET outputs have been converted to PEcAn standard units and stored in PEcAn standard 
 NetCDF files. 
