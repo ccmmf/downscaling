@@ -17,6 +17,8 @@ The downscaling workflow predicts carbon pools (Soil Organic Carbon and Abovegro
 
 It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.
 
+![Spatial downscaling workflow using machine learning with environmental covariates](figures/spatial_downscaling_workflow.png){width="5in"}
+
 ## Terminology
 
 - **Design Points**: Fields chosen via stratified random sampling using k-means clustering on environmental data layers across California crop fields.
