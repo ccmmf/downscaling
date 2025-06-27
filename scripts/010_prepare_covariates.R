@@ -195,7 +195,7 @@ extract_clim <- function(raster, points_sf) {
     ~ extract_clim(.x, ca_fields_pts),
       .id = "year"
       )
-TODO: drop `.tmp` and combine pipe above and below
+# TODO: drop `.tmp` and combine pipe above and below
 clim_summaries <- .tmp |>
   dplyr::mutate(
     precip = units::ud_convert(prec, "second-1", "year-1")
