@@ -4,23 +4,23 @@
     "Repositories": [
       {
         "Name": "BioCsoft",
-        "URL": "https://bioconductor.org/packages/3.20/bioc"
+        "URL": "https://bioconductor.org/packages/3.19/bioc"
       },
       {
         "Name": "BioCann",
-        "URL": "https://bioconductor.org/packages/3.20/data/annotation"
+        "URL": "https://bioconductor.org/packages/3.19/data/annotation"
       },
       {
         "Name": "BioCexp",
-        "URL": "https://bioconductor.org/packages/3.20/data/experiment"
+        "URL": "https://bioconductor.org/packages/3.19/data/experiment"
       },
       {
         "Name": "BioCworkflows",
-        "URL": "https://bioconductor.org/packages/3.20/workflows"
+        "URL": "https://bioconductor.org/packages/3.19/workflows"
       },
       {
         "Name": "BioCbooks",
-        "URL": "https://bioconductor.org/packages/3.20/books"
+        "URL": "https://bioconductor.org/packages/3.19/books"
       },
       {
         "Name": "pecanproject",
@@ -1287,7 +1287,7 @@
     },
     "PEcAnAssimSequential": {
       "Package": "PEcAnAssimSequential",
-      "Version": "1.8.0.9000",
+      "Version": "1.9.0",
       "Source": "GitHub",
       "Type": "Package",
       "Title": "PEcAn Functions Used for Ecological Forecasts and Reanalysis",
@@ -1319,11 +1319,12 @@
       "Suggests": [
         "corrplot",
         "exactextractr",
-        "ggrepel",
         "emdbook",
         "glue",
         "ggpubr",
+        "ggrepel",
         "gridExtra",
+        "keras3 (>= 1.0.0)",
         "magic (>= 1.5.0)",
         "methods",
         "PEcAn.benchmark",
@@ -1334,18 +1335,18 @@
         "plotrix",
         "plyr (>= 1.8.4)",
         "randomForest",
-        "keras3 (>= 1.0.0)",
+        "ranger",
         "raster",
         "readr",
         "reshape2 (>= 1.4.2)",
         "rlist",
         "sf",
+        "sp",
         "stats",
         "terra",
         "testthat",
         "tictoc",
         "tidyr",
-        "sp",
         "utils",
         "XML"
       ],
@@ -1358,7 +1359,7 @@
       "RemoteRepo": "pecan",
       "RemoteUsername": "dlebauer",
       "RemoteRef": "ensemble_downscaling",
-      "RemoteSha": "01def9a03d76de21350912c1d03d572fb3e0cfa2",
+      "RemoteSha": "030930841a60f524262c115a5ae7fd7f22f4e42a",
       "RemoteSubdir": "modules/assim.sequential",
       "NeedsCompilation": "no",
       "Depends": [

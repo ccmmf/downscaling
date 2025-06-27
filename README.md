@@ -27,11 +27,10 @@ The downscaling workflow predicts carbon pools (SOC and AGB) for California crop
 ## Environment and Setup
 
 
-### Key Files
+### Key Configuration Files
 
 - `.future.R` - Sets up parallel processing
 - `000-config.R` - Configuration file for the workflow (called in each workflow script)
-- `renv.lock` - File for package management using `renv`
 
 ## Quick start
 
@@ -49,7 +48,7 @@ cd downscale
 R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); renv::restore()'
 
 # Run the pipeline [Not implemented]
-R -e 'targets::tar_make()'
+# R -e 'targets::tar_make()'
 ```
 
 ## Running the Workflow
@@ -76,7 +75,7 @@ Rscript scripts/030_extract_sipnet_output.R
 Rscript scripts/040_downscale_and_aggregate.R
 
 # 7. Downscale analysis and interpretation
-Rscript scripts/031_downscale_analysis.R
+Rscript scripts/041_downscale_analysis.R
 
 # 8. Generate results documentation
 quarto render reports/downscaling_results.qmd
@@ -93,11 +92,13 @@ qrsh -l h_rt=3:00:00 -pe omp 16 -l buyin
 
 ### Job Submission
 
+This is an example of how a script can be run on an HPC
+
 ```sh
 qsub \
   -l h_rt=1:00:00 \
   -pe omp 8 \
   -o logs/03.out \
   -e logs/03.err \
-  -b y Rscript downscale/03_downscale_and_aggregate.R
+  -b y Rscript downscale/999_workflow_step.R
 ```

@@ -17,7 +17,12 @@ PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 library(patchwork) # for combining plots
 
 ensemble_file <- file.path(model_outdir, "ensemble_output.csv")
-ensemble_data <- readr::read_csv(ensemble_file) 
+ensemble_data <- readr::read_csv(ensemble_file) |>
+  dplyr::rename(
+    ensemble = parameter # parameter is EFI std name for ensemble
+                         # should decide if we want to change downstream code to use parameter
+                         # including PECAnAssimSequential::subset_ensemble
+  )
 ensemble_ids <- ensemble_data |>
   dplyr::pull(ensemble) |>
   unique()

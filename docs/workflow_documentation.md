@@ -30,11 +30,22 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 ### Configuration
 
 Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
+<!-- TODO: check why CCMMF_DIR is handled separately; 
+     I think there were two related motivations
+        1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
+        2. renv directories are set there, using the CCMMF_DIR variable. 
+           but also not sure why those wouldn't be in there.
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
 
 #### Configuration setup
 
-**Required changes**
+
+To set up this workflow to run on your system, follow the following steps.
+
+**Clone Repository**
+
+```sh
+git clone git@github.com:ccmmf/downscaling
 
 - `.Renviron` 
   - `CCMMF_DIR` should point to the shared CCMMF directory. 
@@ -47,7 +58,8 @@ The configuration script reads the CCMMF directory from the environment variable
   - set `pecan_outdir` based on the CCMMF_DIR.
   - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
 - For testing, keep `PRODUCTION` set to `FALSE`. This is _much_ faster and 
-  requires fewer computing resources. Once a test run is successful,
+  requires fewer computing resources because it subsets large datasets. 
+  Once a test run is successful,
   set `PRODUCTION` to `TRUE` to run the full workflow.
 
 **Others:**
@@ -62,6 +74,8 @@ See [renv package documentation](https://rstudio.github.io/renv/articles/renv.ht
 
 **UdUnits dependency**
 
+If you get an error installing the units package, this - or something similar - may help. 
+We are working on an alternative to renv that will bundle system dependencies and hopefully make this and related challenges unnecessary.
 install units package
 
 ```r
@@ -80,7 +94,7 @@ Rscript scripts/010_prepare_covariates.R
 Rscript scripts/011_prepare_anchor_sites.R
 ```
 
-This script prepares data for clustering and downscaling:
+These scripts prepare data for clustering and downscaling:
 
 - Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes
 - Extracts environmental covariates (clay, organic carbon, topographic wetness, temperature, precipitation, solar radiation, vapor pressure)
@@ -91,6 +105,7 @@ This script prepares data for clustering and downscaling:
 
 - **LandIQ Crop Map**: `data_raw/i15_Crop_Mapping_2016_SHP/i15_Crop_Mapping_2016.shp`
 - **Soilgrids**: `clay_0-5cm_mean.tif` and `ocd_0-5cm_mean.tif`
+  Consider aggregating 0-5,5-15,15-30 into a single 0-30 cm layer 
 - **TWI**: `TWI/TWI_resample.tiff`
 - **ERA5 Met Data**: Files in `GridMET/` folder named `ERA5_met_<YYYY>.tiff`
 - **Anchor Sites**: `data_raw/anchor_sites.csv`
@@ -150,7 +165,7 @@ A separate workflow prepares inputs and runs SIPNET simulations for the design p
 
  **Available Variables**
 
-Each output file named `YYYY.nc` contains an associated file named `YYYY.nc.var`. 
+Each output file named `YYYY.nc` has an associated file named `YYYY.nc.var`. 
 This file contains a list of variables included in the output.
 SIPNET outputs have been converted to PEcAn standard units and stored in PEcAn standard 
 NetCDF files. 
@@ -210,8 +225,7 @@ Extracts and formats SIPNET outputs for downscaling:
 - `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`
 
 **Outputs:**
-- `out/efi_ens_long.csv`: Long format data
-- `out/efi_forecast.nc`: NetCDF arrays
+- `out/ensemble_output.csv`: Long format data
 
 ### 5. Downscale and Aggregate SIPNET Output
 
