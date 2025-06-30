@@ -21,7 +21,7 @@ sections to include in release notes:
 
 -->
 
-## [Unreleased]
+## 0.2.0-2a
 
 ### Added
 
@@ -54,7 +54,7 @@ sections to include in release notes:
 
 - Legacy code and data formats related to previous crop types and outdated workflow stages.
 
-## v1.1.0 phase 1a
+## v0.1.1-1b
 
 ### Added
 
