@@ -1,0 +1,322 @@
+## Background
+
+This document prototypes a workflow for modeling croplands with multiple crops at a single site. The proposed strategy, based on [issue #137](https://github.com/ccmmf/organization/issues/137), is to:
+
+1.  Run the model (e.g., SIPNET) separately for each PFT at a given site.
+2.  Combine the model outputs from the individual PFT runs to generate a single, site-level prediction.
+
+
+Table 1: Practices to be implemented in the inventory and projection workflows, in order of priority. 
+We expect data availability to be approximately proportional to priority, where priority reflects a combination of effect size and current or potential adoption.
+
+| Agronomic Practice | Model Representation | Expected GHG Impact on State GHG Inventory | Expected Adoption (CARB 2022 Scoping Plan) | Priority |
+| :---- | :---- | :---- | :---- | :---- |
+| Cover Crops | Same planting and harvest as commodity crops. Crop or mixture specific parameterizations. | High | High | High |
+| Non-Crop Carbon Amendments such as manure or compost | Increase surface carbon and organic nitrogen, analogous to low C:N litter. | High | High | High |
+| N Fertilization | Increase size of soil inorganic nitrogen pools. | High | High | High |
+| Transition to Certified Organic Practices | This will be represented as specific combinations of other practices based on actual or expected rates of adoption associated with the transition. | High | High | High |
+| No-till, reduced till | Tillage will increase litter and SOM decomposition rate. Tillage frequency and effect on decomposition rate will be reduced to represent no till and reduced till. | High | Medium | High |
+| Polycultures \- crop mixtures including orchard ground cover and cover crop mixtures | Run PFTs independently; combine in proportion to relative composition. | Medium | Medium | Medium |
+|  | Increase soil water content. | High |  |  |
+| Annual → Perennial | Change crop type, living biomass may be partially removed during harvest but not killed. | High | Low | Low |
+| Agroforestry and Woody Buffers | Run woody PFTs independently and aggregate to county and state. | High | Low | Low |
+
+Accurately modeling mixed cropping systems is crucial for understanding ecosystem functions such as carbon sequestration, soil health, and productivity. Mixed systems, which include combinations of woody perennials and herbaceous plants, pose challenges due to differing plant functional traits, growth dynamics, and interactions between plant types.
+
+### Mixed Vegetation Management 
+
+A number of Healthy Soils Practices (HSPs, <TK citation>) involve mixed cropping systems. These include hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover crop mixtures.
+
+It is important to be able to represent scenarios that contain multiple crops at the same time. 
+The challenge is that a SIPNET (ref) simulates only one Plant Functional Type (PFT).
+This is a common approach in many land surface and biogeochemistry models, where each PFT represents a distinct vegetation type with specific functional traits and dynamics
+Examples include DayCent, DNDC, RothC, (TK cite, check that this is correct, mention others).
+
+There are a few approaches to modeling mixed cropping systems:
+
+1. Land surface models that simulate a grid cell containing multiple ecosystems is to simulate multiple PFTs separately at each point (or grid cell) and then combine their outputs weighted based on their fractional coverage.
+2. DayCent (TK cite) uses another approach, represents mixtures as a new PFT that is parameterized to reflect a mixture of the component PFTs.
+3. More advanced models like ED2 and FATES (TK cite) simulate how multiple PFTs grow together in real time - representing the vertical structure of the ecosystem and representing competition for light, space, water, and nutrients. 
+4. Others worth mentioning?
+
+All of these approaches have limitations. And simplicity is a key design principle of SIPNET - so the full ED2 or FATES approach is not feasible.
+
+The proportional weighting approach is straightforward and allows for flexibility in representing different mixtures of PFTs. However,
+- SOC represents a history of land cover, not the current state. But the change in SOC over time could be weighted based on the fractional coverage of each PFT.
+- At the same time, imagine an orchard with partial cover. Adding ground cover to an orchard does not immediately change the SOC or AGB of the woody PFT, but it does add to the SOC and AGB of the herbaceous PFT.
+
+We have identified a few options for representing mixed cropping systems in SIPNET:
+
+1. Come up with a new PFT that represents the mixed system. This approach is used e.g. by DayCent.
+2. Simulate each PFT separately and then combine outputs based on their fractional areas within a management parcel.
+3. Starting with orchards, assume that adding ground cover will only increase the SOC and AGB of the system relative to the baseline.
+
+## Proposed Approach
+
+Mixed-vegetation scenarios include hedgerows, orchard ground cover, windbreaks, riparian buffers and cover crop mixtures that contain multiple PFTs. These will be represented by running a separate simulation for each vegetation type and then combining outputs based on the fractional area of each crop type within a field.
+
+For mixed-vegetation scenarios that combine woody buffers with crops such as hedgerows, windbreaks, and riparian buffers, we will combine crop PFTs with existing SIPNET PFTs that have been developed for North American evergreen and deciduous forests.
+
+### Initial Conditions Generation (IC)
+
+1. Run as normal, but for each PFT at each site.
+2. Settings File:
+   - For each mixed site, create separate configuration entries for each PFT; append `-PFT` to the site ID.
+3. For herbaceous crops: 
+   - annual herbaceous: assume start with bare ground (zero biomass).
+   - perennial herbaceous (MVP): start as bare ground run; consider methods for estimating initial biomass in later iterations. 
+4. Run PEcAn SIPNET pipeline to generate initial conditions for each PFT.
+5. Soil Conditions:
+    - Assign whole-site values for soil organic carbon (SOC), soil water content, and other soil parameters to each PFT.
+
+### Model Execution
+
+- Execute PEcAn SIPNET model independently for each PFT and site combination.
+- Following PEcAn convention, netCDFs will be in `out/ENS-{ensemble_number}-{site_id}-{pft}`.
+
+### Post-processing Outputs
+
+1. **Output Combination:**
+    - For each mixed site, combine model outputs by applying weights based on fractional cover.
+    - Biomass pools for herbaceous crops are scaled by fractional cover; woody biomass is summed directly.
+    - Soil variables (e.g., SOC) are calculated as weighted averages across PFTs.
+
+2. **Standardized Results:**
+  - Outputs are formatted into ensemble files (`efi_ensemble.csv`) for downstream analysis and visualization.
+
+### Downscaling and Analysis
+
+1. **Downscaling:**
+  - Apply machine learning models trained separately for each PFT to downscale outputs.
+  - Combine downscaled outputs using fractional cover to produce integrated maps and analyses.
+
+
+
+## Demonstration
+
+Here we illustrate the approach using an orchard with different ratios of woody:herbacous ground cover (e.g., 0:100, 25:75, 50:50, 75:25, 100:0). 
+Two methods of aggregation are demonstrated:
+
+1. **Weighted Average**: Combines model outputs proportionally based on PFT fractional cover.
+2. **Incremental Addition**: Uses Aboveground Biomass (AGB) and Soil Organic Carbon (SOC) directly from woody PFT, adding only incremental increases in AGB and SOC from herbaceous cover proportional to its fractional area.
+
+```{r}
+source("000-config.R")
+library(tidyverse)
+library(ggplot2)
+```
+
+The combination of outputs depends on the variable:
+
+-  **Soil variables** (e.g., `TotSoilCarb`): Calculated as a weighted average of the PFT-specific outputs, with weights determined by the fractional cover of each PFT. This assumes that each PFT contributes to the total soil carbon in proportion to the area it covers. Since simulations of both PFTs have the same initial conditions, this weighted average will reflect the weighted averages of $\delta$ SOC.
+-  **Aboveground Biomass (AGB)**: Calculated as a sum of the PFT-specific outputs. 
+  - For herbaceous PFTs, their AGB is scaled by fractional cover. 
+  - Woody PFT AGB is taken as is. This approach implicitly assumes that adding herbaceous cover doesnt significantly impact the biomass of established woody plants.
+
+The following code demonstrates this output combination process.
+
+### Prepare example data
+
+To demonstrate this approach we will construct a hypothetical mixed cropping system - an orchard with and without herbaceous cover. We will also consider an annual herbaceous monoculture, as well as different mixtures of woody and herbaceous crops.
+
+Inputs are from woody perennial simulations in phase 1b and herbaceous annual simulations in phase 2a. 
+
+Because we have not already run the two PFTs at the same site, we combine outputs from two sites that are less than 1km apart into a single site for illustration.
+
+We will consider the final years of the simulation (2023-2024).
+
+```{r example-data}
+ac_ensemble_output <- readr::read_csv(file.path(model_outdir, "ensemble_output.csv")) |>
+    dplyr::mutate(year = lubridate::year(datetime))
+wp_ensemble_output_csv <- file.path(
+    ccmmf_dir,
+    "modelout",
+    "ccmmf_phase_1b_98sites_20reps_20250312",
+    "out",
+    "efi_std_ens_results.csv" # previous name
+)
+
+wp_ensemble_output <- readr::read_csv(wp_ensemble_output_csv) |>
+    dplyr::rename(
+        site_id = site,
+        ensemble = parameter
+    ) |>
+    dplyr::mutate(
+        pft = "woody perennial crop",
+        year = lubridate::year(datetime)
+    )
+
+mixed_system <- bind_rows(
+  ac_ensemble_output, 
+  wp_ensemble_output
+  ) |>
+    dplyr::filter(
+        site_id %in% c("922c6a68452fc8ca", "57ea98e608333b76"),
+        year %in% 2022:2023, # only have two yrs for woody
+        ensemble %in% 1:5,
+        variable %in% outputs_to_extract
+    ) |>
+    dplyr::mutate(
+        # currently no sites have both annual and perennial crops,
+        # these sites are close, will make one up
+        # AND append PFT acronym to site_id
+        lat = mean(lat, na.rm = TRUE), # haven't joined wp w/ lat,lon yet
+        lon = mean(lon, na.rm = TRUE),
+        site_id = paste0(
+            "1234abcd5678efgh", "-",
+            stringr::str_replace_all(pft, " ", "_")
+        )
+    ) |>
+    dplyr::mutate(
+        pft = case_when(
+            pft == "woody perennial crop" ~ "wp",
+            pft == "annual crop" ~ "ac",
+            TRUE ~ pft
+        ),
+        variable = case_when(
+            variable == "TotSoilCarb" ~ "soc",
+            variable == "AGB" ~ "agb",
+            TRUE ~ variable
+        )
+    ) |>
+    tidyr::pivot_wider(
+        names_from = variable,
+        values_from = prediction
+    ) |> 
+    tidyr::pivot_wider(
+      id_cols = c(year, ensemble),
+      names_from = pft,
+      values_from = c(agb, soc)
+    )
+write_csv(mixed_system, "data/mixed_system.csv")
+```
+
+### Combine Outputs
+
+**Aggregation Scenarios**
+
+We use two approaches to aggregate Aboveground Biomass (AGB) and Soil Organic Carbon (SOC) for mixed systems:
+
+1. **Weighted Average Method**  
+   Each output is combined in proportion to the fractional cover of annual crops (`ac`) and woody perennials (`wp`):
+
+   $$
+   \text{AGB}_{agg} = \text{AGB}_{ac} \times ac + \text{AGB}_{wp} \times wp
+   $$
+   $$
+   \text{SOC}_{agg} = \text{SOC}_{ac} \times ac + \text{SOC}_{wp} \times wp
+   $$
+
+   This assumes both PFTs contribute to the total in proportion to their area.
+
+2. **Incremental Addition Method**  
+   The woody perennial output is used as a base, and only the incremental increase from the annual crop is added, scaled by its fractional cover:
+
+   $$
+   \text{AGB}_{add} = \text{AGB}_{wp} + \text{AGB}_{ac} \times ac
+   $$
+   $$
+   \text{SOC}_{add} = \text{SOC}_{wp} + (\text{SOC}_{ac} - \text{SOC}_{wp}) \times ac
+   $$
+
+   This reflects the assumption that adding ground cover increases system AGB and SOC only by the additional contribution from the annual crop, without reducing the woody perennial pools.
+
+```{r combine-outputs, message=FALSE}
+# Define fractional cover for each PFT.
+# This will eventially be specified by monitoring framework.
+mixed_system <- readr::read_csv("data/mixed_system.csv")
+# Define fractional cover scenarios
+cover_scenarios <- tibble::tribble(
+    ~scenario, ~wp, ~ac,
+    "0:100", 0, 1.0,
+    "25:75", 0.25, 0.75,
+    "50:50", 0.50, 0.50,
+    "75:25", 0.75, 0.25,
+    "100:0", 1.0, 0
+)
+
+# Aggregated estimates for each scenario
+mixed_system_scenarios <- mixed_system |>
+    cross_join(cover_scenarios) |>
+    mutate(
+        agb_agg = agb_ac * ac + agb_wp * wp,
+        soc_agg = soc_ac * ac + soc_wp * wp,
+        wp_present = ifelse(wp > 0, TRUE, FALSE),
+        agb_add = agb_wp * wp_present + agb_ac * ac,
+        soc_add = soc_wp + (soc_ac - soc_wp) * ac,
+        pct_ac = ac * 100,
+        pct_wp = wp * 100
+    ) |>
+    select(-wp_present, -wp, -ac)
+
+```
+
+
+## Compare Different Methods and Scenarios Used Represent Mixed Systems
+
+The following code visualizes both AGB and SOC for all cover scenarios, using both aggregation methods.
+
+```{r visualize-pft-mixtures, message=FALSE, warning=FALSE}
+# Long format for visualization
+mixed_long <- mixed_system_scenarios |>
+    pivot_longer(
+        cols = c(agb_agg, soc_agg, agb_add, soc_add),
+        names_to = c("variable", "method"),
+        names_pattern = "(agb|soc)_(agg|add)",
+        values_to = "value"
+    ) |>
+    mutate(
+        date = as.Date(paste0(year, "-01-01")),
+        scenario = factor(
+            scenario,
+            levels = c("0:100", "25:75", "50:50", "75:25", "100:0")
+        ),
+        variable = factor(
+            variable,
+            levels = c("agb", "soc")
+        ),
+        method = factor(
+            method,
+            levels = c("agg", "add")
+        )
+    ) |> select(-ends_with("wp"), -ends_with("ac"))
+```
+
+```{r}
+mp <- mixed_long |>
+    filter(year == 2023) |>
+    ggplot(aes(x = scenario, y = value)) +
+    facet_grid(
+        variable ~ method,
+        scales = "free_y",
+        labeller = labeller(
+            .rows = c(agb = "AGB", soc = "SOC"),
+            .cols = c(
+                agg = "Weighted Average",
+                add = "Incremental Addition"
+            )
+        )
+    ) +
+    labs(
+        title = "Mixed System Aggregated Outputs by Scenario and Method",
+        x = "Mixture Scenario (Woody:Herbaceous)",
+        y = "Value"
+    ) +
+    theme_minimal()
+
+
+mp +
+    geom_boxplot(
+        #width narrow
+        width = 0.2,
+        color = 'grey'
+    ) +
+    geom_line(aes(group = ensemble), alpha = 0.25)
+
+# +
+#geom_point(alpha = 0.25) +
+# 
+
+
+
+```
