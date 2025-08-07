@@ -313,10 +313,4 @@ mp +
     ) +
     geom_line(aes(group = ensemble), alpha = 0.25)
 
-# +
-#geom_point(alpha = 0.25) +
-# 
-
-
-
 ```
