@@ -25,6 +25,16 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 - **Crop Fields**: All croplands in the LandIQ dataset.
 - **Anchor Sites:** Sites used as ground truth for calibration and validation, including UC research stations and Ameriflux sites.
 
+## This Repository Contains Two Workflows That Will Be Split
+
+ TODO **Workflows (1 & 3) are in this repository and will be split**
+
+The workflows are
+
+1. **Site Selection**: uses environmental variables (later also management layers) to create clusters and then select representative sites. The design_points.csv are then passed to the ensemble workflow  
+2. Ensemble in ccmmf/workflows repository, generates ensemble outputs
+3. **Downscaling**: uses ensemble outputs to make predictions for each field in CA then aggregate to county level summaries.
+
 ## Workflow Steps
 
 ### Configuration
@@ -35,6 +45,8 @@ Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is
         1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
         2. renv directories are set there, using the CCMMF_DIR variable. 
            but also not sure why those wouldn't be in there.
+--->
+
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
 
 #### Configuration setup
@@ -46,6 +58,7 @@ To set up this workflow to run on your system, follow the following steps.
 
 ```sh
 git clone git@github.com:ccmmf/downscaling
+```
 
 - `.Renviron` 
   - `CCMMF_DIR` should point to the shared CCMMF directory. 
@@ -72,6 +85,7 @@ _these shouldn't need to be changed unless you want to change the default behavi
 See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
 See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
 
+<!-- 
 **UdUnits dependency**
 
 If you get an error installing the units package, this - or something similar - may help. 
@@ -84,7 +98,7 @@ install.packages(
   configure.args = "--with-udunits2-lib=/share/pkg.8/udunits/2.2.28/install/lib --with-udunits2-include=/share/pkg.8/udunits/2.2.28/install/include"
 )
 ```
-
+-->
 
 ### 1. Data Preparation
 
@@ -120,15 +134,15 @@ These scripts prepare data for clustering and downscaling:
 
 **Environmental Covariates**
 
-| Variable | Description | Source | Units |
-|----------|-------------|--------|-------|
-| temp | Mean annual temperature | ERA5 | °C |
-| precip | Mean annual precipitation | ERA5 | mm/year |
-| srad | Solar radiation | ERA5 | W/m² |
-| vapr | Vapor pressure deficit | ERA5 | kPa |
-| clay | Clay content | SoilGrids | % |
-| ocd | Organic carbon density | SoilGrids | g/kg |
-| twi | Topographic wetness index | SRTM-derived | - |
+| Variable | Description               | Source       | Units   |
+| -------- | ------------------------- | ------------ | ------- |
+| temp     | Mean annual temperature   | ERA5         | °C      |
+| precip   | Mean annual precipitation | ERA5         | mm/year |
+| srad     | Solar radiation           | ERA5         | W/m²    |
+| vapr     | Vapor pressure deficit    | ERA5         | kPa     |
+| clay     | Clay content              | SoilGrids    | %       |
+| ocd      | Organic carbon density    | SoilGrids    | g/kg    |
+| twi      | Topographic wetness index | SRTM-derived | -       |
 
 ### 2. Design Point Selection
 
@@ -181,32 +195,32 @@ PEcAn standard units are SI, following the Climate Forecasting standards:
 - Other: 
    - LAI: m2 / m2
 
- | Variable                      | Description                              |
- |-------------------------------|------------------------------------------|
- | GPP                           | Gross Primary Productivity               |
- | NPP                           | Net Primary Productivity                 |
- | TotalResp                     | Total Respiration                        |
- | AutoResp                      | Autotrophic Respiration                  |
- | HeteroResp                    | Heterotrophic Respiration                |
- | SoilResp                      | Soil Respiration                         |
- | NEE                           | Net Ecosystem Exchange                   |
- | AbvGrndWood                   | Above ground woody biomass               |
- | leaf_carbon_content           | Leaf Carbon Content                      |
- | TotLivBiom                    | Total living biomass                     |
- | TotSoilCarb                   | Total Soil Carbon                        |
- | Qle                           | Latent heat                              |
- | Transp                        | Total transpiration                      |
- | SoilMoist                     | Average Layer Soil Moisture              |
- | SoilMoistFrac                 | Average Layer Fraction of Saturation     |
- | SWE                           | Snow Water Equivalent                    |
- | litter_carbon_content         | Litter Carbon Content                    |
- | litter_mass_content_of_water  | Average layer litter moisture            |
- | LAI                           | Leaf Area Index                          |
- | fine_root_carbon_content      | Fine Root Carbon Content                 |
- | coarse_root_carbon_content    | Coarse Root Carbon Content               |
- | GWBI                          | Gross Woody Biomass Increment            |
- | AGB                           | Total aboveground biomass                |
- | time_bounds                   | history time interval endpoints          |
+ | Variable                     | Description                          |
+ | ---------------------------- | ------------------------------------ |
+ | GPP                          | Gross Primary Productivity           |
+ | NPP                          | Net Primary Productivity             |
+ | TotalResp                    | Total Respiration                    |
+ | AutoResp                     | Autotrophic Respiration              |
+ | HeteroResp                   | Heterotrophic Respiration            |
+ | SoilResp                     | Soil Respiration                     |
+ | NEE                          | Net Ecosystem Exchange               |
+ | AbvGrndWood                  | Above ground woody biomass           |
+ | leaf_carbon_content          | Leaf Carbon Content                  |
+ | TotLivBiom                   | Total living biomass                 |
+ | TotSoilCarb                  | Total Soil Carbon                    |
+ | Qle                          | Latent heat                          |
+ | Transp                       | Total transpiration                  |
+ | SoilMoist                    | Average Layer Soil Moisture          |
+ | SoilMoistFrac                | Average Layer Fraction of Saturation |
+ | SWE                          | Snow Water Equivalent                |
+ | litter_carbon_content        | Litter Carbon Content                |
+ | litter_mass_content_of_water | Average layer litter moisture        |
+ | LAI                          | Leaf Area Index                      |
+ | fine_root_carbon_content     | Fine Root Carbon Content             |
+ | coarse_root_carbon_content   | Coarse Root Carbon Content           |
+ | GWBI                         | Gross Woody Biomass Increment        |
+ | AGB                          | Total aboveground biomass            |
+ | time_bounds                  | history time interval endpoints      |
 
 
 ### 4. Extract SIPNET Output
