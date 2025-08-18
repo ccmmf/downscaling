@@ -9,20 +9,24 @@ options(
   readr.show_col_types = FALSE
 )
 
+## Set parallel processing options
+no_cores <- max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+
+
 # **set ccmmf_dir and pecan_outdir**
 # Define the CCMMF directory from environment variable
 ccmmf_dir <- Sys.getenv("CCMMF_DIR")
 if (ccmmf_dir == "") {
   ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
 }
-pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
-
+pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
 # **Is this a test or production run?**
 # Set to FALSE during testing and development
 #
 # Global switch to toggle between fast, small scale runs for development and testing 
 # and full-scale production runs. Works by subsetting various data objects. 
-PRODUCTION <- TRUE
+PRODUCTION <- FALSE
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
@@ -32,7 +36,7 @@ outputs_to_extract <- c(
 )
 
 if(!PRODUCTION) {
-  outputs_to_extract <- outputs_to_extract[1]
+  outputs_to_extract <- outputs_to_extract
 }
 
 ### Configuration Settings that can be set to default ###
