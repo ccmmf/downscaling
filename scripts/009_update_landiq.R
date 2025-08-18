@@ -242,25 +242,6 @@ if (nrow(unmatched) > 0) {
         distances <- terra::distance(unmatched_vect[i], dwr_2018)
         min_idx <- which.min(distances)
         nearest_poly <- dwr_2018[min_idx]
-        point_wgs84 <- terra::project(unmatched_vect[i], "epsg:4326")
-        coords <- terra::crds(point_wgs84)
-        tibble(
-          UniqueID = nearest_poly$UniqueID,
-          distance = min(distances),
-          lon = round(coords[1], 5),
-          lat = round(coords[2], 5)
-        )
-      })
-    ) |>
-    tidyr::unnest(nearest_info) |>
-    select(-point_index) |>
-    mutate(match_type = "nearest")
-  ) |>
-    mutate(
-      nearest_info = purrr::map(point_index, function(i) {
-        distances <- terra::distance(unmatched_vect[i], dwr_2018)
-        min_idx <- which.min(distances)
-        nearest_poly <- dwr_2018[min_idx]
         # Get the point coordinates in decimal degrees
         point_wgs84 <- terra::project(unmatched_vect[i], "epsg:4326")
         coords <- terra::crds(point_wgs84)
