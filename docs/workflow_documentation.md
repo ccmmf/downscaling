@@ -39,15 +39,13 @@ The workflows are
 
 ### Configuration
 
-Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
-<!-- TODO: check why CCMMF_DIR is handled separately; 
-     I think there were two related motivations
-        1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
-        2. renv directories are set there, using the CCMMF_DIR variable. 
-           but also not sure why those wouldn't be in there.
---->
+Workflow settings are configured in `000-config.R`.  
 
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
+
+The `CCMMF_DIR` variable, however, is defined in `.Renviron` so that it can:
+- Be used to locate and override R library (`RENV_PATHS_LIBRARY`) and cache (`RENV_PATHS_CACHE`) paths outside the home directory.
+- Be easily overridden via a shell export (`export CCMMF_DIR=…`) without modifying workflow scripts.
 
 #### Configuration setup
 
@@ -67,38 +65,24 @@ git clone git@github.com:ccmmf/downscaling
   - `RENV_PATHS_CACHE` and `RENV_PATHS_LIBRARY` store the `renv` cache and library in the CCMMF directory.
     These are in a subdirectory of the CCMMF directory in order to make them available across all users 
     (and because on some computers, they exceed allocated space in the home directory).
+- `.Rprofile`
+  - sets repositories from which R packages are installed
+  - runs `renv/activate.R`
 - `000-config.R`
   - set `pecan_outdir` based on the CCMMF_DIR.
   - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
-- For testing, keep `PRODUCTION` set to `FALSE`. This is _much_ faster and 
-  requires fewer computing resources because it subsets large datasets. 
-  Once a test run is successful,
-  set `PRODUCTION` to `TRUE` to run the full workflow.
+  - detect and use resources for parallel processing (with future package); default is `available cores - 1`
+  - PRODUCTION mode setting. For testing, set `PRODUCTION` to `FALSE`. This is _much_ faster and requires fewer computing resources because it subsets large datasets. Once a test run is successful, set `PRODUCTION` to `TRUE` to run the full workflow.
 
 **Others:**
 
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
 
-- `.future.R` defines parallel processing when the future package is loaded. 
-  - set to `available cores - 1` by default
 - `renv.lock` is used for package management with `renv`. 
-See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
-See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
+  - See [project renv setup docs](docs/renv_setup.md) for instructions about using `renv` for these workflows. 
+  - See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
 
-<!-- 
-**UdUnits dependency**
-
-If you get an error installing the units package, this - or something similar - may help. 
-We are working on an alternative to renv that will bundle system dependencies and hopefully make this and related challenges unnecessary.
-install units package
-
-```r
-install.packages(
-  "units",
-  configure.args = "--with-udunits2-lib=/share/pkg.8/udunits/2.2.28/install/lib --with-udunits2-include=/share/pkg.8/udunits/2.2.28/install/include"
-)
-```
--->
+# 
 
 ### 1. Data Preparation
 
