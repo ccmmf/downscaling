@@ -39,13 +39,7 @@ The workflows are
 
 ### Configuration
 
-Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
-<!-- TODO: check why CCMMF_DIR is handled separately; 
-     I think there were two related motivations
-        1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
-        2. renv directories are set there, using the CCMMF_DIR variable. 
-           but also not sure why those wouldn't be in there.
---->
+Workflow settings are configured in `000-config.R`.  
 
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
 
@@ -70,8 +64,6 @@ git clone git@github.com:ccmmf/downscaling
   - `RENV_PATHS_CACHE` and `RENV_PATHS_LIBRARY` store the `renv` cache and library in the CCMMF directory.
     These are in a subdirectory of the CCMMF directory in order to make them available across all users 
     (and because on some computers, they exceed allocated space in the home directory).
-  - `R_LIBS_USER` must point to the platform and R version specific subdirectory inside `RENV_PATHS_LIBRARY`.  
-    Example: `/projectnb/dietzelab/ccmmf/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linux-gnu`
 - `.Rprofile`
   - sets repositories from which R packages are installed
   - runs `renv/activate.R`
@@ -86,23 +78,10 @@ git clone git@github.com:ccmmf/downscaling
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
 
 - `renv.lock` is used for package management with `renv`. 
-See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
-See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
+  - See [project renv setup docs](docs/renv_setup.md) for instructions about using `renv` for these workflows. 
+  - See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
 
-<!-- 
-**UdUnits dependency**
-
-If you get an error installing the units package, this - or something similar - may help. 
-We are working on an alternative to renv that will bundle system dependencies and hopefully make this and related challenges unnecessary.
-install units package
-
-```r
-install.packages(
-  "units",
-  configure.args = "--with-udunits2-lib=/share/pkg.8/udunits/2.2.28/install/lib --with-udunits2-include=/share/pkg.8/udunits/2.2.28/install/include"
-)
-```
--->
+# 
 
 ### 1. Data Preparation
 
