@@ -2,7 +2,7 @@
 # A long format CSV (time, site, ensemble, variable) 
 # that follows the Ecological Forecasting Initiative (EFI) forecast standard
 
-# Helper functions in R/efi_long_to_arrays.R will convert this to
+# Helper functions in R/efi_long_to_arrays.R will 
 # 1. A 4-D array (time, site, ensemble, variable)
 # 2. A NetCDF file (time, site, ensemble, variable)
 # TODO: write out EML metadata in order to be fully EFI compliant
@@ -89,8 +89,9 @@ if (!PRODUCTION) {
     start_year <- end_year - 1
 }
 
-## Create dataframe of directories to process, filtered to include only
-##   existing directories (ens_dirs) that have site_ids and ensemble IDs
+## Create of directories to process 
+##   limited to directories that actually exist (ens_dirs)
+##   and that have site_ids and ensemble IDs
 ens_ids_str <- PEcAn.utils::left.pad.zeros(ens_ids)
 dirs_to_process <- ens_dirs |>
     dplyr::filter(
@@ -150,42 +151,19 @@ ens_results <- ens_results_raw |>
     ) |>
     dplyr::select(-site_id) |>
     dplyr::rename(site_id = base_site_id) |>
-    dplyr::select(datetime, site_id, lat, lon, pft, parameter, variable, prediction)
-
-# Classify variables as 'pool' (state) vs 'flux' (rate) using PEcAn standard_vars.
-std_vars <- PEcAn.utils::standard_vars
-
-pool_vars <- std_vars |>
-        dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
-        dplyr::pull(Variable.Name) 
-
-flux_vars <- std_vars |>
-        dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
-        dplyr::pull(Variable.Name)
-
-ens_results <- ens_results |>
-    dplyr::mutate(
-        datetime = lubridate::floor_date(datetime, unit = "month"),
-        variable_type = dplyr::case_when(
-            variable %in% pool_vars ~ "pool",
-            variable %in% flux_vars ~ "flux",
-            TRUE ~ "unknown"
-        )
-    ) |>
-    dplyr::group_by(datetime, site_id, lat, lon, pft, parameter, variable, variable_type) |>
+    dplyr::select(datetime, site_id, lat, lon, pft, parameter, variable, prediction) |>
+    dplyr::mutate(datetime = lubridate::floor_date(datetime, unit = "month")) |>
+    dplyr::group_by(datetime, site_id, lat, lon, pft, parameter, variable) |>
     dplyr::summarise(
-        prediction = mean(prediction, na.rm = TRUE),
-        .groups = "drop"
+        prediction = mean(prediction, na.rm = TRUE), .groups = "drop"
     )
-
-# Warn if flux variables are present because users may need to treat them differently.
-if (any(ens_results$variable_type == "flux")) {
-    PEcAn.logger::logger.severe(
-        "Flux variables detected in ensemble output. Note: averaging flux (rate) variables",
-        "across ensembles/sites or over time can be misleading. Consider computing cumulative",
-        "fluxes over simulation period",
-    )
-}
+# Append with change since start date
+delta_df <- ens_results |>
+    dplyr::group_by(site_id, lat, lon, pft, parameter, variable) |>
+    dplyr::mutate(prediction = as.numeric(difftime(datetime, min(datetime), units = "days"))) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(variable = paste0("delta_", variable))
+ens <- dplyr::bind_rows(ens_results, delta_df)
 
 # After extraction, ens_results$prediction is in kg C m-2 for both AGB and TotSoilCarb
 
@@ -193,7 +171,7 @@ if (any(ens_results$variable_type == "flux")) {
 logger_level <- PEcAn.logger::logger.setLevel(logger_level)
  
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
-readr::write_csv(ens_results, ensemble_output_csv)
+readr::write_csv(ens, ensemble_output_csv)
 PEcAn.logger::logger.info(
     "\nEnsemble output extraction complete.",
     "\nResults saved to ", ensemble_output_csv
