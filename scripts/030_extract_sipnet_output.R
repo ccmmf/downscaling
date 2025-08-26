@@ -2,7 +2,7 @@
 # A long format CSV (time, site, ensemble, variable) 
 # that follows the Ecological Forecasting Initiative (EFI) forecast standard
 
-# Helper functions in R/efi_long_to_arrays.R will 
+# Helper functions in R/efi_long_to_arrays.R will convert this to
 # 1. A 4-D array (time, site, ensemble, variable)
 # 2. A NetCDF file (time, site, ensemble, variable)
 # TODO: write out EML metadata in order to be fully EFI compliant
@@ -89,9 +89,8 @@ if (!PRODUCTION) {
     start_year <- end_year - 1
 }
 
-## Create of directories to process 
-##   limited to directories that actually exist (ens_dirs)
-##   and that have site_ids and ensemble IDs
+## Create dataframe of directories to process, filtered to include only
+##   existing directories (ens_dirs) that have site_ids and ensemble IDs
 ens_ids_str <- PEcAn.utils::left.pad.zeros(ens_ids)
 dirs_to_process <- ens_dirs |>
     dplyr::filter(
@@ -157,13 +156,6 @@ ens_results <- ens_results_raw |>
     dplyr::summarise(
         prediction = mean(prediction, na.rm = TRUE), .groups = "drop"
     )
-# Append with change since start date
-delta_df <- ens_results |>
-    dplyr::group_by(site_id, lat, lon, pft, parameter, variable) |>
-    dplyr::mutate(prediction = as.numeric(difftime(datetime, min(datetime), units = "days"))) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(variable = paste0("delta_", variable))
-ens <- dplyr::bind_rows(ens_results, delta_df)
 
 # After extraction, ens_results$prediction is in kg C m-2 for both AGB and TotSoilCarb
 

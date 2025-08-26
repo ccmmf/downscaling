@@ -5,4 +5,11 @@ options(repos = c(
     CRAN         = "https://cloud.r-project.org"
 ))
 
-# source("renv/activate.R")
+Sys.setenv(R_LIBS_USER = file.path(
+  Sys.getenv("RENV_PATHS_LIBRARY"),
+  renv:::renv_platform_prefix()
+))
+options(renv.config.autoloader.enabled = FALSE)
+if (requireNamespace("renv", quietly = TRUE)) {
+  renv::activate()
+}

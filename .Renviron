@@ -12,5 +12,3 @@ R_LIBS_USER="${CCMMF_DIR}/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linu
 UDUNITS2_LIBS="-L/share/pkg.8/udunits/2.2.28/install/lib -ludunits2"
 UDUNITS2_INCLUDE="-I/share/pkg.8/udunits/2.2.28/install/include"
 
-# Default graphics device
-R_DEFAULT_DEVICE=png

@@ -64,6 +64,8 @@ git clone git@github.com:ccmmf/downscaling
   - `RENV_PATHS_CACHE` and `RENV_PATHS_LIBRARY` store the `renv` cache and library in the CCMMF directory.
     These are in a subdirectory of the CCMMF directory in order to make them available across all users 
     (and because on some computers, they exceed allocated space in the home directory).
+  - `R_LIBS_USER` must point to the platform and R version specific subdirectory inside `RENV_PATHS_LIBRARY`.  
+    Example: `/projectnb/dietzelab/ccmmf/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linux-gnu`
 - `.Rprofile`
   - sets repositories from which R packages are installed
   - runs `renv/activate.R`
