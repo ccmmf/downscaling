@@ -150,12 +150,42 @@ ens_results <- ens_results_raw |>
     ) |>
     dplyr::select(-site_id) |>
     dplyr::rename(site_id = base_site_id) |>
-    dplyr::select(datetime, site_id, lat, lon, pft, parameter, variable, prediction) |>
-    dplyr::mutate(datetime = lubridate::floor_date(datetime, unit = "month")) |>
-    dplyr::group_by(datetime, site_id, lat, lon, pft, parameter, variable) |>
+    dplyr::select(datetime, site_id, lat, lon, pft, parameter, variable, prediction)
+
+# Classify variables as 'pool' (state) vs 'flux' (rate) using PEcAn standard_vars.
+std_vars <- PEcAn.utils::standard_vars
+
+pool_vars <- std_vars |>
+        dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
+        dplyr::pull(Variable.Name) 
+
+flux_vars <- std_vars |>
+        dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
+        dplyr::pull(Variable.Name)
+
+ens_results <- ens_results |>
+    dplyr::mutate(
+        datetime = lubridate::floor_date(datetime, unit = "month"),
+        variable_type = dplyr::case_when(
+            variable %in% pool_vars ~ "pool",
+            variable %in% flux_vars ~ "flux",
+            TRUE ~ "unknown"
+        )
+    ) |>
+    dplyr::group_by(datetime, site_id, lat, lon, pft, parameter, variable, variable_type) |>
     dplyr::summarise(
-        prediction = mean(prediction, na.rm = TRUE), .groups = "drop"
+        prediction = mean(prediction, na.rm = TRUE),
+        .groups = "drop"
     )
+
+# Warn if flux variables are present because users may need to treat them differently.
+if (any(ens_results$variable_type == "flux")) {
+    PEcAn.logger::logger.severe(
+        "Flux variables detected in ensemble output. Note: averaging flux (rate) variables",
+        "across ensembles/sites or over time can be misleading. Consider computing cumulative",
+        "fluxes over simulation period",
+    )
+}
 
 # After extraction, ens_results$prediction is in kg C m-2 for both AGB and TotSoilCarb
 
@@ -163,7 +193,7 @@ ens_results <- ens_results_raw |>
 logger_level <- PEcAn.logger::logger.setLevel(logger_level)
  
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
-readr::write_csv(ens, ensemble_output_csv)
+readr::write_csv(ens_results, ensemble_output_csv)
 PEcAn.logger::logger.info(
     "\nEnsemble output extraction complete.",
     "\nResults saved to ", ensemble_output_csv
