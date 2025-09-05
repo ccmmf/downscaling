@@ -74,7 +74,7 @@ Technical details of these steps are described in more detail below.
 
 #### Two Cases for Mixed Cropping Systems: Discrete and Overlap
 
-In a mixed cropping system, we define $f_{woody}$ and $f_{annual}$ as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not "canopy cover" since that changes over time. Think of this as "percent of a monoculture". <!-- perhaps we should call this something other than 'cover', like "percent of a monoculture" -->This method will build on SIPNET's single PFT design - the outputs from two separate single PFT runs simulate will be combined. 
+In a mixed cropping system, we define $f_{woody}$ and $f_{annual}$ as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not "canopy cover" since that changes over time. Think of this as "percent of a monoculture". This method will build on SIPNET's single PFT design - the outputs from two separate single PFT runs simulate will be combined. 
 
 The two methods of mixing described below are "Discrete" and "Overlap".
 
