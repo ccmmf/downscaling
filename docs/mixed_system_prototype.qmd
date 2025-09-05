@@ -260,8 +260,8 @@ if (nrow(agb_site) >= 3) {
   }
   site_map <- tibble(
     site_id = analysis_sites,
-    agb_class = factor(c("low agb", "med_agb", "high_agb"),
-                       levels = c("low agb", "med_agb", "high_agb"))
+    agb_class = factor(c("low_agb", "med_agb", "high_agb"),
+                       levels = c("low_agb", "med_agb", "high_agb"))
   )
 } else {
   PEcAn.logger::logger.severe("Looks like something went wrong", 
@@ -274,7 +274,7 @@ output_representative_sites <- site_map |>
   mutate(
     agb_class = factor(
       agb_class,
-      levels = c("low agb", "med_agb", "high_agb"),
+      levels = c("low_agb", "med_agb", "high_agb"),
       labels = c("low AGB site", "med AGB site", "high AGB site")
     )
   )
@@ -303,6 +303,8 @@ summary_stats <- combined_output |>
     values_from = val
   )
 
+# TODO future iterations, don't assume columns;
+# use glue to construct dynamically
 knitr::kable(
   summary_stats,
   col.names = c("Mixture", "Type", "AGB", "SOC"),
