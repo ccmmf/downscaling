@@ -7,7 +7,7 @@ format:
   html:
     self-contained: true
 execute:
-#  cache: true
+  cache: true
   echo: false
   warning: false
   message: false
@@ -61,23 +61,24 @@ Technical details of these steps are described in more detail below.
 - Following PEcAn convention, netCDFs will be in `out/ENS-{ensemble_number}-{site_id}-{pft}`.
 
 #### Post-processing Outputs
-- Combine outputs: For each mixed site, combine model outputs using one of the approaches defined in @sec-mixture-methods, below.
+- Combine outputs: For each mixed site, combine model outputs using one of the approaches defined below.
 - Standardize Results: Outputs are formatted into ensemble files (`combined_ensemble_output.csv`) for downstream analysis and visualization.
 
 #### Downscaling and Analysis
 
 1. **Downscaling:**
-  - Apply machine learning models trained separately for each PFT to downscale outputs.
-  - Combine downscaled outputs using one of the methods described below.
+    - Apply machine learning models trained separately for each PFT to downscale outputs.
+    - Combine downscaled outputs using one of the methods described below.
+2. **Analysis:**
+    - Calibrate using site level mixtures.
+    - Validate against downscaled outputs.
+    
 
 ### Mixture Methods {#sec-mixture-methods}
 
 #### Two Cases for Mixed Cropping Systems: Discrete and Overlap
 
 In a mixed cropping system, we define $f_{woody}$ and $f_{annual}$ as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not "canopy cover" since that changes over time. Think of this as "percent of a monoculture". This method will build on SIPNET's single PFT design - the outputs from two separate single PFT runs simulate will be combined. 
-
-The two methods of mixing described below are "Discrete" and "Overlap".
-
 
 | Example System | Scenario | Method           | Eqn.         |
 | :-------------- | :-------- | :----- | :------: |
@@ -89,6 +90,7 @@ The two methods of mixing described below are "Discrete" and "Overlap".
 **Notation**
 
 We define the following values: 
+
 - $X$ is the carbon stock (AGB or SOC). 
 - For a finite time interval $\Delta t$ starting at $t_0$ (the start of the simulation) the change is $\Delta X_{\Delta t} = X(t_0 + \Delta t) - X(t_0)$.
 - $f_{woody}$ and $f_{annual}$ are the fractional contributions of each PFT to ecosystem dynamics. In the case of the discrete method, these represent cover and sum to 1. In the overlap case, $f_{woody} = 1$ and $f_{annual} < 1$.
@@ -126,8 +128,8 @@ We consider a set of mixtures used in the examples and figures below (@tbl-mixtu
 
 | Scenario                                      | Woody (%) | Annual (%) | Method   |
 | :-------------------------------------------- | --------: | ---------: | :------- |
-| 100% woody perennial (orchard / monoculture)  |       100 |          0 | discrete |
-| 100% annual herbaceous (monoculture)          |        0 |         100 | discrete |
+| 100% woody perennial                          |       100 |          0 | monoculture |
+| 100% annual herbaceous                        |        0 |         100 | monoculture |
 | Orchard + 25% herbaceous ground cover         |       100 |         25 | overlap  |
 | Orchard + 50% herbaceous ground cover         |       100 |         50 | overlap  |
 | Annual crop + 25% woody hedgerows             |        25 |         75 | discrete |
@@ -194,7 +196,7 @@ year_scale_dt <- scale_x_datetime(date_breaks = "1 year",
 
 ## Mixed-system dataset
 
-The `combined_output` dataset contains the combined outputs for different scenarios (discrete, overlap).
+The `combined_ensemble_output.csv` file contains the combined outputs for different scenarios (discrete, overlap).
 
 ```{r data-prep}
 # ---- Mixed-system dataset ----------------------------------------------------
@@ -282,6 +284,10 @@ output_representative_sites <- site_map |>
 
 
 ### Summary Statistics
+
+<!-- 
+TODO add initial conditions to table
+-->
 
 ```{r summary-table}
 summary_stats <- combined_output |>
