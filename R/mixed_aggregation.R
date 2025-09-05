@@ -1,4 +1,3 @@
-# TODO: rename function
 #' Combine two-PFT outputs to represent mixed cropping systems
 #'
 #' Canonical rules for combining woody and annual PFT outputs. The function
