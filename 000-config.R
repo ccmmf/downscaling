@@ -1,5 +1,10 @@
 ### Workflow Configuration Settings ###
 
+# Check that we are in the correct working directory
+if(!basename(here::here(getwd())) == 'downscaling') {
+  PEcAn.logger::logger.error("Please run this script from the 'downscaling' directory")
+}
+
 ## Global configuration settings for logging
 
 options(
@@ -26,7 +31,7 @@ pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_2025
 #
 # Global switch to toggle between fast, small scale runs for development and testing 
 # and full-scale production runs. Works by subsetting various data objects. 
-PRODUCTION <- FALSE
+PRODUCTION <- TRUE
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
@@ -36,7 +41,9 @@ outputs_to_extract <- c(
 )
 
 if(!PRODUCTION) {
-  outputs_to_extract <- outputs_to_extract
+  # can subset for testing
+  # depending on what part of the workflow you are testing
+  # outputs_to_extract <- outputs_to_extract[1]
 }
 
 ### Configuration Settings that can be set to default ###

@@ -17,7 +17,7 @@ This document prototypes a workflow for modeling croplands with multiple crops (
 
 ## Challenge
 
-CARB identifies multiple practices that rely on mixed cropping systems—such as hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover-crop mixtures (CARB, 2022 and Appendix Table 1).
+CARB identifies multiple practices from the Healthy Soils Program (https://www.cdfa.ca.gov/oars/healthysoils/) that rely on mixed cropping systems—such as hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover-crop mixtures (CARB, 2022 and Appendix @tbl-hsp).
 
 It is important to be able to represent scenarios that contain multiple crops at the same time. The challenge is that SIPNET simulates only one Plant Functional Type (PFT) - a standard approach used in many land surface, biogeochemistry, and crop models.
 
@@ -45,7 +45,7 @@ Technical details of these steps are described in more detail below.
 1. Run once for each PFT at each site.
 2. Meteorology and soil initial conditions:
    - Use the same meteorological driver data (ERA5 ensemble).
-   - Assign whole-site values for soil texture and soil organic carbon.
+   - Use the same soil texture and soil organic carbon.
 3. Settings File:
    - For each mixed site, create separate a separate configuration file for each PFT; append `-PFT` to the site ID.
 4. For herbaceous crops: 
@@ -637,6 +637,7 @@ for (v in vars) {
 }
 ```
 
+-->
 
 ## Appendix
 
@@ -653,4 +654,5 @@ for (v in vars) {
 | (Water management placeholder) | Increase soil water content. | High |  |  |
 | Annual → Perennial | Change PFT; partial biomass retained. | High | Low | Low |
 | Agroforestry / Woody Buffers | Independent woody runs; spatial aggregation. | High | Low | Low |
--->
+
+: Healthy Soils Program practices, model representation, and priority for implementation in SIPNET. {#tbl-hsp}
