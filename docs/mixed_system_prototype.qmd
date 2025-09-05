@@ -312,10 +312,14 @@ knitr::kable(
 
 ### Carbon Pool Sizes For Different Mixture Types
 
-What we expect to see here: 
+What we expect to see here:
 
-- The discrete mixtures represent weighted averages of the component PFTs (so annual + 25% woody).
-- The overlap mixtures will represent the woody perennial, with a small contribution from the annual crop.
+- Discrete mixtures: Carbon pools scale approximately as the fractional (area) weighted average of the two monocultures.
+- Overlap mixtures: Pools are dominated by the woody monoculture plus a modest incremental contribution from the annual component.
+<!-- 
+TODO: compare difference from t0 and b/w woody and annual in time series plots
+If annual monoculture SOC < woody monoculture SOC, then should addition of herbacious cover reduce SOC relative to woody monoculture?
+-->
 
 ```{r carbon-pools}
 # Ensemble-level end-of-simulation medians (per ensemble) for absolute pool sizes
@@ -383,7 +387,7 @@ combined_output_summaries <- combined_output_site_mean |>
 
 ### Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)
 
-These plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Here we are only comparing to the annual monoculture, as this reflects the healthy soils practice of adding a woody components like a hedgerow to an annual cropping system.
+These plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Because we are considering the healthy soils practice of adding a woody component like a hedgerow to an annual cropping system, we use annual monoculture as the point of comparison.
 
 ```{r effect-size-probabilistic}
 # Compute ensemble-level annual medians (per ensemble) so deltas are calculated within each ensemble
