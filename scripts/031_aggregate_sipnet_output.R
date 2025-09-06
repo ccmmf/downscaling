@@ -21,7 +21,7 @@ source(here::here("R", "mixed_aggregation.R"))
 
 # ---- Load ensemble output ----------------------------------------------------
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
-ens_output <- readr::read_csv(ensemble_output_csv) |>
+ensemble_data <- readr::read_csv(ensemble_output_csv) |>
   # rename EFI std names for clarity
   # efi name   | new name
   # parameter  | ensemble_id
@@ -38,7 +38,7 @@ ens_output <- readr::read_csv(ensemble_output_csv) |>
 # cover_fractions_csv <- file.path(model_outdir, "site_cover_fractions.csv")
 
 # distinct site-year combinations
-distinct_site_year <- ens_output |>
+distinct_site_year <- ensemble_data |>
   dplyr::mutate(year = lubridate::year(datetime)) |>
   dplyr::distinct(site_id, year) 
 
@@ -71,10 +71,10 @@ annual_pft <- "annual crop"
 mixed_overlap_pft <- "woody_annual_overlap_100_50"  # new synthetic PFT label
 
 # ensemble members
-ensemble_ids <- unique(ens_output$ensemble_id)
+ensemble_ids <- unique(ensemble_data$ensemble_id)
 
 # annual_init values for each site x ensemble: value at the earliest datetime
-annual_init <- ens_output |>
+annual_init <- ensemble_data |>
   dplyr::filter(pft == "annual crop") |>
   dplyr::group_by(site_id, variable, ensemble_id) |>
   dplyr::slice_min(order_by = datetime, n = 1, with_ties = FALSE) |>
@@ -92,7 +92,7 @@ annual_init <- ens_output |>
   dplyr::select(site_id, ensemble_id, variable, annual_init)
 
 # ---- Reshape ensemble output (wide by PFT) -----------------------------------
-.ens_wide <- ens_output |>
+.ens_wide <- ensemble_data |>
   dplyr::mutate(year = lubridate::year(datetime)) |>
   dplyr::select(
     datetime, year, site_id, lat, lon,
@@ -173,7 +173,7 @@ PEcAn.logger::logger.info("Wrote aggregated output: ", ens_combined_csv)
 
 # ---- Create EFI-compliant ensemble file with mixed overlap PFT ----
 # Original EFI-style rows (restore EFI column names)
-efi_original <- ens_output |>
+efi_original <- ensemble_data |>
   dplyr::rename(parameter = ensemble_id, prediction = value)
 
 # Extract the specific overlap scenario: 100% woody, 50% annual (orchard + 50% ground cover)

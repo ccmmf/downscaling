@@ -16,16 +16,7 @@ PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 # library(furrr)
 library(patchwork) # for combining plots
 
-ensemble_file_base <- file.path(model_outdir, "ensemble_output.csv")
-ensemble_file_mixed <- file.path(model_outdir, "ensemble_output_with_mixed.csv")
-
-if (file.exists(ensemble_file_mixed)) {
-  PEcAn.logger::logger.info("Using mixed ensemble file (includes overlap synthetic PFT): ", ensemble_file_mixed)
-  ensemble_file <- ensemble_file_mixed
-} else {
-  PEcAn.logger::logger.info("Mixed ensemble file not found; using base ensemble file: ", ensemble_file_base)
-  ensemble_file <- ensemble_file_base
-}
+ensemble_file <- file.path(model_outdir, "ensemble_output.csv")
 
 ensemble_data <- readr::read_csv(ensemble_file) |>
   dplyr::rename(
