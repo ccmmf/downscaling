@@ -25,17 +25,27 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 - **Crop Fields**: All croplands in the LandIQ dataset.
 - **Anchor Sites:** Sites used as ground truth for calibration and validation, including UC research stations and Ameriflux sites.
 
+## This Repository Contains Two Workflows That Will Be Split
+
+ TODO **Workflows (1 & 3) are in this repository and will be split**
+
+The workflows are
+
+1. **Site Selection**: uses environmental variables (later also management layers) to create clusters and then select representative sites. The design_points.csv are then passed to the ensemble workflow  
+2. Ensemble in ccmmf/workflows repository, generates ensemble outputs
+3. **Downscaling**: uses ensemble outputs to make predictions for each field in CA then aggregate to county level summaries.
+
 ## Workflow Steps
 
 ### Configuration
 
-Workflow settings are configured in `000-config.R`, except that the CCMMF_DIR is set in `.Renviron`. 
-<!-- TODO: check why CCMMF_DIR is handled separately; 
-     I think there were two related motivations
-        1. .Renviron vars can be overridden by `export CCMMF_DIR=...` 
-        2. renv directories are set there, using the CCMMF_DIR variable. 
-           but also not sure why those wouldn't be in there.
+Workflow settings are configured in `000-config.R`.  
+
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
+
+The `CCMMF_DIR` variable, however, is defined in `.Renviron` so that it can:
+- Be used to locate and override R library (`RENV_PATHS_LIBRARY`) and cache (`RENV_PATHS_CACHE`) paths outside the home directory.
+- Be easily overridden via a shell export (`export CCMMF_DIR=…`) without modifying workflow scripts.
 
 #### Configuration setup
 
@@ -46,45 +56,34 @@ To set up this workflow to run on your system, follow the following steps.
 
 ```sh
 git clone git@github.com:ccmmf/downscaling
+```
 
-- `.Renviron` 
   - `CCMMF_DIR` should point to the shared CCMMF directory. 
     This is the location where data, inputs, and outputs will be stored, 
     as well as the location of the `renv` cache and library
   - `RENV_PATHS_CACHE` and `RENV_PATHS_LIBRARY` store the `renv` cache and library in the CCMMF directory.
     These are in a subdirectory of the CCMMF directory in order to make them available across all users 
     (and because on some computers, they exceed allocated space in the home directory).
+  - `R_LIBS_USER` must point to the platform and R version specific subdirectory inside `RENV_PATHS_LIBRARY`.  
+    Example: `/projectnb/dietzelab/ccmmf/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linux-gnu`
+- `.Rprofile`
+  - sets repositories from which R packages are installed
+  - runs `renv/activate.R`
 - `000-config.R`
   - set `pecan_outdir` based on the CCMMF_DIR.
   - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
-- For testing, keep `PRODUCTION` set to `FALSE`. This is _much_ faster and 
-  requires fewer computing resources because it subsets large datasets. 
-  Once a test run is successful,
-  set `PRODUCTION` to `TRUE` to run the full workflow.
+  - detect and use resources for parallel processing (with future package); default is `available cores - 1`
+  - PRODUCTION mode setting. For testing, set `PRODUCTION` to `FALSE`. This is _much_ faster and requires fewer computing resources because it subsets large datasets. Once a test run is successful, set `PRODUCTION` to `TRUE` to run the full workflow.
 
 **Others:**
 
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
 
-- `.future.R` defines parallel processing when the future package is loaded. 
-  - set to `available cores - 1` by default
 - `renv.lock` is used for package management with `renv`. 
-See [project renv setup docs](renv_setup.md) for instructions about using `renv` for these workflows. 
-See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
+  - See [project renv setup docs](docs/renv_setup.md) for instructions about using `renv` for these workflows. 
+  - See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
 
-**UdUnits dependency**
-
-If you get an error installing the units package, this - or something similar - may help. 
-We are working on an alternative to renv that will bundle system dependencies and hopefully make this and related challenges unnecessary.
-install units package
-
-```r
-install.packages(
-  "units",
-  configure.args = "--with-udunits2-lib=/share/pkg.8/udunits/2.2.28/install/lib --with-udunits2-include=/share/pkg.8/udunits/2.2.28/install/include"
-)
-```
-
+# 
 
 ### 1. Data Preparation
 
@@ -120,15 +119,15 @@ These scripts prepare data for clustering and downscaling:
 
 **Environmental Covariates**
 
-| Variable | Description | Source | Units |
-|----------|-------------|--------|-------|
-| temp | Mean annual temperature | ERA5 | °C |
-| precip | Mean annual precipitation | ERA5 | mm/year |
-| srad | Solar radiation | ERA5 | W/m² |
-| vapr | Vapor pressure deficit | ERA5 | kPa |
-| clay | Clay content | SoilGrids | % |
-| ocd | Organic carbon density | SoilGrids | g/kg |
-| twi | Topographic wetness index | SRTM-derived | - |
+| Variable | Description               | Source       | Units   |
+| -------- | ------------------------- | ------------ | ------- |
+| temp     | Mean annual temperature   | ERA5         | °C      |
+| precip   | Mean annual precipitation | ERA5         | mm/year |
+| srad     | Solar radiation           | ERA5         | W/m²    |
+| vapr     | Vapor pressure deficit    | ERA5         | kPa     |
+| clay     | Clay content              | SoilGrids    | %       |
+| ocd      | Organic carbon density    | SoilGrids    | g/kg    |
+| twi      | Topographic wetness index | SRTM-derived | -       |
 
 ### 2. Design Point Selection
 
@@ -181,32 +180,32 @@ PEcAn standard units are SI, following the Climate Forecasting standards:
 - Other: 
    - LAI: m2 / m2
 
- | Variable                      | Description                              |
- |-------------------------------|------------------------------------------|
- | GPP                           | Gross Primary Productivity               |
- | NPP                           | Net Primary Productivity                 |
- | TotalResp                     | Total Respiration                        |
- | AutoResp                      | Autotrophic Respiration                  |
- | HeteroResp                    | Heterotrophic Respiration                |
- | SoilResp                      | Soil Respiration                         |
- | NEE                           | Net Ecosystem Exchange                   |
- | AbvGrndWood                   | Above ground woody biomass               |
- | leaf_carbon_content           | Leaf Carbon Content                      |
- | TotLivBiom                    | Total living biomass                     |
- | TotSoilCarb                   | Total Soil Carbon                        |
- | Qle                           | Latent heat                              |
- | Transp                        | Total transpiration                      |
- | SoilMoist                     | Average Layer Soil Moisture              |
- | SoilMoistFrac                 | Average Layer Fraction of Saturation     |
- | SWE                           | Snow Water Equivalent                    |
- | litter_carbon_content         | Litter Carbon Content                    |
- | litter_mass_content_of_water  | Average layer litter moisture            |
- | LAI                           | Leaf Area Index                          |
- | fine_root_carbon_content      | Fine Root Carbon Content                 |
- | coarse_root_carbon_content    | Coarse Root Carbon Content               |
- | GWBI                          | Gross Woody Biomass Increment            |
- | AGB                           | Total aboveground biomass                |
- | time_bounds                   | history time interval endpoints          |
+ | Variable                     | Description                          |
+ | ---------------------------- | ------------------------------------ |
+ | GPP                          | Gross Primary Productivity           |
+ | NPP                          | Net Primary Productivity             |
+ | TotalResp                    | Total Respiration                    |
+ | AutoResp                     | Autotrophic Respiration              |
+ | HeteroResp                   | Heterotrophic Respiration            |
+ | SoilResp                     | Soil Respiration                     |
+ | NEE                          | Net Ecosystem Exchange               |
+ | AbvGrndWood                  | Above ground woody biomass           |
+ | leaf_carbon_content          | Leaf Carbon Content                  |
+ | TotLivBiom                   | Total living biomass                 |
+ | TotSoilCarb                  | Total Soil Carbon                    |
+ | Qle                          | Latent heat                          |
+ | Transp                       | Total transpiration                  |
+ | SoilMoist                    | Average Layer Soil Moisture          |
+ | SoilMoistFrac                | Average Layer Fraction of Saturation |
+ | SWE                          | Snow Water Equivalent                |
+ | litter_carbon_content        | Litter Carbon Content                |
+ | litter_mass_content_of_water | Average layer litter moisture        |
+ | LAI                          | Leaf Area Index                      |
+ | fine_root_carbon_content     | Fine Root Carbon Content             |
+ | coarse_root_carbon_content   | Coarse Root Carbon Content           |
+ | GWBI                         | Gross Woody Biomass Increment        |
+ | AGB                          | Total aboveground biomass            |
+ | time_bounds                  | history time interval endpoints      |
 
 
 ### 4. Extract SIPNET Output

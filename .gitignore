@@ -21,6 +21,8 @@
 # Knitr + R Markdown cache
 *_cache/
 /cache/
+*_files/
+*html
 
 # System files
 .DS_Store

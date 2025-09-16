@@ -1,5 +1,10 @@
 ### Workflow Configuration Settings ###
 
+# Check that we are in the correct working directory
+if(!basename(here::here(getwd())) == 'downscaling') {
+  PEcAn.logger::logger.error("Please run this script from the 'downscaling' directory")
+}
+
 ## Global configuration settings for logging
 
 options(
@@ -9,14 +14,18 @@ options(
   readr.show_col_types = FALSE
 )
 
+## Set parallel processing options
+no_cores <- max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+
+
 # **set ccmmf_dir and pecan_outdir**
 # Define the CCMMF directory from environment variable
 ccmmf_dir <- Sys.getenv("CCMMF_DIR")
 if (ccmmf_dir == "") {
   ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
 }
-pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2a_DRAFT_output_20250520")
-
+pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
 # **Is this a test or production run?**
 # Set to FALSE during testing and development
 #
@@ -32,7 +41,9 @@ outputs_to_extract <- c(
 )
 
 if(!PRODUCTION) {
-  outputs_to_extract <- outputs_to_extract[1]
+  # can subset for testing
+  # depending on what part of the workflow you are testing
+  # outputs_to_extract <- outputs_to_extract[1]
 }
 
 ### Configuration Settings that can be set to default ###

@@ -1,0 +1,670 @@
+---
+title: "Mixed-System Prototype (Two-PFT Aggregation)"
+author: "David LeBauer"
+date: "`r Sys.Date()`"
+quarto-cache: true
+format:
+  html:
+    self-contained: true
+execute:
+  cache: true
+  echo: false
+  warning: false
+  message: false
+---
+
+This document prototypes a workflow for modeling croplands with multiple crops ("mixed cropping systems"). 
+
+## Challenge
+
+CARB identifies multiple practices from the Healthy Soils Program (https://www.cdfa.ca.gov/oars/healthysoils/) that rely on mixed cropping systems—such as hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover-crop mixtures (CARB, 2022 and Appendix @tbl-hsp).
+
+It is important to be able to represent scenarios that contain multiple crops at the same time. The challenge is that SIPNET simulates only one Plant Functional Type (PFT) - a standard approach used in many land surface, biogeochemistry, and crop models.
+
+## Approach
+
+### Context
+
+Here we consider methods of simulating cropping systems where two _ecophysiologically distinct_ PFTs are present at the same time. These include woody buffers and orchards with ground cover. Here, ecophysiologically distinct means that the two PFTs have different growth forms (woody vs herbaceous) and/or phenology (perennial vs annual).
+
+We do not consider mixtures of plant species that are similar enough to represent as a single PFT, including cover crop mixtures and agroforestry. We note that the approach described below could be applied to these practices, and this will be considered if the additional complexity can be justified by potential reduction in uncertainty.
+
+We also do not consider practices in which different crops are planted in sequence. These include crop rotations, cover crops, and land use change. These scenarios can be represented as sequential model runs that change PFTs while maintaining a continuously evolving system state.
+
+### Algorithm
+
+The general approach for combining multiple PFTs into an aggregate estimate of carbon pool size (and later, GHG fluxes) is to:
+
+1. Run SIPNET separately for each PFT.
+2. Combine the model outputs from the individual PFT.
+
+Technical details of these steps are described in more detail below.
+
+#### Initial Conditions Generation (IC)
+
+1. Run once for each PFT at each site.
+2. Meteorology and soil initial conditions:
+   - Use the same meteorological driver data (ERA5 ensemble).
+   - Use the same soil texture and soil organic carbon.
+3. Settings File:
+   - For each mixed site, create separate a separate configuration file for each PFT; append `-PFT` to the site ID.
+4. For herbaceous crops: 
+   - Annual herbaceous: assume start with bare ground (zero biomass).
+   - Perennial herbaceous: start as bare ground run; consider methods for estimating initial biomass in later iterations. 
+5. For woody crops:
+   - Generate initial conditions.
+
+#### Model Execution
+
+- Execute PEcAn SIPNET model independently for each PFT and site combination.
+    - Use ensemble methods to propagate uncertainty and variance in model parameters, meteorological drivers and initial conditions.
+- Following PEcAn convention, netCDFs will be in `out/ENS-{ensemble_number}-{site_id}-{pft}`.
+
+#### Post-processing Outputs
+- Combine outputs: For each mixed site, combine model outputs using one of the approaches defined below.
+- Standardize Results: Outputs are formatted into ensemble files (`combined_ensemble_output.csv`) for downstream analysis and visualization.
+
+#### Downscaling and Analysis
+
+1. **Downscaling:**
+    - Apply machine learning models trained separately for each PFT to downscale outputs.
+    - Combine downscaled outputs using one of the methods described below.
+2. **Analysis:**
+    - Calibrate using site level mixtures.
+    - Validate against downscaled outputs.
+    
+
+### Mixture Methods {#sec-mixture-methods}
+
+#### Two Cases for Mixed Cropping Systems: Discrete and Overlap
+
+In a mixed cropping system, we define $f_{woody}$ and $f_{annual}$ as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not "canopy cover" since that changes over time. Think of this as "percent of a monoculture". This method will build on SIPNET's single PFT design - the outputs from two separate single PFT runs simulate will be combined. 
+
+| Example System | Scenario | Method           | Eqn.         |
+| :-------------- | :-------- | :----- | :------: |
+| Annual Crops + Woody Hedgerow | Discrete | Weighted Average | [-@eq-discrete] |
+| Orchard + Ground Cover | Overlap | Incremental | [-@eq-overlap] |
+
+: Methods for combining two plant functional types (PFTs) in mixed cropping systems. {#tbl-methods}
+
+**Notation**
+
+We define the following values: 
+
+- $X$ is the carbon stock (AGB or SOC). 
+- For a finite time interval $\Delta t$ starting at $t_0$ (the start of the simulation) the change is $\Delta X_{\Delta t} = X(t_0 + \Delta t) - X(t_0)$.
+- $f_{woody}$ and $f_{annual}$ are the fractional contributions of each PFT to ecosystem dynamics. In the case of the discrete method, these represent cover and sum to 1. In the overlap case, $f_{woody} = 1$ and $f_{annual} < 1$.
+
+#### Scenario 1: Discrete (Weighted)
+
+For the Discrete case, we use a _Weighted Average_ approach (@eq-discrete).
+
+The Discrete case refers to mixed systems where the two different crops do not overlap. This covers two key scenarios: 1) each PFT occupies a distinct zones such as an annual crop with woody hedgerows or 2) a mixture of annuals. In this annual mixture case, the approach assumes that the plants do not overlap - even though this is not the case, it is a reasonable simplification. In the **discrete case**, the field scale ecosystem dynamics are approximated by weighting SIPNET outputs by the fractional area of each crop type within a field:
+$$
+X_{\textrm{site}} = f_{\textrm{woody}}\cdot X_{\textrm{woody}} + f_{\textrm{annual}}\cdot X_{\textrm{annual}}
+$$ {#eq-discrete}
+
+#### Scenario 2: Overlap
+
+For the Overlap case, we use an _Incremental_ approach (@eq-overlap).
+
+This scenario applies when a ground cover is added to an existing orchard orchard. We set $f_\textrm{woody} = 1$, reflecting the assumption that the addition of ground cover does not reduce the contribution of the woody species to ecosystem dynamics. Lowering this fraction below 1 at the moment of planting would represent an unrealistic scenario in which adding ground cover also reduced standing orchard biomass and associated impact of the woody species on ecosystem function. When woody biomass removal occurs, it is represented as a distinct harvest event.
+
+The contribution of the ground cover is added _incrementally_ to the system. The parameter $f_\text{annual}$ represents the "ecosystem impact factor" - the fraction of a monoculture's influence on ecosystem functioning that the ground cover contributes to this mixed system. 
+
+This factor is always less than 1 ($f_\textrm{annual} < 1$), as it accounts for both the percent of area covered by the ground cover and the reduction in its ecosystem impact due to competition for light and other resources.
+
+Thus, when ground cover is added, it is treated as an addition to the ecosystem, and the orchard (woody monoculture) is assumed to remain unchanged.
+
+$$
+X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annual}
+$$ {#eq-overlap}
+
+## Demonstration
+
+Here we illustrate this approach using the orchard + ground cover and annual crop + hedgerows scenarios.
+
+We consider a set of mixtures used in the examples and figures below (@tbl-mixture-scenarios); the percent columns indicate the fractional contribution of each Plant Functional Type (PFT).
+
+| Scenario                                      | Woody (%) | Annual (%) | Method   |
+| :-------------------------------------------- | --------: | ---------: | :------- |
+| 100% woody perennial                          |       100 |          0 | monoculture |
+| 100% annual herbaceous                        |        0 |         100 | monoculture |
+| Orchard + 25% herbaceous ground cover         |       100 |         25 | overlap  |
+| Orchard + 50% herbaceous ground cover         |       100 |         50 | overlap  |
+| Annual crop + 25% woody hedgerows             |        25 |         75 | discrete |
+| Annual crop + 50% woody hedgerows             |        50 |         50 | discrete |
+
+: Set of mixture scenarios used for demonstration. {#tbl-mixture-scenarios}
+
+## Illustrative Examples
+
+### Run Configuration
+
+These runs use SIPNET grass and temperate deciduous PFT parameterizations to represent annual and perennial woody crops, respectively. 
+
+These simulations were run from 2016 through 2024 across 10 sites, with an ensemble size of 20.
+
+```{r setup}
+library(tidyverse)
+library(lubridate)
+library(here)
+library(stringr)  # for label wrapping
+library(grid)     # grid::unit() for panel spacing
+
+source(here::here("000-config.R"))
+if (!dir.exists(model_outdir)) {
+    model_outdir <- "data"
+}
+```
+
+
+```{r plot-helpers}
+# helper: replace " + " with newline so labels use two lines
+mix_label_fn <- function(x) stringr::str_replace_all(x, " \\+ ", "\n+ ")
+
+# labeller that applies the above to mix_description (fallback to a normal wrap for other strips)
+mix_labeller <- labeller(
+  mix_description = mix_label_fn,
+  .default = label_wrap_gen(width = 12)
+)
+
+pal_mix <- c(
+  monoculture = "#1b9e77",
+  discrete = "#d95f02",
+  overlap = "#7570b3"
+)
+
+base_theme <- theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "top",
+    strip.text = element_text(size = 9, lineheight = 0.95,
+                              margin = margin(2, 2, 2, 2)),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    plot.margin = margin(5, 5, 5, 5),
+    plot.title.position = "plot",
+    # center title and subtitle
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+wrap_labeller <- labeller(.default = label_wrap_gen(width = 12))
+year_scale_dt <- scale_x_datetime(date_breaks = "1 year",
+                                  date_labels = "%Y",
+                                  expand = expansion(mult = c(0.01, 0.02)))
+```
+
+## Mixed-system dataset
+
+The `combined_ensemble_output.csv` file contains the combined outputs for different scenarios (discrete, overlap).
+
+```{r data-prep}
+# ---- Mixed-system dataset ----------------------------------------------------
+# created in 031_aggregate_sipnet_output.R
+combined_output_csv <- here::here(
+    file.path(model_outdir, "combined_ensemble_output.csv")
+)
+combined_output <- readr::read_csv(
+    combined_output_csv,
+    show_col_types = FALSE
+) |>
+    mutate(
+        variable = recode(variable, "TotSoilCarb" = "SOC"),
+        mix_description = factor(
+            mix_description,
+            levels = c(
+                "100% woody",
+                "100% annual",
+                "100% woody + 25% annual",
+                "100% woody + 50% annual",
+                "75% annual + 25% woody",
+                "50% annual + 50% woody"
+            )
+        ),
+        mix_type = case_when(
+               mix_description %in% c("100% annual", "100% woody") ~ "monoculture",
+               scenario == "discrete" ~ "discrete",
+               scenario == "overlap" ~ "overlap",
+               TRUE ~ "other"
+               )
+     ) |>
+    arrange(mix_description)
+
+# variables present (used by time-series sections below)
+vars <- unique(combined_output$variable)
+
+```
+
+**Selecting Representative Sites**
+
+Next we select representative sites based on their productivity. We use AGB in the 100% woody scenario as an indicator of productivity. We select sites that are near the 15th, 50th, and 85th percentiles of AGB and categorize them as low, medium, and high productivity.
+
+```{r select-representative-sites}
+agb_site <- combined_output |>
+  filter(mix_description == "100% woody", variable == "AGB") |>
+  group_by(site_id) |>
+  summarise(agb_mean = mean(value_combined), .groups = "drop")
+
+if (nrow(agb_site) >= 3) {
+  qs_agb <- quantile(
+    agb_site$agb_mean,
+    probs = c(0.15, 0.50, 0.85)
+  )
+  analysis_sites <- purrr::map_chr(qs_agb, function(qv) {
+    agb_site |>
+      mutate(diff = abs(agb_mean - qv)) |>
+      slice_min(diff, n = 1, with_ties = FALSE) |>
+      pull(site_id)
+  }) |> unique()
+
+  if (length(analysis_sites) != 3) {
+    PEcAn.logger::logger.error("Representative sites not found for all quantiles")
+  }
+  site_map <- tibble(
+    site_id = analysis_sites,
+    agb_class = factor(c("low_agb", "med_agb", "high_agb"),
+                       levels = c("low_agb", "med_agb", "high_agb"))
+  )
+} else {
+  PEcAn.logger::logger.severe("Looks like something went wrong", 
+  "There are only", nrow(agb_site), " sites with AGB data. ")
+}
+
+# join and relabel classes for plotting (use human-friendly labels)
+output_representative_sites <- site_map |>
+  left_join(combined_output, by = "site_id") |>
+  mutate(
+    agb_class = factor(
+      agb_class,
+      levels = c("low_agb", "med_agb", "high_agb"),
+      labels = c("low AGB site", "med AGB site", "high AGB site")
+    )
+  )
+```
+
+
+### Summary Statistics
+
+<!-- 
+TODO add initial conditions to table
+-->
+
+```{r summary-table}
+summary_stats <- combined_output |>
+  filter(year(datetime) == max(year(datetime))) |>
+  group_by(variable, mix_description, mix_type) |>
+  summarise(
+    mean = mean(value_combined),
+    sd = sd(value_combined),
+    .groups = "drop"
+  ) |>
+  mutate(
+    # format as "mean (sd)" with one decimal place
+    val = sprintf("%.1f (%.1f)", mean, sd)
+  ) |>
+  select(-mean, -sd) |>
+  tidyr::pivot_wider(
+    id_cols = c(mix_description, mix_type),
+    names_from = variable,
+    values_from = val
+  )
+
+# TODO future iterations, don't assume columns;
+# use glue to construct dynamically
+knitr::kable(
+  summary_stats,
+  col.names = c("Mixture", "Type", "AGB", "SOC"),
+  caption = "Summary statistics (mean and standard deviation) for carbon pools by mixture type."
+)
+```
+
+### Carbon Pool Sizes For Different Mixture Types
+
+What we expect to see here:
+
+- Discrete mixtures: Carbon pools scale approximately as the fractional (area) weighted average of the two monocultures.
+- Overlap mixtures: Pools are dominated by the woody monoculture plus a modest incremental contribution from the annual component.
+<!-- 
+TODO: compare difference from t0 and b/w woody and annual in time series plots
+If annual monoculture SOC < woody monoculture SOC, then should addition of herbacious cover reduce SOC relative to woody monoculture?
+-->
+
+```{r carbon-pools}
+# Ensemble-level end-of-simulation medians (per ensemble) for absolute pool sizes
+last_dt <- max(combined_output$datetime)
+last_year <- lubridate::year(last_dt)
+
+# Final-time values per (site x ensemble)
+combined_output_final_site_ens <- combined_output |>
+  filter(datetime == last_dt) |>
+  group_by(variable, mix_description, mix_type, site_id, ensemble_id) |>
+  summarise(
+    value = median(value_combined),
+    .groups = "drop"
+  )
+
+# Points: site-level means across ensembles at final time
+combined_output_site_mean <- combined_output_final_site_ens |>
+  group_by(variable, mix_description, mix_type, site_id) |>
+  summarise(
+    site_mean = mean(value),
+    .groups = "drop"
+  )
+
+# Error bars + median dot: summarise across sites (using site-level means)
+combined_output_summaries <- combined_output_site_mean |>
+  group_by(variable, mix_description, mix_type) |>
+  summarise(
+    q25 = quantile(site_mean, 0.25),
+    q50 = quantile(site_mean, 0.5),
+    q75 = quantile(site_mean, 0.75),
+    .groups = "drop"
+  )
+
+    # Plot: ensemble points (jitter) + IQR + median; facet by variable
+    ggplot() +
+      geom_jitter(
+        data = combined_output_site_mean,
+        aes(x = mix_description, y = site_mean, color = mix_type),
+        width = 0.15, alpha = 0.5, size = 1.2
+      ) +
+      geom_errorbar(
+        data = combined_output_summaries,
+        aes(x = mix_description, ymin = q25, ymax = q75, color = mix_type),
+        width = 0.4, linewidth = 0.6
+      ) +
+      geom_point(
+        data = combined_output_summaries,
+        aes(x = mix_description, y = q50, color = mix_type),
+        size = 2
+      ) +
+      facet_wrap(~ variable, scales = "free_y", nrow = 1, labeller = mix_labeller) +  # use mix_labeller
+      scale_x_discrete(labels = mix_label_fn) +                                       # wrap x labels into two lines
+      scale_color_manual(values = pal_mix) +
+      labs(
+        title = paste0("End-Year Carbon Pool Sizes (", last_year, ")"),
+        subtitle = "Points = site means; bars = IQR; dot = median",
+        x = "Mixture",
+        y = expression("Carbon Pool Size (" * kg ~ C ~ m^-2 * ")"),
+        color = "Type"
+      ) +
+      base_theme +
+      theme(axis.text.x = element_text(angle = 35, hjust = 1))
+ 
+```
+
+### Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)
+
+These plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Because we are considering the healthy soils practice of adding a woody component like a hedgerow to an annual cropping system, we use annual monoculture as the point of comparison.
+
+```{r effect-size-probabilistic}
+# Compute ensemble-level annual medians (per ensemble) so deltas are calculated within each ensemble
+annual_stats_ens <- combined_output_final_site_ens
+
+# Mixture ensemble results (exclude pure monocultures)
+mix_ens <- combined_output_final_site_ens |>
+    filter(!(mix_description %in% c("100% annual", "100% woody"))) |>
+    select(variable, mix_description, mix_type, site_id, ensemble_id, value)
+
+# Baseline per ensemble for monocultures (annual & woody)
+base_ens <- annual_stats_ens |>
+    filter(mix_description %in% c("100% annual", "100% woody")) |>
+    select(variable, mix_description, site_id, ensemble_id, baseline = value)
+
+# Join ensemble-specific baselines to mixtures so deltas are ensemble-specific
+delta_ens <- mix_ens |>
+    left_join(
+        base_ens |>
+            filter(mix_description == "100% annual") |>
+            select(variable, site_id, ensemble_id, annual_baseline = baseline),
+        by = c("variable", "site_id", "ensemble_id")
+    ) |>
+    left_join(
+        base_ens |>
+            filter(mix_description == "100% woody") |>
+            select(variable, site_id, ensemble_id, woody_baseline = baseline),
+        by = c("variable", "site_id", "ensemble_id")
+    ) |>
+    mutate(
+        delta_vs_annual = value - annual_baseline,
+        delta_vs_woody  = value - woody_baseline
+    ) |>
+    pivot_longer(
+        cols = starts_with("delta_vs"),
+        names_to = "baseline_ref",
+        values_to = "delta"
+    ) |>
+    mutate(
+        baseline_ref = factor(
+            baseline_ref,
+            levels = c("delta_vs_annual", "delta_vs_woody"),
+            labels = c("Δ vs Annual monoculture", "Δ vs Woody monoculture")
+        )
+    )
+
+# Points: site-level medians (across ensembles)
+delta_site_median <- delta_ens |>
+    group_by(variable, mix_description, baseline_ref, site_id, mix_type) |>
+    summarise(site_median = median(delta), .groups = "drop")
+
+# Error bars + median dot: across-site summaries
+summary_delta <- delta_site_median |>
+    group_by(variable, mix_description, baseline_ref, mix_type) |>
+    summarise(
+        q25 = quantile(site_median, 0.25),
+        q50 = median(site_median, 0.5),
+        q75 = quantile(site_median, 0.75),
+        .groups = "drop"
+    )
+
+# Plot only relative to annual monoculture, reflecting HSP
+summary_delta_annual <- summary_delta |>
+    filter(baseline_ref == "Δ vs Annual monoculture")
+
+delta_site_median_annual <- delta_site_median |>
+    filter(baseline_ref == "Δ vs Annual monoculture")
+
+# Jittered ensemble points + IQR bars + median points
+ggplot() +
+    geom_hline(yintercept = 0, color = "grey60", linewidth = .4) +
+    geom_jitter(
+        data = delta_site_median_annual,
+        aes(x = mix_description, y = site_median, color = mix_type),
+        width = 0.15, height = 0, alpha = 0.5, size = 1.2
+    ) +
+    geom_errorbar(
+        data = summary_delta_annual,
+        aes(x = mix_description, ymin = q25, ymax = q75, color = mix_type),
+        width = 0.4, linewidth = 0.5
+    ) +
+    geom_point(
+        data = summary_delta_annual,
+        aes(x = mix_description, y = q50, color = mix_type),
+        size = 0.9
+    ) +
+    facet_wrap(variable ~ baseline_ref, scales = "free_y", nrow = 1, labeller = mix_labeller) +
+    scale_x_discrete(labels = mix_label_fn) +
+    scale_color_manual(values = pal_mix) +
+    labs(
+        title = paste0("Effect Size in ", last_year),
+        x = "Mixture",
+        y = expression(Delta ~ "(Mixture - Baseline) (" * kg ~ C ~ m^-2 * ")"),
+        color = "Type"
+    ) +
+    base_theme +
+    theme(
+        axis.text.x = element_text(angle = 35, hjust = 1),
+        panel.spacing.y = unit(1.5, "lines") # <-- increase vertical spacing between facet rows
+    )
+```
+
+
+## Other Approaches Considered
+
+We evaluated several alternative approaches for representing mixed cropping systems:
+
+1. Fractional coverage approach (mosaic / tiling)
+     Each PFT is simulated separately and then combined by fractional area weighting (Li & Arora, 2011). This is the "Discrete" method described above (@eq-discrete). 
+2. Composite PFT approach
+     A new parameter set is defined to represent the mixture as a single “composite” PFT (e.g., DayCent: Parton et al., 1998).  
+3. Vegetation demography approach 
+     Individual or cohort based models explicitly represent competition for light and resources among PFTs, as well as disturbance and successional dynamics (Fisher et al., 2018).
+
+Limitations:
+
+-	Composite PFTs: By lumping mixture components into a single parameterization prevents explicit evaluation of the incremental contribution of individual PFTs - it would be harder to compare an orchard monoculture to an orchard+ground cover system. It can also bias estimates of pools and fluxes relative to the weighted mixture model (Li & Arora, 2011).
+- Fractional weighting: While more realistic, this approach requires careful treatment of long-lived pools (e.g., soil organic carbon, woody biomass). If the PFTs share a common soil, raw stocks cannot be summed without double-counting; instead, $\Delta$ stocks relative to a common baseline (or shared-pool formulations) should be aggregated - as is done in the "Overlap" method above (@eq-overlap).
+-	Demography models provide mechanistic representation of competition but impose higher computational costs and require additional data and parameterizations (Fisher et al., 2018; Fisher & Koven, 2020).
+
+
+## References
+
+CARB (2022). Draft 2022 Scoping Plan for Achieving Carbon Neutrality. https://ww2.arb.ca.gov/sites/default/files/2022-09/2022-draft-sp-appendix-b-draft-ea-recirc.pdf
+
+Fisher and Koven, 2020. Perspectives on the future of land surface models and the challenges of representing complex terrestrial systems. JAMES 12, e2018MS001453. https://doi.org/10.1029/2018MS001453
+
+Fisher et al., 2018. Vegetation demographics in Earth system models: a review of progress and priorities. Global Change Biol. 24, 35–54. https://doi.org/10.1111/gcb.13910
+
+Li, R., Arora, V.K., 2011. Effect of mosaic representation of vegetation in land surface schemes on simulated energy and carbon balances. https://doi.org/10.5194/bgd-8-5849-2011
+
+<!--
+---
+
+# <span style="color:grey">Below is Draft Material</span>
+
+--- 
+
+## <span style="color:grey">Nothing to see here</span>
+
+---
+
+## These aren't as interesting.
+
+Except that the lines are wiggly
+
+### Time Series (All Sites)
+
+```{r}
+for (v in vars) {
+    # create a stable plotting group so ensemble lines stay continuous
+    dv <- combined_output |>
+        filter(variable == v) |>
+        mutate(plot_group = interaction(ensemble_id, mix_description, scenario, site_id, drop = TRUE))
+
+    qv <- dv |>
+        group_by(variable, mix_description, datetime) |>
+        summarise(
+            q25 = quantile(value_combined, 0.25),
+            q50 = quantile(value_combined, 0.50),
+            q75 = quantile(value_combined, 0.75),
+            .groups = "drop"
+        )
+
+    p <- ggplot() +
+        geom_line(
+            data = dv,
+            aes(datetime, value_combined, group = plot_group, color = mix_type),
+            alpha = .25, linewidth = .35
+        ) +
+        geom_ribbon(
+            data = qv,
+            aes(datetime, ymin = q25, ymax = q75, group = mix_description),
+            inherit.aes = FALSE, alpha = 0.25, fill = "black",
+            linetype = "dashed"
+        ) +
+        geom_line(
+            data = qv,
+            aes(datetime, q50, group = mix_description),
+            color = "black", linewidth = .5
+        ) +
+        facet_wrap(~mix_description, 
+                   nrow = 1, 
+                   labeller = mix_labeller, 
+                   scales = "free_y") +
+        year_scale_dt +
+        scale_color_manual(values = pal_mix) +
+        labs(
+            title = paste("Time Series (Median & IQR):", v),
+            subtitle = "Lines=ensembles; black=median; ribbon=IQR",
+            x = NULL, y = bquote("Carbon Pool Size (" * kg ~ C ~ m^-2 * ")"), 
+            color = "Category"
+        ) +
+        base_theme
+    print(p)
+}
+```
+
+### Time Series (Representative Sites)
+
+Here we focus on representative sites for each mixture.
+
+We selected 3 sites that represent low, medium, and high productivity (AGB) defined as the 15th, 50th, and 85th percentiles of AGB.
+
+```{r}
+for (v in vars) {
+    dv <- output_representative_sites |>
+        filter(variable == v) |>
+        # ensure ensemble lines are connected within each (site x mix) panel
+        mutate(plot_group = interaction(ensemble_id, mix_description, site_id, drop = TRUE))
+
+    qv <- dv |>
+        group_by(variable, agb_class, mix_description, datetime) |>
+        summarise(
+            q25 = quantile(value_combined, 0.25),
+            q50 = quantile(value_combined, 0.50),
+            q75 = quantile(value_combined, 0.75),
+            .groups = "drop"
+        )
+
+    p <- ggplot() +
+        geom_line(
+            data = dv,
+            aes(datetime, value_combined,
+                group = plot_group, color = mix_type
+            ),
+            alpha = .25, linewidth = .35
+        ) +
+        geom_ribbon(
+            data = qv,
+            aes(datetime, ymin = q25, ymax = q75, group = interaction(agb_class, mix_description)),
+            inherit.aes = FALSE, alpha = 0.25, fill = "black",
+            linetype = "dashed"
+        ) +
+        geom_line(
+            data = qv,
+            aes(datetime, q50, group = interaction(agb_class, mix_description)),
+            color = "black", linewidth = .6
+        ) +
+        # Layout: one row per productivity class (low/med/high AGB), one column per mix_description
+        facet_grid(agb_class ~ mix_description, labeller = mix_labeller, scales = "free_y") +
+        year_scale_dt +
+        scale_color_manual(values = pal_mix) +
+        labs(
+            title = paste("Representative Sites:", v),
+            subtitle = "Lines = ensemble members; black = median; ribbon = IQR (by AGB class)",
+            x = NULL, y = "Carbon Pool Size (kg C m-2)", color = "Category"
+        ) +
+        base_theme
+    print(p)
+}
+```
+
+-->
+
+## Appendix
+
+### Healthy Soils Practices and Model Representation
+
+| Agronomic Practice | Model Representation | Expected GHG Impact on State GHG Inventory | Expected Adoption (CARB 2022 Scoping Plan) | Priority |
+| :---- | :---- | :---- | :---- | :---- |
+| Cover Crops | Planting/harvest like commodity; PFT/mixture params. | High | High | High |
+| Non-Crop Carbon Amendments (manure/compost) | Add surface C & organic N (low C:N litter analog). | High | High | High |
+| N Fertilization | Increase soil inorganic N pools. | High | High | High |
+| Transition to Certified Organic | Composite of shifts (fertility, amendments, tillage). | High | High | High |
+| No-till / Reduced till | Lower decomposition pulses (freq & magnitude). | High | Medium | High |
+| Polycultures / Mixtures | Independent PFT runs; combine by fractional contribution. | Medium | Medium | Medium |
+| (Water management placeholder) | Increase soil water content. | High |  |  |
+| Annual → Perennial | Change PFT; partial biomass retained. | High | Low | Low |
+| Agroforestry / Woody Buffers | Independent woody runs; spatial aggregation. | High | Low | Low |
+
+: Healthy Soils Program practices, model representation, and priority for implementation in SIPNET. {#tbl-hsp}
