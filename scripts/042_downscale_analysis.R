@@ -12,7 +12,7 @@ spec_table <- tibble::tibble(spec = names(downscale_output_list)) |>
   tidyr::separate(spec, into = c("pft_key", "model_output"), sep = "::", remove = FALSE) |>
   dplyr::mutate(
     pft = dplyr::case_when(
-      pft_key == "woody"  ~ "woody perennial crop",
+      pft_key == "woody" ~ "woody perennial crop",
       pft_key == "annual" ~ "annual crop",
       TRUE ~ pft_key
     )

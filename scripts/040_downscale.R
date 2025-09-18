@@ -219,8 +219,7 @@ downscale_model_output <- function(date,
   #     pred_covariates = pred_covariates,
   #     covariate_names = covariate_names, # already defined earlier in 040
   #     nodesize = 1,
-  #     ntree = 1000,
-  #     seed = 123
+  #     ntree = 1000
   #   )
   # } else {
   ## END HACK FOR SMALL-N
@@ -229,8 +228,7 @@ downscale_model_output <- function(date,
     PEcAnAssimSequential::ensemble_downscale(
       ensemble_data = filtered_ens_data,
       site_coords   = train_site_coords,
-      covariates    = pred_covariates,
-      seed          = 123
+      covariates    = pred_covariates
     )
   # } ## REMOVE WITH HACK FOR SMALL-N
   if (is.null(downscale_output)) {
@@ -253,6 +251,28 @@ for (pool in outputs_to_extract) {
     # train_ens: ensemble data filtered by PFT
     train_ens <- ensemble_data |>
       dplyr::filter(pft == pft_i & variable == pool)
+
+    # Skip empty slices early
+    if (nrow(train_ens) == 0) {
+      PEcAn.logger::logger.warn("No ensemble rows for ", pft_i, "::", pool, " <U+2014> skipping")
+      next
+    }
+
+    # Determine per-slice end date and warn if ensembles disagree
+    slice_end_date <- as.Date(max(train_ens$datetime))
+    end_by_ens <- train_ens |>
+      dplyr::group_by(ensemble) |>
+      dplyr::summarise(last_date = max(lubridate::as_date(datetime)), .groups = "drop")
+    if (dplyr::n_distinct(end_by_ens$last_date) > 1) {
+      PEcAn.logger::logger.warn(
+        "End dates vary across ensembles for ", pft_i, "::", pool,
+        "; using slice_end_date=", as.character(slice_end_date)
+      )
+    } else {
+      PEcAn.logger::logger.info(
+        "Using slice_end_date=", as.character(slice_end_date), " for ", pft_i, "::", pool
+      )
+    }
     # train_pts: design points filtered by PFT
     # should be the same as
     train_pts <- train_ens |>
@@ -270,8 +290,16 @@ for (pool in outputs_to_extract) {
 
     # prediction covariates: either full set for that PFT or sampled subset (dev)
     if (PRODUCTION) {
+      # Ensure design point covariates are included for training join
+      dp_pft <- design_covariates_unscaled |>
+        dplyr::filter(site_id %in% (design_points |>
+          dplyr::filter(pft == pft_i) |>
+          dplyr::pull(site_id)))
+
       pred_covs <- covariates_full |>
-        dplyr::filter(site_id %in% (pft_site_ids |> dplyr::filter(pft == pft_i) |> dplyr::pull(site_id)))
+        dplyr::filter(site_id %in% (pft_site_ids |> dplyr::filter(pft == pft_i) |> dplyr::pull(site_id))) |>
+        dplyr::bind_rows(dp_pft) |>
+        dplyr::distinct(site_id, .keep_all = TRUE)
     } else {
       dp_pft <- design_covariates_unscaled |>
         dplyr::filter(site_id %in% (design_points |>
@@ -292,15 +320,31 @@ for (pool in outputs_to_extract) {
 
       pred_covs <- dplyr::bind_rows(sampled, dp_pft)
 
-      # ensure prediction covariates have at least one site
+      # ensure prediction covariates have at least one site (development mode)
       if (nrow(pred_covs) == 0) {
-        PEcAn.logger::logger.warn("No prediction covariates for PFT:", pft_i, "pool:", pool)
+        PEcAn.logger::logger.warn("No prediction covariates for PFT:", pft_i, " pool:", pool, " <U+2014> skipping")
         next
       }
     }
 
+    # Guard for empty prediction covariates (both development mode and production)
+    if (nrow(pred_covs) == 0) {
+      PEcAn.logger::logger.warn("No prediction covariates for PFT:", pft_i, " pool:", pool, " <U+2014> skipping")
+      next
+    }
+
+    # Sanity: ensure all training site_ids exist in prediction covariates
+    missing_train_cov <- setdiff(unique(train_pts$site_id), pred_covs$site_id)
+    if (length(missing_train_cov) > 0) {
+      PEcAn.logger::logger.error(
+        "Missing covariates for training site_ids (", length(missing_train_cov), ") in PFT ", pft_i,
+        ": ", paste(utils::head(missing_train_cov, 10), collapse = ", "),
+        if (length(missing_train_cov) > 10) " ..." else ""
+      )
+    }
+
     result <- downscale_model_output(
-      date = end_date,
+      date = slice_end_date,
       model_output = pool,
       train_ensemble_data = train_ens,
       train_site_coords = train_pts,
@@ -366,12 +410,6 @@ PEcAn.logger::logger.info("Median downscaling model metrics:")
 dplyr::bind_rows(median_metrics, .id = "model_output") |>
   knitr::kable()
 
-#### ---- Aggregate to County Level ---- ####
-#### TODO Split into separate script?
-
-PEcAn.logger::logger.info("Aggregating to County Level")
-
-
 if (!PRODUCTION) {
   # For testing, use a subset of fields
   # could be even faster if we queried from gpkg:
@@ -405,85 +443,9 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
   # Calculate total Mg per field: c_density_Mg_ha * area_ha
   dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha)
 
-### TODO Debug and catch if it appears again
-na_summary <- downscale_preds |>
-  dplyr::summarise(dplyr::across(dplyr::everything(), ~ sum(is.na(.x)))) |>
-  tidyr::pivot_longer(dplyr::everything(), names_to = "column", values_to = "n_na") |>
-  dplyr::filter(n_na > 0)
-
-if (nrow(na_summary) > 0) {
-  ## concise log message
-  PEcAn.logger::logger.warn(
-    "YOU NEED TO DEBUG THIS!!!\n\n",
-    "NA values detected in `downscale_preds`:\n"
-  )
-  knitr::kable(na_summary, format = "simple")
-  # remove all rows with NA values
-  downscale_preds <- tidyr::drop_na(downscale_preds)
-}
-
-ens_county_preds <- downscale_preds |>
-  # Now aggregate to get county level totals for each pool x ensemble
-  dplyr::group_by(model_output, pft, county, ensemble) |>
-  dplyr::summarize(
-    n = dplyr::n(),
-    total_c_Mg = sum(total_c_Mg), # total Mg C per county
-    total_ha = sum(area_ha),
-    .groups = "drop_last"
-  ) |>
-  dplyr::ungroup() |>
-  # counties with no fields will result in NA below
-  dplyr::filter(total_ha > 0) |>
-  dplyr::mutate(
-    total_c_Tg = PEcAn.utils::ud_convert(total_c_Mg, "Mg", "Tg"),
-    c_density_Mg_ha = total_c_Mg / total_ha
-  ) |>
-  dplyr::arrange(model_output, pft, county, ensemble)
-
-ens_members_by_county <- ens_county_preds |>
-  dplyr::group_by(model_output, pft, county) |>
-  dplyr::summarize(n_vals = dplyr::n_distinct(total_c_Mg), .groups = "drop")
-
-if (all(ens_members_by_county$n_vals == length(ensemble_ids))) {
-  PEcAn.logger::logger.info("All counties have the correct number of ensemble members: (", length(ensemble_ids), ")")
-} else {
-  z <- ens_members_by_county |>
-    dplyr::group_by(county) |>
-    dplyr::summarise(n = mean(n_vals))
-  PEcAn.logger::logger.error(
-    sum(z$n != length(ensemble_ids)) / length(z$n),
-    "counties have the wrong number of ensemble members after downscaling.",
-    "Check ens_county_preds object."
-  )
-}
-
-county_summaries <- ens_county_preds |>
-  dplyr::group_by(model_output, pft, county) |>
-  dplyr::summarize(
-    # Number of fields in county should be same for each ensemble member
-    n = max(n),
-    mean_total_c_Tg = mean(total_c_Tg),
-    sd_total_c_Tg = sd(total_c_Tg),
-    mean_c_density_Mg_ha = mean(c_density_Mg_ha),
-    sd_c_density_Mg_ha = sd(c_density_Mg_ha),
-    .groups = "drop"
-  ) |>
-  dplyr::mutate(
-    # Only save 3 significant digits
-    dplyr::across(
-      .cols = c(mean_total_c_Tg, sd_total_c_Tg, mean_c_density_Mg_ha, sd_c_density_Mg_ha),
-      .fns = ~ signif(.x, 3)
-    )
-  )
+## Write out downscaled predictions
 
 readr::write_csv(
-  county_summaries,
-  file.path(model_outdir, "county_summaries.csv")
-)
-PEcAn.logger::logger.info("County summaries written to", file.path(model_outdir, "county_summaries.csv"))
-
-PEcAn.logger::logger.info(
-  rep("<U+0001F31F><U+0001F31F><U+0001F31F>  ", 5), "\n\n",
-  "Finished aggregation to County level", "\n\n",
-  rep("<U+0001F31F><U+0001F31F><U+0001F31F>  ", 5)
+  downscale_preds,
+  file.path(model_outdir, "downscaled_preds.csv")
 )
