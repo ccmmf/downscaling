@@ -1,3 +1,5 @@
+[![](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+
 # Downscaling Workflow
 
 ## Overview
@@ -15,17 +17,9 @@ The downscaling workflow predicts carbon pools (SOC and AGB) for California crop
 
 - **Anchor sites:** Fields with ground truth validation data (e.g., Ameriflux sites)
 - **Design points:** Representative fields selected for SIPNET simulation based on environmental clustering
-- **Downscaling:** Process of extending predictions from design points to all California crop fields
-
-
-
-## Documentation
-
-- [Detailed Workflow Documentation](docs/workflow_documentation.qmd) - Step-by-step description of methods
-- [Results and Analysis](reports/downscaling_results.qmd) - Visualizations and interpretation
+- **Downscaling:** Process of extending predictions from design points to all California crop fields.
 
 ## Environment and Setup
-
 
 ### Key Configuration Files
 
@@ -102,3 +96,61 @@ qsub \
   -e logs/03.err \
   -b y Rscript downscale/999_workflow_step.R
 ```
+
+### Building Documentation Site with Quarto
+
+**Preview**
+
+```bash
+quarto preview
+```
+
+**Build**
+
+```bash
+quarto render
+```
+
+#### Publish to GitHub Pages (gh-pages)
+
+These steps will publish to https://ccmmf.github.io/downscaling.
+
+This does not commit compiled HTML to `main`. Instead, Quarto pushes the built site to a separate `gh-pages` branch.
+
+One-time setup in GitHub:
+1. Settings → Pages → Set Source to “Deploy from a branch”.
+2. Select Branch: `gh-pages` and Folder: `/ (root)`.
+
+Publish from your machine after rendering:
+
+```bash
+# Build site locally (runs R code and embeds results)
+quarto render
+
+# Publish the built _site/ to gh-pages
+quarto publish gh-pages
+```
+
+### Adding Content
+
+- Add any `.qmd` or `.md` file
+- Add links in `_quarto.yml`
+  - under `project.render`
+  - in the appropriate section under `website.navbar.left`.
+
+
+#### Notes on Quarto Configuration
+
+- **Global HTML Settings:** 
+  - `self-contained: true`, `embed-resources: true`, `df-print: paged`, `toc: true`.
+
+- **Execution:**
+  - Uses `freeze: auto` to cache outputs; re-executes only when inputs change.
+  - Some pages (e.g., `reports/downscaling_results.qmd`) depend on paths in `000-config.R`. Build locally where paths exist.
+
+- **Configuration:**
+  - Quarto settings are in `_quarto.yml` (generates standalone HTML).
+  - Does not use GitHub Actions due to reliance on large local datasets.
+
+- **Home Page:**
+  - Defined in `index.qmd` (includes this `README.md`).

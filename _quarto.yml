@@ -1,0 +1,56 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    # Explicit pages to render
+    - index.qmd
+    - README.md
+    - reports/downscaling_results.qmd
+    - reports/design_points_analysis.qmd
+    - reports/variable_importance.qmd
+    - docs/workflow_documentation.md
+    - docs/references.md
+    - docs/mixed_system_prototype.qmd
+
+website:
+  title: "Downscaling"
+  search: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Reports
+        menu:
+          - href: reports/downscaling_results.qmd
+            text: Downscaling Results
+          - href: reports/design_points_analysis.qmd
+            text: Design Points Analysis
+          - href: reports/variable_importance.qmd
+            text: Variable Importance
+          - href: docs/references.md
+            text: References
+      - text: Docs
+        menu:
+          - href: README.md
+            text: README
+          - href: docs/workflow_documentation.md
+            text: Workflow Documentation
+      - text: Examples
+        menu:
+          - href: docs/mixed_system_prototype.qmd
+            text: Mixed System Prototype
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    self-contained: false
+    df-print: paged
+
+# Freeze results so CI can publish without re-executing heavy code.
+execute:
+  echo: false
+  freeze: auto
+
+author: "David LeBauer"
+date: today
