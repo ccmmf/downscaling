@@ -26,9 +26,10 @@ ggpairs_plot <- sites_clustered |>
     mapping = aes(color = as.factor(cluster), alpha = 0.8)
   ) +
   theme_minimal()
-ggsave(ggpairs_plot,
-  filename = "figures/cluster_pairs.png",
-  dpi = 300, width = 10, height = 10, units = "in"
+ggsave_optimized(
+  "figures/cluster_pairs.webp",
+  plot = ggpairs_plot,
+  width = 10, height = 10, units = "in", dpi = 96
 )
 
 # scale and reshape to long for plotting
@@ -52,7 +53,7 @@ cluster_plot <- ggplot(
   labs(x = "Variable", y = "Normalized Value") +
   theme_minimal()
 
-ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300, bg = "white")
+ggsave_optimized("figures/cluster_plot.svg", plot = cluster_plot)
 
 #'
 #' #### Stratification by Crops and Climate Regions
@@ -130,4 +131,4 @@ design_pt_plot <- ggplot() +
     size = 2, stat = "sf_coordinates"
   )
 
-ggsave(design_pt_plot, filename = "figures/design_points.png", dpi = 300, bg = "white")
+ggsave_optimized("figures/design_points.webp", plot = design_pt_plot, width = 10, height = 6, units = "in", dpi = 96, bg = "white")
