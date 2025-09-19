@@ -17,10 +17,20 @@ PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 
 #----- load ensemble data ----------------------------------------------------
 ensemble_csv <- file.path(model_outdir, "ensemble_output.csv")
+timer_read_ensemble <- step_timer()
 ensemble_data <- readr::read_csv(ensemble_csv) |>
   dplyr::rename(
     ensemble = parameter # parameter is EFI std name for ensemble
   )
+PEcAn.logger::logger.info(
+  "Loaded ensemble data:", nrow(ensemble_data), "rows;",
+  dplyr::n_distinct(ensemble_data$site_id), "unique site_ids;",
+  dplyr::n_distinct(ensemble_data$ensemble), "ensembles;",
+  dplyr::n_distinct(ensemble_data$pft), "PFTs;",
+  dplyr::n_distinct(ensemble_data$variable), "variables (carbon pools) in file; load_time_s=",
+  round(step_elapsed(timer_read_ensemble), 2)
+)
+log_mem("After loading ensemble data :: ")
 
 ensemble_ids <- ensemble_data |>
   dplyr::pull(ensemble) |>
@@ -54,13 +64,18 @@ if (length(pfts) == 0) {
 }
 
 #--- load site covariates
-covariates_csv <- file.path(data_dir, "site_covariates_plus_dp_patch.csv")
-# covariates_csv <- file.path(data_dir, "site_covariates.csv")
+covariates_csv <- file.path(data_dir, "site_covariates.csv")
+timer_read_cov <- step_timer()
 covariates <- readr::read_csv(covariates_csv) |>
   dplyr::select(
     site_id, where(is.numeric),
     -climregion_id
   )
+PEcAn.logger::logger.info(
+  "Loaded covariates:", nrow(covariates), "sites x", ncol(covariates) - 1, "numeric predictors; load_time_s=",
+  round(step_elapsed(timer_read_cov), 2)
+)
+log_mem("After loading covariates :: ")
 
 covariate_names <- names(covariates |>
   dplyr::select(where(is.numeric)))
@@ -69,6 +84,72 @@ PEcAn.logger::logger.info(
   "Downscaling will use these covariates:\n\n",
   paste(covariate_names, collapse = ", ")
 )
+
+# ---- variable-importance helpers -------------------------------------------
+safe_sanitize <- function(x) {
+  gsub("[^A-Za-z0-9]+", "_", x)
+}
+
+extract_vi <- function(model) {
+  # Supports randomForest and ranger models
+  if (inherits(model, "randomForest")) {
+    vi <- tryCatch(randomForest::importance(model), error = function(e) NULL)
+    if (is.null(vi)) {
+      return(NULL)
+    }
+    if ("%IncMSE" %in% colnames(vi)) as.numeric(vi[, "%IncMSE"]) else as.numeric(vi[, 1])
+  } else if (inherits(model, "ranger")) {
+    vi <- tryCatch(model$variable.importance, error = function(e) NULL)
+    if (is.null(vi)) {
+      return(NULL)
+    }
+    as.numeric(vi)
+  } else {
+    NULL
+  }
+}
+
+extract_vi_names <- function(model) {
+  if (inherits(model, "randomForest")) {
+    vi <- tryCatch(randomForest::importance(model), error = function(e) NULL)
+    if (is.null(vi)) {
+      return(NULL)
+    }
+    rownames(vi)
+  } else if (inherits(model, "ranger")) {
+    nms <- tryCatch(names(model$variable.importance), error = function(e) NULL)
+    nms
+  } else {
+    NULL
+  }
+}
+
+extract_oob_r2 <- function(model, y_train = NULL) {
+  if (inherits(model, "randomForest")) {
+    if (!is.null(model$predicted) && !is.null(model$y)) {
+      y <- model$y
+      yhat <- model$predicted
+      if (length(y) == length(yhat) && stats::var(y) > 0) {
+        return(1 - sum((y - yhat)^2) / sum((y - mean(y))^2))
+      }
+    }
+    return(NA_real_)
+  }
+  if (inherits(model, "ranger")) {
+    mse_oob <- tryCatch(model$prediction.error, error = function(e) NA_real_)
+    if (!is.na(mse_oob)) {
+      if (is.null(y_train)) {
+        return(NA_real_)
+      }
+      v <- stats::var(y_train)
+      if (!is.finite(v) || v <= 0) {
+        return(NA_real_)
+      }
+      return(1 - mse_oob / v)
+    }
+  }
+  NA_real_
+}
 
 # ----define design points based on ensemble data-------------------------------
 # TODO: move this sanitization upstream to when ens data is created (030_extract_sipnet_output.R)
@@ -176,8 +257,14 @@ pft_site_ids <- ca_field_attributes |>
   dplyr::filter(pft %in% pfts) |>
   dplyr::distinct(site_id, pft)
 
-sites_info <- lapply(pft_site_ids, length)
-PEcAn.logger::logger.info("Sites per PFT:", paste(sites_info, collapse = ", "))
+sites_info <- pft_site_ids |>
+  dplyr::group_by(pft) |>
+  dplyr::summarise(n_sites = dplyr::n(), .groups = "drop")
+PEcAn.logger::logger.info(
+  "Sites per PFT:",
+  paste(paste0(sites_info$pft, "=", sites_info$n_sites), collapse = "; ")
+)
+log_mem("After computing sites per PFT :: ")
 
 #### Target sites: per-PFT site lists built above (pft_site_ids)
 
@@ -244,9 +331,21 @@ downscale_model_output <- function(date,
 # We downscale each carbon pool for both woody and annual PFTs,
 # predicting to the same target set for that PFT
 downscale_output_list <- list()
+delta_output_records <- list()
+training_sites_records <- list()
+combo_total <- length(outputs_to_extract) * length(pfts)
+combo_index <- 0L
+loop_global_timer <- step_timer()
 for (pool in outputs_to_extract) {
   for (pft_i in pfts) {
-    PEcAn.logger::logger.info("Starting downscaling for", pool, "(", pft_i, ")")
+    combo_index <- combo_index + 1L
+    iter_timer <- step_timer()
+    PEcAn.logger::logger.info(
+      sprintf(
+        "[Progress %d/%d] Starting downscaling for %s (%s) at %s",
+        combo_index, combo_total, pool, pft_i, ts_now()
+      )
+    )
 
     # train_ens: ensemble data filtered by PFT
     train_ens <- ensemble_data |>
@@ -274,38 +373,29 @@ for (pool in outputs_to_extract) {
       )
     }
     # train_pts: design points filtered by PFT
-    # should be the same as
     train_pts <- train_ens |>
       dplyr::select(site_id, lat, lon, pft) |>
       dplyr::distinct()
-    # train_pts <- design_points |>
-    #  dplyr::filter(pft == pft_i)
 
-    # Quick diagnostic: overlapping site counts
+    # Diagnostic: overlapping site counts
     n_train_ens_sites <- length(unique(train_ens$site_id))
     n_train_pts <- nrow(train_pts)
     PEcAn.logger::logger.info("Training sites: ensemble has", n_train_ens_sites, "site_ids; using", n_train_pts, "coords")
+    training_sites_records[[paste0(pft_i, "::", pool)]] <-
+      tibble::tibble(site_id = unique(train_pts$site_id), pft = pft_i, model_output = pool)
 
-    # NOTE: We skip strict pre-check; wrapper will attempt subset_ensemble then manual fallback.
-
-    # prediction covariates: either full set for that PFT or sampled subset (dev)
+    # Ensure design point covariates are included for training join
+    dp_pft <- design_covariates_unscaled |>
+      dplyr::filter(site_id %in% (design_points |>
+        dplyr::filter(pft == pft_i) |>
+        dplyr::pull(site_id)))
+    # prediction covariates: either full set for that PFT (prod) or sampled subset (dev)
     if (PRODUCTION) {
-      # Ensure design point covariates are included for training join
-      dp_pft <- design_covariates_unscaled |>
-        dplyr::filter(site_id %in% (design_points |>
-          dplyr::filter(pft == pft_i) |>
-          dplyr::pull(site_id)))
-
       pred_covs <- covariates_full |>
         dplyr::filter(site_id %in% (pft_site_ids |> dplyr::filter(pft == pft_i) |> dplyr::pull(site_id))) |>
         dplyr::bind_rows(dp_pft) |>
         dplyr::distinct(site_id, .keep_all = TRUE)
     } else {
-      dp_pft <- design_covariates_unscaled |>
-        dplyr::filter(site_id %in% (design_points |>
-          dplyr::filter(pft == pft_i) |>
-          dplyr::pull(site_id)))
-
       sample_pool <- covariates_full |>
         dplyr::filter(site_id %in% pft_site_ids[[pft_i]]) |>
         dplyr::anti_join(dp_pft, by = "site_id")
@@ -319,12 +409,6 @@ for (pool in outputs_to_extract) {
       }
 
       pred_covs <- dplyr::bind_rows(sampled, dp_pft)
-
-      # ensure prediction covariates have at least one site (development mode)
-      if (nrow(pred_covs) == 0) {
-        PEcAn.logger::logger.warn("No prediction covariates for PFT:", pft_i, " pool:", pool, " <U+2014> skipping")
-        next
-      }
     }
 
     # Guard for empty prediction covariates (both development mode and production)
@@ -343,6 +427,7 @@ for (pool in outputs_to_extract) {
       )
     }
 
+    call_timer <- step_timer()
     result <- downscale_model_output(
       date = slice_end_date,
       model_output = pool,
@@ -350,38 +435,128 @@ for (pool in outputs_to_extract) {
       train_site_coords = train_pts,
       pred_covariates = pred_covs
     )
+    PEcAn.logger::logger.info(
+      "Completed downscaling for", pool, "(", pft_i, ") in",
+      round(step_elapsed(call_timer), 2), "s; n_pred_sites=", nrow(pred_covs),
+      " n_train_sites=", n_train_pts
+    )
+    log_mem(paste0("After downscaling ", pool, " (", pft_i, ") :: "))
+    # Also compute start-date predictions to enable delta maps
+    start_obj <- downscale_model_output(
+      date = start_date,
+      model_output = pool,
+      train_ensemble_data = train_ens,
+      train_site_coords = train_pts,
+      pred_covariates = pred_covs
+    )
 
-    PEcAn.logger::logger.info("Downscaling complete for", pool, "(", pft_i, ")")
+    # Save models and VI metrics if available from downscale outputs
+    if (!is.null(result) && !is.null(result$model)) {
+      models_dir <- file.path(cache_dir, "models")
+      train_dir <- file.path(cache_dir, "training_data")
+      if (!dir.exists(models_dir)) dir.create(models_dir, recursive = TRUE, showWarnings = FALSE)
+      if (!dir.exists(train_dir)) dir.create(train_dir, recursive = TRUE, showWarnings = FALSE)
+
+      spec_key <- paste0(safe_sanitize(pft_i), "_", safe_sanitize(pool))
+      saveRDS(result$model, file = file.path(models_dir, paste0(spec_key, "_models.rds")))
+
+      if (!is.null(result$data) && !is.null(result$data$training)) {
+        tr_path <- file.path(train_dir, paste0(spec_key, "_training.csv"))
+        readr::write_csv(result$data$training, tr_path)
+      }
+
+      ens_labels <- names(result$predictions)
+      if (is.null(ens_labels)) ens_labels <- as.character(seq_along(result$predictions))
+      vi_rows <- list()
+      for (mi in seq_along(result$model)) {
+        mdl <- result$model[[mi]]
+        vi_vals <- extract_vi(mdl)
+        vi_nms <- extract_vi_names(mdl)
+        if (is.null(vi_vals) || is.null(vi_nms)) next
+        y_train <- NULL
+        if (!is.null(result$data) && !is.null(result$data$training)) {
+          tr <- result$data$training
+          if ("ensemble" %in% names(tr) && "prediction" %in% names(tr)) {
+            y_train <- tr$prediction[tr$ensemble == ens_labels[mi]]
+          }
+        } else if (!is.null(mdl$y)) {
+          y_train <- mdl$y
+        }
+        r2_oob <- extract_oob_r2(mdl, y_train)
+        vi_rows[[length(vi_rows) + 1L]] <- tibble::tibble(
+          pft = pft_i,
+          model_output = pool,
+          ensemble = ens_labels[mi],
+          predictor = vi_nms,
+          importance = as.numeric(vi_vals[seq_along(vi_nms)]),
+          oob_r2 = r2_oob
+        )
+      }
+      if (length(vi_rows) > 0) {
+        vi_tbl <- dplyr::bind_rows(vi_rows)
+        out_vi_per_ens <- file.path(model_outdir, paste0("vi_", spec_key, "_by_ensemble.csv"))
+        readr::write_csv(vi_tbl, out_vi_per_ens)
+      }
+    }
 
     # store using pft::pool names (e.g. "woody::AGB").
     downscale_output_list[[paste0(pft_i, "::", pool)]] <- result
+    if (!is.null(result) && !is.null(start_obj)) {
+      end_df <- purrr::map(
+        result$predictions,
+        ~ tibble::tibble(site_id = result$site_ids, prediction = .x)
+      ) |>
+        dplyr::bind_rows(.id = "ensemble") |>
+        dplyr::rename(end_pred = prediction)
+      start_df <- purrr::map(
+        start_obj$predictions,
+        ~ tibble::tibble(site_id = start_obj$site_ids, prediction = .x)
+      ) |>
+        dplyr::bind_rows(.id = "ensemble") |>
+        dplyr::rename(start_pred = prediction)
+      delta_df <- end_df |>
+        dplyr::inner_join(start_df, by = c("site_id", "ensemble")) |>
+        dplyr::mutate(delta_pred = end_pred - start_pred) |>
+        dplyr::left_join(ca_fields, by = "site_id") |>
+        dplyr::mutate(
+          pft = pft_i,
+          model_output = pool,
+          delta_c_density_Mg_ha = PEcAn.utils::ud_convert(delta_pred, "kg/m2", "Mg/ha"),
+          delta_total_c_Mg = delta_c_density_Mg_ha * area_ha
+        ) |>
+        dplyr::select(site_id, pft, ensemble, delta_c_density_Mg_ha, delta_total_c_Mg, area_ha, county, model_output)
+      delta_output_records[[paste0(pft_i, "::", pool)]] <- delta_df
+    }
+
+    # Incremental checkpoint (so production runs can be resumed)
+    if (!is.null(result)) {
+      tryCatch(
+        {
+          saveRDS(downscale_output_list, file = file.path(cache_dir, "downscale_partial.rds"))
+        },
+        error = function(e) {
+          PEcAn.logger::logger.warn("Failed to write partial checkpoint: ", conditionMessage(e))
+        }
+      )
+    }
+    PEcAn.logger::logger.info(
+      sprintf(
+        "[Progress %d/%d] Finished %s (%s); iter_time_s=%.2f; elapsed_total_s=%.2f",
+        combo_index, combo_total, pool, pft_i,
+        step_elapsed(iter_timer), step_elapsed(loop_global_timer)
+      )
+    )
   }
 }
 
 if (length(downscale_output_list) == 0) {
   PEcAn.logger::logger.severe("No downscale outputs produced")
 }
-PEcAn.logger::logger.info("Downscaling complete for all model outputs")
-
-## Save to make it easier to restart
-#### ---Create checkpoint for downstream analysis---####
-checkpoint_file <- file.path(cache_dir, "downscaling_output.RData")
-start_end <- system.time(
-  save(
-    downscale_output_list,
-    covariates,
-    design_points,
-    design_covariates,
-    ensemble_ids,
-    pft_site_ids,
-    file = checkpoint_file,
-    compress = FALSE
-  )
-)
 PEcAn.logger::logger.info(
-  "Downscaling output objects saved to", checkpoint_file,
-  "\nIt took", round(start_end[3] / 60, 2), "minutes"
+  "Downscaling loop complete; total_elapsed_s=",
+  round(step_elapsed(loop_global_timer), 2)
 )
+log_mem("Post primary downscaling loop :: ")
 
 PEcAn.logger::logger.info(
   paste0("<U+0001F31F><U+0001F31F><U+0001F31F> Finished downscaling <U+0001F31F><U+0001F31F><U+0001F31F>"),
@@ -392,7 +567,8 @@ PEcAn.logger::logger.info(
 ### --- Print Metrics for Each Ensemble Member ---####
 
 PEcAn.logger::logger.info("Downscaling model results for each ensemble member:")
-metrics <- lapply(downscale_output_list, PEcAnAssimSequential::downscale_metrics) # nolint
+metrics_timer <- step_timer()
+metrics <- lapply(downscale_output_list, PEcAnAssimSequential::downscale_metrics)
 
 median_metrics <- purrr::map(metrics, function(m) {
   m |>
@@ -409,6 +585,9 @@ median_metrics <- purrr::map(metrics, function(m) {
 PEcAn.logger::logger.info("Median downscaling model metrics:")
 dplyr::bind_rows(median_metrics, .id = "model_output") |>
   knitr::kable()
+PEcAn.logger::logger.info(
+  "Computed median metrics in", round(step_elapsed(metrics_timer), 2), "s"
+)
 
 if (!PRODUCTION) {
   # For testing, use a subset of fields
@@ -441,11 +620,214 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
   # Convert kg/m2 to Mg/ha using PEcAn.utils::ud_convert
   dplyr::mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
   # Calculate total Mg per field: c_density_Mg_ha * area_ha
-  dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha)
+  dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha) |>
+  dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output, -prediction)
+
+dp <- downscale_preds |>
+  dplyr::select(
+    site_id, pft, ensemble,
+    c_density_Mg_ha, total_c_Mg,
+    area_ha, county, model_output
+  )
+
+## --- Mixed scenario: orchard overlap with 50% grass on woody fields --- ##
+# Goal: add an additional PFT record "woody + annual" computed as:
+#   combined = woody_value + f_annual * (annual_end - annual_start)
+# where values are in kg/m2 and f_annual = 0.5.
+
+# Identify labels used for woody and annual PFTs
+# TODO use lookup table to map crops --> pfts and get labels
+woody_label <- pfts[grepl("woody", pfts, ignore.case = TRUE)]
+annual_label <- pfts[grepl("annual", pfts, ignore.case = TRUE)]
+
+if (is.na(woody_label) | is.na(annual_label)) {
+  PEcAn.logger::logger.warn("Cannot build mixed scenario: missing woody or annual PFT")
+} else {
+  PEcAn.logger::logger.info(
+    "Building mixed scenario 'woody + annual' using overlap (incremental) with 50% annual cover"
+  )
+}
+
+# Helper to tidy a downscale object to site_id/ensemble/prediction (kg/m2)
+tidy_downscale <- function(ds) {
+  purrr::map(
+    ds$predictions,
+    ~ tibble::tibble(site_id = ds$site_ids, prediction = .x)
+  ) |>
+    dplyr::bind_rows(.id = "ensemble")
+}
+
+# Determine target woody sites that exist in current dp
+target_woody_sites <- dp |>
+  dplyr::filter(pft == woody_label) |>
+  dplyr::distinct(site_id) |>
+  dplyr::pull(site_id)
+
+# If no woody sites present, skip
+if (length(target_woody_sites) == 0) {
+  PEcAn.logger::logger.warn("No woody sites found in downscaled predictions; skipping mixed scenario")
+} else {
+  # Build covariates for predicting annual onto woody sites, ensuring
+  # design-point covariates for the annual PFT are available for training join
+  dp_annual <- design_covariates_unscaled |>
+    dplyr::filter(site_id %in% (design_points |>
+      dplyr::filter(pft == annual_label) |>
+      dplyr::pull(site_id)))
+
+  pred_cov_mixed <- covariates_full |>
+    dplyr::filter(site_id %in% target_woody_sites) |>
+    dplyr::bind_rows(dp_annual) |>
+    dplyr::distinct(site_id, .keep_all = TRUE)
+
+  mixed_records <- list()
+
+  for (pool in outputs_to_extract) {
+    # Training data for annual
+    train_ens_annual <- ensemble_data |>
+      dplyr::filter(pft == annual_label & variable == pool)
+
+    if (nrow(train_ens_annual) == 0) {
+      PEcAn.logger::logger.warn("No annual ensemble data for pool ", pool, "; skipping mixed for this pool")
+      next
+    }
+
+    train_pts_annual <- train_ens_annual |>
+      dplyr::select(site_id, lat, lon, pft) |>
+      dplyr::distinct()
+
+    # Annual predictions at start and end dates on woody sites
+    annual_start_obj <- downscale_model_output(
+      date = start_date,
+      model_output = pool,
+      train_ensemble_data = train_ens_annual,
+      train_site_coords = train_pts_annual,
+      pred_covariates = pred_cov_mixed
+    )
+    annual_end_obj <- downscale_model_output(
+      date = end_date,
+      model_output = pool,
+      train_ensemble_data = train_ens_annual,
+      train_site_coords = train_pts_annual,
+      pred_covariates = pred_cov_mixed
+    )
+
+    # Get woody predictions at end date from existing results
+    woody_key <- paste0(woody_label, "::", pool)
+    woody_obj <- downscale_output_list[[woody_key]]
+
+    if (is.null(annual_start_obj) || is.null(annual_end_obj) || is.null(woody_obj)) {
+      PEcAn.logger::logger.warn("Missing components for mixed scenario in pool ", pool, "; skipping")
+      next
+    }
+
+    woody_df <- tidy_downscale(woody_obj) |>
+      dplyr::filter(site_id %in% target_woody_sites) |>
+      dplyr::rename(woody_pred = prediction)
+
+    ann_start_df <- tidy_downscale(annual_start_obj) |>
+      dplyr::filter(site_id %in% target_woody_sites) |>
+      dplyr::rename(annual_start = prediction)
+
+    ann_end_df <- tidy_downscale(annual_end_obj) |>
+      dplyr::filter(site_id %in% target_woody_sites) |>
+      dplyr::rename(annual_end = prediction)
+
+    # Join by site_id and ensemble to align predictions
+    mix_df <- woody_df |>
+      dplyr::inner_join(ann_end_df, by = c("site_id", "ensemble")) |>
+      dplyr::inner_join(ann_start_df, by = c("site_id", "ensemble"))
+
+    if (nrow(mix_df) == 0) {
+      PEcAn.logger::logger.warn("No overlapping site/ensemble rows for mixed scenario in pool ", pool)
+      next
+    }
+
+    f_annual <- 0.5 # TODO: will come from monitoring / scenario data later
+    mix_df <- mix_df |>
+      dplyr::mutate(
+        mixed_pred = combine_value(
+          woody_value = .data$woody_pred,
+          annual_value = .data$annual_end,
+          annual_init = .data$annual_start,
+          annual_cover = f_annual,
+          woody_cover = 1.0,
+          method = "incremental"
+        )
+      ) |>
+      # add area/county for totals
+      dplyr::left_join(ca_fields, by = "site_id") |>
+      dplyr::mutate(
+        pft = "woody + annual",
+        model_output = pool,
+        c_density_Mg_ha = PEcAn.utils::ud_convert(mixed_pred, "kg/m2", "Mg/ha"),
+        total_c_Mg = c_density_Mg_ha * area_ha
+      ) |>
+      dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+
+    mixed_records[[pool]] <- mix_df
+  }
+
+  # Append mixed records if any
+  if (length(mixed_records) > 0) {
+    mixed_df_all <- dplyr::bind_rows(mixed_records, .id = "pool") |>
+      dplyr::select(-pool)
+    dp <- dplyr::bind_rows(dp, mixed_df_all)
+  }
+}
+
 
 ## Write out downscaled predictions
 
 readr::write_csv(
-  downscale_preds,
+  dp, # downscale predictions with mixed scenario appended (if available)
   file.path(model_outdir, "downscaled_preds.csv")
 )
+
+# Write training site IDs used for each spec (pft x pool)
+if (length(training_sites_records) > 0) {
+  train_sites_df <- dplyr::bind_rows(training_sites_records) |>
+    dplyr::distinct()
+  readr::write_csv(train_sites_df, file.path(model_outdir, "training_sites.csv"))
+  PEcAn.logger::logger.info("Training site list written to", file.path(model_outdir, "training_sites.csv"))
+}
+metadata <- list(
+  title = "Downscaled SIPNET Outputs",
+  description = "SIPNET model outputs downscaled to field level using Random Forest",
+  created = Sys.time(),
+  ensembles = sort(unique(as.integer(ensemble_ids))),
+  pfts = pfts,
+  outputs_to_extract = outputs_to_extract,
+  start_date = as.character(start_date),
+  end_date = as.character(end_date),
+  mixed_cover_fraction = 0.5,
+  columns = list(
+    site_id = "Unique identifier for each field from LandIQ",
+    pft = "Plant functional type",
+    ensemble = "Ensemble member identifier",
+    c_density_Mg_ha = "Predicted carbon density (Mg/ha)",
+    total_c_Mg = "Predicted total carbon (Mg) per field",
+    area_ha = "Field area in hectares",
+    county = "California county name where the field is located",
+    model_output = "Type of SIPNET model output (e.g., AGB, TotSoilCarb)"
+  )
+)
+
+metadata |>
+  jsonlite::write_json(
+    file.path(model_outdir, "downscaled_preds_metadata.json"),
+    pretty = TRUE, auto_unbox = TRUE
+  )
+
+if (length(delta_output_records) > 0) {
+  delta_dp <- dplyr::bind_rows(delta_output_records, .id = "spec") |>
+    tidyr::separate(col = "spec", into = c("pft", "model_output"), sep = "::", remove = TRUE)
+  readr::write_csv(delta_dp, file.path(model_outdir, "downscaled_deltas.csv"))
+  PEcAn.logger::logger.info("Delta predictions written to", file.path(model_outdir, "downscaled_deltas.csv"))
+}
+
+PEcAn.logger::logger.info("Downscaled predictions written to", file.path(model_outdir, "downscaled_preds.csv"))
+PEcAn.logger::logger.info(
+  "Total script elapsed time (s):",
+  round(step_elapsed(overall_timer), 2)
+)
+log_mem("End of script :: ")
