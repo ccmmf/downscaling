@@ -1,7 +1,5 @@
 library(testthat)
 
-loglevel <- PEcAn.logger::logger.setLevel("OFF")
-
 test_that("weighted mixing basic case", {
     res <- combine_mixed_crops(
         woody_value = 100, annual_value = 50,
@@ -73,5 +71,3 @@ test_that("length mismatch rejected", {
         "Can't recycle"
     )
 })
-
-PEcAn.logger::logger.setLevel(loglevel)
