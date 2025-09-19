@@ -1,7 +1,5 @@
 ---
-title: "Downscaling Workflow Documentation"
-author: "David LeBauer"
-date: "`r Sys.Date()`"
+title: "Downscaling Workflow Technical Documentation"
 format:
   html:
     self-contained: true
@@ -11,7 +9,7 @@ execute:
   echo: false
 ---
 
-# Workflow Overview
+# Technical Documentation {#sec-workflow-overview}
 
 The downscaling workflow predicts carbon pools (Soil Organic Carbon and Aboveground Biomass) for cropland fields in California and then aggregates these predictions to the county scale.
 
