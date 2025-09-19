@@ -87,3 +87,6 @@ options(
 ## Source all R scripts in the R/ directory
 r_scripts <- list.files(file.path(here::here(), "R"), pattern = "\\.R$", full.names = TRUE)
 lapply(r_scripts, source)
+
+## Check that all tests pass before proceeding
+testthat::test_dir(here::here("tests/testthat"))
