@@ -3966,10 +3966,6 @@ vertical-align: -.125em;
     <a class="dropdown-item" href="../reports/variable_importance.html">
  <span class="dropdown-text">Variable Importance</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../docs/references.html">
- <span class="dropdown-text">References</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -3978,23 +3974,16 @@ vertical-align: -.125em;
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-docs">    
         <li>
-    <a class="dropdown-item" href="../README.html">
- <span class="dropdown-text">README</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="../docs/workflow_documentation.html">
  <span class="dropdown-text">Workflow Documentation</span></a>
   </li>  
-    </ul>
-  </li>
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-examples" role="button" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Examples</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-examples">    
         <li>
     <a class="dropdown-item" href="../docs/mixed_system_prototype.html">
  <span class="dropdown-text">Mixed System Prototype</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../docs/references.html">
+ <span class="dropdown-text">References</span></a>
   </li>  
     </ul>
   </li>
@@ -4016,13 +4005,32 @@ vertical-align: -.125em;
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#importance-partial-dependence" id="toc-importance-partial-dependence" class="nav-link" data-scroll-target="#importance-partial-dependence">Importance + Partial Dependence</a>
   <ul class="collapse">
-  <li><a href="#totsoilcarb-by-pft" id="toc-totsoilcarb-by-pft" class="nav-link" data-scroll-target="#totsoilcarb-by-pft">TotSoilCarb by PFT</a>
+  <li><a href="#agb-by-pft" id="toc-agb-by-pft" class="nav-link" data-scroll-target="#agb-by-pft">AGB by PFT</a>
   <ul class="collapse">
   <li><a href="#annual-crop" id="toc-annual-crop" class="nav-link" data-scroll-target="#annual-crop">annual crop</a></li>
   <li><a href="#woody-perennial-crop" id="toc-woody-perennial-crop" class="nav-link" data-scroll-target="#woody-perennial-crop">woody perennial crop</a></li>
   </ul></li>
+  <li><a href="#totsoilcarb-by-pft" id="toc-totsoilcarb-by-pft" class="nav-link" data-scroll-target="#totsoilcarb-by-pft">TotSoilCarb by PFT</a>
+  <ul class="collapse">
+  <li><a href="#annual-crop-1" id="toc-annual-crop-1" class="nav-link" data-scroll-target="#annual-crop-1">annual crop</a></li>
+  <li><a href="#annual-crop-2" id="toc-annual-crop-2" class="nav-link" data-scroll-target="#annual-crop-2">annual crop</a></li>
+  <li><a href="#woody-perennial-crop-1" id="toc-woody-perennial-crop-1" class="nav-link" data-scroll-target="#woody-perennial-crop-1">woody perennial crop</a></li>
+  <li><a href="#woody-perennial-crop-2" id="toc-woody-perennial-crop-2" class="nav-link" data-scroll-target="#woody-perennial-crop-2">woody perennial crop</a></li>
   </ul></li>
-  <li><a href="#ale-and-ice-effects" id="toc-ale-and-ice-effects" class="nav-link" data-scroll-target="#ale-and-ice-effects">ALE and ICE Effects</a></li>
+  </ul></li>
+  <li><a href="#ale-and-ice-effects" id="toc-ale-and-ice-effects" class="nav-link" data-scroll-target="#ale-and-ice-effects">ALE and ICE Effects</a>
+  <ul class="collapse">
+  <li><a href="#agb-8093-ale-and-ice" id="toc-agb-8093-ale-and-ice" class="nav-link" data-scroll-target="#agb-8093-ale-and-ice">AGB <e2>&lt;80&gt;&lt;93&gt; ALE and ICE</e2></a>
+  <ul class="collapse">
+  <li><a href="#annual-crop-3" id="toc-annual-crop-3" class="nav-link" data-scroll-target="#annual-crop-3">annual crop</a></li>
+  <li><a href="#woody-perennial-crop-3" id="toc-woody-perennial-crop-3" class="nav-link" data-scroll-target="#woody-perennial-crop-3">woody perennial crop</a></li>
+  </ul></li>
+  <li><a href="#totsoilcarb-8093-ale-and-ice" id="toc-totsoilcarb-8093-ale-and-ice" class="nav-link" data-scroll-target="#totsoilcarb-8093-ale-and-ice">TotSoilCarb <e2>&lt;80&gt;&lt;93&gt; ALE and ICE</e2></a>
+  <ul class="collapse">
+  <li><a href="#annual-crop-4" id="toc-annual-crop-4" class="nav-link" data-scroll-target="#annual-crop-4">annual crop</a></li>
+  <li><a href="#woody-perennial-crop-4" id="toc-woody-perennial-crop-4" class="nav-link" data-scroll-target="#woody-perennial-crop-4">woody perennial crop</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -4076,21 +4084,8 @@ vertical-align: -.125em;
 </section>
 <section id="importance-partial-dependence" class="level1">
 <h1>Importance + Partial Dependence</h1>
-<p>v | F W S OK | Context</p>
-<p>/ | 0 | combine_mixed_crops<br>
- | 2 | combine_mixed_crops<br>
-v | 7 | combine_mixed_crops</p>
-<p>/ | 0 | match_site_ids<br>
-/ | 0 | match_site_ids_by_location<br>
-- | 1 | match_site_ids_by_location<br>
-| | 7 | match_site_ids_by_location<br>
-| | 15 | match_site_ids_by_location<br>
-| | 23 | match_site_ids_by_location<br>
-v | 31 | match_site_ids_by_location [3.6s]</p>
-<p>== Results ===================================================================== Duration: 3.8 s</p>
-<p>[ FAIL 0 | WARN 0 | SKIP 0 | PASS 38 ]</p>
-<section id="totsoilcarb-by-pft" class="level2">
-<h2 class="anchored" data-anchor-id="totsoilcarb-by-pft">TotSoilCarb by PFT</h2>
+<section id="agb-by-pft" class="level2">
+<h2 class="anchored" data-anchor-id="agb-by-pft">AGB by PFT</h2>
 <section id="annual-crop" class="level3">
 <h3 class="anchored" data-anchor-id="annual-crop">annual crop</h3>
 <ul>
@@ -4106,12 +4101,116 @@ v | 31 | match_site_ids_by_location [3.6s]</p>
 </ul>
 </section>
 </section>
+<section id="totsoilcarb-by-pft" class="level2">
+<h2 class="anchored" data-anchor-id="totsoilcarb-by-pft">TotSoilCarb by PFT</h2>
+<section id="annual-crop-1" class="level3">
+<h3 class="anchored" data-anchor-id="annual-crop-1">annual crop</h3>
+<ul>
+<li>Left: variable importance (median across ensembles) with interquartile ranges.</li>
+<li>Middle/Right: PDP for the top two predictors.</li>
+</ul>
+</section>
+<section id="annual-crop-2" class="level3">
+<h3 class="anchored" data-anchor-id="annual-crop-2">annual crop</h3>
+<ul>
+<li>Left: variable importance (median across ensembles) with interquartile ranges.</li>
+<li>Middle/Right: PDP for the top two predictors.</li>
+</ul>
+</section>
+<section id="woody-perennial-crop-1" class="level3">
+<h3 class="anchored" data-anchor-id="woody-perennial-crop-1">woody perennial crop</h3>
+<ul>
+<li>Left: variable importance (median across ensembles) with interquartile ranges.</li>
+<li>Middle/Right: PDP for the top two predictors.</li>
+</ul>
+</section>
+<section id="woody-perennial-crop-2" class="level3">
+<h3 class="anchored" data-anchor-id="woody-perennial-crop-2">woody perennial crop</h3>
+<ul>
+<li>Left: variable importance (median across ensembles) with interquartile ranges.</li>
+<li>Middle/Right: PDP for the top two predictors.</li>
+</ul>
+</section>
+</section>
 </section>
 <section id="ale-and-ice-effects" class="level1">
 <h1>ALE and ICE Effects</h1>
-<p>ALE/ICE plots not found (package ‘iml’ may be missing during generation).</p>
+<section id="agb-8093-ale-and-ice" class="level2">
+<h2 class="anchored" data-anchor-id="agb-8093-ale-and-ice">AGB <e2>&lt;80&gt;&lt;93&gt; ALE and ICE</e2></h2>
+<section id="annual-crop-3" class="level3">
+<h3 class="anchored" data-anchor-id="annual-crop-3">annual crop</h3>
+<section id="top-predictor-1" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-1">Top predictor 1</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+<section id="top-predictor-2" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-2">Top predictor 2</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+</section>
+<section id="woody-perennial-crop-3" class="level3">
+<h3 class="anchored" data-anchor-id="woody-perennial-crop-3">woody perennial crop</h3>
+<section id="top-predictor-1-1" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-1-1">Top predictor 1</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+<section id="top-predictor-2-1" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-2-1">Top predictor 2</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="totsoilcarb-8093-ale-and-ice" class="level2">
+<h2 class="anchored" data-anchor-id="totsoilcarb-8093-ale-and-ice">TotSoilCarb <e2>&lt;80&gt;&lt;93&gt; ALE and ICE</e2></h2>
+<section id="annual-crop-4" class="level3">
+<h3 class="anchored" data-anchor-id="annual-crop-4">annual crop</h3>
+<section id="top-predictor-1-2" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-1-2">Top predictor 1</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+<section id="top-predictor-2-2" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-2-2">Top predictor 2</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+</section>
+<section id="woody-perennial-crop-4" class="level3">
+<h3 class="anchored" data-anchor-id="woody-perennial-crop-4">woody perennial crop</h3>
+<section id="top-predictor-1-3" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-1-3">Top predictor 1</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
+</section>
+<section id="top-predictor-2-3" class="level4">
+<h4 class="anchored" data-anchor-id="top-predictor-2-3">Top predictor 2</h4>
+<ul>
+<li>ALE: centered effect; more robust under collinearity.</li>
+<li>ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.</li>
+</ul>
 
 
+</section>
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

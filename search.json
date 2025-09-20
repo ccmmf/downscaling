@@ -35,41 +35,6 @@
     "text": "Advanced Setup and Use\n\nInteractive Session on BU Cluster\n# On geo.bu.edu:\nqrsh -l h_rt=3:00:00 -pe omp 16 -l buyin\n\n\nJob Submission\nThis is an example of how a script can be run on an HPC\nqsub \\\n  -l h_rt=1:00:00 \\\n  -pe omp 8 \\\n  -o logs/03.out \\\n  -e logs/03.err \\\n  -b y Rscript downscale/999_workflow_step.R\n\n\nBuilding Documentation Site with Quarto\nPreview\nquarto preview\nBuild\nquarto render\n\nPublish to GitHub Pages (gh-pages)\nThese steps will publish to https://ccmmf.github.io/downscaling.\nThis does not commit compiled HTML to main. Instead, Quarto pushes the built site to a separate gh-pages branch.\nOne-time setup in GitHub: 1. Settings → Pages → Set Source to “Deploy from a branch”. 2. Select Branch: gh-pages and Folder: / (root).\nPublish from your machine after rendering:\n# Build site locally (runs R code and embeds results)\nquarto render\n\n# Publish the built _site/ to gh-pages\nquarto publish gh-pages\n\n\n\nAdding Content\n\nAdd any .qmd or .md file\nAdd links in _quarto.yml\n\nunder project.render\nin the appropriate section under website.navbar.left.\n\n\n\nNotes on Quarto Configuration\n\nGlobal HTML Settings:\n\nself-contained: true, embed-resources: true, df-print: paged, toc: true.\n\nExecution:\n\nUses freeze: auto to cache outputs; re-executes only when inputs change.\nSome pages (e.g., reports/downscaling_results.qmd) depend on paths in 000-config.R. Build locally where paths exist.\n\nConfiguration:\n\nQuarto settings are in _quarto.yml (generates standalone HTML).\nDoes not use GitHub Actions due to reliance on large local datasets.\n\nHome Page:\n\nDefined in index.qmd (includes this README.md)."
   },
   {
-    "objectID": "README.html#overview",
-    "href": "README.html#overview",
-    "title": "Downscaling",
-    "section": "Overview",
-    "text": "Overview\nThe downscaling workflow predicts carbon pools (SOC and AGB) for California crop fields and aggregates predictions to the county level. It uses ensemble-based uncertainty propagation via SIPNET model runs and Random Forest downscaling.\nKey components: - Environmental covariate extraction from multiple sources (ERA5, SoilGrids, TWI) - Design point selection using k-means clustering - SIPNET model runs at design points - Random Forest models to downscale from design points to all fields - County-level aggregation of carbon estimates\n\nConcepts\n\nAnchor sites: Fields with ground truth validation data (e.g., Ameriflux sites)\nDesign points: Representative fields selected for SIPNET simulation based on environmental clustering\nDownscaling: Process of extending predictions from design points to all California crop fields."
-  },
-  {
-    "objectID": "README.html#environment-and-setup",
-    "href": "README.html#environment-and-setup",
-    "title": "Downscaling",
-    "section": "Environment and Setup",
-    "text": "Environment and Setup\n\nKey Configuration Files\n\n.future.R - Sets up parallel processing\n000-config.R - Configuration file for the workflow (called in each workflow script)"
-  },
-  {
-    "objectID": "README.html#quick-start",
-    "href": "README.html#quick-start",
-    "title": "Downscaling",
-    "section": "Quick start",
-    "text": "Quick start\n# Load modules (geo cluster example)\nmodule load R/4.4.0 gdal proj geos sqlite udunits quarto\n\n# Decide where the shared CCMMF area lives (or set in .Renviron)\nexport CCMMF_DATA_DIR=/projectnb/dietzelab/ccmmf      # or $HOME/ccmmf-dev\n\ngit clone https://github.com/ccmmf/downscale.git\ncd downscale\n\n# Restore exact packages for this workflow\nR -e 'if (!requireNamespace(\"renv\", quietly = TRUE)) install.packages(\"renv\"); renv::restore()'\n\n# Run the pipeline [Not implemented]\n# R -e 'targets::tar_make()'"
-  },
-  {
-    "objectID": "README.html#running-the-workflow",
-    "href": "README.html#running-the-workflow",
-    "title": "Downscaling",
-    "section": "Running the Workflow",
-    "text": "Running the Workflow\nThe workflow consists of these main scripts:\n# 1. Prepare environmental covariates\nRscript scripts/010_prepare_covariates.R\n\n# 2. Assign anchor sites to fields\nRscript scripts/011_prepare_anchor_sites.R\n\n# 3. Select design points via clustering\nRscript scripts/020_cluster_and_select_design_points.R\n\n# 4. Cluster diagnostics and visualization\nRscript scripts/021_clustering_diagnostics.R\n\n# 5. Extract SIPNET output from model runs\nRscript scripts/030_extract_sipnet_output.R  \n\n# 6. Downscale and aggregate to county level\nRscript scripts/040_downscale_and_aggregate.R\n\n# 7. Downscale analysis and interpretation\nRscript scripts/041_downscale_analysis.R\n\n# 8. Generate results documentation\nquarto render reports/downscaling_results.qmd"
-  },
-  {
-    "objectID": "README.html#advanced-setup-and-use",
-    "href": "README.html#advanced-setup-and-use",
-    "title": "Downscaling",
-    "section": "Advanced Setup and Use",
-    "text": "Advanced Setup and Use\n\nInteractive Session on BU Cluster\n# On geo.bu.edu:\nqrsh -l h_rt=3:00:00 -pe omp 16 -l buyin\n\n\nJob Submission\nThis is an example of how a script can be run on an HPC\nqsub \\\n  -l h_rt=1:00:00 \\\n  -pe omp 8 \\\n  -o logs/03.out \\\n  -e logs/03.err \\\n  -b y Rscript downscale/999_workflow_step.R\n\n\nBuilding Documentation Site with Quarto\nPreview\nquarto preview\nBuild\nquarto render\n\nPublish to GitHub Pages (gh-pages)\nThese steps will publish to https://ccmmf.github.io/downscaling.\nThis does not commit compiled HTML to main. Instead, Quarto pushes the built site to a separate gh-pages branch.\nOne-time setup in GitHub: 1. Settings → Pages → Set Source to “Deploy from a branch”. 2. Select Branch: gh-pages and Folder: / (root).\nPublish from your machine after rendering:\n# Build site locally (runs R code and embeds results)\nquarto render\n\n# Publish the built _site/ to gh-pages\nquarto publish gh-pages\n\n\n\nAdding Content\n\nAdd any .qmd or .md file\nAdd links in _quarto.yml\n\nunder project.render\nin the appropriate section under website.navbar.left.\n\n\n\nNotes on Quarto Configuration\n\nGlobal HTML Settings:\n\nself-contained: true, embed-resources: true, df-print: paged, toc: true.\n\nExecution:\n\nUses freeze: auto to cache outputs; re-executes only when inputs change.\nSome pages (e.g., reports/downscaling_results.qmd) depend on paths in 000-config.R. Build locally where paths exist.\n\nConfiguration:\n\nQuarto settings are in _quarto.yml (generates standalone HTML).\nDoes not use GitHub Actions due to reliance on large local datasets.\n\nHome Page:\n\nDefined in index.qmd (includes this README.md)."
-  },
-  {
     "objectID": "reports/downscaling_results.html",
     "href": "reports/downscaling_results.html",
     "title": "Downscaling Results and Analysis",
@@ -81,14 +46,14 @@
     "href": "reports/downscaling_results.html#county-level-carbon-stocks-and-densities",
     "title": "Downscaling Results and Analysis",
     "section": "County-Level Carbon Stocks and Densities",
-    "text": "County-Level Carbon Stocks and Densities\nThe following maps illustrate the predicted carbon pools at the county level, for each PFT. We show both total county carbon (Tg) and area‑normalized density (Mg/ha).\n\nSoil Carbon (TotSoilCarb) by PFT\n\nAnnual Crop\n\nStock: \nDensity: \n\n\n\nWoody Perennial Crop (Orchards & Vineyards)\nThis is the scenario where there is no ground cover in orchards and vineyards.\n\nStock: \nDensity: \n\n\n\n\n\nDifference: Woody + Annual minus Woody\nThese maps show the impact of adding 50% annual ground cover in orchards. Positive values indicate an increase relative to woody-only.\n\nDensity (Mg/ha): \nStock (Tg): \n\n\n\nAboveground Biomass (AGB) by PFT\n\nAnnual Crop\n\nStock: \nDensity: \n\n\n\nWoody Perennial Crop\n\nStock: \nDensity: \n\n\n\n\n\nDifference: Woody + Annual minus Woody (AGB)\n\nDensity (Mg/ha): \nStock (Tg): \n\n\n\nTables: County Stocks and Density (by PFT) and PFT Comparison\nThe first table summarizes county-level metrics for each PFT. The second table pivots TotSoilCarb density by PFT to simplify cross-PFT comparisons.\n\n\n✔ | F W  S  OK | Context\n\n⠏ |          0 | combine_mixed_crops                                            \n⠋ |          1 | combine_mixed_crops                                            \n⠦ |          7 | combine_mixed_crops                                            \n✔ |          7 | combine_mixed_crops\n\n⠏ |          0 | match_site_ids                                                 \n⠏ |          0 | match_site_ids_by_location                                     \n⠋ |          1 | match_site_ids_by_location                                     \n⠦ |          7 | match_site_ids_by_location                                     \n⠼ |         15 | match_site_ids_by_location                                     \n⠹ |         23 | match_site_ids_by_location                                     \n✔ |         31 | match_site_ids_by_location [3.7s]\n\n══ Results ═════════════════════════════════════════════════════════════════════\nDuration: 3.9 s\n\n[ FAIL 0 | WARN 0 | SKIP 0 | PASS 38 ]"
+    "text": "County-Level Carbon Stocks and Densities\nThe following maps illustrate the predicted carbon pools at the county level, for each PFT. We show both total county carbon (Tg) and area<80><91>normalized density (Mg/ha).\n\nSoil Carbon (TotSoilCarb) by PFT\n\nAnnual Crop\n\nStock: \nDensity: \n\n\n\nWoody Perennial Crop (Orchards & Vineyards)\nThis is the scenario where there is no ground cover in orchards and vineyards.\n\nStock: \nDensity: \n\n\n\n\n\nDifference: Woody + Annual minus Woody\nThese maps show the impact of adding 50% annual ground cover in orchards. Positive values indicate an increase relative to woody-only.\n\nDensity (Mg/ha): \nStock (Tg): \n\n\n\nAboveground Biomass (AGB) by PFT\n\nAnnual Crop\n\nStock: \nDensity: \n\n\n\nWoody Perennial Crop\n\nStock: \nDensity: \n\n\n\n\n\nDifference: Woody + Annual minus Woody (AGB)\n\nDensity (Mg/ha): \nStock (Tg): \n\n\n\nTables: County Stocks and Density (by PFT) and PFT Comparison\nThe first table summarizes county-level metrics for each PFT. The second table pivots TotSoilCarb density by PFT to simplify cross-PFT comparisons."
   },
   {
-    "objectID": "reports/downscaling_results.html#startend-delta-by-pft",
-    "href": "reports/downscaling_results.html#startend-delta-by-pft",
+    "objectID": "reports/downscaling_results.html#start-to-end-delta-by-pft",
+    "href": "reports/downscaling_results.html#start-to-end-delta-by-pft",
     "title": "Downscaling Results and Analysis",
-    "section": "Start→End Delta by PFT",
-    "text": "Start→End Delta by PFT\nThe following maps show county-level changes (start→end) in carbon density and stock for each PFT and pool. Positive values indicate an increase over the modeled period.\n\nAnnual Crop\n\nTotSoilCarb: density: , stock: \nAGB: density: , stock: \n\n\n\nWoody Perennial Crop\n\nTotSoilCarb: density: , stock: \nAGB: density: , stock: \n\n\n\nPer-county Mixed–Woody Differences (Tables)\n\n\n\n\n\n\n\n\n\nPer-county Start→End Deltas (Tables)"
+    "section": "Start-to-End Delta by PFT",
+    "text": "Start-to-End Delta by PFT\nThe following maps show county-level changes (start-to-end) in carbon density and stock for each PFT and pool. Positive values indicate an increase over the modeled period.\n\nAnnual Crop\n\nTotSoilCarb: density: , stock: \nAGB: density: , stock: \n\n\n\nWoody Perennial Crop\n\nTotSoilCarb: density: , stock: \nAGB: density: , stock: \n\n\n\nPer-county Mixed-Woody Differences (Tables)\n\n\n\n\n\n\n\n\n\nPer-county Start-to-End Deltas (Tables)"
   },
   {
     "objectID": "reports/design_points_analysis.html",
@@ -105,11 +70,32 @@
     "text": "Diagnostics reflect exactly what scripts/040_downscale.R and scripts/042_downscale_analysis.R produce.\n\nVariable importance: per-ensemble importance computed during downscaling (040) and summarized by median and IQR across ensembles (042).\nPartial dependence (PDP): top two predictors (by median importance) using the saved RF model and training data from 040.\nALE (Accumulated Local Effects) and ICE: optional if the iml package is available; computed from the same saved model and training data.\n\nNotes\n\nImportance units depend on the RF backend: %IncMSE or an equivalent importance metric; higher values indicate stronger influence.\nPDP assumes feature independence; may mislead under strong collinearity. ALE is preferred in that case and is centered at 0.\nThe mixed scenario (woody + annual) has no standalone model; therefore VI/PDP/ALE/ICE are not generated for that PFT.\nPDPs are generated from a single saved RF model (first ensemble) for illustration, while importance ranks are aggregated across ensembles."
   },
   {
+    "objectID": "reports/variable_importance.html#agb-by-pft",
+    "href": "reports/variable_importance.html#agb-by-pft",
+    "title": "Variable Importance and Effects",
+    "section": "AGB by PFT",
+    "text": "AGB by PFT\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors."
+  },
+  {
     "objectID": "reports/variable_importance.html#totsoilcarb-by-pft",
     "href": "reports/variable_importance.html#totsoilcarb-by-pft",
     "title": "Variable Importance and Effects",
     "section": "TotSoilCarb by PFT",
-    "text": "TotSoilCarb by PFT\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors."
+    "text": "TotSoilCarb by PFT\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors."
+  },
+  {
+    "objectID": "reports/variable_importance.html#agb-8093-ale-and-ice",
+    "href": "reports/variable_importance.html#agb-8093-ale-and-ice",
+    "title": "Variable Importance and Effects",
+    "section": "AGB <80><93> ALE and ICE",
+    "text": "AGB <80><93> ALE and ICE\n\nannual crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\n\nwoody perennial crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories."
+  },
+  {
+    "objectID": "reports/variable_importance.html#totsoilcarb-8093-ale-and-ice",
+    "href": "reports/variable_importance.html#totsoilcarb-8093-ale-and-ice",
+    "title": "Variable Importance and Effects",
+    "section": "TotSoilCarb <80><93> ALE and ICE",
+    "text": "TotSoilCarb <80><93> ALE and ICE\n\nannual crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\n\nwoody perennial crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories."
   },
   {
     "objectID": "docs/workflow_documentation.html",
