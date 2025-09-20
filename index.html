@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2025-09-18">
+<meta name="dcterms.date" content="2025-09-19">
 <meta name="description" content="Project overview and quick links">
 
 <title>Downscaling</title>
@@ -262,7 +262,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 18, 2025</p>
+      <p class="date">September 19, 2025</p>
     </div>
   </div>
   
@@ -272,6 +272,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 <section id="downscaling-workflow" class="level1">
 <h1>Downscaling Workflow</h1>
 <section id="overview" class="level2">
@@ -380,8 +385,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="adding-content" class="level3">
 <h3 class="anchored" data-anchor-id="adding-content">Adding Content</h3>
 <ul>
-<li>Add any <code>.qmd</code> or <code>.md</code> under the repo (including <code>docs/</code> and <code>reports/</code>); the site is configured to render them.</li>
-<li>Add links to the navbar in <code>_quarto.yml</code> under <code>website.navbar.left</code>.</li>
+<li>Add any <code>.qmd</code> or <code>.md</code> file</li>
+<li>Add links in <code>_quarto.yml</code>
+<ul>
+<li>under <code>project.render</code></li>
+<li>in the appropriate section under <code>website.navbar.left</code>.</li>
+</ul></li>
 </ul>
 <section id="notes-on-quarto-configuration" class="level4">
 <h4 class="anchored" data-anchor-id="notes-on-quarto-configuration">Notes on Quarto Configuration</h4>
