@@ -3,8 +3,7 @@ project:
   output-dir: _site
   render:
     # Explicit pages to render
-    - index.qmd
-    - README.md
+    - index.qmd # renders README
     - reports/downscaling_results.qmd
     - reports/design_points_analysis.qmd
     - reports/variable_importance.qmd
@@ -27,18 +26,14 @@ website:
             text: Design Points Analysis
           - href: reports/variable_importance.qmd
             text: Variable Importance
-          - href: docs/references.md
-            text: References
       - text: Docs
         menu:
-          - href: README.md
-            text: README
           - href: docs/workflow_documentation.md
             text: Workflow Documentation
-      - text: Examples
-        menu:
           - href: docs/mixed_system_prototype.qmd
             text: Mixed System Prototype
+          - href: docs/references.md
+            text: References
 
 format:
   html:

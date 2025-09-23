@@ -1,80 +1,48 @@
-# Aggregation to County Level
-# Loads downscaling outputs saved by 040_downscale.R and aggregates to counties
+#### ---- Aggregate to County Level ---- ####
+# Inputs: downscaling outputs saved by 040_downscale.R
+# Outputs: county_summaries.csv
+
+
+PEcAn.logger::logger.info("***Starting Aggregation to County Level***")
+
+
 
 # Load configuration and paths
 source("000-config.R")
 
-ca_attributes_csv <- file.path(data_dir, "ca_field_attributes.csv")
-ca_attributes <- readr::read_csv(ca_attributes_csv)
-
-
-
-# Load downscaling checkpoint created by 040_downscale.R
-checkpoint_file <- file.path(cache_dir, "downscaling_output.RData")
-load(checkpoint_file)
-
-# Ensure required objects are present
-required_objs <- c("downscale_output_list", "ensemble_ids", "covariates")
-missing_objs <- required_objs[!vapply(required_objs, exists, logical(1))]
-if (length(missing_objs) > 0) {
-  stop(paste("Missing required objects in checkpoint:", paste(missing_objs, collapse = ", ")))
-}
-
-# Load field geometry/attributes needed for aggregation
-if (!exists("ca_fields")) {
-  ca_fields_full <- sf::read_sf(file.path(data_dir, "ca_fields.gpkg"))
-  ca_fields <- ca_fields_full |>
-    dplyr::select(site_id, county, area_ha)
-}
-
-PEcAn.logger::logger.info("***Starting Aggregation to County Level***")
-#### ---- Aggregate to County Level ---- ####
-#### TODO Split into separate script?
-
-PEcAn.logger::logger.info("Aggregating to County Level")
-
-
-if (!PRODUCTION) {
-  # For testing, use a subset of fields
-  # could be even faster if we queried from gpkg:
-  #    sf::read_sf(..., sql = "SELECT * FROM ca_fields WHERE site_id IN (...)")
-  ca_fields <- ca_fields |>
-    dplyr::right_join(covariates, by = "site_id")
-}
-
-# Convert list to table with predictions and site identifier
-# Helper: Convert a single downscale object to tidy predictions table
-get_downscale_preds <- function(downscale_obj) {
-  purrr::map(
-    downscale_obj$predictions,
-    ~ tibble::tibble(site_id = downscale_obj$site_ids, prediction = .x)
-  ) |>
-    dplyr::bind_rows(.id = "ensemble") |>
-    dplyr::left_join(ca_fields, by = "site_id")
-}
-
-# Assemble predictions; carry PFT label by parsing element name: "{pft}::{pool}"
-downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
-  dplyr::bind_rows(.id = "spec") |>
-  tidyr::separate(
-    col = "spec",
-    into = c("pft", "model_output"),
-    sep = "::",
-    remove = TRUE
-  ) |>
-  # Convert kg/m2 to Mg/ha using PEcAn.utils::ud_convert
-  dplyr::mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
-  # Calculate total Mg per field: c_density_Mg_ha * area_ha
-  dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha)
-
-## Write out downscaled predictions
-
-readr::write_csv(
-  downscale_preds,
-  file.path(model_outdir, "downscaled_preds.csv")
+downscale_preds_csv <- file.path(model_outdir, "downscaled_preds.csv")
+library(readr)
+downscale_preds <- vroom::vroom(
+  downscale_preds_csv,
+  col_types = readr::cols(
+    pft = readr::col_character(),
+    model_output = readr::col_character(),
+    ensemble = readr::col_double(),
+    site_id = readr::col_character(),
+    county = readr::col_character(),
+    area_ha = readr::col_double(),
+    c_density_Mg_ha = readr::col_double(),
+    total_c_Mg = readr::col_double()
+  )
 )
 
-### TODO Debug and catch if it appears again
+ensemble_ids <- unique(downscale_preds$ensemble)
+
+
+# For testing, sample predictions evenly across counties and pfts
+if (!PRODUCTION) {
+  # Sample the same site_ids per county across all PFTs
+  site_sample <- downscale_preds |>
+    dplyr::distinct(county, site_id) |>
+    dplyr::group_by(county) |>
+    dplyr::slice_sample(n = pmin(10L, dplyr::n())) |>
+    dplyr::ungroup()
+
+  downscale_preds <- downscale_preds |>
+    dplyr::inner_join(site_sample, by = c("county", "site_id"))
+}
+
+### TODO Debug and catch if NAs appears again
 na_summary <- downscale_preds |>
   dplyr::summarise(dplyr::across(dplyr::everything(), ~ sum(is.na(.x)))) |>
   tidyr::pivot_longer(dplyr::everything(), names_to = "column", values_to = "n_na") |>
@@ -135,6 +103,8 @@ county_summaries <- ens_county_preds |>
     sd_total_c_Tg = sd(total_c_Tg),
     mean_c_density_Mg_ha = mean(c_density_Mg_ha),
     sd_c_density_Mg_ha = sd(c_density_Mg_ha),
+    mean_total_ha = mean(total_ha),
+    sd_total_ha = sd(total_ha),
     .groups = "drop"
   ) |>
   dplyr::mutate(

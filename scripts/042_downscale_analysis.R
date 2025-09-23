@@ -1,135 +1,170 @@
-# Load required libraries and data
+## Downscale analysis using predictions and covariates
 source("000-config.R")
-checkpoint_file <- file.path(cache_dir, "downscaling_output.RData")
-checkpoint_objects <- load(checkpoint_file)
-PEcAn.logger::logger.info("Loaded checkpoint objects:", paste(checkpoint_objects, collapse = ","))
-# Objects expected:
-# - downscale_output_list (named like "woody::AGB", "annual::AGB", ...)
-# - covariates, design_points, design_covariates, ensemble_ids
 
-# Identify available PFT+pool specs from names
-spec_table <- tibble::tibble(spec = names(downscale_output_list)) |>
-  tidyr::separate(spec, into = c("pft_key", "model_output"), sep = "::", remove = FALSE) |>
-  dplyr::mutate(
-    pft = dplyr::case_when(
-      pft_key == "woody" ~ "woody perennial crop",
-      pft_key == "annual" ~ "annual crop",
-      TRUE ~ pft_key
-    )
+# Variable Importance (VI)
+
+# Lighter defaults in development to avoid memory/timeouts
+rf_ntree <- if (PRODUCTION) 500 else 300
+rf_sample_n <- 20000 # per-ensemble sampling for importance
+
+preds_csv <- file.path(model_outdir, "downscaled_preds.csv")
+meta_json <- file.path(model_outdir, "downscaled_preds_metadata.json")
+
+downscale_preds <- vroom::vroom(
+  preds_csv,
+  col_types = readr::cols(
+    site_id = readr::col_character(),
+    pft = readr::col_character(),
+    ensemble = readr::col_double(),
+    c_density_Mg_ha = readr::col_double(),
+    total_c_Mg = readr::col_double(),
+    area_ha = readr::col_double(),
+    county = readr::col_character(),
+    model_output = readr::col_character()
   )
+)
 
-##### Variable Importance Analysis (by PFT and pool) #####
-importance_summary <- purrr::map_dfr(spec_table$spec, function(sp) {
-  obj <- downscale_output_list[[sp]]
-  importances <- purrr::map(ensemble_ids, function(i) {
-    model <- obj[["model"]][[i]]
-    vi <- randomForest::importance(model)
-    # Prefer %IncMSE if present; otherwise use IncNodePurity
-    if ("%IncMSE" %in% colnames(vi)) vi[, "%IncMSE"] else vi[, 1]
-  })
-  predictors <- rownames(randomForest::importance(obj[["model"]][[1]]))
-  imp_df <- purrr::map_dfr(importances, ~ tibble::tibble(importance = .x), .id = "ensemble") |>
-    dplyr::group_by(ensemble) |>
-    dplyr::mutate(predictor = predictors) |>
-    dplyr::ungroup()
-  spec_row <- dplyr::filter(spec_table, spec == sp)
-  imp_df |>
-    dplyr::group_by(predictor) |>
-    dplyr::summarize(
-      median_importance = median(importance, na.rm = TRUE),
-      lcl_importance = stats::quantile(importance, 0.25, na.rm = TRUE),
-      ucl_importance = stats::quantile(importance, 0.75, na.rm = TRUE),
-      .groups = "drop"
-    ) |>
-    dplyr::mutate(
-      model_output = spec_row$model_output,
-      pft_key = spec_row$pft_key,
-      pft = spec_row$pft
-    )
-})
+meta <- tryCatch(jsonlite::read_json(meta_json, simplifyVector = TRUE), error = function(e) list())
+ensemble_ids <- if (!is.null(meta$ensembles)) meta$ensembles else sort(unique(downscale_preds$ensemble))
 
-for (i in seq_len(nrow(spec_table))) {
-  sp <- spec_table$spec[i]
-  pft_label <- spec_table$pft[i]
-  pool <- spec_table$model_output[i]
-  obj <- downscale_output_list[[sp]]
-  model <- obj[["model"]][[1]]
+covariates_csv <- file.path(data_dir, "site_covariates.csv")
 
-  # Top 2 predictors for this PFT+pool
+covariates <- readr::read_csv(covariates_csv) |>
+  dplyr::select(site_id, where(is.numeric), -climregion_id)
+covariate_names <- names(dplyr::select(covariates, where(is.numeric)))
+PEcAn.logger::logger.info("Loaded predictions, metadata, and covariates")
+PEcAn.logger::logger.info("Rows in predictions:", nrow(downscale_preds), "; unique sites:", dplyr::n_distinct(downscale_preds$site_id))
+PEcAn.logger::logger.info("Ensembles detected:", paste(head(ensemble_ids, 10), collapse = ", "), if (length(ensemble_ids) > 10) "..." else "")
+PEcAn.logger::logger.info("Number of numeric predictors:", length(covariate_names), "; sample:", paste(utils::head(covariate_names, 6), collapse = ", "))
+
+preds_join <- downscale_preds |>
+  dplyr::left_join(covariates, by = "site_id") |>
+  tidyr::drop_na(c_density_Mg_ha)
+
+# Optional: load training site metadata
+train_sites_csv <- file.path(model_outdir, "training_sites.csv")
+train_sites <- NULL
+train_sites <- readr::read_csv(train_sites_csv, show_col_types = FALSE)
+PEcAn.logger::logger.info("Training site metadata found:", train_sites_csv, "; rows:", nrow(train_sites))
+PEcAn.logger::logger.info("Training site columns:", paste(colnames(train_sites), collapse = ", "))
+
+# Build spec table from predictions (includes mixed pft)
+spec_table <- preds_join |>
+  dplyr::distinct(pft, model_output) |>
+  dplyr::arrange(pft, model_output)
+PEcAn.logger::logger.info("Data prep complete")
+
+## No surrogate VI: read per-ensemble VI saved by 040 and summarize here
+vi_path_for_spec <- function(pft_i, pool) {
+  spec_key <- paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool))
+  file.path(model_outdir, paste0("vi_", spec_key, "_by_ensemble.csv"))
+}
+
+importance_summary <- purrr::pmap_dfr(
+  list(spec_table$pft, spec_table$model_output),
+  function(pft_i, pool) {
+    vi_file <- vi_path_for_spec(pft_i, pool)
+    if (!file.exists(vi_file)) {
+      PEcAn.logger::logger.warn("VI per-ensemble CSV not found for ", pft_i, "::", pool)
+      return(NULL)
+    }
+    vi_tbl <- readr::read_csv(vi_file, show_col_types = FALSE)
+    vi_tbl |>
+      dplyr::group_by(pft, model_output, predictor) |>
+      dplyr::summarize(
+        median_importance = stats::median(importance, na.rm = TRUE),
+        lcl_importance = stats::quantile(importance, 0.25, na.rm = TRUE),
+        ucl_importance = stats::quantile(importance, 0.75, na.rm = TRUE),
+        n_ensembles = dplyr::n(),
+        .groups = "drop"
+      )
+  }
+)
+
+for (row in seq_len(nrow(spec_table))) {
+  pft_i <- spec_table$pft[row]
+  pool <- spec_table$model_output[row]
+  PEcAn.logger::logger.info("Processing plots for spec:", paste(pft_i, pool, sep = "::"))
+
+  spec_key <- paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool))
+  mdl_path <- file.path(cache_dir, "models", paste0(spec_key, "_models.rds"))
+  trn_path <- file.path(cache_dir, "training_data", paste0(spec_key, "_training.csv"))
+  rf <- NULL
+  x <- NULL
+  if (file.exists(mdl_path) && file.exists(trn_path)) {
+    models <- readRDS(mdl_path)
+    df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
+    rf <- models[[1]]
+    if (inherits(rf, "randomForest")) {
+      x <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
+    }
+  }
+  if (is.null(rf)) {
+    PEcAn.logger::logger.warn("Saved model not found for ", pft_i, "::", pool, "; skipping PDP")
+    next
+  }
+
   top_predictors <- importance_summary |>
-    dplyr::filter(model_output == pool, pft == pft_label) |>
+    dplyr::filter(model_output == pool, pft == pft_i) |>
     dplyr::arrange(dplyr::desc(median_importance)) |>
     dplyr::slice_head(n = 2) |>
     dplyr::pull(predictor)
 
   if (length(top_predictors) < 2) {
-    PEcAn.logger::logger.warn("Not enough predictors for partial plots:", sp)
+    PEcAn.logger::logger.warn("Not enough predictors for partial plots:", paste(pft_i, pool, sep = "::"))
     next
   }
 
-  # Set up PNG for three panel plot
-  PEcAn.logger::logger.info("Creating importance and partial plots for", sp)
+  PEcAn.logger::logger.info("Creating importance and partial plots for", paste(pft_i, pool, sep = "::"))
   importance_partial_plot_fig <- here::here(
     "figures",
-    paste0(gsub("::", "_", sp), "_importance_partial_plots.png")
+    paste0(gsub(" ", "_", pft_i), "_", pool, "_importance_partial_plots.png")
   )
 
-  png(
-    filename = importance_partial_plot_fig,
-    width = 14, height = 6, units = "in", res = 300, bg = "white"
-  )
+  png(filename = importance_partial_plot_fig, width = 14, height = 6, units = "in", res = 300, bg = "white")
   par(mfrow = c(1, 3))
 
   # Panel 1: Variable importance plot
   output_importance <- importance_summary |>
-    dplyr::filter(model_output == pool, pft == pft_label)
+    dplyr::filter(model_output == pool, pft == pft_i)
   par(mar = c(5, 10, 4, 2))
   with(
     output_importance,
     dotchart(median_importance,
       labels = reorder(predictor, median_importance),
       xlab = "Median Increase MSE (SD)",
-      main = paste("Importance -", pool, "-", pft_label),
+      main = paste("Importance -", pool, "-", pft_i),
       pch = 19, col = "steelblue", cex = 1.2
     )
   )
   with(
     output_importance,
-    segments(lcl_importance,
-      seq_along(predictor),
-      ucl_importance,
-      seq_along(predictor),
-      col = "gray50"
-    )
+    segments(lcl_importance, seq_along(predictor), ucl_importance, seq_along(predictor), col = "gray50")
   )
 
-  # Panel 2: Partial plot for top predictor
+  # Panel 2 and 3: Partial plots for top predictors
   par(mar = c(5, 5, 4, 2))
-  randomForest::partialPlot(model,
-    pred.data = design_covariates,
-    x.var = top_predictors[1],
-    main = paste("Partial Dependence -", top_predictors[1]),
-    xlab = top_predictors[1],
-    ylab = paste("Predicted", pool, "-", pft_label),
-    col = "steelblue",
-    lwd = 2
-  )
-
-  # Panel 3: Partial plot for second predictor
-  randomForest::partialPlot(model,
-    pred.data = design_covariates,
-    x.var = top_predictors[2],
-    main = paste("Partial Dependence -", top_predictors[2]),
-    xlab = top_predictors[2],
-    ylab = paste("Predicted", pool, "-", pft_label),
-    col = "steelblue",
-    lwd = 2
-  )
+  if (requireNamespace("iml", quietly = TRUE)) {
+    requireNamespace("randomForest", quietly = TRUE)
+    pred_fun <- function(m, newdata) stats::predict(m, newdata)
+    predictor_obj <- iml::Predictor$new(model = rf, data = x, y = NULL, predict.function = pred_fun)
+    fe1 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[1], method = "pdp")
+    fe2 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[2], method = "pdp")
+    plot(fe1)
+    plot(fe2)
+  } else {
+    randomForest::partialPlot(rf,
+      pred.data = x, x.var = top_predictors[1],
+      main = paste("Partial Dependence -", top_predictors[1]),
+      xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+    )
+    randomForest::partialPlot(rf,
+      pred.data = x, x.var = top_predictors[2],
+      main = paste("Partial Dependence -", top_predictors[2]),
+      xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+    )
+  }
   dev.off()
-  PEcAn.logger::logger.info(
-    "Saved importance and partial plots for",
-    sp, " to ", importance_partial_plot_fig
-  )
 }
 
 
@@ -137,66 +172,46 @@ for (i in seq_len(nrow(spec_table))) {
 # robust marginal effect estimates even with correlated predictors.
 # library(iml)
 
-PEcAn.logger::logger.info("***Starting ALE plots***")
-for (i in seq_len(nrow(spec_table))) {
-  sp <- spec_table$spec[i]
-  pft_label <- spec_table$pft[i]
-  pool <- spec_table$model_output[i]
-  model <- downscale_output_list[[sp]][["model"]][[1]]
 
-  top_predictors <- importance_summary |>
-    dplyr::filter(model_output == pool, pft == pft_label) |>
-    dplyr::arrange(dplyr::desc(median_importance)) |>
-    dplyr::slice_head(n = 2) |>
-    dplyr::pull(predictor)
-
-  predictor_obj <- iml::Predictor$new(
-    model = model,
-    data = design_covariates,
-    y = NULL,
-    predict.function = function(m, newdata) stats::predict(m, newdata)
-  )
-
-  for (j in seq_along(top_predictors)) {
-    pred_var_name <- top_predictors[j]
-    PEcAn.logger::logger.info("Starting ALE calculation for", sp, "predictor:", pred_var_name)
-    ale <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ale")
-    ggplot2::ggsave(
-      filename = here::here("figures", paste0(gsub("::", "_", sp), "_ALE_predictor", j, ".png")),
-      plot = plot(ale) + ggplot2::ggtitle(paste("ALE for", pred_var_name, "on", pool, "-", pft_label)),
-      width = 6, height = 4, units = "in", dpi = 300
-    )
+PEcAn.logger::logger.info("Starting ALE and ICE plots for all specs")
+for (row in seq_len(nrow(spec_table))) {
+  pft_i <- spec_table$pft[row]
+  pool <- spec_table$model_output[row]
+  PEcAn.logger::logger.info("Starting ALE/ICE plots for spec:", paste(pft_i, pool, sep = "::"))
+  spec_key <- paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool))
+  mdl_path <- file.path(cache_dir, "models", paste0(spec_key, "_models.rds"))
+  trn_path <- file.path(cache_dir, "training_data", paste0(spec_key, "_training.csv"))
+  if (!file.exists(mdl_path) || !file.exists(trn_path)) {
+    PEcAn.logger::logger.warn("Saved model/training data missing for ", pft_i, "::", pool, "; skipping ALE/ICE")
+    next
   }
-}
-
-## ICE Plots
-PEcAn.logger::logger.info("Creating ICE plots for top predictors")
-for (i in seq_len(nrow(spec_table))) {
-  sp <- spec_table$spec[i]
-  pft_label <- spec_table$pft[i]
-  pool <- spec_table$model_output[i]
-  model <- downscale_output_list[[sp]][["model"]][[1]]
-
+  models <- readRDS(mdl_path)
+  df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
+  rf <- models[[1]]
+  x <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
+  requireNamespace("randomForest", quietly = TRUE)
+  predictor_obj <- iml::Predictor$new(
+    model = rf, data = x, y = NULL,
+    predict.function = function(m, newdata) stats::predict(m, newdata)
+  )
   top_predictors <- importance_summary |>
-    dplyr::filter(model_output == pool, pft == pft_label) |>
+    dplyr::filter(model_output == pool, pft == pft_i) |>
     dplyr::arrange(dplyr::desc(median_importance)) |>
     dplyr::slice_head(n = 2) |>
     dplyr::pull(predictor)
-
-  predictor_obj <- iml::Predictor$new(
-    model = model,
-    data = design_covariates,
-    y = NULL, # y is not used by predict.randomForest
-    predict.function = function(m, newdata) stats::predict(m, newdata)
-  )
-
   for (j in seq_along(top_predictors)) {
     pred_var_name <- top_predictors[j]
+    ale <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ale")
+    ggsave_optimized(
+      filename = here::here("figures", paste0(gsub(" ", "_", pft_i), "_", pool, "_ALE_predictor", j, ".svg")),
+      plot = plot(ale) + ggplot2::ggtitle(paste("ALE for", pred_var_name, "on", pool, "-", pft_i)),
+      width = 6, height = 4, units = "in"
+    )
     ice <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ice")
-    ggplot2::ggsave(
-      filename = here::here("figures", paste0(gsub("::", "_", sp), "_ICE_predictor", j, ".png")),
-      plot = plot(ice) + ggplot2::ggtitle(paste("ICE for", pred_var_name, "on", pool, "-", pft_label)),
-      width = 6, height = 4, units = "in", dpi = 300
+    ggsave_optimized(
+      filename = here::here("figures", paste0(gsub(" ", "_", pft_i), "_", pool, "_ICE_predictor", j, ".svg")),
+      plot = plot(ice) + ggplot2::ggtitle(paste("ICE for", pred_var_name, "on", pool, "-", pft_i)),
+      width = 6, height = 4, units = "in"
     )
   }
 }

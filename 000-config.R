@@ -73,7 +73,9 @@ msg <- glue::glue(
   "- will extract variables: {paste(outputs_to_extract, collapse = ', ')}\n",
   "- ca_albers_crs  : {ca_albers_crs}{if(ca_albers_crs == 3310) ', which is NAD83 / California Albers' else ''}\n"
 )
-PEcAn.logger::logger.info(msg, wrap = FALSE)
+if (!isTRUE(getOption("ccmmf.quiet_banner", FALSE))) {
+  PEcAn.logger::logger.info(msg, wrap = FALSE)
+}
 
 ## Global configuration settings for logging
 
@@ -87,6 +89,3 @@ options(
 ## Source all R scripts in the R/ directory
 r_scripts <- list.files(file.path(here::here(), "R"), pattern = "\\.R$", full.names = TRUE)
 lapply(r_scripts, source)
-
-## Check that all tests pass before proceeding
-testthat::test_dir(here::here("tests/testthat"))

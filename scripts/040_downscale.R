@@ -457,13 +457,15 @@ for (pool in outputs_to_extract) {
       if (!dir.exists(models_dir)) dir.create(models_dir, recursive = TRUE, showWarnings = FALSE)
       if (!dir.exists(train_dir)) dir.create(train_dir, recursive = TRUE, showWarnings = FALSE)
 
-      spec_key <- paste0(safe_sanitize(pft_i), "_", safe_sanitize(pool))
+      spec_key <- paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool))
       saveRDS(result$model, file = file.path(models_dir, paste0(spec_key, "_models.rds")))
 
-      if (!is.null(result$data) && !is.null(result$data$training)) {
-        tr_path <- file.path(train_dir, paste0(spec_key, "_training.csv"))
-        readr::write_csv(result$data$training, tr_path)
-      }
+      # Write the explicit training covariate matrix for the sites used to fit the model
+      tr_covs <- dp_pft |>
+        dplyr::semi_join(train_pts, by = "site_id") |>
+        dplyr::select(site_id, dplyr::all_of(covariate_names))
+      tr_path <- file.path(train_dir, paste0(spec_key, "_training.csv"))
+      readr::write_csv(tr_covs, tr_path)
 
       ens_labels <- names(result$predictions)
       if (is.null(ens_labels)) ens_labels <- as.character(seq_along(result$predictions))
@@ -745,7 +747,7 @@ if (length(target_woody_sites) == 0) {
     f_annual <- 0.5 # TODO: will come from monitoring / scenario data later
     mix_df <- mix_df |>
       dplyr::mutate(
-        mixed_pred = combine_value(
+        mixed_pred = combine_mixed_crops(
           woody_value = .data$woody_pred,
           annual_value = .data$annual_end,
           annual_init = .data$annual_start,
