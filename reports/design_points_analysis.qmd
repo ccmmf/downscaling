@@ -2,8 +2,7 @@
 title: "Design Points Analysis"
 format:
   html:
-    self-contained: true
-    embed-resources: true
+    self-contained: false
     df-print: paged
     toc: true
 ---

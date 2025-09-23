@@ -5,7 +5,8 @@ date: "`r Sys.Date()`"
 quarto-cache: true
 format:
   html:
-    self-contained: true
+    self-contained: false
+    df-print: default
 execute:
   cache: true
   echo: false

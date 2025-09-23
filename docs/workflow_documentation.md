@@ -1,21 +1,22 @@
 ---
 title: "Downscaling Workflow Technical Documentation"
+author: "David LeBauer"
+date: "`r Sys.Date()`"
 format:
   html:
-    self-contained: true
-    embed-resources: true
+    self-contained: false
     toc: true
 execute:
   echo: false
 ---
 
-# Technical Documentation {#sec-workflow-overview}
+# Technical Documentation
 
 The downscaling workflow predicts carbon pools (Soil Organic Carbon and Aboveground Biomass) for cropland fields in California and then aggregates these predictions to the county scale.
 
 It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.
 
-![Spatial downscaling workflow using machine learning with environmental covariates](figures/spatial_downscaling_workflow.png){width="5in"}
+![Spatial downscaling workflow using machine learning with environmental covariates](../figures/spatial_downscaling_workflow.png){width="5in"}
 
 ## Terminology
 
@@ -29,31 +30,33 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 
 The workflows are
 
-1. **Site Selection**: uses environmental variables (in the future we will add agronomic practice changes) to create clusters and then select representative sites. The `design_points.csv` are then passed to the ensemble workflow.
-2. **Ensemble Runs**: generate ensemble outputs. These are done in the [ccmmf/workflows](https://github.com/ccmmf/workflows) repository.
-3. **Downscaling**: uses ensemble outputs to make predictions for each field in CA, then aggregates to county level summaries and produces figures.
+1. **Site Selection**: uses environmental variables (later also management layers) to create clusters and then select representative sites. The design_points.csv are then passed to the ensemble workflow  
+2. Ensemble in ccmmf/workflows repository, generates ensemble outputs
+3. **Downscaling**: uses ensemble outputs to make predictions for each field in CA then aggregate to county level summaries.
 
-Overview:
+## Overview
 
-```r
+```sh
 # Site Selection
-Rscript scripts/009_update_landiq.R --production true
-Rscript scripts/010_prepare_covariates.R --production true
-Rscript scripts/011_prepare_anchor_sites.R --production true
-Rscript scripts/020_cluster_and_select_design_points.R --production true
+Rscript scripts/009_update_landiq.R
+Rscript scripts/010_prepare_covariates.R
+Rscript scripts/011_prepare_anchor_sites.R
+Rscript scripts/020_cluster_and_select_design_points.R
+Rscript scripts/021_clustering_diagnostics.R
+
 # Downscaling and Aggregation
-Rscript scripts/030_extract_sipnet_output.R --production true
-Rscript scripts/040_downscale.R --production true
-Rscript scripts/041_aggregate_to_county.R --production true
-Rscript scripts/042_downscale_analysis.R --production true
-Rscript scripts/043_county_level_plots.R --production true
+Rscript scripts/030_extract_sipnet_output.R
+Rscript scripts/031_aggregate_sipnet_output.R
+Rscript scripts/040_downscale_and_aggregate.R
+Rscript scripts/041_downscale_analysis.R
+Rscript scripts/042_county_level_plots.R
 ```
 
 ## Workflow Steps
 
 ### Configuration
 
-Workflow settings are configured in `000-config.R`.  
+Workflow settings are configured in `000-config.R`.
 
 The configuration script reads the CCMMF directory from the environment variable `CCMMF_DIR` (set in .Renviron), and uses it to define paths for inputs and outputs.
 
@@ -84,13 +87,11 @@ git clone git@github.com:ccmmf/downscaling
   - sets repositories from which R packages are installed
   - runs `renv/activate.R`
 - `000-config.R`
-  - Parses a `--production` flag via `argparse` to toggle development vs production mode. In non-interactive runs, default is development (`--production FALSE`); interactive sessions override to production. Example: `Rscript scripts/040_downscale.R --production true`.
-  - Sets directories for inputs and outputs used by the pipelines.
-  - Sets parallelization via `future::plan(multicore, workers = availableCores() - 1)`.
-  - Controls variables to extract via `outputs_to_extract` default: `c("TotSoilCarb", "AGB")`.
-  - Auto-sources all helper functions in `R/` and runs unit tests under `tests/testthat` at startup.
+  - set `pecan_outdir` based on the CCMMF_DIR.
+  - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
+  - detect and use resources for parallel processing (with future package); default is `available cores - 1`
+  - PRODUCTION mode setting. For testing, set `PRODUCTION` to `FALSE`. This is _much_ faster and requires fewer computing resources because it subsets large datasets. Once a test run is successful, set `PRODUCTION` to `TRUE` to run the full workflow.
 
-<!--
 **Others:**
 
 _these shouldn't need to be changed unless you want to change the default behavior of the workflow_
@@ -99,7 +100,7 @@ _these shouldn't need to be changed unless you want to change the default behavi
   - See [project renv setup docs](docs/renv_setup.md) for instructions about using `renv` for these workflows. 
   - See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
 
--->
+# 
 
 ### 1. Data Preparation
 
@@ -232,14 +233,15 @@ Rscript scripts/030_extract_sipnet_output.R
 
 Extracts and formats SIPNET outputs for downscaling:
 
-- Extract output variables (AGB, TotSoilCarb) from SIPNET simulations (configurable via `outputs_to_extract`).
-- Aggregate site-level ensemble outputs into a long EFI-style format: `datetime, site_id, lat, lon, pft, parameter, variable, prediction`.
+- Extract output variables (AGB, TotSoilCarb) from SIPNET simulations
+- Aggregate site-level ensemble outputs into long and 4D array formats
+- Save CSV and NetCDF files following EFI standards
 
 **Inputs:**
 - `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`
 
 **Outputs:**
-- `out/ensemble_output.csv`: Long format data for selected variables
+- `out/ensemble_output.csv`: Long format data
 
 ### 5. Mixed Cropping Systems
 
@@ -247,11 +249,10 @@ Extracts and formats SIPNET outputs for downscaling:
 Rscript scripts/031_aggregate_sipnet_output.R
 ```
 
-Simulates mixed-cropping scenarios by combining outputs across two PFTs using the `combine_mixed_crops()` function. This is described in more detail in [Mixed System Prototype](../docs/mixed_system_prototype.qmd).
+Simulates mixed-cropping scenarios by combining outputs across two PFTs using a mixed aggregation function (see Mixed System Prototype). Two methods are supported:
 
-There are two methods for combining outputs:
-- `weighted`: area-partitioned mix where `woody_cover + annual_cover = 1`
-- `incremental`: preserve woody baseline (`woody_cover = 1`) and add the annual delta scaled by `annual_cover`.
+- weighted: area-partitioned mix where `woody_cover + annual_cover = 1`
+- incremental: preserve woody baseline (`woody_cover = 1`) and add the annual delta scaled by `annual_cover`
 
 The current analysis uses the weighted method to represent ground cover in orchards and vineyards.
 
@@ -260,10 +261,8 @@ Outputs include `multi_pft_ensemble_output.csv`, `combined_ensemble_output.csv`,
 ### 6. Downscale, Aggregate to County, and Plot
 
 ```sh
-Rscript scripts/040_downscale.R --production true
-Rscript scripts/041_aggregate_to_county.R --production true
-Rscript scripts/042_downscale_analysis.R --production true
-Rscript scripts/043_county_level_plots.R --production true
+Rscript scripts/040_downscale_and_aggregate.R
+Rscript scripts/041_downscale_analysis.R
 ```
 
 Builds Random Forest models to predict carbon pools for all fields; aggregates to county-level; summarizes variable importance; and produces maps:
@@ -271,33 +270,47 @@ Builds Random Forest models to predict carbon pools for all fields; aggregates t
 - Train models on SIPNET ensemble runs at design points
 - Use environmental covariates to downscale predictions to all fields
 - Aggregate to county-level estimates
-- Output maps and statistics of carbon density and stocls.
+- Output maps and statistics of carbon density and totals
 
 **Inputs:**
 - `out/ensemble_output.csv`: SIPNET outputs
 - `data/site_covariates.csv`: Environmental covariates
 
-Outputs from `040_downscale.R`:
-- `out/downscaled_preds.csv`: Per-field predictions with ensemble, area, and county
-- `out/downscaled_preds_metadata.json`: Metadata documenting ensembles, PFTs, variables, and date range
-- `out/training_sites.csv`: Training site IDs per PFT × pool
-- `out/vi_<pft>_<pool>_by_ensemble.csv`: Variable importance per ensemble
-- `out/downscaled_deltas.csv`: Start --> end deltas used for delta maps
+**Outputs from `040_downscale_and_aggregate.R`:**
+- `cache/downscaling_output.RData`: Checkpoint for downstream analysis
+- `model_outdir/county_summaries.csv`: County statistics (means/SDs across ensembles for stocks and densities)
 
-Outputs from `041_aggregate_to_county.R`:
-- `out/county_summaries.csv`: County statistics (means/SDs across ensembles for stocks and densities)
+**Outputs from `041_downscale_analysis.R` (saved in `figures/`):**
+- `<pool>_importance_partial_plots.png`: Variable importance with partial plots for top predictors
+- `<pool>_ALE_predictor<i>.png` and `<pool>_ICE_predictor<i>.png`: ALE and ICE plots for top predictors
 
-Outputs from `043_county_level_plots.R` (saved in `figures/`):
-- County-level maps of carbon stock and density by PFT and pool.
-- Difference maps (mixed − woody) and delta maps (start→end).
+**Outputs from `042_county_level_plots.R` (saved in `figures/`):**
+- `county_<pool>_carbon_stock.png` and `county_<pool>_carbon_density.png`: County-level maps of carbon stock and density by pool
 
-## Technical Notes
+## Technical Reference
 
-**Ensemble Structure**
+### Ensemble Structure
 
 Each ensemble member represents a plausible realization given parameter and meteorological uncertainty. This ensemble structure is maintained throughout the workflow to properly propagate uncertainty. For example, downscaling is done for each ensemble member separately, and then the results are aggregated to county-level statistics.
 
-**Implementation notes:**
 
-- EFI-standard column `parameter` (ensemble ID) is renamed to `ensemble` in some steps for clarity.
-- Pool variables are in `kg/m²` and are converted to `Mg/ha` for densities via `PEcAn.utils::ud_convert()`; field-level stocks are computed as `density × area`.
+
+# References
+
+**EFI Standards**
+
+Dietze, Michael C., R. Quinn Thomas, Jody Peters, Carl Boettiger, Gerbrand Koren, Alexey N. Shiklomanov, and Jaime Ashander. 2023. "A Community Convention for Ecological Forecasting: Output Files and Metadata Version 1.0." Ecosphere 14 (11): e4686. https://doi.org/10.1002/ecs2.4686.
+
+**Data Sources**
+
+Land IQ, LLC. California Crop Mapping (2014). California Department of Water Resources, 2017. https://data.cnra.ca.gov/dataset/statewide-crop-mapping.
+
+Hengl, T. et al. 2017. "SoilGrids250m: Global Gridded Soil Information Based on Machine Learning." PLoS ONE 12(2): e0169748. https://doi.org/10.1371/journal.pone.0169748
+
+Hersbach, H. et al. 2020. "The ERA5 Global Reanalysis." Quarterly Journal of the Royal Meteorological Society 146: 1999–2049. https://doi.org/10.1002/qj.3803
+
+**Models**
+
+Braswell, Bobby H., William J. Sacks, Ernst Linder, and David S. Schimel. 2005. "Estimating Diurnal to Annual Ecosystem Parameters by Synthesis of a Carbon Flux Model with Eddy Covariance Net Ecosystem Exchange Observations." Global Change Biology 11 (2): 335–55. https://doi.org/10.1111/j.1365-2486.2005.00897.x.
+
+Liaw, Andy, and Matthew Wiener. 2002. "Classification and Regression by randomForest." R News 2 (3): 18–22. https://CRAN.R-project.org/doc/Rnews/.

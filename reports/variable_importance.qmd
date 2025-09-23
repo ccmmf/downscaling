@@ -2,8 +2,7 @@
 title: "Variable Importance and Effects"
 format:
   html:
-    self-contained: true
-    embed-resources: true
+    self-contained: false
     df-print: paged
     toc: true
 ---
@@ -61,7 +60,7 @@ if (length(imp_pngs) == 0) {
 }
 ```
 
-# ALE and ICE Effects
+## ALE and ICE Effects
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 ale_svgs <- list.files(fig_dir, pattern = "_ALE_predictor[0-9]+\\.svg$", full.names = TRUE)

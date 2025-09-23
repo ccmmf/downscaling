@@ -23,7 +23,7 @@ For detailed information about methods and workflow, see the [Workflow Documenta
 
 Estimates for woody and mixed woody + annual systems are done for all fields in the LandIQ dataset with tree and vinyard crops; annual systems are done for all fields with herbaceous annual crops.
 
-In the mixed scenario, ground cover is planted in all orchards. The methods for simulating the addition of ground cover to orchards, and is described in ![](../docs/mixed_system_prototype.qmd). Briefly, it combines downscaled model outputs from the woody perennial crop and annual crop PFTs to represent the effect of ground cover on carbon pools.
+In the mixed scenario, ground cover is planted in all orchards. The methods for simulating the addition of ground cover to orchards are described in [Mixed System Prototype](../docs/mixed_system_prototype.qmd). Briefly, it combines downscaled model outputs from the woody perennial crop and annual crop PFTs to represent the effect of ground cover on carbon pools.
 
 # Results
 

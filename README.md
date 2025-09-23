@@ -115,14 +115,6 @@ quarto render
 
 These steps will publish to https://ccmmf.github.io/downscaling.
 
-This does not commit compiled HTML to `main`. Instead, Quarto pushes the built site to a separate `gh-pages` branch.
-
-One-time setup in GitHub:
-1. Settings → Pages → Set Source to “Deploy from a branch”.
-2. Select Branch: `gh-pages` and Folder: `/ (root)`.
-
-Publish from your machine after rendering:
-
 ```bash
 # Build site locally (runs R code and embeds results)
 quarto render
