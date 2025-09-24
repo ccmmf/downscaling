@@ -53,10 +53,6 @@ model_outdir <- file.path(pecan_outdir, "out")
 set.seed(42)
 ca_albers_crs <- 3310
 
-# Plot masking threshold for county-level maps (share of statewide total carbon)
-# Example: 0.01 = mask counties below 1% of statewide total carbon for that PFT/pool
-MASK_THRESHOLD <- 0.01
-
 #### Messages ####
 msg <- glue::glue(
   "\n\n",
