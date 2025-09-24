@@ -31,22 +31,8 @@ combos <- co_preds_to_plot |>
 p <- purrr::pmap(
   list(combos$pft, combos$model_output, combos$units),
   function(.pft, pool, unit) {
-    # Cumulative-share mask: exclude smallest-contributing counties whose aggregate
-    # share of statewide total carbon is below MASK_THRESHOLD for this PFT + pool
-    mask_df <- county_summaries |>
-      dplyr::filter(pft == .pft, model_output == pool) |>
-      dplyr::mutate(share = mean_total_c_Tg / sum(mean_total_c_Tg, na.rm = TRUE)) |>
-      dplyr::arrange(share) |>
-      dplyr::mutate(cum_share = cumsum(dplyr::coalesce(share, 0))) |>
-      dplyr::mutate(mask_ok = cum_share >= get0("MASK_THRESHOLD", ifnotfound = 0.01)) |>
-      dplyr::select(county, mask_ok)
-
     dat <- dplyr::filter(co_preds_to_plot, pft == .pft, model_output == pool, units == unit) |>
-      dplyr::left_join(mask_df, by = "county") |>
-      dplyr::mutate(
-        .mask_ok = dplyr::coalesce(mask_ok, FALSE),
-        value_plot = dplyr::if_else(.mask_ok, value, NA_real_)
-      )
+      dplyr::mutate(value_plot = value)
     .plt <- ggplot2::ggplot(
       dat,
       ggplot2::aes(geometry = geom, fill = value_plot)
@@ -58,11 +44,6 @@ p <- purrr::pmap(
       ggplot2::facet_grid(model_output ~ stat) +
       ggplot2::labs(
         title = paste("County-Level", pool, "-", .pft),
-        subtitle = paste0(
-          "Excluding smallest counties whose combined share < ",
-          scales::percent(get0("MASK_THRESHOLD", ifnotfound = 0.01)),
-          " of statewide total carbon"
-        ),
         fill = unit
       ) +
       ggplot2::guides(fill = ggplot2::guide_colorbar(title.position = "top"))
@@ -103,6 +84,21 @@ mix <- dp |>
 wood <- dp |>
   dplyr::filter(pft == "woody perennial crop") |>
   dplyr::select(site_id, ensemble, model_output, county, area_ha_woody = area_ha, total_c_Mg_woody = total_c_Mg)
+
+# Log if duplicate keys remain (should be rare after upstream normalization)
+mix_dups <- mix |>
+  dplyr::count(site_id, ensemble, model_output, county) |>
+  dplyr::filter(n > 1)
+wood_dups <- wood |>
+  dplyr::count(site_id, ensemble, model_output, county) |>
+  dplyr::filter(n > 1)
+if (nrow(mix_dups) > 0 || nrow(wood_dups) > 0) {
+  PEcAn.logger::logger.severe(paste0(
+    "Duplicate keys detected prior to join (mix=", nrow(mix_dups), ", wood=", nrow(wood_dups), "). ",
+    "Fix upstream duplication; refusing to silently aggregate."
+  ))
+}
+
 diff_county <- mix |>
   dplyr::inner_join(wood, by = c("site_id", "ensemble", "model_output", "county")) |>
   dplyr::mutate(diff_total_Mg = total_c_Mg_mix - total_c_Mg_woody, area_ha = dplyr::coalesce(area_ha_woody, area_ha_mix)) |>
@@ -116,31 +112,14 @@ diff_county <- mix |>
 for (pool in unique(stats::na.omit(diff_county$model_output))) {
   dat_pool <- dplyr::filter(diff_county, model_output == pool)
 
-  # Cumulative-share mask based on absolute change magnitudes
-  sum_abs <- sum(abs(dat_pool$mean_diff_total_Tg), na.rm = TRUE)
-  if (is.finite(sum_abs) && sum_abs > 0) {
-    dat_pool_mask <- dat_pool |>
-      dplyr::mutate(share = abs(mean_diff_total_Tg) / sum_abs) |>
-      dplyr::arrange(share) |>
-      dplyr::mutate(cum_share = cumsum(dplyr::coalesce(share, 0))) |>
-      dplyr::mutate(mask_ok = cum_share >= get0("MASK_THRESHOLD", ifnotfound = 0.01))
-  } else {
-    dat_pool_mask <- dplyr::mutate(dat_pool, mask_ok = TRUE)
-  }
-
   # Density difference map (Mg/ha)
-  p_density <- ggplot2::ggplot(dat_pool_mask, ggplot2::aes(geometry = geom, fill = dplyr::if_else(mask_ok, mean_diff_density_Mg_ha, NA_real_))) +
+  p_density <- ggplot2::ggplot(dat_pool, ggplot2::aes(geometry = geom, fill = mean_diff_density_Mg_ha)) +
     ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
     ggplot2::geom_sf() +
     ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
     ggplot2::theme_minimal() +
     ggplot2::labs(
       title = paste("Difference in Carbon Density (Mg/ha): (woody + annual) - (woody)", pool),
-      subtitle = paste0(
-        "Excluding smallest counties whose combined share < ",
-        scales::percent(get0("MASK_THRESHOLD", ifnotfound = 0.01)),
-        " of statewide total change"
-      ),
       fill = "Delta (Mg/ha)"
     )
   ggsave_optimized(
@@ -150,18 +129,13 @@ for (pool in unique(stats::na.omit(diff_county$model_output))) {
   )
 
   # Stock difference map (Tg)
-  p_stock <- ggplot2::ggplot(dat_pool_mask, ggplot2::aes(geometry = geom, fill = dplyr::if_else(mask_ok, mean_diff_total_Tg, NA_real_))) +
+  p_stock <- ggplot2::ggplot(dat_pool, ggplot2::aes(geometry = geom, fill = mean_diff_total_Tg)) +
     ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
     ggplot2::geom_sf() +
     ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
     ggplot2::theme_minimal() +
     ggplot2::labs(
       title = paste("Difference in Carbon Stock (Tg): (woody + annual) - (woody)", pool),
-      subtitle = paste0(
-        "Excluding smallest counties whose combined share < ",
-        scales::percent(get0("MASK_THRESHOLD", ifnotfound = 0.01)),
-        " of statewide total change"
-      ),
       fill = "Delta (Tg)"
     )
   ggsave_optimized(
@@ -211,30 +185,15 @@ if (file.exists(delta_csv)) {
     combos_delta,
     function(pft, model_output) {
       datp <- dplyr::filter(delta_county, pft == !!pft, model_output == !!model_output)
-      sum_abs <- sum(abs(datp$mean_delta_total_Tg), na.rm = TRUE)
-      if (is.finite(sum_abs) && sum_abs > 0) {
-        datp <- datp |>
-          dplyr::mutate(share = abs(mean_delta_total_Tg) / sum_abs) |>
-          dplyr::arrange(share) |>
-          dplyr::mutate(cum_share = cumsum(dplyr::coalesce(share, 0))) |>
-          dplyr::mutate(mask_ok = cum_share >= get0("MASK_THRESHOLD", ifnotfound = 0.01))
-      } else {
-        datp <- dplyr::mutate(datp, mask_ok = TRUE)
-      }
       pft_key <- stringr::str_replace_all(pft, "[^A-Za-z0-9]+", "_")
       # density
-      p_den <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = dplyr::if_else(mask_ok, mean_delta_density_Mg_ha, NA_real_))) +
+      p_den <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = mean_delta_density_Mg_ha)) +
         ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
         ggplot2::geom_sf() +
         ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
         ggplot2::theme_minimal() +
         ggplot2::labs(
           title = paste("Delta Density (start->end)", model_output, "-", pft),
-          subtitle = paste0(
-            "Excluding smallest counties whose combined share < ",
-            scales::percent(get0("MASK_THRESHOLD", ifnotfound = 0.01)),
-            " of statewide total change"
-          ),
           fill = "Delta (Mg/ha)"
         )
       ggsave_optimized(
@@ -242,18 +201,13 @@ if (file.exists(delta_csv)) {
         plot = p_den, width = 10, height = 5, units = "in", dpi = 96, bg = "white"
       )
       # stock
-      p_stk <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = dplyr::if_else(mask_ok, mean_delta_total_Tg, NA_real_))) +
+      p_stk <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = mean_delta_total_Tg)) +
         ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
         ggplot2::geom_sf() +
         ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
         ggplot2::theme_minimal() +
         ggplot2::labs(
           title = paste("Delta Stock (start->end)", model_output, "-", pft),
-          subtitle = paste0(
-            "Excluding smallest counties whose combined share < ",
-            scales::percent(get0("MASK_THRESHOLD", ifnotfound = 0.01)),
-            " of statewide total change"
-          ),
           fill = "Delta (Tg)"
         )
       ggsave_optimized(filename = here::here("figures", paste0("county_delta_", pft_key, "_", model_output, "_carbon_stock.webp")), plot = p_stk, width = 10, height = 5, units = "in", dpi = 96, bg = "white")

@@ -11,7 +11,6 @@ PEcAn.logger::logger.info("***Starting Aggregation to County Level***")
 source("000-config.R")
 
 downscale_preds_csv <- file.path(model_outdir, "downscaled_preds.csv")
-library(readr)
 downscale_preds <- vroom::vroom(
   downscale_preds_csv,
   col_types = readr::cols(

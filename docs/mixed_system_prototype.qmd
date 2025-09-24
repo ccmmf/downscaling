@@ -236,6 +236,74 @@ vars <- unique(combined_output$variable)
 
 ```
 
+## County Comparisons on Woody Sites (Downscaled)
+
+This section compares three treatment scenarios on the same set of woody sites using the downscaled outputs:
+
+- 100% woody (baseline)
+- 100% woody + 50% annual (overlap)
+- 100% annual (counterfactual on woody sites)
+
+```{r woody-treatments}
+treat_path <- file.path(model_outdir, "treatments_woody_sites.csv")
+if (file.exists(treat_path)) {
+  tr <- readr::read_csv(treat_path, show_col_types = FALSE)
+
+  # County-level per-ensemble totals and densities, then average across ensembles
+  tr_county <- tr |>
+    dplyr::group_by(model_output, scenario, county, ensemble) |>
+    dplyr::summarise(total_Mg = sum(total_c_Mg, na.rm = TRUE), total_ha = sum(area_ha, na.rm = TRUE), .groups = "drop") |>
+    dplyr::mutate(
+      density_Mg_ha = dplyr::if_else(total_ha > 0, total_Mg / total_ha, NA_real_),
+      total_Tg = PEcAn.utils::ud_convert(total_Mg, "Mg", "Tg")
+    ) |>
+    dplyr::group_by(model_output, scenario, county) |>
+    dplyr::summarise(
+      mean_total_Tg = mean(total_Tg, na.rm = TRUE),
+      mean_density_Mg_ha = mean(density_Mg_ha, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  # Bring in county boundaries for maps
+  county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"), quiet = TRUE)
+
+  # Differences vs 100% woody baseline
+  base <- tr_county |>
+    dplyr::filter(scenario == "woody_100") |>
+    dplyr::select(model_output, county, base_total_Tg = mean_total_Tg, base_density_Mg_ha = mean_density_Mg_ha)
+  diffs <- tr_county |>
+    dplyr::filter(scenario != "woody_100") |>
+    dplyr::left_join(base, by = c("model_output", "county")) |>
+    dplyr::mutate(
+      delta_total_Tg = mean_total_Tg - base_total_Tg,
+      delta_density_Mg_ha = mean_density_Mg_ha - base_density_Mg_ha
+    ) |>
+    dplyr::left_join(county_boundaries, by = "county")
+
+  # Simple maps: density deltas by scenario and pool
+  ggplot2::ggplot(diffs, ggplot2::aes(geometry = geom, fill = delta_density_Mg_ha)) +
+    ggplot2::geom_sf(color = "black", fill = NA) +
+    ggplot2::geom_sf() +
+    ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
+    ggplot2::facet_grid(model_output ~ scenario) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(title = "County-level density delta vs 100% woody (on woody sites)", fill = "Delta (Mg/ha)")
+
+  # Table preview
+  DT::datatable(
+    diffs |>
+      dplyr::select(model_output, scenario, county, delta_total_Tg, delta_density_Mg_ha) |>
+      dplyr::arrange(model_output, scenario, county),
+    options = list(pageLength = 10, scrollY = "50vh", scroller = TRUE, deferRender = TRUE),
+    extensions = c('Scroller'),
+    rownames = FALSE
+  ) |>
+  DT::formatSignif(columns = c("delta_total_Tg", "delta_density_Mg_ha"), digits = 2)
+} else {
+  cat("treatments_woody_sites.csv not found; run scripts/040_downscale.R to generate.")
+}
+```
+
 **Selecting Representative Sites**
 
 Next we select representative sites based on their productivity. We use AGB in the 100% woody scenario as an indicator of productivity. We select sites that are near the 15th, 50th, and 85th percentiles of AGB and categorize them as low, medium, and high productivity.
@@ -498,6 +566,26 @@ ggplot() +
         panel.spacing.y = unit(1.5, "lines") # <-- increase vertical spacing between facet rows
     )
 ```
+
+## Effect on County Level Carbon Stocks
+
+Here we present county-level maps showing the impact of adding 50% ground cover to orchards on carbon stocks and densities. Positive values indicate an increase relative to woody-only.
+
+These maps are generated from the downscaled outputs that are presented in the [Downscaling Results](downscaling_results.qmd#results) page.
+
+### Change in Carbon Stocks (Tg):
+
+![](../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp)
+
+
+![](../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp)
+
+
+### Change in Carbon Density (Mg/ha): 
+
+![](../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp)
+
+![](../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp)
 
 
 ## Other Approaches Considered

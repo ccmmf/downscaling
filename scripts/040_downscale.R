@@ -46,7 +46,27 @@ if (!exists("ca_fields_full")) {
 }
 
 ca_fields <- ca_fields_full |>
+  sf::st_drop_geometry() |>
   dplyr::select(site_id, county, area_ha)
+
+# Normalize reference table to one row per site_id and warn if duplicates exist
+dup_counts <- ca_fields |>
+  dplyr::count(site_id, name = "n") |>
+  dplyr::filter(n > 1)
+if (nrow(dup_counts) > 0) {
+  PEcAn.logger::logger.warn(
+    "ca_fields has duplicate site_id rows: ", nrow(dup_counts),
+    "; collapsing to first observed county/area per site_id. Examples: ",
+    paste(utils::head(dup_counts$site_id, 5), collapse = ", ")
+  )
+}
+ca_fields <- ca_fields |>
+  dplyr::group_by(site_id) |>
+  dplyr::summarise(
+    county  = dplyr::first(county),
+    area_ha = dplyr::first(area_ha),
+    .groups = "drop"
+  )
 
 ca_field_attributes <- readr::read_csv(file.path(data_dir, "ca_field_attributes.csv"))
 
@@ -734,9 +754,9 @@ if (length(target_woody_sites) == 0) {
       dplyr::filter(site_id %in% target_woody_sites) |>
       dplyr::rename(annual_end = prediction)
 
-    # Join by site_id and ensemble to align predictions
+    # Join by site_id and ensemble to align predictions (include annual_start for SOC)
     mix_df <- woody_df |>
-      dplyr::inner_join(ann_end_df, by = c("site_id", "ensemble")) |>
+      dplyr::inner_join(ann_end_df,  by = c("site_id", "ensemble")) |>
       dplyr::inner_join(ann_start_df, by = c("site_id", "ensemble"))
 
     if (nrow(mix_df) == 0) {
@@ -750,7 +770,7 @@ if (length(target_woody_sites) == 0) {
         mixed_pred = combine_mixed_crops(
           woody_value = .data$woody_pred,
           annual_value = .data$annual_end,
-          annual_init = .data$annual_start,
+          annual_init = if (pool == "AGB") 0 else .data$annual_start,
           annual_cover = f_annual,
           woody_cover = 1.0,
           method = "incremental"
@@ -767,6 +787,37 @@ if (length(target_woody_sites) == 0) {
       dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
 
     mixed_records[[pool]] <- mix_df
+
+    # Also save per-site treatment scenarios on woody fields for comparisons
+    woody_scn <- woody_df |>
+      dplyr::left_join(ca_fields, by = "site_id") |>
+      dplyr::mutate(
+        pft = pft_i,
+        model_output = pool,
+        scenario = "woody_100",
+        c_density_Mg_ha = PEcAn.utils::ud_convert(woody_pred, "kg/m2", "Mg/ha"),
+        total_c_Mg = c_density_Mg_ha * area_ha
+      ) |>
+      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+
+    annual_scn <- ann_end_df |>
+      dplyr::left_join(ca_fields, by = "site_id") |>
+      dplyr::mutate(
+        pft = pft_i,
+        model_output = pool,
+        scenario = "annual_100",
+        c_density_Mg_ha = PEcAn.utils::ud_convert(annual_end, "kg/m2", "Mg/ha"),
+        total_c_Mg = c_density_Mg_ha * area_ha
+      ) |>
+      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+
+    mixed_scn <- mix_df |>
+      dplyr::mutate(scenario = "woody_50_annual_50") |>
+      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+
+    # accumulate
+    if (!exists("treatment_records", inherits = FALSE)) treatment_records <- list()
+    treatment_records[[length(treatment_records) + 1L]] <- dplyr::bind_rows(woody_scn, annual_scn, mixed_scn)
   }
 
   # Append mixed records if any
@@ -825,6 +876,14 @@ if (length(delta_output_records) > 0) {
     tidyr::separate(col = "spec", into = c("pft", "model_output"), sep = "::", remove = TRUE)
   readr::write_csv(delta_dp, file.path(model_outdir, "downscaled_deltas.csv"))
   PEcAn.logger::logger.info("Delta predictions written to", file.path(model_outdir, "downscaled_deltas.csv"))
+}
+
+# Write treatment comparisons for woody sites if available
+if (exists("treatment_records") && length(treatment_records) > 0) {
+  treatments_df <- dplyr::bind_rows(treatment_records)
+  out_treat <- file.path(model_outdir, "treatments_woody_sites.csv")
+  readr::write_csv(treatments_df, out_treat)
+  PEcAn.logger::logger.info("Treatment scenarios written to", out_treat)
 }
 
 PEcAn.logger::logger.info("Downscaled predictions written to", file.path(model_outdir, "downscaled_preds.csv"))

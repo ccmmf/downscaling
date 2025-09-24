@@ -16,7 +16,7 @@ The downscaling workflow predicts carbon pools (Soil Organic Carbon and Abovegro
 
 It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.
 
-![Spatial downscaling workflow using machine learning with environmental covariates](../figures/spatial_downscaling_workflow.png){width="5in"}
+![Spatial downscaling workflow using machine learning with environmental covariates](figures/spatial_downscaling_workflow.webp){width="5in"}
 
 ## Terminology
 
@@ -82,7 +82,6 @@ git clone git@github.com:ccmmf/downscaling
     These are in a subdirectory of the CCMMF directory in order to make them available across all users 
     (and because on some computers, they exceed allocated space in the home directory).
   - `R_LIBS_USER` must point to the platform and R version specific subdirectory inside `RENV_PATHS_LIBRARY`.  
-    Example: `/projectnb/dietzelab/ccmmf/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linux-gnu`
 - `.Rprofile`
   - sets repositories from which R packages are installed
   - runs `renv/activate.R`
@@ -91,16 +90,6 @@ git clone git@github.com:ccmmf/downscaling
   - confirm that relative paths (`data_raw`, `data`, `cache`) are correct.
   - detect and use resources for parallel processing (with future package); default is `available cores - 1`
   - PRODUCTION mode setting. For testing, set `PRODUCTION` to `FALSE`. This is _much_ faster and requires fewer computing resources because it subsets large datasets. Once a test run is successful, set `PRODUCTION` to `TRUE` to run the full workflow.
-
-**Others:**
-
-_these shouldn't need to be changed unless you want to change the default behavior of the workflow_
-
-- `renv.lock` is used for package management with `renv`. 
-  - See [project renv setup docs](docs/renv_setup.md) for instructions about using `renv` for these workflows. 
-  - See [renv package documentation](https://rstudio.github.io/renv/articles/renv.html) for more details.
-
-# 
 
 ### 1. Data Preparation
 

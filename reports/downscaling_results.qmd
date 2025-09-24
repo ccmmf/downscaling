@@ -21,7 +21,7 @@ Here we present results of aggregating from field scale pool sizes <!-- and flux
 
 For detailed information about methods and workflow, see the [Workflow Documentation](../docs/workflow_documentation.md).
 
-Estimates for woody and mixed woody + annual systems are done for all fields in the LandIQ dataset with tree and vinyard crops; annual systems are done for all fields with herbaceous annual crops.
+Estimates for woody and mixed woody + annual systems are done for all fields in the LandIQ dataset with tree and vinyard crops; estimates for annual systems are done for all fields with herbaceous annual crops.
 
 In the mixed scenario, ground cover is planted in all orchards. The methods for simulating the addition of ground cover to orchards are described in [Mixed System Prototype](../docs/mixed_system_prototype.qmd). Briefly, it combines downscaled model outputs from the woody perennial crop and annual crop PFTs to represent the effect of ground cover on carbon pools.
 
@@ -29,71 +29,77 @@ In the mixed scenario, ground cover is planted in all orchards. The methods for 
 
 ## County-Level Carbon Stocks and Densities
 
-The following maps illustrate the predicted carbon pools at the county level, for each PFT. We show both total county carbon (Tg) and area‑normalized density (Mg/ha).
+The maps below are organized to compare across PFTs. First we show total county carbon (Stocks, Tg), then area‑normalized density (Density, Mg/ha), each split by carbon pool and PFT.
 
-### Soil Carbon (TotSoilCarb) by PFT
+### Stocks
 
-#### Annual Crop
+#### Soil Carbon (TotSoilCarb)
 
-- Stock: ![](../figures/county_annual_crop_TotSoilCarb_carbon_stock.webp)
-- Density: ![](../figures/county_annual_crop_TotSoilCarb_carbon_density.webp)
+##### Annual Crop
 
-#### Woody Perennial Crop (Orchards & Vineyards)
+![](../figures/county_annual_crop_TotSoilCarb_carbon_stock.webp)
 
-This is the scenario where there is no ground cover in orchards and vineyards.
+##### Woody Perennial Crop (Orchards & Vineyards)
 
-- Stock: ![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
-- Density: ![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
+![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
 
-<!--Exclude these maps b/c woody stocks + difference plots convey same information more clearly.
-#### Woody + Annual (Orchards & Vineyards with Ground Cover)
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
 
+![](../figures/county_woody_annual_TotSoilCarb_carbon_stock.webp)
 
-- Stock: ![](../figures/county_woody_annual_TotSoilCarb_carbon_stock.webp)
-- Density: ![](../figures/county_woody_annual_TotSoilCarb_carbon_density.webp)
--->
+#### Aboveground Biomass (AGB)
 
-### Difference: Woody + Annual minus Woody
+##### Annual Crop
 
-These maps show the impact of adding 50% annual ground cover in orchards. Positive values indicate an increase relative to woody-only.
+![](../figures/county_annual_crop_AGB_carbon_stock.webp)
 
-- Density (Mg/ha): ![](../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp)
-- Stock (Tg): ![](../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp)
+##### Woody Perennial Crop (Orchards & Vineyards)
 
-### Aboveground Biomass (AGB) by PFT
+![](../figures/county_woody_perennial_crop_AGB_carbon_stock.webp)
 
-#### Annual Crop
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
 
-- Stock: ![](../figures/county_annual_crop_AGB_carbon_stock.webp)
-- Density: ![](../figures/county_annual_crop_AGB_carbon_density.webp)
+![](../figures/county_woody_annual_AGB_carbon_stock.webp)
 
-#### Woody Perennial Crop
+### Density
 
-- Stock: ![](../figures/county_woody_perennial_crop_AGB_carbon_stock.webp)
-- Density: ![](../figures/county_woody_perennial_crop_AGB_carbon_density.webp)
+#### Soil Carbon (TotSoilCarb)
 
-<!--Exclude these maps b/c woody stocks + difference plots convey same information more clearly.
-#### Woody + Annual (Overlap Scenario)
+##### Annual Crop
 
-- Stock: ![](../figures/county_woody_annual_AGB_carbon_stock.webp)
-- Density: ![](../figures/county_woody_annual_AGB_carbon_density.webp)
--->
-### Difference: Woody + Annual minus Woody (AGB)
+![](../figures/county_annual_crop_TotSoilCarb_carbon_density.webp)
 
-- Density (Mg/ha): ![](../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp)
-- Stock (Tg): ![](../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp)
+##### Woody Perennial Crop (Orchards & Vineyards)
 
+![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
+
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
+![](../figures/county_woody_annual_TotSoilCarb_carbon_density.webp)
+
+#### Aboveground Biomass (AGB)
+
+##### Annual Crop
+
+![](../figures/county_annual_crop_AGB_carbon_density.webp)
+
+##### Woody Perennial Crop (Orchards & Vineyards)
+
+![](../figures/county_woody_perennial_crop_AGB_carbon_density.webp)
+
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
+
+![](../figures/county_woody_annual_AGB_carbon_density.webp)
 
 ### Tables: County Stocks and Density (by PFT) and PFT Comparison
 
-The first table summarizes county-level metrics for each PFT. The second table pivots TotSoilCarb density by PFT to simplify cross-PFT comparisons.
+The first table summarizes county-level metrics for each PFT. The second table pivots carbon pools to highlight differences across cropping systems..
 
-```{r, include=FALSE}
-options(ccmmf.quiet_banner = TRUE)
+```{r, options, include=FALSE}
+options(ccmmf.quiet_bannerj = TRUE)
 source(here::here("000-config.R"))
 ```
 
-```{r, message=FALSE, warning=FALSE}
+```{r,load_inputs, message=FALSE, warning=FALSE}
 
 # Load county summaries data
 county_summaries <- readr::read_csv(
@@ -122,14 +128,14 @@ DT::datatable(
   county_summaries_table,
   extensions = c('Scroller','SearchPanes','Select'),
   options = list(
-    dom = 'Plfrtip',
+    dom = 'Plrtip',
     pageLength = 10,
-    searchHighlight = TRUE,
+    searchHighlight = FALSE,
     deferRender = TRUE,
     scroller = TRUE,
     scrollY = "60vh",
     searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
-    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1,2)))
+    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
   ),
   class = "stripe hover compact",
   rownames = FALSE, escape = FALSE
@@ -165,9 +171,9 @@ DT::datatable(
   density_wide,
   extensions = c('Scroller','SearchPanes','Select'),
   options = list(
-    dom = 'Plfrtip',
+    dom = 'Plrtip',
     pageLength = 10,
-    searchHighlight = TRUE,
+    searchHighlight = FALSE,
     deferRender = TRUE,
     scroller = TRUE,
     scrollY = "60vh",
@@ -175,24 +181,37 @@ DT::datatable(
     columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
   ),
   class = "stripe hover compact",
-  rownames = FALSE, escape = FALSE,
-  filter = 'top'
+  rownames = FALSE, escape = FALSE
 )
 ```
 
+<!-- 
+OMIT - need to find appropriate t0 value for annual AGB 
+Or completely omit delta for annual AGB and focus on C in woody biomass 
 ## Start-to-End Delta by PFT
 
 The following maps show county-level changes (start-to-end) in carbon density and stock for each PFT and pool. Positive values indicate an increase over the modeled period.
 
 ### Annual Crop
 
-- TotSoilCarb: density: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_density.webp), stock: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_stock.webp)
-- AGB: density: ![](../figures/county_delta_annual_crop_AGB_carbon_density.webp), stock: ![](../figures/county_delta_annual_crop_AGB_carbon_stock.webp)
+
+TotSoilCarb density: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_density.webp)
+
+TotSoilCarb stock: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_stock.webp)
+
+AGB density: ![](../figures/county_delta_annual_crop_AGB_carbon_density.webp)
+
+AGB stock: ![](../figures/county_delta_annual_crop_AGB_carbon_stock.webp)
 
 ### Woody Perennial Crop
 
-- TotSoilCarb: density: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_density.webp), stock: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
-- AGB: density: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_density.webp), stock: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_stock.webp)
+TotSoilCarb density: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
+
+TotSoilCarb stock: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
+
+AGB density: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_density.webp)
+
+AGB stock: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_stock.webp)
 
 ### Per-county Mixed-Woody Differences (Tables)
 
@@ -230,9 +249,9 @@ DT::datatable(
   diff_tbl,
   extensions = c('Scroller','SearchPanes','Select'),
   options = list(
-    dom = 'Plfrtip',
+    dom = 'Plrtip',
     pageLength = 10,
-    searchHighlight = TRUE,
+    searchHighlight = FALSE,
     deferRender = TRUE,
     scroller = TRUE,
     scrollY = "60vh",
@@ -240,12 +259,12 @@ DT::datatable(
     columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
   ),
   class = "stripe hover compact",
-  rownames = FALSE, escape = FALSE,
-  filter = 'top'
+  rownames = FALSE, escape = FALSE
 )
 ```
 
-### Per-county Start-to-End Deltas (Tables)
+
+### Per-county Start-to-End Deltas
 
 ```{r}
 delta_csv <- file.path(model_outdir, "downscaled_deltas.csv")
@@ -280,9 +299,9 @@ if (file.exists(delta_csv)) {
     delta_tbl,
     extensions = c('Scroller','SearchPanes','Select'),
     options = list(
-      dom = 'Plfrtip',
+      dom = 'Plrtip',
       pageLength = 10,
-      searchHighlight = TRUE,
+      searchHighlight = FALSE,
       deferRender = TRUE,
       scroller = TRUE,
       scrollY = "60vh",
@@ -290,10 +309,10 @@ if (file.exists(delta_csv)) {
       columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1,2)))
     ),
     class = "stripe hover compact",
-    rownames = FALSE, escape = FALSE,
-    filter = 'top'
+    rownames = FALSE, escape = FALSE
   )
 } else {
   cat("Delta file not found.")
 }
 ```
+-->
