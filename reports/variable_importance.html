@@ -9,7 +9,7 @@
 <meta name="author" content="David LeBauer">
 <meta name="dcterms.date" content="2025-09-25">
 
-<title>Downscaling - Downscaling Analysis: Variable Importance and Effects</title>
+<title>Downscaling - RF Model Fit and Importance</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -102,7 +102,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="../reports/variable_importance.html">
- <span class="dropdown-text">Variable Importance</span></a>
+ <span class="dropdown-text">RF Model Evaluation</span></a>
   </li>  
     </ul>
   </li>
@@ -140,9 +140,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#totsoilcarb" id="toc-totsoilcarb" class="nav-link" data-scroll-target="#totsoilcarb">TotSoilCarb</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
+  <li><a href="#model-fit-oob-r²-agb" id="toc-model-fit-oob-r²-agb" class="nav-link" data-scroll-target="#model-fit-oob-r²-agb">Model fit: OOB R² (AGB)</a></li>
+  <li><a href="#model-fit-oob-r²-soc" id="toc-model-fit-oob-r²-soc" class="nav-link" data-scroll-target="#model-fit-oob-r²-soc">Model fit: OOB R² (SOC)</a></li>
+  <li><a href="#variable-importance-figures" id="toc-variable-importance-figures" class="nav-link" data-scroll-target="#variable-importance-figures">Variable importance figures</a>
+  <ul class="collapse">
   <li><a href="#agb" id="toc-agb" class="nav-link" data-scroll-target="#agb">AGB</a></li>
+  <li><a href="#soc-totsoilcarb" id="toc-soc-totsoilcarb" class="nav-link" data-scroll-target="#soc-totsoilcarb">SOC (TotSoilCarb)</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -151,7 +158,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Downscaling Analysis: Variable Importance and Effects</h1>
+<h1 class="title">RF Model Fit and Importance</h1>
 </div>
 
 
@@ -180,56 +187,94 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="overview" class="level1">
 <h1>Overview</h1>
-<p>This page answers two questions for each model (pool × PFT):</p>
-<ol type="1">
-<li>Which predictors matter most? (Top-5 table across ensembles)</li>
-<li>How do top predictors affect predictions? (PDP panels)</li>
-</ol>
-<p>Notes: importance is aggregated across ensembles; PDPs come from one saved RF model and are for quick intuition. ALE/ICE details are folded at the bottom.</p>
+<p>This page reports simple model fit statistics (OOB R²) for each PFT and carbon pool and then presents the static variable-importance figures for AGB and SOC.</p>
+<section id="model-fit-oob-r²-agb" class="level2">
+<h2 class="anchored" data-anchor-id="model-fit-oob-r²-agb">Model fit: OOB R² (AGB)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>AGB model fit (OOB R²)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">PFT</th>
+<th style="text-align: right;">Median OOB R^2</th>
+<th style="text-align: left;">IQR</th>
+<th style="text-align: right;">Ensembles</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">-0.483</td>
+<td style="text-align: left;">[-0.682, -0.227]</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">-0.523</td>
+<td style="text-align: left;">[-0.585, -0.2]</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
-<section id="totsoilcarb" class="level1">
-<h1>TotSoilCarb</h1>
-<section id="annual-crop" class="level4">
-<h4 class="anchored" data-anchor-id="annual-crop">Annual crop</h4>
+<section id="model-fit-oob-r²-soc" class="level2">
+<h2 class="anchored" data-anchor-id="model-fit-oob-r²-soc">Model fit: OOB R² (SOC)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>SOC (TotSoilCarb) model fit (OOB R²)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">PFT</th>
+<th style="text-align: right;">Median OOB R^2</th>
+<th style="text-align: left;">IQR</th>
+<th style="text-align: right;">Ensembles</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">-0.309</td>
+<td style="text-align: left;">[-0.472, -0.155]</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">-0.384</td>
+<td style="text-align: left;">[-0.648, -0.148]</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="variable-importance-figures" class="level2">
+<h2 class="anchored" data-anchor-id="variable-importance-figures">Variable importance figures</h2>
+<p>The following figures summarize variable importance across the study area for the two carbon pools.</p>
+<section id="agb" class="level3">
+<h3 class="anchored" data-anchor-id="agb">AGB</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/annual_crop_tot_soil_carb_importance_partial_plots.png"><img src="../figures/annual_crop_tot_soil_carb_importance_partial_plots.png" class="img-fluid figure-img" style="width:100.0%"></a></p>
-<p></p><figcaption class="figure-caption">Annual crop – TotSoilCarb: importance + PDP</figcaption><p></p>
+<p><img src="../figures/agb_importance.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">AGB variable importance</figcaption><p></p>
 </figure>
 </div>
 </section>
-<section id="woody-perennial-crop" class="level4">
-<h4 class="anchored" data-anchor-id="woody-perennial-crop">Woody perennial crop</h4>
+<section id="soc-totsoilcarb" class="level3">
+<h3 class="anchored" data-anchor-id="soc-totsoilcarb">SOC (TotSoilCarb)</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png"><img src="../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png" class="img-fluid figure-img" style="width:100.0%"></a></p>
-<p></p><figcaption class="figure-caption">Woody perennial crop – TotSoilCarb: importance + PDP</figcaption><p></p>
+<p><img src="../figures/soc_importance.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">SOC variable importance</figcaption><p></p>
 </figure>
 </div>
-</section>
-</section>
-<section id="agb" class="level1">
-<h1>AGB</h1>
-<section id="annual-crop-1" class="level4">
-<h4 class="anchored" data-anchor-id="annual-crop-1">Annual crop</h4>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/annual_crop_agb_importance_partial_plots.png"><img src="../figures/annual_crop_agb_importance_partial_plots.png" class="img-fluid figure-img" style="width:100.0%"></a></p>
-<p></p><figcaption class="figure-caption">Annual crop – AGB: importance + PDP</figcaption><p></p>
-</figure>
-</div>
-</section>
-<section id="woody-perennial-crop-1" class="level4">
-<h4 class="anchored" data-anchor-id="woody-perennial-crop-1">Woody perennial crop</h4>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/woody_perennial_crop_agb_importance_partial_plots.png"><img src="../figures/woody_perennial_crop_agb_importance_partial_plots.png" class="img-fluid figure-img" style="width:100.0%"></a></p>
-<p></p><figcaption class="figure-caption">Woody perennial crop – AGB: importance + PDP</figcaption><p></p>
-</figure>
-</div>
-<!-- ALE/ICE plots omitted to focus on the partial dependence. -->
 
 
+</section>
 </section>
 </section>
 

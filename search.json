@@ -58,9 +58,9 @@
   {
     "objectID": "reports/variable_importance.html",
     "href": "reports/variable_importance.html",
-    "title": "Downscaling Analysis: Variable Importance and Effects",
+    "title": "RF Model Fit and Importance",
     "section": "",
-    "text": "Overview\nThis page answers two questions for each model (pool × PFT):\n\nWhich predictors matter most? (Top-5 table across ensembles)\nHow do top predictors affect predictions? (PDP panels)\n\nNotes: importance is aggregated across ensembles; PDPs come from one saved RF model and are for quick intuition. ALE/ICE details are folded at the bottom.\n\n\nTotSoilCarb\n\nAnnual crop\n\n\n\nAnnual crop – TotSoilCarb: importance + PDP\n\n\n\n\nWoody perennial crop\n\n\n\nWoody perennial crop – TotSoilCarb: importance + PDP\n\n\n\n\n\nAGB\n\nAnnual crop\n\n\n\nAnnual crop – AGB: importance + PDP\n\n\n\n\nWoody perennial crop\n\n\n\nWoody perennial crop – AGB: importance + PDP"
+    "text": "This page reports simple model fit statistics (OOB R²) for each PFT and carbon pool and then presents the static variable-importance figures for AGB and SOC.\n\n\n\n\n\nAGB model fit (OOB R²)\n\n\nPFT\nMedian OOB R^2\nIQR\nEnsembles\n\n\n\n\nwoody perennial crop\n-0.483\n[-0.682, -0.227]\n10\n\n\nannual crop\n-0.523\n[-0.585, -0.2]\n10\n\n\n\n\n\n\n\n\n\n\n\nSOC (TotSoilCarb) model fit (OOB R²)\n\n\nPFT\nMedian OOB R^2\nIQR\nEnsembles\n\n\n\n\nwoody perennial crop\n-0.309\n[-0.472, -0.155]\n10\n\n\nannual crop\n-0.384\n[-0.648, -0.148]\n10\n\n\n\n\n\n\n\n\nThe following figures summarize variable importance across the study area for the two carbon pools.\n\n\n\n\n\nAGB variable importance\n\n\n\n\n\n\n\n\nSOC variable importance"
   },
   {
     "objectID": "docs/workflow_documentation.html",
