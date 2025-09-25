@@ -571,7 +571,7 @@ ggplot() +
 
 Here we present county-level maps showing the impact of adding 50% ground cover to orchards on carbon stocks and densities. Positive values indicate an increase relative to woody-only.
 
-These maps are generated from the downscaled outputs that are presented in the [Downscaling Results](downscaling_results.qmd#results) page.
+These maps are generated from the downscaled outputs that are presented in the [Downscaling Results](../reports/downscaling_results.qmd#results) page.
 
 ### Change in Carbon Stocks (Tg):
 

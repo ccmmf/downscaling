@@ -3,10 +3,6 @@ source("000-config.R")
 
 # Variable Importance (VI)
 
-# Lighter defaults in development to avoid memory/timeouts
-rf_ntree <- if (PRODUCTION) 500 else 300
-rf_sample_n <- 20000 # per-ensemble sampling for importance
-
 preds_csv <- file.path(model_outdir, "downscaled_preds.csv")
 meta_json <- file.path(model_outdir, "downscaled_preds_metadata.json")
 
@@ -24,7 +20,7 @@ downscale_preds <- vroom::vroom(
   )
 )
 
-meta <- tryCatch(jsonlite::read_json(meta_json, simplifyVector = TRUE), error = function(e) list())
+meta <- jsonlite::read_json(meta_json, simplifyVector = TRUE)
 ensemble_ids <- if (!is.null(meta$ensembles)) meta$ensembles else sort(unique(downscale_preds$ensemble))
 
 covariates_csv <- file.path(data_dir, "site_covariates.csv")
@@ -90,13 +86,15 @@ for (row in seq_len(nrow(spec_table))) {
   mdl_path <- file.path(cache_dir, "models", paste0(spec_key, "_models.rds"))
   trn_path <- file.path(cache_dir, "training_data", paste0(spec_key, "_training.csv"))
   rf <- NULL
-  x <- NULL
+
+  # Here, the cached training CSV corresponds to the design-point covariates used to train the RF.
+  design_covariates <- NULL
   if (file.exists(mdl_path) && file.exists(trn_path)) {
     models <- readRDS(mdl_path)
     df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
     rf <- models[[1]]
     if (inherits(rf, "randomForest")) {
-      x <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
+      design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
     }
   }
   if (is.null(rf)) {
@@ -116,9 +114,11 @@ for (row in seq_len(nrow(spec_table))) {
   }
 
   PEcAn.logger::logger.info("Creating importance and partial plots for", paste(pft_i, pool, sep = "::"))
+  clean_pft <- janitor::make_clean_names(pft_i)
+  clean_pool <- janitor::make_clean_names(pool)
   importance_partial_plot_fig <- here::here(
     "figures",
-    paste0(gsub(" ", "_", pft_i), "_", pool, "_importance_partial_plots.png")
+    paste0(clean_pft, "_", clean_pool, "_importance_partial_plots.png")
   )
 
   png(filename = importance_partial_plot_fig, width = 14, height = 6, units = "in", res = 300, bg = "white")
@@ -147,24 +147,25 @@ for (row in seq_len(nrow(spec_table))) {
   if (requireNamespace("iml", quietly = TRUE)) {
     requireNamespace("randomForest", quietly = TRUE)
     pred_fun <- function(m, newdata) stats::predict(m, newdata)
-    predictor_obj <- iml::Predictor$new(model = rf, data = x, y = NULL, predict.function = pred_fun)
+    predictor_obj <- iml::Predictor$new(model = rf, data = design_covariates, y = NULL, predict.function = pred_fun)
     fe1 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[1], method = "pdp")
     fe2 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[2], method = "pdp")
     plot(fe1)
     plot(fe2)
   } else {
     randomForest::partialPlot(rf,
-      pred.data = x, x.var = top_predictors[1],
+      pred.data = design_covariates, x.var = top_predictors[1],
       main = paste("Partial Dependence -", top_predictors[1]),
       xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
     )
     randomForest::partialPlot(rf,
-      pred.data = x, x.var = top_predictors[2],
+      pred.data = design_covariates, x.var = top_predictors[2],
       main = paste("Partial Dependence -", top_predictors[2]),
       xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
     )
   }
   dev.off()
+  PEcAn.logger::logger.info("Saved importance/PDP figure:", importance_partial_plot_fig)
 }
 
 
@@ -188,10 +189,11 @@ for (row in seq_len(nrow(spec_table))) {
   models <- readRDS(mdl_path)
   df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
   rf <- models[[1]]
-  x <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
+  # Use design-point covariates for ALE/ICE as in the original script
+  design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
   requireNamespace("randomForest", quietly = TRUE)
   predictor_obj <- iml::Predictor$new(
-    model = rf, data = x, y = NULL,
+    model = rf, data = design_covariates, y = NULL,
     predict.function = function(m, newdata) stats::predict(m, newdata)
   )
   top_predictors <- importance_summary |>
@@ -203,13 +205,13 @@ for (row in seq_len(nrow(spec_table))) {
     pred_var_name <- top_predictors[j]
     ale <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ale")
     ggsave_optimized(
-      filename = here::here("figures", paste0(gsub(" ", "_", pft_i), "_", pool, "_ALE_predictor", j, ".svg")),
+      filename = here::here("figures", paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ALE_predictor", j, ".svg")),
       plot = plot(ale) + ggplot2::ggtitle(paste("ALE for", pred_var_name, "on", pool, "-", pft_i)),
       width = 6, height = 4, units = "in"
     )
     ice <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ice")
     ggsave_optimized(
-      filename = here::here("figures", paste0(gsub(" ", "_", pft_i), "_", pool, "_ICE_predictor", j, ".svg")),
+      filename = here::here("figures", paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ICE_predictor", j, ".svg")),
       plot = plot(ice) + ggplot2::ggtitle(paste("ICE for", pred_var_name, "on", pool, "-", pft_i)),
       width = 6, height = 4, units = "in"
     )

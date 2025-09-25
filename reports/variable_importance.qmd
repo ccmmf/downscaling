@@ -1,114 +1,63 @@
 ---
-title: "Variable Importance and Effects"
+title: "Downscaling Analysis: Variable Importance and Effects"
 format:
   html:
     self-contained: false
     df-print: paged
     toc: true
+execute:
+  freeze: false   # force re-execution to refresh figures after new model runs
 ---
 
 # Overview
+This page answers two questions for each model (pool × PFT):
 
-Diagnostics reflect exactly what scripts/040_downscale.R and scripts/042_downscale_analysis.R produce.
+1) Which predictors matter most? (Top-5 table across ensembles)
+2) How do top predictors affect predictions? (PDP panels)
 
-- Variable importance: per-ensemble importance computed during downscaling (040) and summarized by median and IQR across ensembles (042).
-- Partial dependence (PDP): top two predictors (by median importance) using the saved RF model and training data from 040.
-- ALE (Accumulated Local Effects) and ICE: optional if the iml package is available; computed from the same saved model and training data.
-
-Notes
-
-- Importance units depend on the RF backend: %IncMSE or an equivalent importance metric; higher values indicate stronger influence.
-- PDP assumes feature independence; may mislead under strong collinearity. ALE is preferred in that case and is centered at 0.
-- The mixed scenario (woody + annual) has no standalone model; therefore VI/PDP/ALE/ICE are not generated for that PFT.
-- PDPs are generated from a single saved RF model (first ensemble) for illustration, while importance ranks are aggregated across ensembles.
-
-# Importance + Partial Dependence
-
+Notes: importance is aggregated across ensembles; PDPs come from one saved RF model and are for quick intuition. ALE/ICE details are folded at the bottom.
+ 
 ```{r, include=FALSE}
 options(ccmmf.quiet_banner = TRUE)
 source(here::here("000-config.R"))
-```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
-
-fig_dir <- here::here("figures")
-imp_pngs <- list.files(fig_dir, pattern = "_importance_partial_plots\\.png$", full.names = TRUE)
-if (length(imp_pngs) == 0) {
-  cat("No importance/partial plots found. Run scripts/042_downscale_analysis.R to generate them.")
-} else {
-  # Parse filenames into PFT and pool: <pft>_<pool>_importance_partial_plots.png
-  meta <- tibble::tibble(file = imp_pngs) |>
-    dplyr::mutate(name = basename(file)) |>
-    # capture any pool token (last underscore-delimited token before suffix)
-    tidyr::extract(name, into = c("pft", "pool"),
-                   regex = "^(.*)_([^_]+)_importance_partial_plots\\.png$",
-                   remove = FALSE) |>
-    dplyr::arrange(pool, pft)
-
-  pools <- unique(meta$pool)
-  for (po in pools) {
-    cat("\n## ", po, " by PFT\n\n", sep = "")
-    mf <- dplyr::filter(meta, pool == po)
-    for (i in seq_len(nrow(mf))) {
-      cat("### ", gsub("_", " ", mf$pft[i]), "\n\n", sep = "")
-      knitr::include_graphics(mf$file[i])
-      cat("\n")
-      cat("- Left: variable importance (median across ensembles) with interquartile ranges.\n")
-      cat("- Middle/Right: PDP for the top two predictors.\n\n")
-    }
-  }
+summ_vi <- function(pft, pool, top_n = 5) {
+  spec_key <- paste0(janitor::make_clean_names(pft), "_", janitor::make_clean_names(pool))
+  vi_file <- file.path(model_outdir, paste0("vi_", spec_key, "_by_ensemble.csv"))
+  if (!file.exists(vi_file)) return(NULL)
+  readr::read_csv(vi_file, show_col_types = FALSE) |>
+    group_by(pft, model_output, predictor) |>
+    summarize(
+      median_importance = median(importance, na.rm = TRUE),
+      iqr_importance = IQR(importance, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    arrange(desc(median_importance)) |>
+    slice_head(n = top_n)
 }
+
+pfts <- c("annual crop", "woody perennial crop")
 ```
 
-## ALE and ICE Effects
+# TotSoilCarb
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
-ale_svgs <- list.files(fig_dir, pattern = "_ALE_predictor[0-9]+\\.svg$", full.names = TRUE)
-ice_svgs <- list.files(fig_dir, pattern = "_ICE_predictor[0-9]+\\.svg$", full.names = TRUE)
+#### Annual crop
 
-if (length(ale_svgs) == 0 && length(ice_svgs) == 0) {
-  cat("ALE/ICE plots not found (package 'iml' may be missing during generation).\n")
-} else {
-  parse_fx <- function(files, kind) {
-    tibble::tibble(file = files) |>
-      dplyr::mutate(name = basename(file)) |>
-      # capture any pool token (last underscore-delimited token before kind)
-      tidyr::extract(
-        name,
-        into = c("pft", "pool", "pred_idx"),
-        regex = paste0("^(.*)_([^_]+)_", kind, "_predictor([0-9]+)\\.svg$"),
-        remove = FALSE
-      ) |>
-      dplyr::mutate(pred_idx = as.integer(pred_idx))
-  }
+[![Annual crop – TotSoilCarb: importance + PDP](../figures/annual_crop_tot_soil_carb_importance_partial_plots.png){width=100%}](../figures/annual_crop_tot_soil_carb_importance_partial_plots.png)
 
-  ale_meta <- parse_fx(ale_svgs, "ALE")
-  ice_meta <- parse_fx(ice_svgs, "ICE")
+#### Woody perennial crop
 
-  # Merge ALE and ICE by pft/pool/pred_idx
-  meta <- dplyr::full_join(
-    dplyr::rename(ale_meta, ale_file = file),
-    dplyr::rename(ice_meta, ice_file = file),
-    by = c("pft", "pool", "pred_idx")
-  ) |>
-    dplyr::arrange(pool, pft, pred_idx)
+[![Woody perennial crop – TotSoilCarb: importance + PDP](../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png){width=100%}](../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png)
 
-  pools <- unique(meta$pool)
-  for (po in pools) {
-    cat("\n## ", po, " – ALE and ICE\n\n", sep = "")
-    mf <- dplyr::filter(meta, pool == po)
-    pf <- unique(mf$pft)
-    for (pf_i in pf) {
-      cat("### ", gsub("_", " ", pf_i), "\n\n", sep = "")
-      for (k in unique(mf$pred_idx[mf$pft == pf_i])) {
-        row <- dplyr::filter(mf, pft == pf_i, pred_idx == k)[1, ]
-        cat("#### Top predictor ", k, "\n\n", sep = "")
-        if (!is.na(row$ale_file)) knitr::include_graphics(row$ale_file)
-        if (!is.na(row$ice_file)) knitr::include_graphics(row$ice_file)
-        cat("\n- ALE: centered effect; more robust under collinearity.\n",
-            "- ICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n")
-      }
-    }
-  }
-}
-```
+
+# AGB
+
+#### Annual crop
+
+[![Annual crop – AGB: importance + PDP](../figures/annual_crop_agb_importance_partial_plots.png){width=100%}](../figures/annual_crop_agb_importance_partial_plots.png)
+
+#### Woody perennial crop
+
+[![Woody perennial crop – AGB: importance + PDP](../figures/woody_perennial_crop_agb_importance_partial_plots.png){width=100%}](../figures/woody_perennial_crop_agb_importance_partial_plots.png)
+
+<!-- ALE/ICE plots omitted to focus on the partial dependence. -->
