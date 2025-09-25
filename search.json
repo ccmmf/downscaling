@@ -58,44 +58,9 @@
   {
     "objectID": "reports/variable_importance.html",
     "href": "reports/variable_importance.html",
-    "title": "Variable Importance and Effects",
+    "title": "Downscaling Analysis: Variable Importance and Effects",
     "section": "",
-    "text": "Diagnostics reflect exactly what scripts/040_downscale.R and scripts/042_downscale_analysis.R produce.\n\nVariable importance: per-ensemble importance computed during downscaling (040) and summarized by median and IQR across ensembles (042).\nPartial dependence (PDP): top two predictors (by median importance) using the saved RF model and training data from 040.\nALE (Accumulated Local Effects) and ICE: optional if the iml package is available; computed from the same saved model and training data.\n\nNotes\n\nImportance units depend on the RF backend: %IncMSE or an equivalent importance metric; higher values indicate stronger influence.\nPDP assumes feature independence; may mislead under strong collinearity. ALE is preferred in that case and is centered at 0.\nThe mixed scenario (woody + annual) has no standalone model; therefore VI/PDP/ALE/ICE are not generated for that PFT.\nPDPs are generated from a single saved RF model (first ensemble) for illustration, while importance ranks are aggregated across ensembles."
-  },
-  {
-    "objectID": "reports/variable_importance.html#agb-by-pft",
-    "href": "reports/variable_importance.html#agb-by-pft",
-    "title": "Variable Importance and Effects",
-    "section": "AGB by PFT",
-    "text": "AGB by PFT\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors."
-  },
-  {
-    "objectID": "reports/variable_importance.html#totsoilcarb-by-pft",
-    "href": "reports/variable_importance.html#totsoilcarb-by-pft",
-    "title": "Variable Importance and Effects",
-    "section": "TotSoilCarb by PFT",
-    "text": "TotSoilCarb by PFT\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nannual crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors.\n\n\n\nwoody perennial crop\n\nLeft: variable importance (median across ensembles) with interquartile ranges.\nMiddle/Right: PDP for the top two predictors."
-  },
-  {
-    "objectID": "reports/variable_importance.html#ale-and-ice-effects",
-    "href": "reports/variable_importance.html#ale-and-ice-effects",
-    "title": "Variable Importance and Effects",
-    "section": "ALE and ICE Effects",
-    "text": "ALE and ICE Effects"
-  },
-  {
-    "objectID": "reports/variable_importance.html#agb-ale-and-ice",
-    "href": "reports/variable_importance.html#agb-ale-and-ice",
-    "title": "Variable Importance and Effects",
-    "section": "AGB – ALE and ICE",
-    "text": "AGB – ALE and ICE\n\nannual crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\n\nwoody perennial crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories."
-  },
-  {
-    "objectID": "reports/variable_importance.html#totsoilcarb-ale-and-ice",
-    "href": "reports/variable_importance.html#totsoilcarb-ale-and-ice",
-    "title": "Variable Importance and Effects",
-    "section": "TotSoilCarb – ALE and ICE",
-    "text": "TotSoilCarb – ALE and ICE\n\nannual crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\n\nwoody perennial crop\n\nTop predictor 1\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories.\n\n\n\nTop predictor 2\n\nALE: centered effect; more robust under collinearity.\nICE: per-observation curves; heterogeneity and interactions appear as diverse or crossing trajectories."
+    "text": "Overview\nThis page answers two questions for each model (pool × PFT):\n\nWhich predictors matter most? (Top-5 table across ensembles)\nHow do top predictors affect predictions? (PDP panels)\n\nNotes: importance is aggregated across ensembles; PDPs come from one saved RF model and are for quick intuition. ALE/ICE details are folded at the bottom.\n\n\nTotSoilCarb\n\nAnnual crop\n\n\n\nAnnual crop – TotSoilCarb: importance + PDP\n\n\n\n\nWoody perennial crop\n\n\n\nWoody perennial crop – TotSoilCarb: importance + PDP\n\n\n\n\n\nAGB\n\nAnnual crop\n\n\n\nAnnual crop – AGB: importance + PDP\n\n\n\n\nWoody perennial crop\n\n\n\nWoody perennial crop – AGB: importance + PDP"
   },
   {
     "objectID": "docs/workflow_documentation.html",
