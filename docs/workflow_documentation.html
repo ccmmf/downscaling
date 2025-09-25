@@ -261,7 +261,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../figures/spatial_downscaling_workflow.png" class="img-fluid figure-img" style="width:5in"></p>
+<p><img src="figures/spatial_downscaling_workflow.webp" class="img-fluid figure-img" style="width:5in"></p>
 <p></p><figcaption class="figure-caption">Spatial downscaling workflow using machine learning with environmental covariates</figcaption><p></p>
 </figure>
 </div>
@@ -316,7 +316,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>CCMMF_DIR</code> should point to the shared CCMMF directory. This is the location where data, inputs, and outputs will be stored, as well as the location of the <code>renv</code> cache and library</li>
 <li><code>RENV_PATHS_CACHE</code> and <code>RENV_PATHS_LIBRARY</code> store the <code>renv</code> cache and library in the CCMMF directory. These are in a subdirectory of the CCMMF directory in order to make them available across all users (and because on some computers, they exceed allocated space in the home directory).</li>
 <li><code>R_LIBS_USER</code> must point to the platform and R version specific subdirectory inside <code>RENV_PATHS_LIBRARY</code>.<br>
-Example: <code>/projectnb/dietzelab/ccmmf/renv-library/linux-almalinux-8.10/R-4.4/x86_64-pc-linux-gnu</code></li>
+</li>
 <li><code>.Rprofile</code>
 <ul>
 <li>sets repositories from which R packages are installed</li>
