@@ -94,7 +94,8 @@ for (row in seq_len(nrow(spec_table))) {
     df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
     rf <- models[[1]]
     if (inherits(rf, "randomForest")) {
-      design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
+      design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |>
+        as.data.frame()
     }
   }
   if (is.null(rf)) {
@@ -144,26 +145,17 @@ for (row in seq_len(nrow(spec_table))) {
 
   # Panel 2 and 3: Partial plots for top predictors
   par(mar = c(5, 5, 4, 2))
-  if (requireNamespace("iml", quietly = TRUE)) {
-    requireNamespace("randomForest", quietly = TRUE)
-    pred_fun <- function(m, newdata) stats::predict(m, newdata)
-    predictor_obj <- iml::Predictor$new(model = rf, data = design_covariates, y = NULL, predict.function = pred_fun)
-    fe1 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[1], method = "pdp")
-    fe2 <- iml::FeatureEffect$new(predictor_obj, feature = top_predictors[2], method = "pdp")
-    plot(fe1)
-    plot(fe2)
-  } else {
-    randomForest::partialPlot(rf,
-      pred.data = design_covariates, x.var = top_predictors[1],
-      main = paste("Partial Dependence -", top_predictors[1]),
-      xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
-    )
-    randomForest::partialPlot(rf,
-      pred.data = design_covariates, x.var = top_predictors[2],
-      main = paste("Partial Dependence -", top_predictors[2]),
-      xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
-    )
-  }
+
+  randomForest::partialPlot(rf,
+    pred.data = design_covariates, x.var = top_predictors[1], ylim = yl,
+    main = paste("Partial Dependence -", top_predictors[1]),
+    xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+  )
+  randomForest::partialPlot(rf,
+    pred.data = design_covariates, x.var = top_predictors[2], ylim = yl,
+    main = paste("Partial Dependence -", top_predictors[2]),
+    xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+  )
   dev.off()
   PEcAn.logger::logger.info("Saved importance/PDP figure:", importance_partial_plot_fig)
 }

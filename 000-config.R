@@ -5,7 +5,7 @@ parser <- argparse::ArgumentParser()
 ## Set development vs production mode ##
 # Dev mode speeds up workflows by subsetting data for testing and debugging
 parser$add_argument("--production",
-  type = "logical", default = FALSE,
+  type = "logical", default = TRUE,
   help = "Set to true for production mode, false for faster development (default: FALSE)"
 )
 args <- parser$parse_args()

@@ -1,6 +1,10 @@
 project:
   type: website
   output-dir: _site
+  preview:
+    watch-inputs: true
+  resources:
+    - README.md
   render:
     # Explicit pages to render
     - index.qmd # renders README
@@ -25,7 +29,7 @@ website:
           - href: reports/design_points_analysis.qmd
             text: Design Points Analysis
           - href: reports/variable_importance.qmd
-            text: Variable Importance
+            text: Downscaling Model Evaluation
       - text: Docs
         menu:
           - href: docs/workflow_documentation.md

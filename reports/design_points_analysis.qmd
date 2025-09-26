@@ -7,8 +7,6 @@ format:
     toc: true
 ---
 
-# Design Point Distribution
-
 Design points are representative locations selected to capture the range of environmental conditions across California croplands from CADWR (2018).
 These are the locations where SIPNET is run to produce outputs later used in downscaling to all ~600k crop fields.
 

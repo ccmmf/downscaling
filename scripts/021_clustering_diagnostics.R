@@ -55,6 +55,45 @@ cluster_plot <- ggplot(
 
 ggsave_optimized("figures/cluster_plot.svg", plot = cluster_plot)
 
+#' ### Which covariates define the clusters? (Unsupervised VI)
+#'
+#' We estimate each variable's contribution to cluster separation using the
+#' proportion of variance explained by clusters (eta-squared, <U+03B7><U+00B2>):
+#' <U+03B7><U+00B2> = between-cluster variance / total variance. Higher values indicate
+#' variables whose means differ more strongly across clusters.
+
+# Compute eta-squared (<U+03B7><U+00B2>) per numeric variable
+num_vars <- sites_clustered |>
+  dplyr::select(where(is.numeric)) |>
+  names()
+num_vars <- setdiff(num_vars, c("cluster"))
+
+eta2_tbl <- purrr::map_dfr(num_vars, function(vn) {
+  x <- sites_clustered[[vn]]
+  cl <- as.factor(sites_clustered$cluster)
+  m <- mean(x, na.rm = TRUE)
+  # counts and means by cluster (handle NAs per group)
+  g_mean <- tapply(x, cl, function(v) mean(v, na.rm = TRUE))
+  g_n <- tapply(x, cl, function(v) sum(!is.na(v)))
+  N <- sum(!is.na(x))
+  total <- stats::var(x, na.rm = TRUE) * max(N - 1, 1)
+  between <- sum(g_n * (g_mean - m)^2, na.rm = TRUE)
+  eta2 <- ifelse(total > 0, between / total, NA_real_)
+  tibble::tibble(variable = vn, eta2 = eta2)
+}) |>
+  dplyr::arrange(dplyr::desc(eta2))
+
+vi_cluster_plot <- ggplot(eta2_tbl, aes(x = reorder(variable, eta2), y = eta2)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    x = "Predictor", y = expression(eta^2 ~ " (between / total variance)"),
+    title = "K-means cluster separation by predictor (<U+03B7><U+00B2>)"
+  ) +
+  theme_minimal()
+
+ggsave_optimized("figures/cluster_variable_importance.svg", plot = vi_cluster_plot)
+
 #'
 #' #### Stratification by Crops and Climate Regions
 #'

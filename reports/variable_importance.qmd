@@ -1,63 +1,32 @@
 ---
-title: "Downscaling Analysis: Variable Importance and Effects"
+title: "RF Model Fit and Importance"
 format:
   html:
     self-contained: false
-    df-print: paged
     toc: true
 execute:
-  freeze: false   # force re-execution to refresh figures after new model runs
+  freeze: false
 ---
 
-# Overview
-This page answers two questions for each model (pool × PFT):
+# Variable importance and Partial Dependence Plots (PDP)
 
-1) Which predictors matter most? (Top-5 table across ensembles)
-2) How do top predictors affect predictions? (PDP panels)
+This page reports variable-importance and partial dependence plots for the Random Forest models used to downscale AGB and SOC.
 
-Notes: importance is aggregated across ensembles; PDPs come from one saved RF model and are for quick intuition. ALE/ICE details are folded at the bottom.
- 
-```{r, include=FALSE}
-options(ccmmf.quiet_banner = TRUE)
-source(here::here("000-config.R"))
+In the first plot, x axis is the importance of each variable, measured as the increase in mean squared error (MSE) when that variable is permuted (i.e., its values are randomly shuffled).
+Higher values indicate that the variable is more important for accurate predictions. 
 
-summ_vi <- function(pft, pool, top_n = 5) {
-  spec_key <- paste0(janitor::make_clean_names(pft), "_", janitor::make_clean_names(pool))
-  vi_file <- file.path(model_outdir, paste0("vi_", spec_key, "_by_ensemble.csv"))
-  if (!file.exists(vi_file)) return(NULL)
-  readr::read_csv(vi_file, show_col_types = FALSE) |>
-    group_by(pft, model_output, predictor) |>
-    summarize(
-      median_importance = median(importance, na.rm = TRUE),
-      iqr_importance = IQR(importance, na.rm = TRUE),
-      .groups = "drop"
-    ) |>
-    arrange(desc(median_importance)) |>
-    slice_head(n = top_n)
-}
+The next two plots show the partial dependence of the response variable (AGB or SOC) on the top two most important predictors, holding all other predictors at their average values. (= marginal effect of each predictor on the response variable). Here, the y axis is normalized.
 
-pfts <- c("annual crop", "woody perennial crop")
-```
+### AGB
 
-# TotSoilCarb
+Here we see that vapor pressure deficit (vapr) is the most important variable, the second most important variable is precipitation (precip). Temperature (temp) and solar radiation (srad) are also important.
 
-#### Annual crop
+PDPs show negative trend - increasing vapr leads to lower AGB. While  increasing precip leads to higher AGB up to a point, after which there is a decline before levelling off.
 
-[![Annual crop – TotSoilCarb: importance + PDP](../figures/annual_crop_tot_soil_carb_importance_partial_plots.png){width=100%}](../figures/annual_crop_tot_soil_carb_importance_partial_plots.png)
+![](../figures/agb_importance.png){width=100%}
 
-#### Woody perennial crop
+### SOC (TotSoilCarb)
 
-[![Woody perennial crop – TotSoilCarb: importance + PDP](../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png){width=100%}](../figures/woody_perennial_crop_tot_soil_carb_importance_partial_plots.png)
+Here we see that vapor pressure deficit is again the most important variable, followed by temperature. PDPs show negative trends - increasing vapr or temp leads to lower SOC.
 
-
-# AGB
-
-#### Annual crop
-
-[![Annual crop – AGB: importance + PDP](../figures/annual_crop_agb_importance_partial_plots.png){width=100%}](../figures/annual_crop_agb_importance_partial_plots.png)
-
-#### Woody perennial crop
-
-[![Woody perennial crop – AGB: importance + PDP](../figures/woody_perennial_crop_agb_importance_partial_plots.png){width=100%}](../figures/woody_perennial_crop_agb_importance_partial_plots.png)
-
-<!-- ALE/ICE plots omitted to focus on the partial dependence. -->
+![](../figures/soc_importance.png){width=100%}

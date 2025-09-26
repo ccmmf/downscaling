@@ -1,7 +1,2 @@
----
-title: "Downscaling"
-description: "Project overview and quick links"
----
 
 {{< include README.md >}}
-
