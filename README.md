@@ -1,36 +1,21 @@
-# Downscaling Workflow
+
+# Downscaling Workflow 
+
+<p><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="repo status: WIP"></a></p>
 
 ## Overview
 
-The downscaling workflow predicts carbon pools (SOC and AGB) for California crop fields and aggregates predictions to the county level. It uses ensemble-based uncertainty propagation via SIPNET model runs and Random Forest downscaling.
+This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level.
 
-**Key components:**
-- Environmental covariate extraction from multiple sources (ERA5, SoilGrids, TWI)
-- Design point selection using k-means clustering
-- SIPNET model runs at design points
-- Random Forest models to downscale from design points to all fields
-- County-level aggregation of carbon estimates
+Key components:
 
-### Concepts
+- Environmental covariates (ERA5, SoilGrids, TWI)
+- Design point selection via k-means
+- SIPNET simulations at design points [done externally]
+- Random Forest downscaling to all fields
+- County-level aggregation
 
-- **Anchor sites:** Fields with ground truth validation data (e.g., Ameriflux sites)
-- **Design points:** Representative fields selected for SIPNET simulation based on environmental clustering
-- **Downscaling:** Process of extending predictions from design points to all California crop fields
-
-
-
-## Documentation
-
-- [Detailed Workflow Documentation](docs/workflow_documentation.qmd) - Step-by-step description of methods
-- [Results and Analysis](reports/downscaling_results.qmd) - Visualizations and interpretation
-
-## Environment and Setup
-
-
-### Key Configuration Files
-
-- `.future.R` - Sets up parallel processing
-- `000-config.R` - Configuration file for the workflow (called in each workflow script)
+Configuration: see `000-config.R` for paths, variables, and parallel settings.
 
 ## Quick start
 
@@ -38,67 +23,36 @@ The downscaling workflow predicts carbon pools (SOC and AGB) for California crop
 # Load modules (geo cluster example)
 module load R/4.4.0 gdal proj geos sqlite udunits quarto
 
-# Decide where the shared CCMMF area lives (or set in .Renviron)
-export CCMMF_DATA_DIR=/projectnb/dietzelab/ccmmf      # or $HOME/ccmmf-dev
+# Point to the shared CCMMF directory (or set in .Renviron)
+export CCMMF_DIR=/projectnb/dietzelab/ccmmf      # or $HOME/ccmmf-dev
 
-git clone https://github.com/ccmmf/downscale.git
-cd downscale
+git clone https://github.com/ccmmf/downscaling.git
+cd downscaling
 
 # Restore exact packages for this workflow
 R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); renv::restore()'
-
-# Run the pipeline [Not implemented]
-# R -e 'targets::tar_make()'
 ```
 
-## Running the Workflow
+### Run Sequence
 
-The workflow consists of these main scripts:
+See full details about how to set up and run the workflows in the [Technical Documentation](docs/workflow_documentation.md#sec-tech-doc). 
 
 ```bash
-# 1. Prepare environmental covariates
+# Data prep and clustering
 Rscript scripts/010_prepare_covariates.R
-
-# 2. Assign anchor sites to fields
 Rscript scripts/011_prepare_anchor_sites.R
-
-# 3. Select design points via clustering
 Rscript scripts/020_cluster_and_select_design_points.R
-
-# 4. Cluster diagnostics and visualization
 Rscript scripts/021_clustering_diagnostics.R
 
-# 5. Extract SIPNET output from model runs
-Rscript scripts/030_extract_sipnet_output.R  
+# Extract SIPNET outputs and create mixed-PFT scenarios
+Rscript scripts/030_extract_sipnet_output.R
+Rscript scripts/031_aggregate_sipnet_output.R
 
-# 6. Downscale and aggregate to county level
-Rscript scripts/040_downscale_and_aggregate.R
+# Downscale and aggregate
+Rscript scripts/040_downscale.R
+Rscript scripts/041_aggregate_to_county.R
 
-# 7. Downscale analysis and interpretation
-Rscript scripts/041_downscale_analysis.R
-
-# 8. Generate results documentation
-quarto render reports/downscaling_results.qmd
-```
-
-## Advanced Setup and Use
-
-### Interactive Session on BU Cluster
-
-```sh
-# On geo.bu.edu:
-qrsh -l h_rt=3:00:00 -pe omp 16 -l buyin
-```
-
-### Job Submission
-
-This is an example of how a script can be run on an HPC
-
-```sh
-qsub \
-  -l h_rt=1:00:00 \
-  -pe omp 8 \
-  -o logs/03.out \
-  -e logs/03.err \
-  -b y Rscript downscale/999_workflow_step.R
+# Analysis and figures
+Rscript scripts/042_downscale_analysis.R
+Rscript scripts/043_county_level_plots.R
 ```

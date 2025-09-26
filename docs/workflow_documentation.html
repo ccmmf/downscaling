@@ -8,7 +8,7 @@
 
 <meta name="author" content="David LeBauer">
 
-<title>Downscaling - Downscaling Workflow Technical Documentation</title>
+<title>Downscaling - Technical Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -161,7 +161,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
         <li>
     <a class="dropdown-item" href="../reports/variable_importance.html">
- <span class="dropdown-text">RF Model Evaluation</span></a>
+ <span class="dropdown-text">Downscaling Model Evaluation</span></a>
   </li>  
     </ul>
   </li>
@@ -199,11 +199,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#technical-documentation" id="toc-technical-documentation" class="nav-link active" data-scroll-target="#technical-documentation">Technical Documentation</a>
+  <li><a href="#sec-tech-doc" id="toc-sec-tech-doc" class="nav-link active" data-scroll-target="#sec-tech-doc">Technical Documentation</a>
   <ul class="collapse">
   <li><a href="#terminology" id="toc-terminology" class="nav-link" data-scroll-target="#terminology">Terminology</a></li>
   <li><a href="#this-repository-contains-two-workflows-that-will-be-split" id="toc-this-repository-contains-two-workflows-that-will-be-split" class="nav-link" data-scroll-target="#this-repository-contains-two-workflows-that-will-be-split">This Repository Contains Two Workflows That Will Be Split</a></li>
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#workflow-steps" id="toc-workflow-steps" class="nav-link" data-scroll-target="#workflow-steps">Workflow Steps</a>
   <ul class="collapse">
   <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a></li>
@@ -214,12 +213,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#mixed-cropping-systems" id="toc-mixed-cropping-systems" class="nav-link" data-scroll-target="#mixed-cropping-systems">5. Mixed Cropping Systems</a></li>
   <li><a href="#downscale-aggregate-to-county-and-plot" id="toc-downscale-aggregate-to-county-and-plot" class="nav-link" data-scroll-target="#downscale-aggregate-to-county-and-plot">6. Downscale, Aggregate to County, and Plot</a></li>
   </ul></li>
+  <li><a href="#running-on-bu-cluster" id="toc-running-on-bu-cluster" class="nav-link" data-scroll-target="#running-on-bu-cluster">Running on BU Cluster</a></li>
+  <li><a href="#documentation-site-quarto" id="toc-documentation-site-quarto" class="nav-link" data-scroll-target="#documentation-site-quarto">Documentation Site (Quarto)</a></li>
   <li><a href="#technical-reference" id="toc-technical-reference" class="nav-link" data-scroll-target="#technical-reference">Technical Reference</a>
   <ul class="collapse">
   <li><a href="#ensemble-structure" id="toc-ensemble-structure" class="nav-link" data-scroll-target="#ensemble-structure">Ensemble Structure</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -228,7 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Downscaling Workflow Technical Documentation</h1>
+<h1 class="title">Technical Documentation</h1>
 </div>
 
 
@@ -255,13 +255,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="technical-documentation" class="level1">
+<section id="sec-tech-doc" class="level1">
 <h1>Technical Documentation</h1>
 <p>The downscaling workflow predicts carbon pools (Soil Organic Carbon and Aboveground Biomass) for cropland fields in California and then aggregates these predictions to the county scale.</p>
 <p>It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="figures/spatial_downscaling_workflow.webp" class="img-fluid figure-img" style="width:5in"></p>
+<p><img src="../figures/spatial_downscaling_workflow.webp" class="img-fluid figure-img" style="width:5in"></p>
 <p></p><figcaption class="figure-caption">Spatial downscaling workflow using machine learning with environmental covariates</figcaption><p></p>
 </figure>
 </div>
@@ -283,22 +283,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Ensemble in ccmmf/workflows repository, generates ensemble outputs</li>
 <li><strong>Downscaling</strong>: uses ensemble outputs to make predictions for each field in CA then aggregate to county level summaries.</li>
 </ol>
-</section>
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Site Selection</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/009_update_landiq.R</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/010_prepare_covariates.R</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/011_prepare_anchor_sites.R</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/020_cluster_and_select_design_points.R</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/021_clustering_diagnostics.R</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Downscaling and Aggregation</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/031_aggregate_sipnet_output.R</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale_and_aggregate.R</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_downscale_analysis.R</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_county_level_plots.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<!--
+TODO: Add workflow diagram; should be generated by Targets 
+-->
 </section>
 <section id="workflow-steps" class="level2">
 <h2 class="anchored" data-anchor-id="workflow-steps">Workflow Steps</h2>
@@ -311,7 +298,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h4 class="anchored" data-anchor-id="configuration-setup">Configuration setup</h4>
 <p>To set up this workflow to run on your system, follow the following steps.</p>
 <p><strong>Clone Repository</strong></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:ccmmf/downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:ccmmf/downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li><code>CCMMF_DIR</code> should point to the shared CCMMF directory. This is the location where data, inputs, and outputs will be stored, as well as the location of the <code>renv</code> cache and library</li>
 <li><code>RENV_PATHS_CACHE</code> and <code>RENV_PATHS_LIBRARY</code> store the <code>renv</code> cache and library in the CCMMF directory. These are in a subdirectory of the CCMMF directory in order to make them available across all users (and because on some computers, they exceed allocated space in the home directory).</li>
@@ -334,9 +321,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="data-preparation" class="level3">
 <h3 class="anchored" data-anchor-id="data-preparation">1. Data Preparation</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/009_update_landiq.R</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/010_prepare_covariates.R</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/011_prepare_anchor_sites.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/009_update_landiq.R</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/010_prepare_covariates.R</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/011_prepare_anchor_sites.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>These scripts prepare data for clustering and downscaling:</p>
 <ul>
 <li>Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes</li>
@@ -417,8 +404,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="design-point-selection" class="level3">
 <h3 class="anchored" data-anchor-id="design-point-selection">2. Design Point Selection</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/020_cluster_and_select_design_points.R</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/021_clustering_diagnostics.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/020_cluster_and_select_design_points.R</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/021_clustering_diagnostics.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Uses k-means clustering to select representative fields plus anchor sites:</p>
 <ul>
 <li>Subsample LandIQ fields and include anchor sites for clustering</li>
@@ -562,7 +549,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="extract-sipnet-output" class="level3">
 <h3 class="anchored" data-anchor-id="extract-sipnet-output">4. Extract SIPNET Output</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Extracts and formats SIPNET outputs for downscaling:</p>
 <ul>
 <li>Extract output variables (AGB, TotSoilCarb) from SIPNET simulations</li>
@@ -574,7 +561,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="mixed-cropping-systems" class="level3">
 <h3 class="anchored" data-anchor-id="mixed-cropping-systems">5. Mixed Cropping Systems</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/031_aggregate_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/031_aggregate_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Simulates mixed-cropping scenarios by combining outputs across two PFTs using a mixed aggregation function (see Mixed System Prototype). Two methods are supported:</p>
 <ul>
 <li>weighted: area-partitioned mix where <code>woody_cover + annual_cover = 1</code></li>
@@ -585,8 +572,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="downscale-aggregate-to-county-and-plot" class="level3">
 <h3 class="anchored" data-anchor-id="downscale-aggregate-to-county-and-plot">6. Downscale, Aggregate to County, and Plot</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale_and_aggregate.R</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_downscale_analysis.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Builds Random Forest models to predict carbon pools for all fields; aggregates to county-level; summarizes variable importance; and produces maps:</p>
 <ul>
 <li>Train models on SIPNET ensemble runs at design points</li>
@@ -594,33 +583,43 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Aggregate to county-level estimates</li>
 <li>Output maps and statistics of carbon density and totals</li>
 </ul>
-<p><strong>Inputs:</strong> - <code>out/ensemble_output.csv</code>: SIPNET outputs - <code>data/site_covariates.csv</code>: Environmental covariates</p>
-<p><strong>Outputs from <code>040_downscale_and_aggregate.R</code>:</strong> - <code>cache/downscaling_output.RData</code>: Checkpoint for downstream analysis - <code>model_outdir/county_summaries.csv</code>: County statistics (means/SDs across ensembles for stocks and densities)</p>
-<p><strong>Outputs from <code>041_downscale_analysis.R</code> (saved in <code>figures/</code>):</strong> - <code>&lt;pool&gt;_importance_partial_plots.png</code>: Variable importance with partial plots for top predictors - <code>&lt;pool&gt;_ALE_predictor&lt;i&gt;.png</code> and <code>&lt;pool&gt;_ICE_predictor&lt;i&gt;.png</code>: ALE and ICE plots for top predictors</p>
-<p><strong>Outputs from <code>042_county_level_plots.R</code> (saved in <code>figures/</code>):</strong> - <code>county_&lt;pool&gt;_carbon_stock.png</code> and <code>county_&lt;pool&gt;_carbon_density.png</code>: County-level maps of carbon stock and density by pool</p>
+<p><strong>Inputs:</strong> - <code>model_outdir/ensemble_output.csv</code>: SIPNET outputs extracted in step 4 - <code>data/site_covariates.csv</code>: Environmental covariates</p>
+<p><strong>Outputs from <code>040_downscale.R</code>:</strong> - <code>model_outdir/downscaled_preds.csv</code>: Per-site, per-ensemble predictions with totals and densities - <code>model_outdir/downscaled_preds_metadata.json</code>: Metadata for predictions - <code>model_outdir/training_sites.csv</code>: Training site list per PFT and pool - <code>cache/models/*_models.rds</code>: Saved RF models per spec - <code>cache/training_data/*_training.csv</code>: Training covariate matrices per spec - <code>model_outdir/downscaled_deltas.csv</code>: Optional start→end deltas when available</p>
+<p><strong>Outputs from <code>041_aggregate_to_county.R</code>:</strong> - <code>model_outdir/county_summaries.csv</code>: County statistics (means/SDs across ensembles for stocks and densities)</p>
+<p><strong>Outputs from <code>042_downscale_analysis.R</code> (saved in <code>figures/</code>):</strong> - <code>&lt;pft&gt;_&lt;pool&gt;_importance_partial_plots.png</code>: Variable importance with partial plots for top predictors - <code>&lt;pft&gt;_&lt;pool&gt;_ALE_predictor&lt;i&gt;.svg</code> and <code>&lt;pft&gt;_&lt;pool&gt;_ICE_predictor&lt;i&gt;.svg</code>: ALE and ICE plots</p>
+<p><strong>Outputs from <code>043_county_level_plots.R</code> (saved in <code>figures/</code>):</strong> - <code>county_&lt;pft&gt;_&lt;pool&gt;_carbon_stock.webp</code> and <code>county_&lt;pft&gt;_&lt;pool&gt;_carbon_density.webp</code>: County-level maps - <code>county_diff_woody_plus_annual_minus_woody_&lt;pool&gt;_carbon_{density,stock}.webp</code>: Scenario difference maps - <code>county_delta_&lt;pft&gt;_&lt;pool&gt;_carbon_{density,stock}.webp</code>: Start→end delta maps when available</p>
 </section>
+</section>
+<section id="running-on-bu-cluster" class="level2">
+<h2 class="anchored" data-anchor-id="running-on-bu-cluster">Running on BU Cluster</h2>
+<p>Interactive session (example):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qrsh</span> <span class="at">-l</span> h_rt=3:00:00 <span class="at">-pe</span> omp 16 <span class="at">-l</span> buyin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Submit a batch job (example using downscaling step):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qsub</span> <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-l</span> h_rt=4:00:00 <span class="dt">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-pe</span> omp 8 <span class="dt">\</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> logs/040.out <span class="dt">\</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> logs/040.err <span class="dt">\</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-b</span> y Rscript scripts/040_downscale.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="documentation-site-quarto" class="level2">
+<h2 class="anchored" data-anchor-id="documentation-site-quarto">Documentation Site (Quarto)</h2>
+<ul>
+<li>Preview: <code>quarto preview</code></li>
+<li>Build: <code>quarto render</code></li>
+<li>Publish to GitHub Pages: <code>quarto publish gh-pages</code> (publishes <code>_site/</code>)</li>
+</ul>
+<p>Notes: - Quarto config is in <code>_quarto.yml</code> and the home page is <code>index.qmd</code> (includes <code>README.md</code>). - Uses <code>freeze: auto</code> to cache outputs; rebuild where data paths exist (see <code>000-config.R</code>).</p>
 </section>
 <section id="technical-reference" class="level2">
 <h2 class="anchored" data-anchor-id="technical-reference">Technical Reference</h2>
 <section id="ensemble-structure" class="level3">
 <h3 class="anchored" data-anchor-id="ensemble-structure">Ensemble Structure</h3>
 <p>Each ensemble member represents a plausible realization given parameter and meteorological uncertainty. This ensemble structure is maintained throughout the workflow to properly propagate uncertainty. For example, downscaling is done for each ensemble member separately, and then the results are aggregated to county-level statistics.</p>
-</section>
-</section>
-</section>
-<section id="references" class="level1">
-<h1>References</h1>
-<p><strong>EFI Standards</strong></p>
-<p>Dietze, Michael C., R. Quinn Thomas, Jody Peters, Carl Boettiger, Gerbrand Koren, Alexey N. Shiklomanov, and Jaime Ashander. 2023. “A Community Convention for Ecological Forecasting: Output Files and Metadata Version 1.0.” Ecosphere 14 (11): e4686. https://doi.org/10.1002/ecs2.4686.</p>
-<p><strong>Data Sources</strong></p>
-<p>Land IQ, LLC. California Crop Mapping (2014). California Department of Water Resources, 2017. https://data.cnra.ca.gov/dataset/statewide-crop-mapping.</p>
-<p>Hengl, T. et al.&nbsp;2017. “SoilGrids250m: Global Gridded Soil Information Based on Machine Learning.” PLoS ONE 12(2): e0169748. https://doi.org/10.1371/journal.pone.0169748</p>
-<p>Hersbach, H. et al.&nbsp;2020. “The ERA5 Global Reanalysis.” Quarterly Journal of the Royal Meteorological Society 146: 1999–2049. https://doi.org/10.1002/qj.3803</p>
-<p><strong>Models</strong></p>
-<p>Braswell, Bobby H., William J. Sacks, Ernst Linder, and David S. Schimel. 2005. “Estimating Diurnal to Annual Ecosystem Parameters by Synthesis of a Carbon Flux Model with Eddy Covariance Net Ecosystem Exchange Observations.” Global Change Biology 11 (2): 335–55. https://doi.org/10.1111/j.1365-2486.2005.00897.x.</p>
-<p>Liaw, Andy, and Matthew Wiener. 2002. “Classification and Regression by randomForest.” R News 2 (3): 18–22. https://CRAN.R-project.org/doc/Rnews/.</p>
 
 
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->
