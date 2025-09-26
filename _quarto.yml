@@ -33,7 +33,7 @@ website:
       - text: Docs
         menu:
           - href: docs/workflow_documentation.md
-            text: Workflow Documentation
+            text: Technical Documentation
           - href: docs/mixed_system_prototype.qmd
             text: Mixed System Prototype
           - href: docs/references.md
