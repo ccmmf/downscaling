@@ -61,9 +61,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-
 
 </head>
 
@@ -140,15 +137,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
-  <ul class="collapse">
-  <li><a href="#model-fit-oob-r²-agb" id="toc-model-fit-oob-r²-agb" class="nav-link" data-scroll-target="#model-fit-oob-r²-agb">Model fit: OOB R² (AGB)</a></li>
-  <li><a href="#model-fit-oob-r²-soc" id="toc-model-fit-oob-r²-soc" class="nav-link" data-scroll-target="#model-fit-oob-r²-soc">Model fit: OOB R² (SOC)</a></li>
-  <li><a href="#variable-importance-figures" id="toc-variable-importance-figures" class="nav-link" data-scroll-target="#variable-importance-figures">Variable importance figures</a>
+  <li><a href="#variable-importance-and-partial-dependence-plots-pdp" id="toc-variable-importance-and-partial-dependence-plots-pdp" class="nav-link active" data-scroll-target="#variable-importance-and-partial-dependence-plots-pdp">Variable importance and Partial Dependence Plots (PDP)</a>
   <ul class="collapse">
   <li><a href="#agb" id="toc-agb" class="nav-link" data-scroll-target="#agb">AGB</a></li>
   <li><a href="#soc-totsoilcarb" id="toc-soc-totsoilcarb" class="nav-link" data-scroll-target="#soc-totsoilcarb">SOC (TotSoilCarb)</a></li>
-  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -185,96 +177,23 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="overview" class="level1">
-<h1>Overview</h1>
-<p>This page reports simple model fit statistics (OOB R²) for each PFT and carbon pool and then presents the static variable-importance figures for AGB and SOC.</p>
-<section id="model-fit-oob-r²-agb" class="level2">
-<h2 class="anchored" data-anchor-id="model-fit-oob-r²-agb">Model fit: OOB R² (AGB)</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<caption>AGB model fit (OOB R²)</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;">PFT</th>
-<th style="text-align: right;">Median OOB R^2</th>
-<th style="text-align: left;">IQR</th>
-<th style="text-align: right;">Ensembles</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">-0.483</td>
-<td style="text-align: left;">[-0.682, -0.227]</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">-0.523</td>
-<td style="text-align: left;">[-0.585, -0.2]</td>
-<td style="text-align: right;">10</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="model-fit-oob-r²-soc" class="level2">
-<h2 class="anchored" data-anchor-id="model-fit-oob-r²-soc">Model fit: OOB R² (SOC)</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<caption>SOC (TotSoilCarb) model fit (OOB R²)</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;">PFT</th>
-<th style="text-align: right;">Median OOB R^2</th>
-<th style="text-align: left;">IQR</th>
-<th style="text-align: right;">Ensembles</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">-0.309</td>
-<td style="text-align: left;">[-0.472, -0.155]</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">-0.384</td>
-<td style="text-align: left;">[-0.648, -0.148]</td>
-<td style="text-align: right;">10</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="variable-importance-figures" class="level2">
-<h2 class="anchored" data-anchor-id="variable-importance-figures">Variable importance figures</h2>
-<p>The following figures summarize variable importance across the study area for the two carbon pools.</p>
+<section id="variable-importance-and-partial-dependence-plots-pdp" class="level1">
+<h1>Variable importance and Partial Dependence Plots (PDP)</h1>
+<p>This page reports variable-importance and partial dependence plots for the Random Forest models used to downscale AGB and SOC.</p>
+<p>In the first plot, x axis is the importance of each variable, measured as the increase in mean squared error (MSE) when that variable is permuted (i.e., its values are randomly shuffled). Higher values indicate that the variable is more important for accurate predictions.</p>
+<p>The next two plots show the partial dependence of the response variable (AGB or SOC) on the top two most important predictors, holding all other predictors at their average values. (= marginal effect of each predictor on the response variable). Here, the y axis is normalized.</p>
 <section id="agb" class="level3">
 <h3 class="anchored" data-anchor-id="agb">AGB</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../figures/agb_importance.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<p></p><figcaption class="figure-caption">AGB variable importance</figcaption><p></p>
-</figure>
-</div>
+<p>Here we see that vapor pressure deficit (vapr) is the most important variable, the second most important variable is precipitation (precip). Temperature (temp) and solar radiation (srad) are also important.</p>
+<p>PDPs show negative trend - increasing vapr leads to lower AGB. While increasing precip leads to higher AGB up to a point, after which there is a decline before levelling off.</p>
+<p><img src="../figures/agb_importance.png" class="img-fluid" style="width:100.0%"></p>
 </section>
 <section id="soc-totsoilcarb" class="level3">
 <h3 class="anchored" data-anchor-id="soc-totsoilcarb">SOC (TotSoilCarb)</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../figures/soc_importance.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<p></p><figcaption class="figure-caption">SOC variable importance</figcaption><p></p>
-</figure>
-</div>
+<p>Here we see that vapor pressure deficit is again the most important variable, followed by temperature. PDPs show negative trends - increasing vapr or temp leads to lower SOC.</p>
+<p><img src="../figures/soc_importance.png" class="img-fluid" style="width:100.0%"></p>
 
 
-</section>
 </section>
 </section>
 
