@@ -35,7 +35,7 @@ R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); r
 
 ### Run Sequence
 
-See full details in . Typical sequence:
+See full details about how to set up and run the workflows in the [Technical Documentation](docs/workflow_documentation.md#sec-tech-doc). 
 
 ```bash
 # Data prep and clustering
