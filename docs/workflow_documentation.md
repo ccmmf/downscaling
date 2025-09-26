@@ -10,8 +10,6 @@ execute:
   echo: false
 ---
 
-# Technical Documentation {#sec-tech-doc}
-
 The downscaling workflow predicts carbon pools (Soil Organic Carbon and Aboveground Biomass) for cropland fields in California and then aggregates these predictions to the county scale.
 
 It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.

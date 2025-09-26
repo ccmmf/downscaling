@@ -1,7 +1,10 @@
 
-# Downscaling Workflow 
+# Downscaling And Aggregation Workflow
 
-<p><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="repo status: WIP"></a></p>
+::: {.callout-warning}
+This proof of concept is untested and subject to change. Interpret results as illustrative.
+:::
+
 
 ## Overview
 
