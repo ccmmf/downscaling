@@ -41,9 +41,9 @@
 #' )
 combine_mixed_crops <- function(woody_value,
                                 annual_value,
-                                annual_init = NULL,
                                 annual_cover,
                                 woody_cover,
+                                annual_init = NULL,
                                 method = c("weighted", "incremental")) {
   method <- match.arg(method)
 
