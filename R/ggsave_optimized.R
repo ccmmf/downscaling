@@ -1,4 +1,4 @@
-#' Save Optimized Image Formats
+#' Save Web Optimized Image Formats
 #'
 #' Saves a ggplot object to a file, supporting both vector and raster formats.
 #' Raster formats are processed with `magick` for additional optimizations.
