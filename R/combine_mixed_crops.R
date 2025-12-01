@@ -8,9 +8,7 @@
 #'    and treats annual as an increment relative to an annual initial baseline:
 #'    `annual_delta = annual_value - annual_init`; `result = woody_value + annual_cover * annual_delta`.
 #'
-#' Vectorization & recycling are handled via `vctrs::vec_recycle_common()`. All scalar
-#' inputs are broadcast to the common length. Length mismatches other than 1 or the
-#' common size trigger a severe error.
+#' All inputs must be vectors each of length 1 or a shared common length.
 #'
 #' Validation rules (severe errors unless otherwise noted):
 #'  * No input values may be NA (including covers, pool sizes, annual_init if required)
