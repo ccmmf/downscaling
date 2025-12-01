@@ -21,8 +21,8 @@
 #' @param woody_value numeric. Pool size for the woody PFT (kg/m2).
 #' @param annual_value numeric. Pool size for the annual PFT (kg/m2).
 #' @param annual_init numeric, required for method = "incremental"; the initial annual pool.
-#' @param annual_cover numeric. Fractional cover of the annual PFT (f_annual, 0-1).
-#' @param woody_cover numeric. Fractional cover of the woody PFT (f_woody, 0-1). Must be 1 for incremental.
+#' @param annual_cover numeric. Fractional cover of the annual PFT (0-1).
+#' @param woody_cover numeric. Fractional cover of the woody PFT (0-1). Must be 1 when `method` is "incremental".
 #' @param method character. One of "weighted" or "incremental".
 #'
 #' @return numeric vector of combined values.
