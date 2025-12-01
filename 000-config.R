@@ -30,10 +30,6 @@ pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_2025
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
-# outputs_to_extract <- c(
-#   "TotSoilCarb",
-#   "AGB"
-# )
 outputs_to_extract <- c("TotSoilCarb", "AGB")
 if (!PRODUCTION) {
   # can subset for testing
