@@ -22,11 +22,23 @@ ensemble_data <- readr::read_csv(ensemble_csv) |>
   dplyr::rename(
     ensemble = parameter # parameter is EFI std name for ensemble
   )
+
+# detect scenario mode (Phase 3 has scenario column, Phase 2 does not)
+has_scenarios <- "scenario" %in% names(ensemble_data)
+if (has_scenarios) {
+  scenarios <- unique(ensemble_data$scenario)
+  PEcAn.logger::logger.info("Scenario mode: ", paste(scenarios, collapse = ", "))
+} else {
+  scenarios <- "baseline"
+  ensemble_data <- ensemble_data |> dplyr::mutate(scenario = "baseline")
+}
+
 PEcAn.logger::logger.info(
   "Loaded ensemble data:", nrow(ensemble_data), "rows;",
   dplyr::n_distinct(ensemble_data$site_id), "unique site_ids;",
   dplyr::n_distinct(ensemble_data$ensemble), "ensembles;",
   dplyr::n_distinct(ensemble_data$pft), "PFTs;",
+  length(scenarios), "scenarios;",
   dplyr::n_distinct(ensemble_data$variable), "variables (carbon pools) in file; load_time_s=",
   round(step_elapsed(timer_read_ensemble), 2)
 )
@@ -187,35 +199,53 @@ extract_oob_r2 <- function(model, y_train = NULL) {
 #   ca_field_attributes
 # )
 
-# TODO: Need to put a canonical design_points CSV in repository
-### FOR NOW, just use hard coded design points
-design_points <- structure(list(site_id = c(
-  "3a84c0268e1655a3", "3a84c0268e1655a3",
-  "d523652b399a8f6e", "d523652b399a8f6e", "275102c035b15f5e", "275102c035b15f5e",
-  "26ff9e8246f7c8f4", "26ff9e8246f7c8f4", "47cd11223bb49112", "47cd11223bb49112",
-  "9a4c7e47fc0297bb", "9a4c7e47fc0297bb", "e5bb4dca46bd5041", "e5bb4dca46bd5041",
-  "abd5a71d492e92e1", "abd5a71d492e92e1", "7fe5bb855fb36cdb", "7fe5bb855fb36cdb",
-  "7bb77bae6ac3c147", "7bb77bae6ac3c147"
-), lat = c(
-  34.91295, 34.91295,
-  34.38596, 34.38596, 34.47244, 34.47244, 33.86884, 33.86884, 34.29708,
-  34.29708, 33.96727, 33.96727, 33.35306, 33.35306, 34.37258, 34.37258,
-  33.90119, 33.90119, 33.57847, 33.57847
-), lon = c(
-  -120.40345,
-  -120.40345, -118.81446, -118.81446, -119.22015, -119.22015, -117.40838,
-  -117.40838, -119.06014, -119.06014, -117.34049, -117.34049, -117.19182,
-  -117.19182, -119.03318, -119.03318, -117.40624, -117.40624, -116.03157,
-  -116.03157
-), pft = c(
-  "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop",
-  "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop",
-  "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop",
-  "annual crop"
-)), row.names = c(NA, -20L), class = c(
-  "tbl_df", "tbl",
-  "data.frame"
-))
+
+# TODO: unify design point loading across modes when multi-PFT scenarios are added
+if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
+  site_info <- readr::read_csv(file.path(pecan_outdir, "site_info.csv"))
+  design_points <- site_info |>
+    dplyr::transmute(
+      site_id = id,
+      lat = lat,
+      lon = lon,
+      pft = dplyr::case_when(
+        site.pft == "annual_crop" ~ "annual crop",
+        TRUE ~ site.pft
+      )
+    )
+  PEcAn.logger::logger.info("phase 3: loaded ", nrow(design_points), " design points from site_info.csv")
+} else {
+  # Phase 2: hard-coded design points
+  # TODO: Need to put a canonical design_points CSV in repository
+  ### FOR NOW, just use hard coded design points
+  design_points <- structure(list(site_id = c(
+    "3a84c0268e1655a3", "3a84c0268e1655a3",
+    "d523652b399a8f6e", "d523652b399a8f6e", "275102c035b15f5e", "275102c035b15f5e",
+    "26ff9e8246f7c8f4", "26ff9e8246f7c8f4", "47cd11223bb49112", "47cd11223bb49112",
+    "9a4c7e47fc0297bb", "9a4c7e47fc0297bb", "e5bb4dca46bd5041", "e5bb4dca46bd5041",
+    "abd5a71d492e92e1", "abd5a71d492e92e1", "7fe5bb855fb36cdb", "7fe5bb855fb36cdb",
+    "7bb77bae6ac3c147", "7bb77bae6ac3c147"
+  ), lat = c(
+    34.91295, 34.91295,
+    34.38596, 34.38596, 34.47244, 34.47244, 33.86884, 33.86884, 34.29708,
+    34.29708, 33.96727, 33.96727, 33.35306, 33.35306, 34.37258, 34.37258,
+    33.90119, 33.90119, 33.57847, 33.57847
+  ), lon = c(
+    -120.40345,
+    -120.40345, -118.81446, -118.81446, -119.22015, -119.22015, -117.40838,
+    -117.40838, -119.06014, -119.06014, -117.34049, -117.34049, -117.19182,
+    -117.19182, -119.03318, -119.03318, -117.40624, -117.40624, -116.03157,
+    -116.03157
+  ), pft = c(
+    "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop",
+    "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop",
+    "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop", "annual crop", "woody perennial crop",
+    "annual crop"
+  )), row.names = c(NA, -20L), class = c(
+    "tbl_df", "tbl",
+    "data.frame"
+  ))
+}
 
 stopifnot(all(design_points$site_id %in% covariates$site_id))
 
@@ -348,61 +378,61 @@ downscale_model_output <- function(date,
 }
 
 # not using furrr b/c it is used inside downscale
-# We downscale each carbon pool for both woody and annual PFTs,
+# we downscale each carbon pool for each scenario and PFT,
 # predicting to the same target set for that PFT
 downscale_output_list <- list()
 delta_output_records <- list()
 training_sites_records <- list()
-combo_total <- length(outputs_to_extract) * length(pfts)
+combo_total <- length(scenarios) * length(outputs_to_extract) * length(pfts)
 combo_index <- 0L
 loop_global_timer <- step_timer()
-for (pool in outputs_to_extract) {
-  for (pft_i in pfts) {
-    combo_index <- combo_index + 1L
-    iter_timer <- step_timer()
-    PEcAn.logger::logger.info(
-      sprintf(
-        "[Progress %d/%d] Starting downscaling for %s (%s) at %s",
-        combo_index, combo_total, pool, pft_i, ts_now()
-      )
-    )
 
-    # train_ens: ensemble data filtered by PFT
-    train_ens <- ensemble_data |>
-      dplyr::filter(pft == pft_i & variable == pool)
-
-    # Skip empty slices early
-    if (nrow(train_ens) == 0) {
-      PEcAn.logger::logger.warn("No ensemble rows for ", pft_i, "::", pool, " <U+2014> skipping")
-      next
-    }
-
-    # Determine per-slice end date and warn if ensembles disagree
-    slice_end_date <- as.Date(max(train_ens$datetime))
-    end_by_ens <- train_ens |>
-      dplyr::group_by(ensemble) |>
-      dplyr::summarise(last_date = max(lubridate::as_date(datetime)), .groups = "drop")
-    if (dplyr::n_distinct(end_by_ens$last_date) > 1) {
-      PEcAn.logger::logger.warn(
-        "End dates vary across ensembles for ", pft_i, "::", pool,
-        "; using slice_end_date=", as.character(slice_end_date)
-      )
-    } else {
+for (scenario_i in scenarios) {
+  PEcAn.logger::logger.info("=== Processing scenario: ", scenario_i, " ===")
+  
+  for (pool in outputs_to_extract) {
+    for (pft_i in pfts) {
+      combo_index <- combo_index + 1L
+      iter_timer <- step_timer()
       PEcAn.logger::logger.info(
-        "Using slice_end_date=", as.character(slice_end_date), " for ", pft_i, "::", pool
+        sprintf(
+          "[Progress %d/%d] %s / %s / %s at %s",
+          combo_index, combo_total, scenario_i, pool, pft_i, ts_now()
+        )
       )
-    }
-    # train_pts: design points filtered by PFT
-    train_pts <- train_ens |>
-      dplyr::select(site_id, lat, lon, pft) |>
-      dplyr::distinct()
 
-    # Diagnostic: overlapping site counts
-    n_train_ens_sites <- length(unique(train_ens$site_id))
-    n_train_pts <- nrow(train_pts)
-    PEcAn.logger::logger.info("Training sites: ensemble has", n_train_ens_sites, "site_ids; using", n_train_pts, "coords")
-    training_sites_records[[paste0(pft_i, "::", pool)]] <-
-      tibble::tibble(site_id = unique(train_pts$site_id), pft = pft_i, model_output = pool)
+      # train_ens: ensemble data filtered by scenario, PFT, and pool
+      train_ens <- ensemble_data |>
+        dplyr::filter(scenario == scenario_i, pft == pft_i, variable == pool)
+
+      # Skip empty slices early
+      if (nrow(train_ens) == 0) {
+        PEcAn.logger::logger.warn("No data for ", scenario_i, "::", pft_i, "::", pool, " - skipping")
+        next
+      }
+
+      # Determine per-slice end date and warn if ensembles disagree
+      slice_end_date <- as.Date(max(train_ens$datetime))
+      end_by_ens <- train_ens |>
+        dplyr::group_by(ensemble) |>
+        dplyr::summarise(last_date = max(lubridate::as_date(datetime)), .groups = "drop")
+      if (dplyr::n_distinct(end_by_ens$last_date) > 1) {
+        PEcAn.logger::logger.warn(
+          "End dates vary across ensembles for ", scenario_i, "::", pft_i, "::", pool
+        )
+      }
+
+      # train_pts: design points filtered by PFT
+      train_pts <- train_ens |>
+        dplyr::select(site_id, lat, lon, pft) |>
+        dplyr::distinct()
+
+      # Diagnostic: overlapping site counts
+      n_train_ens_sites <- length(unique(train_ens$site_id))
+      n_train_pts <- nrow(train_pts)
+      PEcAn.logger::logger.info("Training sites: ", n_train_ens_sites, "; coords: ", n_train_pts)
+      training_sites_records[[paste0(scenario_i, "::", pft_i, "::", pool)]] <-
+        tibble::tibble(site_id = unique(train_pts$site_id), scenario = scenario_i, pft = pft_i, model_output = pool)
 
     # Ensure design point covariates are included for training join
     dp_pft <- design_covariates_unscaled |>
@@ -521,8 +551,8 @@ for (pool in outputs_to_extract) {
       }
     }
 
-    # store using pft::pool names (e.g. "woody::AGB").
-    downscale_output_list[[paste0(pft_i, "::", pool)]] <- result
+    # store using scenario::pft::pool names
+    downscale_output_list[[paste0(scenario_i, "::", pft_i, "::", pool)]] <- result
     if (!is.null(result) && !is.null(start_obj)) {
       end_df <- purrr::map(
         result$predictions,
@@ -547,7 +577,7 @@ for (pool in outputs_to_extract) {
           delta_total_c_Mg = delta_c_density_Mg_ha * area_ha
         ) |>
         dplyr::select(site_id, pft, ensemble, delta_c_density_Mg_ha, delta_total_c_Mg, area_ha, county, model_output)
-      delta_output_records[[paste0(pft_i, "::", pool)]] <- delta_df
+      delta_output_records[[paste0(scenario_i, "::", pft_i, "::", pool)]] <- delta_df
     }
 
     # Incremental checkpoint (so production runs can be resumed)
@@ -568,8 +598,9 @@ for (pool in outputs_to_extract) {
         step_elapsed(iter_timer), step_elapsed(loop_global_timer)
       )
     )
-  }
-}
+    } # end pft_i loop
+  } # end pool loop
+} # end scenario_i loop
 
 if (length(downscale_output_list) == 0) {
   PEcAn.logger::logger.severe("No downscale outputs produced")
@@ -630,12 +661,12 @@ get_downscale_preds <- function(downscale_obj) {
     dplyr::left_join(ca_fields, by = "site_id")
 }
 
-# Assemble predictions; carry PFT label by parsing element name: "{pft}::{pool}"
+# Assemble predictions; carry scenario/PFT label by parsing element name: "{scenario}::{pft}::{pool}"
 downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
   dplyr::bind_rows(.id = "spec") |>
   tidyr::separate(
     col = "spec",
-    into = c("pft", "model_output"),
+    into = c("scenario", "pft", "model_output"),
     sep = "::",
     remove = TRUE
   ) |>
@@ -643,11 +674,11 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
   dplyr::mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
   # Calculate total Mg per field: c_density_Mg_ha * area_ha
   dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha) |>
-  dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output, -prediction)
+  dplyr::select(site_id, scenario, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output, -prediction)
 
 dp <- downscale_preds |>
   dplyr::select(
-    site_id, pft, ensemble,
+    site_id, scenario, pft, ensemble,
     c_density_Mg_ha, total_c_Mg,
     area_ha, county, model_output
   )
@@ -662,186 +693,204 @@ dp <- downscale_preds |>
 woody_label <- pfts[grepl("woody", pfts, ignore.case = TRUE)]
 annual_label <- pfts[grepl("annual", pfts, ignore.case = TRUE)]
 
-if (is.na(woody_label) | is.na(annual_label)) {
+if (length(woody_label) == 0 || length(annual_label) == 0) {
   PEcAn.logger::logger.warn("Cannot build mixed scenario: missing woody or annual PFT")
 } else {
   PEcAn.logger::logger.info(
     "Building mixed scenario 'woody + annual' using overlap (incremental) with 50% annual cover"
   )
-}
-
-# Helper to tidy a downscale object to site_id/ensemble/prediction (kg/m2)
-tidy_downscale <- function(ds) {
-  purrr::map(
-    ds$predictions,
-    ~ tibble::tibble(site_id = ds$site_ids, prediction = .x)
-  ) |>
-    dplyr::bind_rows(.id = "ensemble")
-}
-
-# Determine target woody sites that exist in current dp
-target_woody_sites <- dp |>
-  dplyr::filter(pft == woody_label) |>
-  dplyr::distinct(site_id) |>
-  dplyr::pull(site_id)
-
-# If no woody sites present, skip
-if (length(target_woody_sites) == 0) {
-  PEcAn.logger::logger.warn("No woody sites found in downscaled predictions; skipping mixed scenario")
-} else {
-  # Build covariates for predicting annual onto woody sites, ensuring
-  # design-point covariates for the annual PFT are available for training join
-  dp_annual <- design_covariates_unscaled |>
-    dplyr::filter(site_id %in% (design_points |>
-      dplyr::filter(pft == annual_label) |>
-      dplyr::pull(site_id)))
-
-  pred_cov_mixed <- covariates_full |>
-    dplyr::filter(site_id %in% target_woody_sites) |>
-    dplyr::bind_rows(dp_annual) |>
-    dplyr::distinct(site_id, .keep_all = TRUE)
-
-  mixed_records <- list()
-
-  for (pool in outputs_to_extract) {
-    # Training data for annual
-    train_ens_annual <- ensemble_data |>
-      dplyr::filter(pft == annual_label & variable == pool)
-
-    if (nrow(train_ens_annual) == 0) {
-      PEcAn.logger::logger.warn("No annual ensemble data for pool ", pool, "; skipping mixed for this pool")
-      next
-    }
-
-    train_pts_annual <- train_ens_annual |>
-      dplyr::select(site_id, lat, lon, pft) |>
-      dplyr::distinct()
-
-    # Annual predictions at start and end dates on woody sites
-    annual_start_obj <- downscale_model_output(
-      date = start_date,
-      model_output = pool,
-      train_ensemble_data = train_ens_annual,
-      train_site_coords = train_pts_annual,
-      pred_covariates = pred_cov_mixed
-    )
-    annual_end_obj <- downscale_model_output(
-      date = end_date,
-      model_output = pool,
-      train_ensemble_data = train_ens_annual,
-      train_site_coords = train_pts_annual,
-      pred_covariates = pred_cov_mixed
-    )
-
-    # Get woody predictions at end date from existing results
-    woody_key <- paste0(woody_label, "::", pool)
-    woody_obj <- downscale_output_list[[woody_key]]
-
-    if (is.null(annual_start_obj) || is.null(annual_end_obj) || is.null(woody_obj)) {
-      PEcAn.logger::logger.warn("Missing components for mixed scenario in pool ", pool, "; skipping")
-      next
-    }
-
-    woody_df <- tidy_downscale(woody_obj) |>
-      dplyr::filter(site_id %in% target_woody_sites) |>
-      dplyr::rename(woody_pred = prediction)
-
-    ann_start_df <- tidy_downscale(annual_start_obj) |>
-      dplyr::filter(site_id %in% target_woody_sites) |>
-      dplyr::rename(annual_start = prediction)
-
-    ann_end_df <- tidy_downscale(annual_end_obj) |>
-      dplyr::filter(site_id %in% target_woody_sites) |>
-      dplyr::rename(annual_end = prediction)
-
-    # Join by site_id and ensemble to align predictions (include annual_start for SOC)
-    mix_df <- woody_df |>
-      dplyr::inner_join(ann_end_df,  by = c("site_id", "ensemble")) |>
-      dplyr::inner_join(ann_start_df, by = c("site_id", "ensemble"))
-
-    if (nrow(mix_df) == 0) {
-      PEcAn.logger::logger.warn("No overlapping site/ensemble rows for mixed scenario in pool ", pool)
-      next
-    }
-
-    f_annual <- 0.5 # TODO: will come from monitoring / scenario data later
-    mix_df <- mix_df |>
-      dplyr::mutate(
-        mixed_pred = combine_mixed_crops(
-          woody_value = .data$woody_pred,
-          annual_value = .data$annual_end,
-          annual_init = if (pool == "AGB") 0 else .data$annual_start,
-          annual_cover = f_annual,
-          woody_cover = 1.0,
-          method = "incremental"
-        )
-      ) |>
-      # add area/county for totals
-      dplyr::left_join(ca_fields, by = "site_id") |>
-      dplyr::mutate(
-        pft = "woody + annual",
-        model_output = pool,
-        c_density_Mg_ha = PEcAn.utils::ud_convert(mixed_pred, "kg/m2", "Mg/ha"),
-        total_c_Mg = c_density_Mg_ha * area_ha
-      ) |>
-      dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-
-    mixed_records[[pool]] <- mix_df
-
-    # Also save per-site treatment scenarios on woody fields for comparisons
-    woody_scn <- woody_df |>
-      dplyr::left_join(ca_fields, by = "site_id") |>
-      dplyr::mutate(
-        pft = pft_i,
-        model_output = pool,
-        scenario = "woody_100",
-        c_density_Mg_ha = PEcAn.utils::ud_convert(woody_pred, "kg/m2", "Mg/ha"),
-        total_c_Mg = c_density_Mg_ha * area_ha
-      ) |>
-      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-
-    annual_scn <- ann_end_df |>
-      dplyr::left_join(ca_fields, by = "site_id") |>
-      dplyr::mutate(
-        pft = pft_i,
-        model_output = pool,
-        scenario = "annual_100",
-        c_density_Mg_ha = PEcAn.utils::ud_convert(annual_end, "kg/m2", "Mg/ha"),
-        total_c_Mg = c_density_Mg_ha * area_ha
-      ) |>
-      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-
-    mixed_scn <- mix_df |>
-      dplyr::mutate(scenario = "woody_50_annual_50") |>
-      dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-
-    # accumulate
-    if (!exists("treatment_records", inherits = FALSE)) treatment_records <- list()
-    treatment_records[[length(treatment_records) + 1L]] <- dplyr::bind_rows(woody_scn, annual_scn, mixed_scn)
+  
+  # Helper to tidy a downscale object to site_id/ensemble/prediction (kg/m2)
+  tidy_downscale <- function(ds) {
+    purrr::map(
+      ds$predictions,
+      ~ tibble::tibble(site_id = ds$site_ids, prediction = .x)
+    ) |>
+      dplyr::bind_rows(.id = "ensemble")
   }
-
-  # Append mixed records if any
-  if (length(mixed_records) > 0) {
-    mixed_df_all <- dplyr::bind_rows(mixed_records, .id = "pool") |>
-      dplyr::select(-pool)
-    dp <- dplyr::bind_rows(dp, mixed_df_all)
+  
+  # Determine target woody sites that exist in current dp
+  target_woody_sites <- dp |>
+    dplyr::filter(pft == woody_label) |>
+    dplyr::distinct(site_id) |>
+    dplyr::pull(site_id)
+  
+  # If no woody sites present, skip
+  if (length(target_woody_sites) == 0) {
+    PEcAn.logger::logger.warn("No woody sites found in downscaled predictions; skipping mixed scenario")
+  } else {
+    # Build covariates for predicting annual onto woody sites, ensuring
+    # design-point covariates for the annual PFT are available for training join
+    dp_annual <- design_covariates_unscaled |>
+      dplyr::filter(site_id %in% (design_points |>
+                                    dplyr::filter(pft == annual_label) |>
+                                    dplyr::pull(site_id)))
+    
+    pred_cov_mixed <- covariates_full |>
+      dplyr::filter(site_id %in% target_woody_sites) |>
+      dplyr::bind_rows(dp_annual) |>
+      dplyr::distinct(site_id, .keep_all = TRUE)
+    
+    mixed_records <- list()
+    
+    for (pool in outputs_to_extract) {
+      # Training data for annual
+      train_ens_annual <- ensemble_data |>
+        dplyr::filter(pft == annual_label & variable == pool)
+      
+      if (nrow(train_ens_annual) == 0) {
+        PEcAn.logger::logger.warn("No annual ensemble data for pool ", pool, "; skipping mixed for this pool")
+        next
+      }
+      
+      train_pts_annual <- train_ens_annual |>
+        dplyr::select(site_id, lat, lon, pft) |>
+        dplyr::distinct()
+      
+      # Annual predictions at start and end dates on woody sites
+      annual_start_obj <- downscale_model_output(
+        date = start_date,
+        model_output = pool,
+        train_ensemble_data = train_ens_annual,
+        train_site_coords = train_pts_annual,
+        pred_covariates = pred_cov_mixed
+      )
+      annual_end_obj <- downscale_model_output(
+        date = end_date,
+        model_output = pool,
+        train_ensemble_data = train_ens_annual,
+        train_site_coords = train_pts_annual,
+        pred_covariates = pred_cov_mixed
+      )
+      
+      # Get woody predictions at end date from existing results
+      woody_key <- paste0(woody_label, "::", pool)
+      woody_obj <- downscale_output_list[[woody_key]]
+      
+      if (is.null(annual_start_obj) || is.null(annual_end_obj) || is.null(woody_obj)) {
+        PEcAn.logger::logger.warn("Missing components for mixed scenario in pool ", pool, "; skipping")
+        next
+      }
+      
+      woody_df <- tidy_downscale(woody_obj) |>
+        dplyr::filter(site_id %in% target_woody_sites) |>
+        dplyr::rename(woody_pred = prediction)
+      
+      ann_start_df <- tidy_downscale(annual_start_obj) |>
+        dplyr::filter(site_id %in% target_woody_sites) |>
+        dplyr::rename(annual_start = prediction)
+      
+      ann_end_df <- tidy_downscale(annual_end_obj) |>
+        dplyr::filter(site_id %in% target_woody_sites) |>
+        dplyr::rename(annual_end = prediction)
+      
+      # Join by site_id and ensemble to align predictions (include annual_start for SOC)
+      mix_df <- woody_df |>
+        dplyr::inner_join(ann_end_df,  by = c("site_id", "ensemble")) |>
+        dplyr::inner_join(ann_start_df, by = c("site_id", "ensemble"))
+      
+      if (nrow(mix_df) == 0) {
+        PEcAn.logger::logger.warn("No overlapping site/ensemble rows for mixed scenario in pool ", pool)
+        next
+      }
+      
+      f_annual <- 0.5 # TODO: will come from monitoring / scenario data later
+      mix_df <- mix_df |>
+        dplyr::mutate(
+          mixed_pred = combine_mixed_crops(
+            woody_value = .data$woody_pred,
+            annual_value = .data$annual_end,
+            annual_init = if (pool == "AGB") 0 else .data$annual_start,
+            annual_cover = f_annual,
+            woody_cover = 1.0,
+            method = "incremental"
+          )
+        ) |>
+        # add area/county for totals
+        dplyr::left_join(ca_fields, by = "site_id") |>
+        dplyr::mutate(
+          pft = "woody + annual",
+          model_output = pool,
+          c_density_Mg_ha = PEcAn.utils::ud_convert(mixed_pred, "kg/m2", "Mg/ha"),
+          total_c_Mg = c_density_Mg_ha * area_ha
+        ) |>
+        dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+      
+      mixed_records[[pool]] <- mix_df
+      
+      # Also save per-site treatment scenarios on woody fields for comparisons
+      woody_scn <- woody_df |>
+        dplyr::left_join(ca_fields, by = "site_id") |>
+        dplyr::mutate(
+          pft = pft_i,
+          model_output = pool,
+          scenario = "woody_100",
+          c_density_Mg_ha = PEcAn.utils::ud_convert(woody_pred, "kg/m2", "Mg/ha"),
+          total_c_Mg = c_density_Mg_ha * area_ha
+        ) |>
+        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+      
+      annual_scn <- ann_end_df |>
+        dplyr::left_join(ca_fields, by = "site_id") |>
+        dplyr::mutate(
+          pft = pft_i,
+          model_output = pool,
+          scenario = "annual_100",
+          c_density_Mg_ha = PEcAn.utils::ud_convert(annual_end, "kg/m2", "Mg/ha"),
+          total_c_Mg = c_density_Mg_ha * area_ha
+        ) |>
+        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+      
+      mixed_scn <- mix_df |>
+        dplyr::mutate(scenario = "woody_50_annual_50") |>
+        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+      
+      # accumulate
+      if (!exists("treatment_records", inherits = FALSE)) treatment_records <- list()
+      treatment_records[[length(treatment_records) + 1L]] <- dplyr::bind_rows(woody_scn, annual_scn, mixed_scn)
+    }
+    
+    # Append mixed records if any
+    if (length(mixed_records) > 0) {
+      mixed_df_all <- dplyr::bind_rows(mixed_records, .id = "pool") |>
+        dplyr::select(-pool)
+      dp <- dplyr::bind_rows(dp, mixed_df_all)
+    }
   }
 }
 
 
 ## Write out downscaled predictions
 
-readr::write_csv(
-  dp, # downscale predictions with mixed scenario appended (if available)
-  file.path(model_outdir, "downscaled_preds.csv")
+# Helper function to write CSV and optionally parquet
+write_output <- function(data, path_base, description = "data") {
+  csv_path <- paste0(path_base, ".csv")
+  readr::write_csv(data, csv_path)
+  PEcAn.logger::logger.info(description, " written to ", csv_path)
+  
+  # write parquet for large files (>100k rows) when arrow is available
+  if (nrow(data) > 100000 && requireNamespace("arrow", quietly = TRUE)) {
+    parquet_path <- paste0(path_base, ".parquet")
+    arrow::write_parquet(data, parquet_path)
+    PEcAn.logger::logger.info(description, " (parquet) written to ", parquet_path)
+  }
+}
+
+write_output(
+  dp,
+  file.path(model_outdir, "downscaled_preds"),
+  "Downscaled predictions"
 )
 
-# Write training site IDs used for each spec (pft x pool)
+# Training sites
 if (length(training_sites_records) > 0) {
   train_sites_df <- dplyr::bind_rows(training_sites_records) |>
     dplyr::distinct()
-  readr::write_csv(train_sites_df, file.path(model_outdir, "training_sites.csv"))
-  PEcAn.logger::logger.info("Training site list written to", file.path(model_outdir, "training_sites.csv"))
+  write_output(
+    train_sites_df,
+    file.path(model_outdir, "training_sites"),
+    "Training site list"
+  )
 }
 metadata <- list(
   title = "Downscaled SIPNET Outputs",
@@ -849,13 +898,15 @@ metadata <- list(
   created = Sys.time(),
   ensembles = sort(unique(as.integer(ensemble_ids))),
   pfts = pfts,
+  scenarios = scenarios,
   outputs_to_extract = outputs_to_extract,
   start_date = as.character(start_date),
   end_date = as.character(end_date),
-  mixed_cover_fraction = 0.5,
+  mixed_cover_fraction = if (length(scenarios) == 1) 0.5 else NA,
   columns = list(
     site_id = "Unique identifier for each field from LandIQ",
     pft = "Plant functional type",
+    scenario = "Management scenario (baseline, compost, etc.)",
     ensemble = "Ensemble member identifier",
     c_density_Mg_ha = "Predicted carbon density (Mg/ha)",
     total_c_Mg = "Predicted total carbon (Mg) per field",
@@ -871,22 +922,27 @@ metadata |>
     pretty = TRUE, auto_unbox = TRUE
   )
 
+# Delta predictions
 if (length(delta_output_records) > 0) {
   delta_dp <- dplyr::bind_rows(delta_output_records, .id = "spec") |>
-    tidyr::separate(col = "spec", into = c("pft", "model_output"), sep = "::", remove = TRUE)
-  readr::write_csv(delta_dp, file.path(model_outdir, "downscaled_deltas.csv"))
-  PEcAn.logger::logger.info("Delta predictions written to", file.path(model_outdir, "downscaled_deltas.csv"))
+    tidyr::separate(col = "spec", into = c("scenario", "pft", "model_output"), sep = "::", remove = TRUE)
+  write_output(
+    delta_dp,
+    file.path(model_outdir, "downscaled_deltas"),
+    "Delta predictions"
+  )
 }
 
-# Write treatment comparisons for woody sites if available
+# Treatment comparisons
 if (exists("treatment_records") && length(treatment_records) > 0) {
   treatments_df <- dplyr::bind_rows(treatment_records)
-  out_treat <- file.path(model_outdir, "treatments_woody_sites.csv")
-  readr::write_csv(treatments_df, out_treat)
-  PEcAn.logger::logger.info("Treatment scenarios written to", out_treat)
+  write_output(
+    treatments_df,
+    file.path(model_outdir, "treatments_woody_sites"),
+    "Treatment scenarios"
+  )
 }
 
-PEcAn.logger::logger.info("Downscaled predictions written to", file.path(model_outdir, "downscaled_preds.csv"))
 PEcAn.logger::logger.info(
   "Total script elapsed time (s):",
   round(step_elapsed(overall_timer), 2)
