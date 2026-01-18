@@ -91,7 +91,6 @@ if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
 } else {
     
     #----------NetCDF extraction-------------------------------
-    PEcAn.logger::logger.info("Phase 2 mode: Extracting from NetCDF files")
     
     # Read settings file and extract run information
     settings <- PEcAn.settings::read.settings(file.path(pecan_outdir, "pecan.CONFIGS.xml"))
