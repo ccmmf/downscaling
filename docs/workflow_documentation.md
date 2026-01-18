@@ -285,16 +285,21 @@ Builds Random Forest models to predict carbon pools for all fields; aggregates t
 - `cache/training_data/*_training.csv`: Training covariate matrices per spec
 
 **Outputs from `041_aggregate_to_county.R`:**
-- `model_outdir/county_summaries.csv`: County statistics (means/SDs across ensembles for stocks and densities)
+- `model_outdir/county_aggregated_preds.csv`: County statistics per scenario with columns:
+  - `scenario`, `model_output`, `pft`, `county`, `n`, `mean_total_c_Tg`, `sd_total_c_Tg`, `mean_c_density_Mg_ha`, `sd_c_density_Mg_ha`, `mean_total_ha`, `sd_total_ha`
+- `model_outdir/county_aggregated_deltas.csv`: County-level carbon change per scenario
+- `model_outdir/state_summaries.csv`: State-level totals per scenario
+- `model_outdir/aggregation_metadata.json`: Metadata for aggregated outputs
 
 **Outputs from `042_downscale_analysis.R` (saved in `figures/`):**
 - `<pft>_<pool>_importance_partial_plots.png`: Variable importance with partial plots for top predictors
 - `<pft>_<pool>_ALE_predictor<i>.svg` and `<pft>_<pool>_ICE_predictor<i>.svg`: ALE and ICE plots
 
 **Outputs from `043_county_level_plots.R` (saved in `figures/`):**
-- `county_<pft>_<pool>_carbon_stock.webp` and `county_<pft>_<pool>_carbon_density.webp`: County-level maps
-- `county_diff_woody_plus_annual_minus_woody_<pool>_carbon_{density,stock}.webp`: Scenario difference maps
-- `county_delta_<pft>_<pool>_carbon_{density,stock}.webp`: Start→end delta maps when available
+- `county_<scenario>_<pft>_<pool>_carbon_stock.webp`: County-level stock maps per scenario
+- `field_<scenario>_<pft>_<pool>_carbon_density.webp`: Field-level density point maps per scenario
+- `county_diff_woody_plus_annual_minus_woody_<pool>_carbon_stock.webp`: Difference maps (mixed - woody) - stock only
+- `county_delta_<scenario>_<pft>_<pool>_carbon_stock.webp`: Start→end delta stock maps when available
 
 ## Running on BU Cluster
 
