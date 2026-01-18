@@ -22,15 +22,25 @@ sections to include in release notes:
 - Early exit in `031_aggregate_sipnet_output.R` for single-PFT runs
 - Parquet output for large files (>100k rows) via `write_output()` helper
 
+- County and state level aggregation with management scenario support
+  - `county_aggregated_preds.csv` replaces `county_summaries.csv`
+  - `county_aggregated_deltas.csv` for delta aggregation by scenario
+  - `state_summaries.csv` for California state-level totals
+  - `aggregation_metadata.json` with column descriptions
+- Field-level density maps replacing county density choropleth maps (per CARB request)
+- Backward compatibility for multi-PFT workflows without scenario column
+
 ### Fixed
 
 - Empty vector handling in mixed-scenario logic (`040_downscale.R`)
 
 ### Changed
 
+- County-level plots now include scenario in filenames (`043_county_level_plots.R`)
+
 ### Removed
 
-
+- County-level density choropleth maps (per CARB request; replaced with field-level point maps)
 
 ## 0.2.0-2a
 
