@@ -75,6 +75,26 @@ git clone git@github.com:ccmmf/downscaling
   - detect and use resources for parallel processing (with future package); default is `available cores - 1`
   - PRODUCTION mode setting. For testing, set `PRODUCTION` to `FALSE`. This is _much_ faster and requires fewer computing resources because it subsets large datasets. Once a test run is successful, set `PRODUCTION` to `TRUE` to run the full workflow.
 
+#### Management Scenario Configuration
+
+To compare carbon outcomes under different agricultural practices, enable management scenario mode:
+```r
+USE_PHASE_3_SCENARIOS <- TRUE
+```
+
+When enabled, the workflow processes multiple management scenarios in a single run. Each scenario represents a different combination of practices applied to annual croplands.
+
+**Available Management Scenarios:**
+
+| Scenario | Description |
+|----------|-------------|
+| baseline | Conventional management practices |
+| compost | Compost application replacing mineral N fertilizer |
+| reduced_till | Reduced tillage intensity (0.10) |
+| zero_till | No tillage (0.00) |
+| reduced_irrig_drip | Drip irrigation replacing canopy irrigation |
+| stacked | Combined: compost + reduced tillage + drip irrigation |
+
 ### 1. Data Preparation
 
 ```sh
@@ -212,9 +232,13 @@ Extracts and formats SIPNET outputs for downscaling:
 
 **Inputs:**
 - `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`
+- `results_monthly_<variable>.Rdata` (management scenario mode)
+- `site_info.csv` (management scenario mode)
 
 **Outputs:**
-- `out/ensemble_output.csv`: Long format data
+- `out/ensemble_output.csv`: Long format data with columns:
+  - `scenario`: Management scenario identifier (when scenarios enabled)
+  - `datetime`, `site_id`, `lat`, `lon`, `pft`, `parameter`, `variable`, `prediction`
 
 ### 5. Mixed Cropping Systems
 
@@ -252,12 +276,13 @@ Builds Random Forest models to predict carbon pools for all fields; aggregates t
 - `data/site_covariates.csv`: Environmental covariates
 
 **Outputs from `040_downscale.R`:**
-- `model_outdir/downscaled_preds.csv`: Per-site, per-ensemble predictions with totals and densities
-- `model_outdir/downscaled_preds_metadata.json`: Metadata for predictions
-- `model_outdir/training_sites.csv`: Training site list per PFT and pool
+- `model_outdir/downscaled_preds.csv`: Per-site, per-ensemble predictions with columns:
+  - `site_id`, `scenario`, `pft`, `ensemble`, `c_density_Mg_ha`, `total_c_Mg`, `area_ha`, `county`, `model_output`
+- `model_outdir/downscaled_preds_metadata.json`: Metadata including scenarios list
+- `model_outdir/downscaled_deltas.csv`: Carbon change from simulation start to end per scenario
+- `model_outdir/training_sites.csv`: Training site list per scenario, PFT, and pool
 - `cache/models/*_models.rds`: Saved RF models per spec
 - `cache/training_data/*_training.csv`: Training covariate matrices per spec
-- `model_outdir/downscaled_deltas.csv`: Optional start→end deltas when available
 
 **Outputs from `041_aggregate_to_county.R`:**
 - `model_outdir/county_summaries.csv`: County statistics (means/SDs across ensembles for stocks and densities)
