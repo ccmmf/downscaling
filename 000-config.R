@@ -13,7 +13,7 @@ PRODUCTION <- args$production
 
 # Manual override for interactive sessions
 if (rlang::is_interactive()) {
-  PRODUCTION <- TRUE
+  PRODUCTION <- FALSE  # change this (just for testing)
 }
 
 ## Set parallel processing options
@@ -34,6 +34,27 @@ pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_2025
 
 # PEcAn model output to be analyzed
 pecan_archive_tgz <- file.path(ccmmf_dir, "lebauer_agu_2025_20251210.tgz")
+
+# -----Management scenarios config -----
+# set to TRUE to use Phase 3 management scenario outputs
+USE_PHASE_3_SCENARIOS <- TRUE
+
+phase_3_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_3_scenarios_20251210")
+
+management_scenarios <- c(
+  "baseline",
+  "compost",
+  "reduced_till",
+  "zero_till",
+  "reduced_irrig_drip",
+  "stacked"
+)
+
+model_outdir <- file.path(pecan_outdir, "out")
+# override paths if using Phase 3
+if (USE_PHASE_3_SCENARIOS) {
+  pecan_outdir <- phase_3_outdir
+}
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
