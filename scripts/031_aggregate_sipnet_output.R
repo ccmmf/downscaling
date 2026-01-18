@@ -16,6 +16,16 @@
 
 source("000-config.R")
 
+# skip for single-PFT management scenarios (multi-PFT aggregation not applicable)
+# TODO: extend to support multi-PFT management scenarios when woody crop scenarios are added
+if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
+  PEcAn.logger::logger.info(
+    "Skipping multi-PFT aggregation (single PFT scenarios).",
+    "Proceeding directly to 040_downscale.R"
+  )
+  quit(save = "no", status = 0)
+}
+
 PEcAn.logger::logger.info("*** Starting multi-PFT aggregation ***")
 source(here::here("R", "mixed_aggregation.R"))
 
