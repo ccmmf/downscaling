@@ -169,8 +169,14 @@ A separate workflow prepares inputs and runs SIPNET simulations for the design p
 - Initial conditions (from modeling workflow)
 
 **Outputs:**
-- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`: NetCDF files containing SIPNET outputs, in PEcAn standard model output format. 
+- `out/ENS-<ensemble_number>-<site_id>/YYYY.nc`: Individual NetCDF files containing SIPNET outputs, in PEcAn standard model output format. 
 - `out/ENS-<ensemble_number>-<site_id>/YYYY.nc.var`: List of variables included in SIPNET output (see table below)
+
+**Outputs (merged format):**
+- `out/merged_nc/YYYY.nc`: One file per year containing all sites and ensembles
+  - Dimensions: `site`, `ensemble`, `time`
+  - Coordinate variables: `site_id`, `latitude`, `longitude`
+  - Data variables: `TotSoilCarb`, `AGB`, etc (see table below)
 
  **Available Variables**
 

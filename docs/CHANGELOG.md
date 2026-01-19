@@ -30,6 +30,10 @@ sections to include in release notes:
 - Field-level density maps replacing county density choropleth maps (per CARB request)
 - Backward compatibility for multi-PFT workflows without scenario column
 
+- Support for merged netCDF files in `030_extract_sipnet_output.R`
+  - Automatically detects `out/merged_nc/YYYY.nc` files
+  - Falls back to individual `ENS-*/YYYY.nc` files if merged files not present
+
 ### Fixed
 
 - Empty vector handling in mixed-scenario logic (`040_downscale.R`)
