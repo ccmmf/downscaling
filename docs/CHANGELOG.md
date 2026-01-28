@@ -25,6 +25,7 @@ sections to include in release notes:
 
 ### Changed
 
+- Renamed `ca_*` prefixes to `calif_*` (California) and `caladapt_*` (Cal-Adapt API) to eliminate ambiguity
 - `010_prepare_covariates.R`: Updated to use harmonized multi-year CADWR data instead of 2016-only LandIQ
 - `011_prepare_anchor_sites.R`: Updated to use new `cadwr_crops_sites.gpkg` field geometries
 - `020_cluster_and_select_design_points.R`: 
