@@ -6,20 +6,35 @@ Once a new release is made this file will be updated to create a new `Unreleased
 
 For more information about this file see also [Keep a Changelog](http://keepachangelog.com/) .
 
-<!-- 
+
 sections to include in release notes:
 
 ## [Unreleased]
 
 ### Added
 
+- `009_prepare_cadwr_crops.R`: New script to standardize harmonized CADWR LandIQ data (2016-2023) and create temporal features via EOF decomposition for cropping system identification
+- `R/standardize_cadwr_crops.R`: Reusable function for converting `crops_all_years.csv` to standardized format with PFT mapping
+- EOF based temporal features (`eof_1` through `eof_10`) capturing crop rotation patterns for improved site clustering
+- One-hot encoded PFT covariates for downstream modeling
+
 ### Fixed
+
+- Site ID mismatch between legacy design points and new harmonized data
+- PFT mapping to use downstream names (`woody perennial crop`, `annual crop`)
 
 ### Changed
 
+- `010_prepare_covariates.R`: Updated to use harmonized multi-year CADWR data instead of 2016-only LandIQ
+- `011_prepare_anchor_sites.R`: Updated to use new `cadwr_crops_sites.gpkg` field geometries
+- `020_cluster_and_select_design_points.R`: 
+  - Added EOF features to clustering covariates
+  - Reconciled old hash based site_ids to LandIQ UniqueIDs
+  - Fixed PFT name handling (`herbaceous crop` -> `annual crop`)
+- Standardized site_id format to LandIQ UniqueID (numeric) across all outputs
+
 ### Removed
 
--->
 
 ## 0.2.0-2a
 
