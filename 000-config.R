@@ -6,7 +6,7 @@ parser <- argparse::ArgumentParser()
 # Dev mode speeds up workflows by subsetting data for testing and debugging
 parser$add_argument("--production",
   type = "logical", default = TRUE,
-  help = "Set to true for production mode, false for faster development (default: FALSE)"
+  help = "Set to true for production mode, false for faster development (default: TRUE)"
 )
 args <- parser$parse_args()
 PRODUCTION <- args$production
@@ -33,10 +33,6 @@ pecan_archive_tgz <- file.path(ccmmf_dir, "lebauer_agu_2025_20251210.tgz")
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
-# outputs_to_extract <- c(
-#   "TotSoilCarb",
-#   "AGB"
-# )
 outputs_to_extract <- c("TotSoilCarb", "AGB")
 if (!PRODUCTION) {
   # can subset for testing

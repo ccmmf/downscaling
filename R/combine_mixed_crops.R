@@ -8,9 +8,7 @@
 #'    and treats annual as an increment relative to an annual initial baseline:
 #'    `annual_delta = annual_value - annual_init`; `result = woody_value + annual_cover * annual_delta`.
 #'
-#' Vectorization & recycling are handled via `vctrs::vec_recycle_common()`. All scalar
-#' inputs are broadcast to the common length. Length mismatches other than 1 or the
-#' common size trigger a severe error.
+#' All inputs must be vectors each of length 1 or a shared common length.
 #'
 #' Validation rules (severe errors unless otherwise noted):
 #'  * No input values may be NA (including covers, pool sizes, annual_init if required)
@@ -23,8 +21,8 @@
 #' @param woody_value numeric. Pool size for the woody PFT (kg/m2).
 #' @param annual_value numeric. Pool size for the annual PFT (kg/m2).
 #' @param annual_init numeric, required for method = "incremental"; the initial annual pool.
-#' @param annual_cover numeric. Fractional cover of the annual PFT (f_annual, 0-1).
-#' @param woody_cover numeric. Fractional cover of the woody PFT (f_woody, 0-1). Must be 1 for incremental.
+#' @param annual_cover numeric. Fractional cover of the annual PFT (0-1).
+#' @param woody_cover numeric. Fractional cover of the woody PFT (0-1). Must be 1 when `method` is "incremental".
 #' @param method character. One of "weighted" or "incremental".
 #'
 #' @return numeric vector of combined values.
@@ -43,9 +41,9 @@
 #' )
 combine_mixed_crops <- function(woody_value,
                                 annual_value,
-                                annual_init = NULL,
                                 annual_cover,
                                 woody_cover,
+                                annual_init = NULL,
                                 method = c("weighted", "incremental")) {
   method <- match.arg(method)
 
@@ -97,7 +95,7 @@ combine_mixed_crops <- function(woody_value,
   out_of_range_woody <- (woody_cover < 0 - tol) | (woody_cover > 1 + tol)
   if (any(out_of_range_annual | out_of_range_woody, na.rm = TRUE)) {
     n_bad <- sum(out_of_range_annual | out_of_range_woody, na.rm = TRUE)
-    PEcAn.logger::logger.severe(paste0(n_bad, " rows have cover fractions outside [0,1] (<U+00B1>tol)."))
+    PEcAn.logger::logger.severe("weighted: cover fractions outside must be in the range [0,1] (+/- tol).", n_bad, "rows violate.")
   }
 
   if (method == "incremental") {
