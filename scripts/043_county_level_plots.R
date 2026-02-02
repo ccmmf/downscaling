@@ -1,4 +1,23 @@
 ## Create county-level plots
+##
+## Usage:
+##   Rscript scripts/043_county_level_plots.R
+##
+## Inputs (from 000-config.R paths):
+##   - model_outdir/out/county_summaries.csv (from 041_aggregate_to_county.R)
+##   - model_outdir/out/downscaled_preds.csv (for mixed-scenario diffs and deltas)
+##   - model_outdir/out/downscaled_deltas.csv (optional; for delta maps)
+##   - data/ca_counties.gpkg (county boundaries)
+##
+## Outputs:
+##   - figures/county_<pft>_<pool>_carbon_{density,stock}.webp
+##   - figures/county_diff_woody_plus_annual_minus_woody_<pool>_carbon_{density,stock}.webp
+##   - figures/county_delta_<pft>_<pool>_carbon_{density,stock}.webp
+##   - Additional poster-grade exports for selected maps (PDF/SVG/PNG)
+##
+## Notes:
+##   - Requires R/ggsave_optimized.R to be sourced via 000-config.R
+##   - Uses facet columns for Mean and SD in each output
 source("000-config.R")
 PEcAn.logger::logger.info("Creating county-level plots")
 county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"))
@@ -28,6 +47,48 @@ combos <- co_preds_to_plot |>
   dplyr::distinct(pft, model_output, units) |>
   dplyr::arrange(pft, model_output, units)
 
+# Optional filters via env vars to generate a subset only
+pft_filter   <- Sys.getenv("PFT_FILTER",   unset = "")
+pool_filter  <- Sys.getenv("POOL_FILTER",  unset = "")
+units_filter <- Sys.getenv("UNITS_FILTER", unset = "")
+if (nzchar(pft_filter))   combos <- dplyr::filter(combos, pft == !!pft_filter)
+if (nzchar(pool_filter))  combos <- dplyr::filter(combos, model_output == !!pool_filter)
+if (nzchar(units_filter)) combos <- dplyr::filter(combos, units == !!units_filter)
+
+# Color scale controls
+# Priority: COLOR_SCALE if set -> POSTER_PALETTE if TRUE -> default (plasma)
+use_poster_palette <- isTRUE(as.logical(Sys.getenv("POSTER_PALETTE", "FALSE")))
+color_scale_opt <- tolower(Sys.getenv("COLOR_SCALE", unset = ""))
+custom_colors <- Sys.getenv("CUSTOM_COLORS", unset = "")  # comma-separated hex
+custom_values <- Sys.getenv("CUSTOM_VALUES", unset = "")  # comma-separated numerics in [0,1]
+
+fill_scale <- NULL
+if (nzchar(color_scale_opt)) {
+  if (color_scale_opt %in% c("viridis","plasma","magma","inferno","cividis")) {
+    fill_scale <- ggplot2::scale_fill_viridis_c(option = color_scale_opt, na.value = "white")
+  } else if (color_scale_opt == "custom" && nzchar(custom_colors)) {
+    cols <- trimws(strsplit(custom_colors, ",", fixed = TRUE)[[1]])
+    vals <- if (nzchar(custom_values)) as.numeric(trimws(strsplit(custom_values, ",", fixed = TRUE)[[1]])) else NULL
+    if (is.null(vals)) {
+      fill_scale <- ggplot2::scale_fill_gradientn(colors = cols, na.value = "white")
+    } else {
+      fill_scale <- ggplot2::scale_fill_gradientn(colors = cols, values = vals, na.value = "white")
+    }
+  }
+}
+if (is.null(fill_scale)) {
+  if (use_poster_palette) {
+    # Poster palette requested earlier: light green -> poster green -> poster purple
+    fill_scale <- ggplot2::scale_fill_gradientn(
+      colors = c("#d7f2d3", "#62b874", "#4a2f86"),
+      values = c(0, 0.6, 1),
+      na.value = "white"
+    )
+  } else {
+    fill_scale <- ggplot2::scale_fill_viridis_c(option = "plasma", na.value = "white")
+  }
+}
+
 p <- purrr::pmap(
   list(combos$pft, combos$model_output, combos$units),
   function(.pft, pool, unit) {
@@ -39,7 +100,7 @@ p <- purrr::pmap(
     ) +
       ggplot2::geom_sf(data = county_boundaries, mapping = ggplot2::aes(geometry = geom), fill = "white", color = "black", inherit.aes = FALSE) +
       ggplot2::geom_sf() +
-      ggplot2::scale_fill_viridis_c(option = "plasma", na.value = "white") +
+      fill_scale +
       ggplot2::theme_minimal() +
       ggplot2::facet_grid(model_output ~ stat) +
       ggplot2::labs(
@@ -60,6 +121,41 @@ p <- purrr::pmap(
       width = 10, height = 5, units = "in", dpi = 96,
       bg = "white"
     )
+    # Also export poster-grade formats for the AGB density map of woody perennials
+    if (.pft == "woody perennial crop" && pool == "AGB" && unit_key == "density") {
+      basefile <- here::here("figures", paste0("county_", pft_key, "_", pool, "_carbon_", unit_key))
+      PEcAn.logger::logger.info("Exporting poster-grade versions (28.36x14.18 in):", paste0(basename(basefile), "{.pdf,.svg,.png}"))
+      # Vector formats (preferred for print) at 14.18 in tall (2:1 aspect)
+      ggsave_optimized(filename = paste0(basefile, ".pdf"), plot = .plt, width = 28.36, height = 14.18, units = "in", bg = "white")
+      ggsave_optimized(filename = paste0(basefile, ".svg"), plot = .plt, width = 28.36, height = 14.18, units = "in", bg = "white")
+      # High-resolution raster as fallback
+      ggsave_optimized(filename = paste0(basefile, ".png"), plot = .plt, width = 28.36, height = 14.18, units = "in", dpi = 300, bg = "white")
+    }
+    # High-res PNG for woody perennials SOC stock (12" tall for print)
+    if (.pft == "woody perennial crop" && pool == "TotSoilCarb" && unit_key == "stock") {
+      basefile_soc_stock <- here::here("figures", paste0("county_", pft_key, "_", pool, "_carbon_", unit_key))
+      # Maintain 2:1 aspect (width:height) used above: width=24in, height=12in
+      PEcAn.logger::logger.info("Exporting 12in-tall high-res PNG:", paste0(basename(basefile_soc_stock), ".png"))
+      ggsave_optimized(filename = paste0(basefile_soc_stock, ".png"), plot = .plt,
+                       width = 28.36, height = 14.18, units = "in", dpi = 300, bg = "white")
+    }
+    # High-res exports for annual crop SOC stock
+    if (.pft == "annual crop" && pool == "TotSoilCarb" && unit_key == "stock") {
+      basefile_ann_soc_stock <- here::here("figures", paste0("county_", pft_key, "_", pool, "_carbon_", unit_key))
+      PEcAn.logger::logger.info("Exporting high-res annual SOC stock (28.36x14.18 in):", paste0(basename(basefile_ann_soc_stock), "{.pdf,.png}"))
+      ggsave_optimized(filename = paste0(basefile_ann_soc_stock, ".pdf"), plot = .plt,
+                       width = 28.36, height = 14.18, units = "in", bg = "white")
+      ggsave_optimized(filename = paste0(basefile_ann_soc_stock, ".png"), plot = .plt,
+                       width = 28.36, height = 14.18, units = "in", dpi = 300, bg = "white")
+    }
+    # Export high-res PDF/PNG for County-level woody+herbaceous (mixed) SOC maps
+    if (pool == "TotSoilCarb" && (grepl("woody", .pft, ignore.case = TRUE)) &&
+        (grepl("annual", .pft, ignore.case = TRUE) || grepl("herb", .pft, ignore.case = TRUE))) {
+      basefile_soc <- here::here("figures", paste0("county_", pft_key, "_", pool, "_carbon_", unit_key))
+      PEcAn.logger::logger.info("Exporting high-res SOC versions (28.36x14.18 in):", paste0(basename(basefile_soc), "{.pdf,.png}"))
+      ggsave_optimized(filename = paste0(basefile_soc, ".pdf"), plot = .plt, width = 28.36, height = 14.18, units = "in", bg = "white")
+      ggsave_optimized(filename = paste0(basefile_soc, ".png"), plot = .plt, width = 28.36, height = 14.18, units = "in", dpi = 300, bg = "white")
+    }
     return(.plt)
   }
 )
