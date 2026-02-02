@@ -28,6 +28,9 @@ if (ccmmf_dir == "") {
 }
 pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
 
+# PEcAn model output to be analyzed
+pecan_archive_tgz <- file.path(ccmmf_dir, "lebauer_agu_2025_20251210.tgz")
+
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
 # outputs_to_extract <- c(
@@ -65,6 +68,8 @@ msg <- glue::glue(
   "- raw_data_dir.  : {raw_data_dir}\n",
   "- pecan_outdir.  : {pecan_outdir}\n",
   "- model_outdir.  : {model_outdir}\n\n",
+  "- pecan_archive_tgz : {ifelse(is.na(pecan_archive_tgz), '<unset>', pecan_archive_tgz)}\n",
+  "- pecan_archive_force : {pecan_archive_force}\n\n",
   "### Other Settings ###\n",
   "- will extract variables: {paste(outputs_to_extract, collapse = ', ')}\n",
   "- ca_albers_crs  : {ca_albers_crs}{if(ca_albers_crs == 3310) ', which is NAD83 / California Albers' else ''}\n"

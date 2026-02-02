@@ -1,16 +1,11 @@
 # This file processess the output from SIPNET ensemble runs and generates
-# A long format CSV (time, site, ensemble, variable) 
+# A long format CSV (time, site, ensemble, variable)
 # that follows the Ecological Forecasting Initiative (EFI) forecast standard
 
 # Helper functions in R/efi_long_to_arrays.R will convert this to
 # 1. A 4-D array (time, site, ensemble, variable)
 # 2. A NetCDF file (time, site, ensemble, variable)
 # TODO: write out EML metadata in order to be fully EFI compliant
-
-
-## First, uncompress the model output
-# tar --use-compress-program="pigz -d" -xf ccmmf_phase_2a_DRAFT_output_20250516.tgz
-# tar --use-compress-program="pigz -d" -xf ccmmf_phase_2a_DRAFT_output_20250516.tgz --wildcards '*.nc'
 
 ## Second, make sure ccmmf_dir and pecan_outdir are defined in the config file
 source("000-config.R")
@@ -80,7 +75,7 @@ site_ids <- site_meta |>
 ens_ids <- 1:ensemble_size
 
 variables <- outputs_to_extract # TODO standardize this name; variables is ambiguous
-                                # but is used by the PEcAn read.output function
+# but is used by the PEcAn read.output function
 
 if (!PRODUCTION) {
     ## -----TESTING SUBSET----##
@@ -133,7 +128,7 @@ ens_results_raw <- furrr::future_pmap_dfr(
     # .Bug report: https://github.com/r-quantities/units/issues/409
     # Fixed in units version >= 0.8.7
     .options = furrr::furrr_options(seed = TRUE)
-) 
+)
 
 ens_results <- ens_results_raw |>
     dplyr::group_by(parameter, base_site_id, pft, year) |>
@@ -156,12 +151,12 @@ ens_results <- ens_results_raw |>
 std_vars <- PEcAn.utils::standard_vars
 
 pool_vars <- std_vars |>
-        dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
-        dplyr::pull(Variable.Name) 
+    dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
+    dplyr::pull(Variable.Name)
 
 flux_vars <- std_vars |>
-        dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
-        dplyr::pull(Variable.Name)
+    dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
+    dplyr::pull(Variable.Name)
 
 ens_results <- ens_results |>
     dplyr::mutate(
@@ -191,7 +186,7 @@ if (any(ens_results$variable_type == "flux")) {
 
 # restore logging
 logger_level <- PEcAn.logger::logger.setLevel(logger_level)
- 
+
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
 readr::write_csv(ens_results, ensemble_output_csv)
 PEcAn.logger::logger.info(
