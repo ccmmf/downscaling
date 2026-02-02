@@ -200,6 +200,29 @@ PEcAn standard units are SI, following the Climate Forecasting standards:
 
 ### 4. Extract SIPNET Output
 
+
+First, uncompress the model output. Only the netCDF files are needed.
+
+```sh
+# Set paths
+ccmmf_dir=/projectnb2/dietzelab/ccmmf
+archive_file="$ccmmf_dir/lebauer_agu_2025_20251210.tgz"
+output_dir="$ccmmf_dir/modelout/ccmmf_phase_3_scenarios_20251210"
+
+# Ensure output directory exists
+mkdir -p "$output_dir"
+
+# 
+tar --use-compress-program="pigz -d" -xf \
+  "$archive_file" \
+  -C "$output_dir" \
+  --strip-components=1 \
+  --no-same-owner #\
+#  --wildcards \
+#  'lebauer_agu_2025/output_/out/' \
+#  'lebauer_agu_2025/output_/out/ENS--/[0-9][0-9][0-9][0-9].nc'
+```
+
 ```sh
 Rscript scripts/030_extract_sipnet_output.R
 ```
