@@ -112,7 +112,7 @@ combine_mixed_crops <- function(woody_value,
       PEcAn.logger::logger.severe(paste0("incremental: woody_cover must be 1 (+/- ", tol, "); ", n_bad, " rows violate."))
     }
     res <- woody_value + annual_cover * (annual_value - annual_init)
-    return(as.numeric(res))
+    return(res)
   }
 
   # weighted method
@@ -124,5 +124,5 @@ combine_mixed_crops <- function(woody_value,
     PEcAn.logger::logger.warn(paste0("weighted: ", n_bad, " rows with cover fractions not summing to 1 (<U+00B1>tol); results set to NA for those rows."))
     res[bad_sum] <- NA_real_
   }
-  return(as.numeric(res))
+  return(res)
 }
