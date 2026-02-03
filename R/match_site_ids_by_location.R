@@ -61,6 +61,26 @@ match_site_ids_by_location <- function(
     )
   }
 
+  # target_df: check for records with the same site_id but different coordinates
+  id_coord <- target_df |> dplyr::distinct(
+    dplyr::across(dplyr::all_of(c(target_id_col, target_lat_col, target_lon_col)))
+  )
+  if (any(duplicated(id_coord[[target_id_col]]))) {
+    PEcAn.logger::logger.severe(
+      "target_df has duplicate IDs with different coordinates; ensure sites are unique."
+    )
+  }
+
+  # reference_df: check for records with the same site_id but different coordinates
+  ref_id_coord <- reference_df |> dplyr::distinct(
+    dplyr::across(dplyr::all_of(c(reference_id_col, reference_lat_col, reference_lon_col)))
+  )
+  if (any(duplicated(ref_id_coord[[reference_id_col]]))) {
+    PEcAn.logger::logger.severe(
+      "reference_df has duplicate IDs with different coordinates; ensure sites are unique."
+    )
+  }
+
   # Annotate rows and, unless in location-only mode, split by ID membership
   by_id <- stats::setNames(reference_id_col, target_id_col)
   target_df <- target_df |>
@@ -155,8 +175,7 @@ match_site_ids_by_location <- function(
         TRUE ~ "far (>5000m)"
       )
     ) |>
-    dplyr::select(-`..row..`) |>
-    dplyr::distinct()
+    dplyr::select(-`..row..`)
 
   # Enforce maximum allowable distance
   if (any(mapping$distance_m > max_distance, na.rm = TRUE)) {
