@@ -106,6 +106,21 @@ county_summaries <- ens_county_preds |>
     sd_total_ha = sd(total_ha),
     .groups = "drop"
   ) |>
+  (
+    function(df) {
+      if (any(df$n == 1, na.rm = TRUE)) {
+        PEcAn.logger::logger.severe(
+          "At least one (model_output, pft, county) group has n == 1; variability across ensembles cannot be assessed."
+        )
+      }
+      if (any(df$sd_total_c_Tg == 0, na.rm = TRUE)) {
+        PEcAn.logger::logger.severe(
+          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_c_Tg == 0)."
+        )
+      }
+      df
+    }
+  ) |>
   dplyr::mutate(
     # Only save 3 significant digits
     dplyr::across(
