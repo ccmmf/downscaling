@@ -7,7 +7,14 @@ ca_climregions <- sf::st_read(file.path(data_dir, "ca_climregions.gpkg"))
 
 ######### Cluster Diagnostics ################
 
-sites_clustered <- readRDS(file.path(cache_dir, "sites_clustered.rds"))
+sites_clustered_path <- file.path(cache_dir, "sites_clustered.rds")
+if (!file.exists(sites_clustered_path)) {
+  PEcAn.logger::logger.severe("Expected clustering output not found:", sites_clustered_path)
+}
+sites_clustered <- readRDS(sites_clustered_path)
+if (!("cluster" %in% names(sites_clustered))) {
+  PEcAn.logger::logger.severe("Clustering object lacks 'cluster' column; check upstream clustering step.")
+}
 # Summarize clusters
 cluster_summary <- sites_clustered |>
   dplyr::group_by(cluster) |>
@@ -16,16 +23,22 @@ cluster_summary <- sites_clustered |>
 knitr::kable(cluster_summary, digits = 0)
 
 # Plot all pairwise numeric variables
-ggpairs_plot <- sites_clustered |>
-  dplyr::select(-site_id) |>
-  # need small # pfts for ggpairs
-  dplyr::sample_n(min(nrow(sites_clustered), 1000)) |>
-  GGally::ggpairs(
-    # plot all values except site_id and cluster
-    columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
-    mapping = aes(color = as.factor(cluster), alpha = 0.8)
-  ) +
-  theme_minimal()
+
+withr::with_seed(42, {
+  ggpairs_plot <- sites_clustered |>
+    dplyr::select(-site_id) |>
+    # need small # pfts for ggpairs
+    dplyr::slice_sample(
+      n = min(nrow(sites_clustered), 10000)
+    ) |>
+    GGally::ggpairs(
+      # plot all values except site_id and cluster
+      columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
+      mapping = aes(color = as.factor(cluster), alpha = 0.8)
+    ) +
+    theme_minimal()
+})
+
 ggsave_optimized(
   "figures/cluster_pairs.webp",
   plot = ggpairs_plot,
@@ -155,9 +168,6 @@ design_points_clust <- design_points |>
   dplyr::select(site_id, lat, lon, cluster) |>
   tidyr::drop_na(lat, lon) |>
   dplyr::mutate(cluster = as.factor(cluster)) |>
-  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-ca_fields_pts <- ca_fields |>
   sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 design_pt_plot <- ggplot() +

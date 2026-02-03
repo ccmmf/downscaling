@@ -1,6 +1,6 @@
-# This script is used to explore LandIQ data 
-# and reconcile design points generated in previous iterations 
-# with updated LandIQ data. 
+# This script is used to explore LandIQ data
+# and reconcile design points generated in previous iterations
+# with updated LandIQ data.
 # Will be obsolete once we re-generate new design points in phase 3
 
 ## One off code used to fix LandIQ data has been moved to a gist:.groups
@@ -18,7 +18,7 @@ cluster_library(cl, "dplyr")
 
 ## Load Configuration
 ##   later can be replaced w/ config.yml or pecan.xml
-config_file <- here::here("000-config.R") 
+config_file <- here::here("000-config.R")
 if (file.exists(config_file)) {
   source(config_file)
 } else {
@@ -33,8 +33,8 @@ crops_all <- data.table::fread(
   filter(!is.na(CLASS)) |>
   mutate(
     SUBCLASS = replace_na(SUBCLASS, 0)
-  )   
-  
+  )
+
 crop_pft_map <- readr::read_csv(
   file.path(raw_data_dir, "cadwr_land_use", "CARB_PFTs_table.csv")
 ) |>
@@ -56,7 +56,7 @@ crops_all |>
     values_from = n,
     values_fill = 0
   )
-  
+
 # Perform join to map PFTs
 crops_all_pft <- crops_all |>
   left_join(
@@ -65,7 +65,7 @@ crops_all_pft <- crops_all |>
       "CLASS"    = "crop_type",
       "SUBCLASS" = "crop_code"
     )
-  )  
+  )
 # Split into multidplyr_df by year and season
 # For parallel dplyr
 crops_all_pft_x <- crops_all_pft |>
@@ -75,9 +75,11 @@ crops_all_pft_x <- crops_all_pft |>
 
 # 1) How many rows lost pft_group (i.e. join failures) by year/season?
 crops_all_pft_x |>
-  summarise(n_total = n(),
-            n_missing = sum(is.na(pft_group)),
-            pct_missing = round(n_missing / n_total * 100)) |>
+  summarise(
+    n_total = n(),
+    n_missing = sum(is.na(pft_group)),
+    pct_missing = round(n_missing / n_total * 100)
+  ) |>
   collect() |>
   print(n = Inf)
 
@@ -150,12 +152,12 @@ woody_herb_summary <- crops_all_pft_x |>
     woody_pcnt = sum(PCNT[pft_group == "woody"], na.rm = TRUE),
     herb_pcnt = sum(PCNT[pft_group == "herbaceous"], na.rm = TRUE)
   ) |>
-  ungroup() |> 
-  filter(n_pft == 2)  
-  
+  ungroup() |>
+  filter(n_pft == 2)
+
 z <- woody_herb_summary |>
   collect() |>
-  #filter(woody_pcnt > 0, herb_pcnt > 0) |>
+  # filter(woody_pcnt > 0, herb_pcnt > 0) |>
   mutate(
     total_pcnt = woody_pcnt + herb_pcnt
   )
@@ -186,7 +188,7 @@ woody_herb_fields_by_year_season |>
   summarize(n_fields = n_distinct(UniqueID)) |>
   arrange(year, season)
 
-### Trying reconcile 2016 and 2018 LandIQ data 
+### Trying reconcile 2016 and 2018 LandIQ data
 
 crops_all_2016 <- crops_all |>
   filter(year == 2016)
@@ -196,7 +198,7 @@ crops_all_2018 <- crops_all |>
 
 dwr_2018 <- terra::vect(
   file.path(raw_data_dir, "cadwr_land_use", "LandIQ_shapefiles", "i15_Crop_Mapping_2018_SHP", "i15_Crop_Mapping_2018.shp")
-)  |> 
+) |>
   terra::project("epsg:3310")
 
 dwr_2016 <- terra::vect(
@@ -210,11 +212,11 @@ dwr_x <- terra::intersect(dwr_2018, dwr_2016)
 ## Goal is to reconcile dwr_2016 Unique_ID with dwr_2018 UniqueID
 ## join them by geometry, creating id_2016 and id_2018
 ## find where UniqueID has changed (or not)
-## where 2016 is missing from 2018, find nearest polygon and calculate distance 
+## where 2016 is missing from 2018, find nearest polygon and calculate distance
 dwr_merged <- terra::intersect(dwr_2018, dwr_2016) |>
   # Project to WGS84 (decimal degrees) before converting to dataframe
   terra::project("epsg:4326") |>
-  as.data.frame(geom = "xy") |> 
+  as.data.frame(geom = "xy") |>
   select(contains("id"), x, y) |>
   rename(lon = x, lat = y) |>
   mutate(
@@ -229,9 +231,10 @@ unmatched <- anti_join(design_points, design_points_ids, by = "site_id") |>
 # Then append to the design_points_ids
 if (nrow(unmatched) > 0) {
   unmatched_vect <- terra::vect(
-    unmatched, geom = c("lon", "lat"), crs = "epsg:4326"
+    unmatched,
+    geom = c("lon", "lat"), crs = "epsg:4326"
   ) |> terra::project("epsg:3310")
-  
+
   # Calculate distance matrix and find nearest polygons
   nearest_data <- tibble(
     site_id = unmatched$site_id,
@@ -260,19 +263,22 @@ if (nrow(unmatched) > 0) {
 
   PEcAn.logger::logger.info("Design points joined to nearest polygon:")
   nearest_data |>
-    knitr::kable(digits = 5) 
-  
+    knitr::kable(digits = 5)
+
   # Combine intersected points with nearest points
   design_points_ids_updated <- bind_rows(design_points_ids, nearest_data)
 }
-  
 
-write.csv(design_points_ids_updated |>
-  select(UniqueID, site_id, lat, lon) |>
-  left_join(design_points |> 
-      select(site_id, pft),
-    by = "site_id") |>
-  arrange(pft, lat, lon),
+
+write.csv(
+  design_points_ids_updated |>
+    select(UniqueID, site_id, lat, lon) |>
+    left_join(
+      design_points |>
+        select(site_id, pft),
+      by = "site_id"
+    ) |>
+    arrange(pft, lat, lon),
   here::here("data/design_points.csv"),
   row.names = FALSE
 )
@@ -300,7 +306,7 @@ crops_all |>
   arrange(desc(n_counties)) |>
   print(n = 15)
 
-### 
+###
 
 grass_fields <- crops_all |>
   filter(CLASS == "P", MULTIUSE == "S", season == 2) |>
@@ -315,7 +321,7 @@ grass_fields <- crops_all |>
     ids = paste(unique(UniqueID), collapse = ",")
   ) |>
   ungroup() |>
-  sample_n(10) |>
+  slice_sample(n = 10) |>
   rename(lat = centy, lon = centx) |>
   terra::vect(crs = "epsg:3857") |>
   terra::project("epsg:4269") |>
