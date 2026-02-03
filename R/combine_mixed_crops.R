@@ -109,7 +109,7 @@ combine_mixed_crops <- function(woody_value,
     not_one <- abs(woody_cover - 1) > tol
     if (any(not_one, na.rm = TRUE)) {
       n_bad <- sum(not_one, na.rm = TRUE)
-      PEcAn.logger::logger.severe(paste0("incremental: woody_cover must be 1 (+/- ", tol, "); ", n_bad, " rows violate."))
+      PEcAn.logger::logger.severe("incremental: woody_cover must be 1 (+/- ", tol, "); ", n_bad, " rows violate.")
     }
     res <- woody_value + annual_cover * (annual_value - annual_init)
     return(res)

@@ -25,6 +25,10 @@ future::plan(future::multicore, workers = no_cores)
 ccmmf_dir <- Sys.getenv("CCMMF_DIR")
 if (ccmmf_dir == "") {
   ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
+  if (!dir.exists(ccmmf_dir)) {
+    # Fallback to repository root for local development
+    ccmmf_dir <- here::here()
+  }
 }
 pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
 
@@ -50,9 +54,24 @@ model_outdir <- file.path(pecan_outdir, "out")
 
 # Misc
 set.seed(42)
-ca_albers_crs <- 3310
+ca_albers_crs <- "EPSG:3310"
+
+if (terra::is.lonlat(ca_albers_crs)) {
+  PEcAn.logger::logger.severe("`ca_albers_crs` must remain a projected CRS (EPSG:3310).")
+}
+
+ca_albers_info <- terra::crs(ca_albers_crs, describe = TRUE)
+if (is.null(ca_albers_info$code) || ca_albers_info$code != 3310) {
+  PEcAn.logger::logger.severe("`ca_albers_crs` is reserved for California's standard NAD83 / California Albers (EPSG:3310).")
+}
+ca_albers_name <- ca_albers_info[["name"]]
 
 #### Messages ####
+## Ensure pecan_archive_force is defined (allow override via env var)
+if (!exists("pecan_archive_force", inherits = FALSE)) {
+  pecan_archive_force <- isTRUE(as.logical(Sys.getenv("PECAN_ARCHIVE_FORCE", "FALSE")))
+}
+
 msg <- glue::glue(
   "\n\n",
   "##### SETTINGS SUMMARY #####\n\n",
@@ -68,7 +87,7 @@ msg <- glue::glue(
   "- pecan_archive_force : {pecan_archive_force}\n\n",
   "### Other Settings ###\n",
   "- will extract variables: {paste(outputs_to_extract, collapse = ', ')}\n",
-  "- ca_albers_crs  : {ca_albers_crs}{if(ca_albers_crs == 3310) ', which is NAD83 / California Albers' else ''}\n"
+  "- ca_albers_crs : {ca_albers_crs}{if(!is.na(ca_albers_name)) paste0(' (', ca_albers_name, ')') else ''}\n"
 )
 if (!isTRUE(getOption("ccmmf.quiet_banner", FALSE))) {
   PEcAn.logger::logger.info(msg, wrap = FALSE)

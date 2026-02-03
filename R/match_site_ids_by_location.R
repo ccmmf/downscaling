@@ -30,7 +30,17 @@
 #'        ID-matched rows are returned with distance 0. Note: `map_all` does not
 #'        change which ID is returned; it only controls distance calculations.
 #' @param max_distance numeric. Maximum allowable distance (m) for a match; error if exceeded (default 100 m).
-#' @return a tibble with mapping and distances (same number of rows as target_df)
+#' @return a tibble with one row per target row, containing:
+#'   \describe{
+#'     \item{target_site_id}{Original target site ID}
+#'     \item{matched_site_id}{Matched reference site ID (may differ from target if not found by ID)}
+#'     \item{target_lat, target_lon}{Original target coordinates}
+#'     \item{ref_lat, ref_lon}{Matched reference coordinates}
+#'     \item{distance_m}{Distance between target and matched reference (meters)}
+#'     \item{close}{Proximity classification: "same location", "very close", "close", "moderate", "far"}
+#'   }
+#'   Rows are returned in the same order as target_df.
+
 match_site_ids_by_location <- function(
     target_df,
     reference_df,
