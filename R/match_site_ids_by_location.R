@@ -193,8 +193,6 @@ match_site_ids_by_location <- function(
 #' If some target IDs don't exist in reference, update them to the nearest reference IDs by location.
 #' If all target IDs exist in reference, returns the original target_df unchanged.
 #'
-#' @param target_df data.frame
-#' @param reference_df data.frame
 #' @inheritParams match_site_ids_by_location
 #' @return data.frame with potentially updated ID column
 update_site_ids_by_location <- function(
