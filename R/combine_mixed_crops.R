@@ -53,20 +53,23 @@ combine_mixed_crops <- function(woody_value,
                                 method = c("weighted", "incremental")) {
   method <- match.arg(method)
 
+  # Internal tolerance for floating point comparisons
+  tol <- 1e-3
 
   # Accept scalars for cover and vectors for values
-  # Collect inputs for recycling (add annual_init only if provided)
-  recycle_inputs <- list(
+  recycled <- vctrs::vec_recycle_common(
     woody_value = woody_value,
     annual_value = annual_value,
     annual_cover = annual_cover,
     woody_cover = woody_cover,
-    annual_init = annual_init
-  )
-
-  recycled <- vctrs::vec_recycle_common(
-    !!!recycle_inputs,
-    .size = vctrs::vec_size_common(!!!recycle_inputs)
+    annual_init = annual_init,
+    .size = vctrs::vec_size_common(
+      woody_value,
+      annual_value,
+      annual_cover,
+      woody_cover,
+      annual_init
+    )
   )
 
   woody_value <- recycled$woody_value
@@ -74,8 +77,6 @@ combine_mixed_crops <- function(woody_value,
   annual_cover <- recycled$annual_cover
   woody_cover <- recycled$woody_cover
   annual_init <- recycled$annual_init
-  # Internal tolerance for floating point comparisons
-  tol <- 1e-3
 
   # NA checks (annual_init only if required for incremental)
   na_checks <- list(
