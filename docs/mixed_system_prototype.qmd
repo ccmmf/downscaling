@@ -77,6 +77,9 @@ Technical details of these steps are described in more detail below.
 
 ### Mixture Methods {#sec-mixture-methods}
 
+These formulas are implemented in `combine_mixed_crops()`. This function expects additive quantities
+per unit area (stocks or flux totals already integrated over a defined time step.
+
 #### Two Cases for Mixed Cropping Systems: Discrete and Overlap
 
 In a mixed cropping system, we define $f_{woody}$ and $f_{annual}$ as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not "canopy cover" since that changes over time. Think of this as "percent of a monoculture". This method will build on SIPNET's single PFT design - the outputs from two separate single PFT runs simulate will be combined. 
@@ -150,8 +153,8 @@ These simulations were run from 2016 through 2024 across 10 sites, with an ensem
 library(tidyverse)
 library(lubridate)
 library(here)
-library(stringr)  # for label wrapping
-library(grid)     # grid::unit() for panel spacing
+library(stringr) # for label wrapping
+library(grid) # grid::unit() for panel spacing
 
 source(here::here("000-config.R"))
 if (!dir.exists(model_outdir)) {
@@ -166,33 +169,37 @@ mix_label_fn <- function(x) stringr::str_replace_all(x, " \\+ ", "\n+ ")
 
 # labeller that applies the above to mix_description (fallback to a normal wrap for other strips)
 mix_labeller <- labeller(
-  mix_description = mix_label_fn,
-  .default = label_wrap_gen(width = 12)
+    mix_description = mix_label_fn,
+    .default = label_wrap_gen(width = 12)
 )
 
 pal_mix <- c(
-  monoculture = "#1b9e77",
-  discrete = "#d95f02",
-  overlap = "#7570b3"
+    monoculture = "#1b9e77",
+    discrete = "#d95f02",
+    overlap = "#7570b3"
 )
 
 base_theme <- theme_minimal(base_size = 10) +
-  theme(
-    legend.position = "top",
-    strip.text = element_text(size = 9, lineheight = 0.95,
-                              margin = margin(2, 2, 2, 2)),
-    axis.text.x = element_text(angle = 0, hjust = 0.5),
-    plot.margin = margin(5, 5, 5, 5),
-    plot.title.position = "plot",
-    # center title and subtitle
-    plot.title = element_text(hjust = 0.5),
-    plot.subtitle = element_text(hjust = 0.5)
-  )
+    theme(
+        legend.position = "top",
+        strip.text = element_text(
+            size = 9, lineheight = 0.95,
+            margin = margin(2, 2, 2, 2)
+        ),
+        axis.text.x = element_text(angle = 0, hjust = 0.5),
+        plot.margin = margin(5, 5, 5, 5),
+        plot.title.position = "plot",
+        # center title and subtitle
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)
+    )
 
 wrap_labeller <- labeller(.default = label_wrap_gen(width = 12))
-year_scale_dt <- scale_x_datetime(date_breaks = "1 year",
-                                  date_labels = "%Y",
-                                  expand = expansion(mult = c(0.01, 0.02)))
+year_scale_dt <- scale_x_datetime(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0.02))
+)
 ```
 
 ## Mixed-system dataset
@@ -223,12 +230,12 @@ combined_output <- readr::read_csv(
             )
         ),
         mix_type = case_when(
-               mix_description %in% c("100% annual", "100% woody") ~ "monoculture",
-               scenario == "discrete" ~ "discrete",
-               scenario == "overlap" ~ "overlap",
-               TRUE ~ "other"
-               )
-     ) |>
+            mix_description %in% c("100% annual", "100% woody") ~ "monoculture",
+            scenario == "discrete" ~ "discrete",
+            scenario == "overlap" ~ "overlap",
+            TRUE ~ "other"
+        )
+    ) |>
     arrange(mix_description)
 
 # variables present (used by time-series sections below)
@@ -247,60 +254,60 @@ This section compares three treatment scenarios on the same set of woody sites u
 ```{r woody-treatments}
 treat_path <- file.path(model_outdir, "treatments_woody_sites.csv")
 if (file.exists(treat_path)) {
-  tr <- readr::read_csv(treat_path, show_col_types = FALSE)
+    tr <- readr::read_csv(treat_path, show_col_types = FALSE)
 
-  # County-level per-ensemble totals and densities, then average across ensembles
-  tr_county <- tr |>
-    dplyr::group_by(model_output, scenario, county, ensemble) |>
-    dplyr::summarise(total_Mg = sum(total_c_Mg, na.rm = TRUE), total_ha = sum(area_ha, na.rm = TRUE), .groups = "drop") |>
-    dplyr::mutate(
-      density_Mg_ha = dplyr::if_else(total_ha > 0, total_Mg / total_ha, NA_real_),
-      total_Tg = PEcAn.utils::ud_convert(total_Mg, "Mg", "Tg")
+    # County-level per-ensemble totals and densities, then average across ensembles
+    tr_county <- tr |>
+        dplyr::group_by(model_output, scenario, county, ensemble) |>
+        dplyr::summarise(total_Mg = sum(total_c_Mg, na.rm = TRUE), total_ha = sum(area_ha, na.rm = TRUE), .groups = "drop") |>
+        dplyr::mutate(
+            density_Mg_ha = dplyr::if_else(total_ha > 0, total_Mg / total_ha, NA_real_),
+            total_Tg = PEcAn.utils::ud_convert(total_Mg, "Mg", "Tg")
+        ) |>
+        dplyr::group_by(model_output, scenario, county) |>
+        dplyr::summarise(
+            mean_total_Tg = mean(total_Tg, na.rm = TRUE),
+            mean_density_Mg_ha = mean(density_Mg_ha, na.rm = TRUE),
+            .groups = "drop"
+        )
+
+    # Bring in county boundaries for maps
+    county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"), quiet = TRUE)
+
+    # Differences vs 100% woody baseline
+    base <- tr_county |>
+        dplyr::filter(scenario == "woody_100") |>
+        dplyr::select(model_output, county, base_total_Tg = mean_total_Tg, base_density_Mg_ha = mean_density_Mg_ha)
+    diffs <- tr_county |>
+        dplyr::filter(scenario != "woody_100") |>
+        dplyr::left_join(base, by = c("model_output", "county")) |>
+        dplyr::mutate(
+            delta_total_Tg = mean_total_Tg - base_total_Tg,
+            delta_density_Mg_ha = mean_density_Mg_ha - base_density_Mg_ha
+        ) |>
+        dplyr::left_join(county_boundaries, by = "county")
+
+    # Simple maps: density deltas by scenario and pool
+    ggplot2::ggplot(diffs, ggplot2::aes(geometry = geom, fill = delta_density_Mg_ha)) +
+        ggplot2::geom_sf(color = "black", fill = NA) +
+        ggplot2::geom_sf() +
+        ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
+        ggplot2::facet_grid(model_output ~ scenario) +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(title = "County-level density delta vs 100% woody (on woody sites)", fill = "Delta (Mg/ha)")
+
+    # Table preview
+    DT::datatable(
+        diffs |>
+            dplyr::select(model_output, scenario, county, delta_total_Tg, delta_density_Mg_ha) |>
+            dplyr::arrange(model_output, scenario, county),
+        options = list(pageLength = 10, scrollY = "50vh", scroller = TRUE, deferRender = TRUE),
+        extensions = c("Scroller"),
+        rownames = FALSE
     ) |>
-    dplyr::group_by(model_output, scenario, county) |>
-    dplyr::summarise(
-      mean_total_Tg = mean(total_Tg, na.rm = TRUE),
-      mean_density_Mg_ha = mean(density_Mg_ha, na.rm = TRUE),
-      .groups = "drop"
-    )
-
-  # Bring in county boundaries for maps
-  county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"), quiet = TRUE)
-
-  # Differences vs 100% woody baseline
-  base <- tr_county |>
-    dplyr::filter(scenario == "woody_100") |>
-    dplyr::select(model_output, county, base_total_Tg = mean_total_Tg, base_density_Mg_ha = mean_density_Mg_ha)
-  diffs <- tr_county |>
-    dplyr::filter(scenario != "woody_100") |>
-    dplyr::left_join(base, by = c("model_output", "county")) |>
-    dplyr::mutate(
-      delta_total_Tg = mean_total_Tg - base_total_Tg,
-      delta_density_Mg_ha = mean_density_Mg_ha - base_density_Mg_ha
-    ) |>
-    dplyr::left_join(county_boundaries, by = "county")
-
-  # Simple maps: density deltas by scenario and pool
-  ggplot2::ggplot(diffs, ggplot2::aes(geometry = geom, fill = delta_density_Mg_ha)) +
-    ggplot2::geom_sf(color = "black", fill = NA) +
-    ggplot2::geom_sf() +
-    ggplot2::scale_fill_gradient2(low = "royalblue", mid = "white", high = "firebrick", midpoint = 0, na.value = "white") +
-    ggplot2::facet_grid(model_output ~ scenario) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(title = "County-level density delta vs 100% woody (on woody sites)", fill = "Delta (Mg/ha)")
-
-  # Table preview
-  DT::datatable(
-    diffs |>
-      dplyr::select(model_output, scenario, county, delta_total_Tg, delta_density_Mg_ha) |>
-      dplyr::arrange(model_output, scenario, county),
-    options = list(pageLength = 10, scrollY = "50vh", scroller = TRUE, deferRender = TRUE),
-    extensions = c('Scroller'),
-    rownames = FALSE
-  ) |>
-  DT::formatSignif(columns = c("delta_total_Tg", "delta_density_Mg_ha"), digits = 2)
+        DT::formatSignif(columns = c("delta_total_Tg", "delta_density_Mg_ha"), digits = 2)
 } else {
-  cat("treatments_woody_sites.csv not found; run scripts/040_downscale.R to generate.")
+    cat("treatments_woody_sites.csv not found; run scripts/040_downscale.R to generate.")
 }
 ```
 
@@ -310,45 +317,48 @@ Next we select representative sites based on their productivity. We use AGB in t
 
 ```{r select-representative-sites}
 agb_site <- combined_output |>
-  filter(mix_description == "100% woody", variable == "AGB") |>
-  group_by(site_id) |>
-  summarise(agb_mean = mean(value_combined), .groups = "drop")
+    filter(mix_description == "100% woody", variable == "AGB") |>
+    group_by(site_id) |>
+    summarise(agb_mean = mean(value_combined), .groups = "drop")
 
 if (nrow(agb_site) >= 3) {
-  qs_agb <- quantile(
-    agb_site$agb_mean,
-    probs = c(0.15, 0.50, 0.85)
-  )
-  analysis_sites <- purrr::map_chr(qs_agb, function(qv) {
-    agb_site |>
-      mutate(diff = abs(agb_mean - qv)) |>
-      slice_min(diff, n = 1, with_ties = FALSE) |>
-      pull(site_id)
-  }) |> unique()
+    qs_agb <- quantile(
+        agb_site$agb_mean,
+        probs = c(0.15, 0.50, 0.85)
+    )
+    analysis_sites <- purrr::map_chr(qs_agb, function(qv) {
+        agb_site |>
+            mutate(diff = abs(agb_mean - qv)) |>
+            slice_min(diff, n = 1, with_ties = FALSE) |>
+            pull(site_id)
+    }) |> unique()
 
-  if (length(analysis_sites) != 3) {
-    PEcAn.logger::logger.error("Representative sites not found for all quantiles")
-  }
-  site_map <- tibble(
-    site_id = analysis_sites,
-    agb_class = factor(c("low_agb", "med_agb", "high_agb"),
-                       levels = c("low_agb", "med_agb", "high_agb"))
-  )
+    if (length(analysis_sites) != 3) {
+        PEcAn.logger::logger.error("Representative sites not found for all quantiles")
+    }
+    site_map <- tibble(
+        site_id = analysis_sites,
+        agb_class = factor(c("low_agb", "med_agb", "high_agb"),
+            levels = c("low_agb", "med_agb", "high_agb")
+        )
+    )
 } else {
-  PEcAn.logger::logger.severe("Looks like something went wrong", 
-  "There are only", nrow(agb_site), " sites with AGB data. ")
+    PEcAn.logger::logger.severe(
+        "Looks like something went wrong",
+        "There are only", nrow(agb_site), " sites with AGB data. "
+    )
 }
 
 # join and relabel classes for plotting (use human-friendly labels)
 output_representative_sites <- site_map |>
-  left_join(combined_output, by = "site_id") |>
-  mutate(
-    agb_class = factor(
-      agb_class,
-      levels = c("low_agb", "med_agb", "high_agb"),
-      labels = c("low AGB site", "med AGB site", "high AGB site")
+    left_join(combined_output, by = "site_id") |>
+    mutate(
+        agb_class = factor(
+            agb_class,
+            levels = c("low_agb", "med_agb", "high_agb"),
+            labels = c("low AGB site", "med AGB site", "high AGB site")
+        )
     )
-  )
 ```
 
 
@@ -360,30 +370,30 @@ TODO add initial conditions to table
 
 ```{r summary-table}
 summary_stats <- combined_output |>
-  filter(year(datetime) == max(year(datetime))) |>
-  group_by(variable, mix_description, mix_type) |>
-  summarise(
-    mean = mean(value_combined),
-    sd = sd(value_combined),
-    .groups = "drop"
-  ) |>
-  mutate(
-    # format as "mean (sd)" with one decimal place
-    val = sprintf("%.1f (%.1f)", mean, sd)
-  ) |>
-  select(-mean, -sd) |>
-  tidyr::pivot_wider(
-    id_cols = c(mix_description, mix_type),
-    names_from = variable,
-    values_from = val
-  )
+    filter(year(datetime) == max(year(datetime))) |>
+    group_by(variable, mix_description, mix_type) |>
+    summarise(
+        mean = mean(value_combined),
+        sd = sd(value_combined),
+        .groups = "drop"
+    ) |>
+    mutate(
+        # format as "mean (sd)" with one decimal place
+        val = sprintf("%.1f (%.1f)", mean, sd)
+    ) |>
+    select(-mean, -sd) |>
+    tidyr::pivot_wider(
+        id_cols = c(mix_description, mix_type),
+        names_from = variable,
+        values_from = val
+    )
 
 # TODO future iterations, don't assume columns;
 # use glue to construct dynamically
 knitr::kable(
-  summary_stats,
-  col.names = c("Mixture", "Type", "AGB", "SOC"),
-  caption = "Summary statistics (mean and standard deviation) for carbon pools by mixture type."
+    summary_stats,
+    col.names = c("Mixture", "Type", "AGB", "SOC"),
+    caption = "Summary statistics (mean and standard deviation) for carbon pools by mixture type."
 )
 ```
 
@@ -405,61 +415,61 @@ last_year <- lubridate::year(last_dt)
 
 # Final-time values per (site x ensemble)
 combined_output_final_site_ens <- combined_output |>
-  filter(datetime == last_dt) |>
-  group_by(variable, mix_description, mix_type, site_id, ensemble_id) |>
-  summarise(
-    value = median(value_combined),
-    .groups = "drop"
-  )
+    filter(datetime == last_dt) |>
+    group_by(variable, mix_description, mix_type, site_id, ensemble_id) |>
+    summarise(
+        value = median(value_combined),
+        .groups = "drop"
+    )
 
 # Points: site-level means across ensembles at final time
 combined_output_site_mean <- combined_output_final_site_ens |>
-  group_by(variable, mix_description, mix_type, site_id) |>
-  summarise(
-    site_mean = mean(value),
-    .groups = "drop"
-  )
+    group_by(variable, mix_description, mix_type, site_id) |>
+    summarise(
+        site_mean = mean(value),
+        .groups = "drop"
+    )
 
 # Error bars + median dot: summarise across sites (using site-level means)
 combined_output_summaries <- combined_output_site_mean |>
-  group_by(variable, mix_description, mix_type) |>
-  summarise(
-    q25 = quantile(site_mean, 0.25),
-    q50 = quantile(site_mean, 0.5),
-    q75 = quantile(site_mean, 0.75),
-    .groups = "drop"
-  )
+    group_by(variable, mix_description, mix_type) |>
+    summarise(
+        q25 = quantile(site_mean, 0.25),
+        q50 = quantile(site_mean, 0.5),
+        q75 = quantile(site_mean, 0.75),
+        .groups = "drop"
+    )
 
-    # Plot: ensemble points (jitter) + IQR + median; facet by variable
-    ggplot() +
-      geom_jitter(
+# Plot: ensemble points (jitter) + IQR + median; facet by variable
+ggplot() +
+    geom_jitter(
         data = combined_output_site_mean,
         aes(x = mix_description, y = site_mean, color = mix_type),
         width = 0.15, alpha = 0.5, size = 1.2
-      ) +
-      geom_errorbar(
+    ) +
+    geom_errorbar(
         data = combined_output_summaries,
         aes(x = mix_description, ymin = q25, ymax = q75, color = mix_type),
         width = 0.4, linewidth = 0.6
-      ) +
-      geom_point(
+    ) +
+    geom_point(
         data = combined_output_summaries,
         aes(x = mix_description, y = q50, color = mix_type),
         size = 2
-      ) +
-      facet_wrap(~ variable, scales = "free_y", nrow = 1, labeller = mix_labeller) +  # use mix_labeller
-      scale_x_discrete(labels = mix_label_fn) +                                       # wrap x labels into two lines
-      scale_color_manual(values = pal_mix) +
-      labs(
+    ) +
+    facet_wrap(~variable, scales = "free_y", nrow = 1, labeller = mix_labeller) + # use mix_labeller
+    scale_x_discrete(labels = mix_label_fn) + # wrap x labels into two lines
+    scale_color_manual(values = pal_mix) +
+    labs(
         title = paste0("End-Year Carbon Pool Sizes (", last_year, ")"),
         subtitle = "Points = site means; bars = IQR; dot = median",
         x = "Mixture",
         y = expression("Carbon Pool Size (" * kg ~ C ~ m^-2 * ")"),
         color = "Type"
-      ) +
-      base_theme +
-      theme(axis.text.x = element_text(angle = 35, hjust = 1))
- 
+    ) +
+    base_theme +
+    theme(axis.text.x = element_text(angle = 35, hjust = 1))
+
 ```
 
 ### Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)
@@ -666,16 +676,17 @@ for (v in vars) {
             aes(datetime, q50, group = mix_description),
             color = "black", linewidth = .5
         ) +
-        facet_wrap(~mix_description, 
-                   nrow = 1, 
-                   labeller = mix_labeller, 
-                   scales = "free_y") +
+        facet_wrap(~mix_description,
+            nrow = 1,
+            labeller = mix_labeller,
+            scales = "free_y"
+        ) +
         year_scale_dt +
         scale_color_manual(values = pal_mix) +
         labs(
             title = paste("Time Series (Median & IQR):", v),
             subtitle = "Lines=ensembles; black=median; ribbon=IQR",
-            x = NULL, y = bquote("Carbon Pool Size (" * kg ~ C ~ m^-2 * ")"), 
+            x = NULL, y = bquote("Carbon Pool Size (" * kg ~ C ~ m^-2 * ")"),
             color = "Category"
         ) +
         base_theme

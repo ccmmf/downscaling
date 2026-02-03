@@ -1,7 +1,7 @@
 #' Combine two-PFT outputs to represent mixed cropping systems
 #'
-#' Rules for combining woody and annual PFT outputs to represent a
-#' mixed cropping system. Supports two methods:
+#' Rules for combining woody and annual PFT outputs (stocks or accumulated
+#' flux totals) to represent a mixed cropping system. Supports two methods:
 #'  - "weighted": PFTs partition area (woody_cover + annual_cover = 1) and the
 #'    output is a weighted average: `woody_cover * woody_value + annual_cover * annual_value`.
 #'  - "incremental": preserves the full-area woody baseline (requires `woody_cover == 1`)
@@ -9,6 +9,8 @@
 #'    `annual_delta = annual_value - annual_init`; `result = woody_value + annual_cover * annual_delta`.
 #'
 #' All inputs must be vectors each of length 1 or a shared common length.
+#'
+#' This function is intended to be applied to pools or integrated fluxes (e.g., annual NPP, annual N2O flux).
 #'
 #' Validation rules (severe errors unless otherwise noted):
 #'  * No input values may be NA (including covers, pool sizes, annual_init if required)
@@ -18,8 +20,12 @@
 #'  * Method "weighted": rows whose `woody_cover + annual_cover` differ from 1 by more than tolerance
 #'    are set to NA in the result; a single aggregated warning is emitted listing the count
 #'
-#' @param woody_value numeric. Pool size for the woody PFT (kg/m2).
-#' @param annual_value numeric. Pool size for the annual PFT (kg/m2).
+#' Inputs may be any quantity expressed per unit area (stocks such as
+#' kg/m2 or fluxes accumulated over a defined time step, e.g., kg/m2 per
+#' hour or year).
+#'
+#' @param woody_value numeric. Pool or accumulated flux for the woody PFT (kg/m2).
+#' @param annual_value numeric. Pool or accumulated flux for the annual PFT (kg/m2).
 #' @param annual_init numeric, required for method = "incremental"; the initial annual pool.
 #' @param annual_cover numeric. Fractional cover of the annual PFT (0-1).
 #' @param woody_cover numeric. Fractional cover of the woody PFT (0-1). Must be 1 when `method` is "incremental".
@@ -54,9 +60,9 @@ combine_mixed_crops <- function(woody_value,
     woody_value = woody_value,
     annual_value = annual_value,
     annual_cover = annual_cover,
-    woody_cover = woody_cover
+    woody_cover = woody_cover,
+    annual_init = annual_init
   )
-  if (!is.null(annual_init)) recycle_inputs$annual_init <- annual_init
 
   recycled <- vctrs::vec_recycle_common(
     !!!recycle_inputs,
@@ -67,7 +73,7 @@ combine_mixed_crops <- function(woody_value,
   annual_value <- recycled$annual_value
   annual_cover <- recycled$annual_cover
   woody_cover <- recycled$woody_cover
-  if (!is.null(annual_init)) annual_init <- recycled$annual_init
+  annual_init <- recycled$annual_init
   # Internal tolerance for floating point comparisons
   tol <- 1e-3
 

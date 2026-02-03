@@ -245,12 +245,15 @@ Extracts and formats SIPNET outputs for downscaling:
 Rscript scripts/031_aggregate_sipnet_output.R
 ```
 
-Simulates mixed-cropping scenarios by combining outputs across two PFTs using a mixed aggregation function (see Mixed System Prototype). Two methods are supported:
+Simulates mixed-cropping scenarios by combining outputs across two PFTs using `combine_mixed_crops()` (see Mixed System Prototype). Two methods are supported:
 
 - weighted: area-partitioned mix where `woody_cover + annual_cover = 1`
 - incremental: preserve woody baseline (`woody_cover = 1`) and add the annual delta scaled by `annual_cover`
 
-The current analysis uses the weighted method to represent ground cover in orchards and vineyards.
+`combine_mixed_crops()` is pool-agnostic: pass any additive quantity expressed per unit area, including instantaneous stocks
+(`kg/m^2`) or total flux totals that have already been accumulated over the SIPNET output interval (e.g., hourly or annual `kg/m^2` of NEE).
+(`kg/m^2`) or total flux totals that have already been accumulated over the SIPNET output interval (e.g., hourly or annual `kg/m^2` of NEE).
+(`kg/m^2`) or total flux over a defined time step.
 
 Outputs include `multi_pft_ensemble_output.csv`, `combined_ensemble_output.csv`, and `ensemble_output_with_mixed.csv` with a synthetic mixed PFT.
 
