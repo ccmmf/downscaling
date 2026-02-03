@@ -5,11 +5,7 @@ test_that("match_site_ids_by_location returns full mapping when all IDs exist", 
     lat = c(34.0, 35.0),
     lon = c(-118.0, -119.0)
   )
-  reference <- data.frame(
-    site_id = c("A", "B"),
-    lat = c(34.0, 35.0),
-    lon = c(-118.0, -119.0)
-  )
+  reference <- target
 
   map <- match_site_ids_by_location(target, reference)
   expect_s3_class(map, "data.frame")
