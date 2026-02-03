@@ -17,7 +17,17 @@
 #' @param map_all logical. If TRUE, compute nearest distances for all target rows.
 #'        If FALSE, only compute nearest distances for IDs missing from reference;
 #'        matched-by-ID rows are returned with distance 0.
-#' @return a tibble with mapping and distances (same number of rows as target_df)
+#' @return a tibble with one row per target row, containing:
+#'   \describe{
+#'     \item{target_site_id}{Original target site ID}
+#'     \item{matched_site_id}{Matched reference site ID (may differ from target if not found by ID)}
+#'     \item{target_lat, target_lon}{Original target coordinates}
+#'     \item{ref_lat, ref_lon}{Matched reference coordinates}
+#'     \item{distance_m}{Distance between target and matched reference (meters)}
+#'     \item{close}{Proximity classification: "same location", "very close", "close", "moderate", "far"}
+#'   }
+#'   Rows are returned in the same order as target_df.
+
 match_site_ids_by_location <- function(
     target_df,
     reference_df,
