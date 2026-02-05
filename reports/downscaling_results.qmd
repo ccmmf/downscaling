@@ -95,7 +95,7 @@ The maps below are organized to compare across PFTs. First we show total county 
 The first table summarizes county-level metrics for each PFT. The second table pivots carbon pools to highlight differences across cropping systems..
 
 ```{r, options, include=FALSE}
-options(ccmmf.quiet_bannerj = TRUE)
+options(ccmmf.quiet_banner = TRUE)
 source(here::here("000-config.R"))
 ```
 
