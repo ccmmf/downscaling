@@ -8,6 +8,11 @@ withr::defer(PEcAn.logger::logger.setLevel(level))
 r_dir <- here::here("R")
 r_scripts <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE)
 for (f in r_scripts) {
-    # source quietly; re-definitions are harmless for tests
-    try(source(f, local = TRUE), silent = TRUE)
+    result <- tryCatch(
+        source(f, local = TRUE),
+        error = function(e) {
+            warning("Failed to source ", basename(f), ": ", conditionMessage(e))
+            NULL
+        }
+    )
 }
