@@ -1,7 +1,7 @@
 ---
 title: "Mixed-System Prototype (Two-PFT Aggregation)"
 author: "David LeBauer"
-date: "`r Sys.Date()`"
+date: today
 quarto-cache: true
 format:
   html:
@@ -14,7 +14,7 @@ execute:
   message: false
 ---
 
-This document prototypes a workflow for modeling croplands with multiple crops ("mixed cropping systems"). 
+This document presents a prototype workflow for modeling croplands with multiple crops ("mixed cropping systems"). 
 
 ## Challenge
 
@@ -48,7 +48,7 @@ Technical details of these steps are described in more detail below.
    - Use the same meteorological driver data (ERA5 ensemble).
    - Use the same soil texture and soil organic carbon.
 3. Settings File:
-   - For each mixed site, create separate a separate configuration file for each PFT; append `-PFT` to the site ID.
+   - For each mixed site, create a separate configuration file for each PFT; append `-PFT` to the site ID.
 4. For herbaceous crops: 
    - Annual herbaceous: assume start with bare ground (zero biomass).
    - Perennial herbaceous: start as bare ground run; consider methods for estimating initial biomass in later iterations. 
