@@ -98,11 +98,11 @@ combine_mixed_crops <- function(woody_value,
   }
 
   # Range checks for covers
-  out_of_range_annual <- (annual_cover < 0 - tol) | (annual_cover > 1 + tol)
-  out_of_range_woody <- (woody_cover < 0 - tol) | (woody_cover > 1 + tol)
+  out_of_range_annual <- (annual_cover < -tol) | (annual_cover > 1 + tol)
+  out_of_range_woody <- (woody_cover < -tol) | (woody_cover > 1 + tol)
   if (any(out_of_range_annual | out_of_range_woody, na.rm = TRUE)) {
     n_bad <- sum(out_of_range_annual | out_of_range_woody, na.rm = TRUE)
-    PEcAn.logger::logger.severe("weighted: cover fractions outside must be in the range [0,1] (+/- tol).", n_bad, "rows violate.")
+    PEcAn.logger::logger.severe("weighted: cover fractions must be in the range [0,1] (+/- tol). ", n_bad, " rows violate this constraint.")
   }
 
   if (method == "incremental") {
