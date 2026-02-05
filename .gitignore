@@ -1,33 +1,44 @@
-# R-specific files
+########## Operating system / Editor ##########
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+########## R / RStudio ##########
 .Rhistory
 .RData
 .Ruserdata
 .Rproj.user/
 *.Rproj
+Rplots.pdf
 
-# Quarto directories
-/.quarto/
+########## Quarto build outputs ##########
 /_site/
 /_book/
-*/docs/
-!/docs/**
 /_freeze/
+/.quarto/
 /_files/
 
+# Keep only top-level docs; ignore nested docs directories elsewhere
+*/docs/
+!/docs/**
 
-# VScode settings
-.vscode/
-
-# Knitr + R Markdown cache
+########## Knitr / R Markdown caches ##########
 *_cache/
 /cache/
 *_files/
-*html
+*.utf8.md
+*.knit.md
+*.html
 
-# System files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
+########## Logs / temp ##########
 *.log
+*.tmp
+nohup.out
+
+########## Deployment / misc ##########
+rsconnect/
+
+########## Generated figures ##########
+# Do not track any rendered images; site publishing copies from _site
+figures/

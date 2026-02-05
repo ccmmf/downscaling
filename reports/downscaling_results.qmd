@@ -1,12 +1,11 @@
 ---
 title: "Downscaling Results and Analysis"
 author: "David LeBauer"
-date: "`r Sys.Date()`"
+date: today
 format:
   html:
-    self-contained: true
-    embed-resources: true
-    df-print: paged
+    self-contained: false
+    df-print: default
     toc: true
 execute:
   echo: false
@@ -16,185 +15,304 @@ execute:
 
 # Overview
 
-This document presents the results of downscaling workflow: soil carbon stocks and aboveground biomass in California cropland fields, aggregated to the county level.
+Here we present results of aggregating from field scale pool sizes <!-- and fluxes--> to county-level estimates of county-level carbon stocks and densities for soil carbon stocks to 30cm and aboveground biomass.
 
-The Results section presents the county-level carbon stocks and densities for soil carbon and aboveground biomass. The Analysis section explores results from the downscaling and aggregation analysis steps.
+**Not validated, for illustrative purposes only.**
 
-For detailed information about methods and workflow, please see the Workflow Documentation in [`docs/workflow_documentation.md`](https://github.com/ccmmf/downscaling/blob/update_site_selection/docs/workflow_documentation.md).
+For detailed information about methods and workflow, see the [Workflow Documentation](../docs/workflow_documentation.md).
+
+Estimates for woody and mixed woody + annual systems are done for all fields in the LandIQ dataset with tree and vinyard crops; estimates for annual systems are done for all fields with herbaceous annual crops.
+
+In the mixed scenario, ground cover is planted in all orchards. The methods for simulating the addition of ground cover to orchards are described in [Mixed System Prototype](../docs/mixed_system_prototype.qmd). Briefly, it combines downscaled model outputs from the woody perennial crop and annual crop PFTs to represent the effect of ground cover on carbon pools.
 
 # Results
 
 ## County-Level Carbon Stocks and Densities
 
-The following maps illustrate the spatial variation and uncertainty (mean and standard deviation) of the predicted carbon pools at the county level.
+The maps below are organized to compare across PFTs. First we show total county carbon (Stocks, Tg), then area‑normalized density (Density, Mg/ha), each split by carbon pool and PFT.
 
-### Soil Carbon (TotSoilCarb)
+### Stocks
 
-#### Carbon Stock by County
+#### Soil Carbon (TotSoilCarb)
 
-![](../figures/county_TotSoilCarb_carbon_stock.png)
+##### Annual Crop
 
-#### Carbon Density by County
+![](../figures/county_annual_crop_TotSoilCarb_carbon_stock.webp)
 
-![](../figures/county_TotSoilCarb_carbon_density.png)
+##### Woody Perennial Crop (Orchards & Vineyards)
 
-### Aboveground Biomass (AGB)
+![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
 
-#### Carbon Stock by County
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
 
-![](../figures/county_AGB_carbon_stock.png)
+![](../figures/county_woody_annual_TotSoilCarb_carbon_stock.webp)
 
-#### Carbon Density by County
+#### Aboveground Biomass (AGB)
 
-![](../figures/county_AGB_carbon_density.png)
+##### Annual Crop
 
+![](../figures/county_annual_crop_AGB_carbon_stock.webp)
 
-### Table of Carbon Stocks and Density by County
+##### Woody Perennial Crop (Orchards & Vineyards)
 
-The table below provides a searchable summary of the county-level carbon stocks and densities.
+![](../figures/county_woody_perennial_crop_AGB_carbon_stock.webp)
 
-```{r}
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
+
+![](../figures/county_woody_annual_AGB_carbon_stock.webp)
+
+### Density
+
+#### Soil Carbon (TotSoilCarb)
+
+##### Annual Crop
+
+![](../figures/county_annual_crop_TotSoilCarb_carbon_density.webp)
+
+##### Woody Perennial Crop (Orchards & Vineyards)
+
+![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
+
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
+![](../figures/county_woody_annual_TotSoilCarb_carbon_density.webp)
+
+#### Aboveground Biomass (AGB)
+
+##### Annual Crop
+
+![](../figures/county_annual_crop_AGB_carbon_density.webp)
+
+##### Woody Perennial Crop (Orchards & Vineyards)
+
+![](../figures/county_woody_perennial_crop_AGB_carbon_density.webp)
+
+##### Woody + Annual (Orchards & Vineyards with Ground Cover)
+
+![](../figures/county_woody_annual_AGB_carbon_density.webp)
+
+### Tables: County Stocks and Density (by PFT) and PFT Comparison
+
+The first table summarizes county-level metrics for each PFT. The second table pivots carbon pools to highlight differences across cropping systems..
+
+```{r, options, include=FALSE}
+options(ccmmf.quiet_banner = TRUE)
 source(here::here("000-config.R"))
+```
+
+```{r,load_inputs, message=FALSE, warning=FALSE}
 
 # Load county summaries data
-county_summaries <- readr::read_csv(file.path(model_outdir, "county_summaries.csv"),
-  show_col_types = FALSE)
-#colnames(county_summaries)
-# Combine mean and SD into a single column for carbon density
-county_summaries_table <- county_summaries |> 
+county_summaries <- readr::read_csv(
+  file.path(model_outdir, "county_summaries.csv"),
+  show_col_types = FALSE
+)
+
+# Long table with PFT + area
+county_summaries_table <- county_summaries |>
   dplyr::mutate(
-    `Mean Total C (Tg/county)` = paste0(
-       signif(mean_total_c_Tg, 2), 
-       " (", signif(sd_total_c_Tg, 2), ")"
-    ),
-    `Mean C Density (Mg/ha)` = paste0(
-       signif(mean_c_density_Mg_ha, 2), 
-       " (", signif(sd_c_density_Mg_ha, 2), ")"
-    )
-     ) |> 
-     dplyr::rename(
+    `Mean Total C (Tg/county)` = paste0(signif(mean_total_c_Tg, 2), " (", signif(sd_total_c_Tg, 2), ")"),
+    `Mean C Density (Mg/ha)`   = paste0(signif(mean_c_density_Mg_ha, 2), " (", signif(sd_c_density_Mg_ha, 2), ")"),
+    `Area (ha)`                = signif(mean_total_ha, 3)
+  ) |>
+  dplyr::rename(
     `Carbon Pool` = model_output,
-    `County` = county,
-    `# Fields` = n
-     ) |> 
-     dplyr::select(`Carbon Pool`, `County`, `# Fields`, `Mean Total C (Tg/county)`, `Mean C Density (Mg/ha)`)
+    `PFT`         = pft,
+    `County`      = county,
+    `# Fields`    = n
+  ) |>
+  dplyr::select(`Carbon Pool`, `PFT`, `County`, `# Fields`, `Area (ha)`, `Mean Total C (Tg/county)`, `Mean C Density (Mg/ha)`)
 
-# Create Table
-# TODO 
-#  - Fix point w/ missing county
-
-htmlwidgets::setWidgetIdSeed(123) # required to embed table self-contained in html
-options(htmlwidgets.TEMP_DIR = "htmlwidgets")
+htmlwidgets::setWidgetIdSeed(123)
 
 DT::datatable(
-   county_summaries_table,
-   options = list(
-      pageLength = 10,
-      searchHighlight = TRUE
-   ),
-   rownames = FALSE,
-   escape = FALSE
+  county_summaries_table,
+  extensions = c('Scroller','SearchPanes','Select'),
+  options = list(
+    dom = 'Plrtip',
+    pageLength = 10,
+    searchHighlight = FALSE,
+    deferRender = TRUE,
+    scroller = TRUE,
+    scrollY = "60vh",
+    searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
+    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
+  ),
+  class = "stripe hover compact",
+  rownames = FALSE, escape = FALSE
+)
+
+# Wide comparison: TotSoilCarb density by PFT
+density_wide <- county_summaries |>
+  dplyr::select(County = county, `Carbon Pool` = model_output, PFT = pft, `C Density (Mg/ha)` = mean_c_density_Mg_ha) |>
+  tidyr::pivot_wider(names_from = PFT, values_from = `C Density (Mg/ha)`) |>
+  dplyr::arrange(`Carbon Pool`, County)
+
+# Drop rows where the row-wise max value is < MASK_THRESHOLD * colsum of the column where that max occurs,
+# evaluated within each Carbon Pool separately
+if (exists("MASK_THRESHOLD")) {
+  mask_group <- function(df) {
+    vals <- as.matrix(dplyr::select(df, -County, -`Carbon Pool`))
+    vals2 <- vals; vals2[is.na(vals2)] <- -Inf
+    col_sums <- colSums(vals, na.rm = TRUE)
+    if (all(!is.finite(col_sums)) || sum(col_sums, na.rm = TRUE) <= 0) return(df)
+    row_max_val <- apply(vals2, 1, max)
+    row_max_col <- max.col(vals2, ties.method = "first")
+    thresholds <- col_sums[row_max_col] * get0("MASK_THRESHOLD", ifnotfound = 0.01)
+    keep <- is.finite(row_max_val) & row_max_val >= thresholds
+    df[keep, , drop = FALSE]
+  }
+  density_wide <- density_wide |>
+    dplyr::group_split(`Carbon Pool`, .keep = TRUE) |>
+    purrr::map(mask_group) |>
+    dplyr::bind_rows()
+}
+
+DT::datatable(
+  density_wide,
+  extensions = c('Scroller','SearchPanes','Select'),
+  options = list(
+    dom = 'Plrtip',
+    pageLength = 10,
+    searchHighlight = FALSE,
+    deferRender = TRUE,
+    scroller = TRUE,
+    scrollY = "60vh",
+    searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
+    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
+  ),
+  class = "stripe hover compact",
+  rownames = FALSE, escape = FALSE
 )
 ```
 
-# Analysis
+<!-- 
+OMIT - need to find appropriate t0 value for annual AGB 
+Or completely omit delta for annual AGB and focus on C in woody biomass 
+## Start-to-End Delta by PFT
 
-## Design Point Distribution
+The following maps show county-level changes (start-to-end) in carbon density and stock for each PFT and pool. Positive values indicate an increase over the modeled period.
 
-Design points are representative locations selected to capture the range of environmental conditions across California croplands from CADWR (2018).
-These are the locations where SIPNET is run to produce outputs later used in downscaling to all ~600k crop fields.
-
-We used clustering to select design points that represent the range of environmental conditions across California croplands. 
-The following figures illustrate the distribution of these design points, which were clustered based on environmental covariates.
-
-The environmental covariates used for clustering are:
+### Annual Crop
 
 
-| Variable | Description | Source | Units |
-|----------|-------------|--------|-------|
-| temp | Mean annual temperature | ERA5 | °C |
-| precip | Mean annual precipitation | ERA5 | mm/year |
-| srad | Solar radiation | ERA5 | W/m² |
-| vapr | Vapor pressure deficit | ERA5 | kPa |
-| clay | Clay content | SoilGrids | % |
-| ocd | Organic carbon density | SoilGrids | g/kg |
-| twi | Topographic wetness index | SRTM-derived | - |
+TotSoilCarb density: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_density.webp)
+
+TotSoilCarb stock: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_stock.webp)
+
+AGB density: ![](../figures/county_delta_annual_crop_AGB_carbon_density.webp)
+
+AGB stock: ![](../figures/county_delta_annual_crop_AGB_carbon_stock.webp)
+
+### Woody Perennial Crop
+
+TotSoilCarb density: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
+
+TotSoilCarb stock: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
+
+AGB density: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_density.webp)
+
+AGB stock: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_stock.webp)
+
+### Per-county Mixed-Woody Differences (Tables)
+
+```{r}
+# Compute Mixed – Woody differences from matched fields for both pools
+dp <- vroom::vroom(
+  file.path(model_outdir, "downscaled_preds.csv"),
+  col_types = readr::cols(
+    site_id = readr::col_character(),
+    pft = readr::col_character(),
+    ensemble = readr::col_double(),
+    c_density_Mg_ha = readr::col_double(),
+    total_c_Mg = readr::col_double(),
+    area_ha = readr::col_double(),
+    county = readr::col_character(),
+    model_output = readr::col_character()
+  )
+)
+mix <- dp |> dplyr::filter(pft == "woody + annual") |>
+  dplyr::select(site_id, ensemble, model_output, county, total_c_Mg_mix = total_c_Mg)
+wood <- dp |> dplyr::filter(pft == "woody perennial crop") |>
+  dplyr::select(site_id, ensemble, model_output, county, total_c_Mg_woody = total_c_Mg)
+diff_tbl <- mix |>
+  dplyr::inner_join(wood, by = c("site_id","ensemble","model_output","county")) |>
+  dplyr::mutate(diff_total_Mg = total_c_Mg_mix - total_c_Mg_woody) |>
+  dplyr::group_by(model_output, county, ensemble) |>
+  dplyr::summarise(diff_total_Mg = sum(diff_total_Mg), .groups = "drop") |>
+  dplyr::group_by(model_output, county) |>
+  dplyr::summarise(delta_Tg = PEcAn.utils::ud_convert(mean(diff_total_Mg), "Mg", "Tg"), .groups = "drop") |>
+  dplyr::mutate(`Delta Total C (Tg)` = ifelse(abs(delta_Tg) < 0.005, 0, round(delta_Tg, 3))) |>
+  dplyr::select(model_output, county, `Delta Total C (Tg)`) |>
+  dplyr::arrange(model_output, county)
+
+DT::datatable(
+  diff_tbl,
+  extensions = c('Scroller','SearchPanes','Select'),
+  options = list(
+    dom = 'Plrtip',
+    pageLength = 10,
+    searchHighlight = FALSE,
+    deferRender = TRUE,
+    scroller = TRUE,
+    scrollY = "60vh",
+    searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
+    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
+  ),
+  class = "stripe hover compact",
+  rownames = FALSE, escape = FALSE
+)
+```
 
 
-### Map of Selected Design Points
+### Per-county Start-to-End Deltas
 
-Here we check the geographic distribution of design points relative to the distribution of all croplands. 
-Grey areas are the fields in the CADWR (2018) land use dataset. 
-Boundaries are Climate Zones from CalAdapt (Lyons, 2025).
+```{r}
+delta_csv <- file.path(model_outdir, "downscaled_deltas.csv")
+if (file.exists(delta_csv)) {
+  deltas <- vroom::vroom(
+    delta_csv,
+    col_types = readr::cols(
+      site_id = readr::col_character(),
+      pft = readr::col_character(),
+      ensemble = readr::col_double(),
+      delta_c_density_Mg_ha = readr::col_double(),
+      delta_total_c_Mg = readr::col_double(),
+      area_ha = readr::col_double(),
+      county = readr::col_character(),
+      model_output = readr::col_character()
+    )
+  )
+  delta_tbl <- deltas |>
+    dplyr::group_by(model_output, pft, county, ensemble) |>
+    dplyr::summarise(total_delta_Mg = sum(delta_total_c_Mg), total_ha = sum(area_ha), .groups = "drop") |>
+    dplyr::mutate(`Delta Density (Mg/ha)` = total_delta_Mg / total_ha,
+                   `Delta Total (Tg)` = PEcAn.utils::ud_convert(total_delta_Mg, "Mg", "Tg")) |>
+    dplyr::group_by(model_output, pft, county) |>
+    dplyr::summarise(`Delta Density (Mg/ha)` = mean(`Delta Density (Mg/ha)`),
+                     `Delta Total (Tg)` = mean(`Delta Total (Tg)`), .groups = "drop") |>
+    dplyr::mutate(`Delta Density (Mg/ha)` = round(`Delta Density (Mg/ha)`, 4),
+                   `Delta Total (Tg)` = round(`Delta Total (Tg)`, 3)) |>
+    dplyr::rename(`Carbon Pool` = model_output, `PFT` = pft, County = county) |>
+    dplyr::arrange(`Carbon Pool`, `PFT`, County)
 
-The design points should be well distributed across California croplands and Climate Zones.
-
-![Clustered Design Points](../figures/design_points.png)
-
-### Relationships Among Environmental Covariates
-
-This pairs plot shows the relationships between covariates used for clustering, with colors indicating cluster membership.
-
-The clusters should show distinct groupings based on the environmental covariates.
-
-![Clustered Pairs Plot](../figures/cluster_pairs.png)
-
-### Environmental Characteristics of each Cluster
-
-These plots present This the normalized mean values of environmental covariates for each cluster.
-
-This summary highlights the characteristics of each cluster based on the environmental covariates used for clustering.
-
-Here we expect to see clusters with distinct environmental signatures, reflecting the unique multivariate profiles of each cluster.
-
-![Cluster Summary](../figures/cluster_plot.png)
-
-## Variable Importance and Partial Dependence
-
-The following plots show the variable importance from the random forest models used for downscaling, along with partial dependence plots for the top two predictors.
-
-Variable importance quantifies how useful each covariate is in predicting the carbon stock<!-- or ghg flux-->. Partial dependence plots show the marginal effect of individual predictors on model response after averaging over the other predictors.
-
-### Total Soil Carbon
-
-![](../figures/TotSoilCarb_importance_partial_plots.png)
-
-### Aboveground Biomass (AGB) Carbon
-
-![](../figures/AGB_importance_partial_plots.png)
-
-
-# References
-
-**EFI Standards**
-
-Dietze, Michael C., R. Quinn Thomas, Jody Peters, Carl Boettiger, Gerbrand Koren, Alexey N. Shiklomanov, and Jaime Ashander. 2023. “A Community Convention for Ecological Forecasting: Output Files and Metadata Version 1.0.” Ecosphere 14 (11): e4686. https://doi.org/10.1002/ecs2.4686.
-
-**CADWR LandIQ Crop Map**
-
-California Department of Water Resources. (2018). Statewide Crop Mapping—California Natural Resources Agency Open Data. Retrieved “Oct 14, 2024” from https://data.cnra.ca.gov/dataset/statewide-crop-mapping.
-
-**CalAdapt**
-
-Lyons, Andrew and R Development Core Team. 2025. “Caladaptr: Tools for the Cal-Adapt API in R.” Manual. https://ucanr-igis.github.io/caladaptr.
-
-**SoilGrids250m**
-
-Hengl, T. et al. 2017. “SoilGrids250m: Global Gridded Soil Information Based on Machine Learning.” PLoS ONE 12(2): e0169748. https://doi.org/10.1371/journal.pone.0169748
-
-**ERA5 Climate Data**
-
-Hersbach, H. et al. 2020. “The ERA5 Global Reanalysis.” Quarterly Journal of the Royal Meteorological Society 146: 1999–2049. https://doi.org/10.1002/qj.3803
-
-**CalAdapt Climate Zones**
-CalAdapt. 2024. “Climate Zones.” Accessed October 14, 2024. https://cal-adapt.org/tools/climate-zones/.
-
-**SIPNET**
-
-Braswell, Bobby H., William J. Sacks, Ernst Linder, and David S. Schimel. 2005. “Estimating Diurnal to Annual Ecosystem Parameters by Synthesis of a Carbon Flux Model with Eddy Covariance Net Ecosystem Exchange Observations.” Global Change Biology 11 (2): 335–55. https://doi.org/10.1111/j.1365-2486.2005.00897.x.
-
-Sacks, William J., David S. Schimel, Russell K. Monson, and Bobby H. Braswell. 2006. “Model‐data Synthesis of Diurnal and Seasonal CO2 Fluxes at Niwot Ridge, Colorado.” Global Change Biology 12 (2): 240–59. https://doi.org/10.1111/j.1365-2486.2005.01059.x.
-
-**Random Forest**
-
-Liaw, Andy, and Matthew Wiener. 2002. “Classification and Regression by randomForest.” R News 2 (3): 18–22. https://CRAN.R-project.org/doc/Rnews/.
+  DT::datatable(
+    delta_tbl,
+    extensions = c('Scroller','SearchPanes','Select'),
+    options = list(
+      dom = 'Plrtip',
+      pageLength = 10,
+      searchHighlight = FALSE,
+      deferRender = TRUE,
+      scroller = TRUE,
+      scrollY = "60vh",
+      searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
+      columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1,2)))
+    ),
+    class = "stripe hover compact",
+    rownames = FALSE, escape = FALSE
+  )
+} else {
+  cat("Delta file not found.")
+}
+```
+-->

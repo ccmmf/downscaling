@@ -7,7 +7,14 @@ ca_climregions <- sf::st_read(file.path(data_dir, "ca_climregions.gpkg"))
 
 ######### Cluster Diagnostics ################
 
-sites_clustered <- readRDS(file.path(cache_dir, "sites_clustered.rds"))
+sites_clustered_path <- file.path(cache_dir, "sites_clustered.rds")
+if (!file.exists(sites_clustered_path)) {
+  PEcAn.logger::logger.severe("Expected clustering output not found:", sites_clustered_path)
+}
+sites_clustered <- readRDS(sites_clustered_path)
+if (!("cluster" %in% names(sites_clustered))) {
+  PEcAn.logger::logger.severe("Clustering object lacks 'cluster' column; check upstream clustering step.")
+}
 # Summarize clusters
 cluster_summary <- sites_clustered |>
   dplyr::group_by(cluster) |>
@@ -16,19 +23,26 @@ cluster_summary <- sites_clustered |>
 knitr::kable(cluster_summary, digits = 0)
 
 # Plot all pairwise numeric variables
-ggpairs_plot <- sites_clustered |>
-  dplyr::select(-site_id) |>
-  # need small # pfts for ggpairs
-  dplyr::sample_n(min(nrow(sites_clustered), 1000)) |>
-  GGally::ggpairs(
-    # plot all values except site_id and cluster
-    columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
-    mapping = aes(color = as.factor(cluster), alpha = 0.8)
-  ) +
-  theme_minimal()
-ggsave(ggpairs_plot,
-  filename = "figures/cluster_pairs.png",
-  dpi = 300, width = 10, height = 10, units = "in"
+
+withr::with_seed(42, {
+  ggpairs_plot <- sites_clustered |>
+    dplyr::select(-site_id) |>
+    # need small # pfts for ggpairs
+    dplyr::slice_sample(
+      n = min(nrow(sites_clustered), 10000)
+    ) |>
+    GGally::ggpairs(
+      # plot all values except site_id and cluster
+      columns = setdiff(names(sites_clustered), c("site_id", "cluster")),
+      mapping = aes(color = as.factor(cluster), alpha = 0.8)
+    ) +
+    theme_minimal()
+})
+
+ggsave_optimized(
+  "figures/cluster_pairs.webp",
+  plot = ggpairs_plot,
+  width = 10, height = 10, units = "in", dpi = 96
 )
 
 # scale and reshape to long for plotting
@@ -52,7 +66,46 @@ cluster_plot <- ggplot(
   labs(x = "Variable", y = "Normalized Value") +
   theme_minimal()
 
-ggsave(cluster_plot, filename = "figures/cluster_plot.png", dpi = 300, bg = "white")
+ggsave_optimized("figures/cluster_plot.svg", plot = cluster_plot)
+
+#' ### Which covariates define the clusters? (Unsupervised VI)
+#'
+#' We estimate each variable's contribution to cluster separation using the
+#' proportion of variance explained by clusters (eta-squared, <U+03B7><U+00B2>):
+#' <U+03B7><U+00B2> = between-cluster variance / total variance. Higher values indicate
+#' variables whose means differ more strongly across clusters.
+
+# Compute eta-squared (<U+03B7><U+00B2>) per numeric variable
+num_vars <- sites_clustered |>
+  dplyr::select(where(is.numeric)) |>
+  names()
+num_vars <- setdiff(num_vars, c("cluster"))
+
+eta2_tbl <- purrr::map_dfr(num_vars, function(vn) {
+  x <- sites_clustered[[vn]]
+  cl <- as.factor(sites_clustered$cluster)
+  m <- mean(x, na.rm = TRUE)
+  # counts and means by cluster (handle NAs per group)
+  g_mean <- tapply(x, cl, function(v) mean(v, na.rm = TRUE))
+  g_n <- tapply(x, cl, function(v) sum(!is.na(v)))
+  N <- sum(!is.na(x))
+  total <- stats::var(x, na.rm = TRUE) * max(N - 1, 1)
+  between <- sum(g_n * (g_mean - m)^2, na.rm = TRUE)
+  eta2 <- ifelse(total > 0, between / total, NA_real_)
+  tibble::tibble(variable = vn, eta2 = eta2)
+}) |>
+  dplyr::arrange(dplyr::desc(eta2))
+
+vi_cluster_plot <- ggplot(eta2_tbl, aes(x = reorder(variable, eta2), y = eta2)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    x = "Predictor", y = expression(eta^2 ~ " (between / total variance)"),
+    title = "K-means cluster separation by predictor (<U+03B7><U+00B2>)"
+  ) +
+  theme_minimal()
+
+ggsave_optimized("figures/cluster_variable_importance.svg", plot = vi_cluster_plot)
 
 #'
 #' #### Stratification by Crops and Climate Regions
@@ -117,9 +170,6 @@ design_points_clust <- design_points |>
   dplyr::mutate(cluster = as.factor(cluster)) |>
   sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
-ca_fields_pts <- ca_fields |>
-  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
 design_pt_plot <- ggplot() +
   geom_sf(data = ca_climregions, fill = "white") +
   theme_minimal() +
@@ -130,4 +180,4 @@ design_pt_plot <- ggplot() +
     size = 2, stat = "sf_coordinates"
   )
 
-ggsave(design_pt_plot, filename = "figures/design_points.png", dpi = 300, bg = "white")
+ggsave_optimized("figures/design_points.webp", plot = design_pt_plot, width = 10, height = 6, units = "in", dpi = 96, bg = "white")

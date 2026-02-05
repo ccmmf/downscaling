@@ -1,8 +1,8 @@
 ## --- Custom R repositories (CRAN + R-universe) ------------------------
 options(repos = c(
-    pecanproject = "https://pecanproject.r-universe.dev",
-    ajlyons      = "https://ajlyons.r-universe.dev", # caladaptr
-    CRAN         = "https://cloud.r-project.org"
+  pecanproject = "https://pecanproject.r-universe.dev",
+  ajlyons      = "https://ajlyons.r-universe.dev", # caladaptr
+  CRAN         = "https://cloud.r-project.org"
 ))
 
 # Sys.setenv(R_LIBS_USER = file.path(
@@ -61,4 +61,4 @@ if (!interactive() && requireNamespace("knitr", quietly = TRUE)) {
     dpi = 144
   )
 }
-cat("global Rprofile loaded\n")
+cat("repository Rprofile loaded\n")

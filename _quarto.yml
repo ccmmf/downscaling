@@ -1,0 +1,62 @@
+project:
+  type: website
+  output-dir: _site
+  preview:
+    watch-inputs: true
+  resources:
+    - README.md
+  render:
+    # Explicit pages to render
+    - index.qmd # renders README
+    - reports/downscaling_results.qmd
+    - reports/design_points_analysis.qmd
+    - reports/variable_importance.qmd
+    - docs/workflow_documentation.md
+    - docs/references.md
+    - docs/mixed_system_prototype.qmd
+
+website:
+  title: "Downscaling"
+  search: true
+  sidebar:
+    style: docked
+    collapse-level: 1
+    contents:
+      - href: index.qmd
+        text: Home
+      - section: Reports
+        contents:
+          - href: reports/downscaling_results.qmd
+            text: Downscaling Results
+          - href: reports/design_points_analysis.qmd
+            text: Design Points Analysis
+          - href: reports/variable_importance.qmd
+            text: Downscaling Model Evaluation
+      - section: Docs
+        contents:
+          - href: docs/workflow_documentation.md
+            text: Technical Documentation
+          - href: docs/mixed_system_prototype.qmd
+            text: Mixed System Prototype
+          - href: docs/references.md
+            text: References
+    tools:
+      - icon: exclamation-octagon
+        text: "Status: Draft"
+      - icon: github
+        href: https://github.com/ccmmf/downscaling
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    self-contained: false
+    df-print: paged
+
+# Freeze results so CI can publish without re-executing heavy code.
+execute:
+  echo: false
+  freeze: auto
+
+author: "David LeBauer"
+date: today

@@ -23,7 +23,7 @@ p <- anchor_sites_pts |>
   scale_color_brewer(palette = "Dark2") +
   labs(color = "PFT") +
   theme_minimal()
-ggsave(p, filename = "figures/anchor_sites.png", dpi = 300, bg = "white")
+ggsave_optimized("figures/anchor_sites.webp", plot = p, dpi = 96, bg = "white")
 
 #' Match anchor sites to LandIQ fields 
 #' 

@@ -1,8 +1,96 @@
 ### Workflow Configuration Settings ###
 
-# Check that we are in the correct working directory
-if(!basename(here::here(getwd())) == 'downscaling') {
-  PEcAn.logger::logger.error("Please run this script from the 'downscaling' directory")
+parser <- argparse::ArgumentParser()
+
+## Set development vs production mode ##
+# Dev mode speeds up workflows by subsetting data for testing and debugging
+parser$add_argument("--production",
+  type = "logical", default = TRUE,
+  help = "Set to true for production mode, false for faster development (default: TRUE)"
+)
+args <- parser$parse_args()
+PRODUCTION <- args$production
+
+# Manual override for interactive sessions
+if (rlang::is_interactive()) {
+  PRODUCTION <- TRUE
+}
+
+## Set parallel processing options
+no_cores <- max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+
+# **set ccmmf_dir and pecan_outdir**
+# Define the CCMMF directory from environment variable
+ccmmf_dir <- Sys.getenv("CCMMF_DIR")
+if (ccmmf_dir == "") {
+  ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
+  if (!dir.exists(ccmmf_dir)) {
+    # Fallback to repository root for local development
+    ccmmf_dir <- here::here()
+  }
+}
+pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
+
+# PEcAn model output to be analyzed
+pecan_archive_tgz <- file.path(ccmmf_dir, "lebauer_agu_2025_20251210.tgz")
+
+# **Variables to extract**
+# see docs/workflow_documentation.qmd for complete list of outputs
+outputs_to_extract <- c("TotSoilCarb", "AGB")
+if (!PRODUCTION) {
+  # can subset for testing
+  # depending on what part of the workflow you are testing
+  outputs_to_extract <- outputs_to_extract[1]
+}
+
+### Configuration Settings that can be set to default ###
+
+# Assume consistent directory structure for other directories
+data_dir <- file.path(ccmmf_dir, "data")
+raw_data_dir <- file.path(ccmmf_dir, "data_raw")
+cache_dir <- file.path(ccmmf_dir, "cache")
+model_outdir <- file.path(pecan_outdir, "out")
+
+# Misc
+set.seed(42)
+ca_albers_crs <- "EPSG:3310"
+
+if (terra::is.lonlat(ca_albers_crs)) {
+  PEcAn.logger::logger.severe("`ca_albers_crs` must remain a projected CRS (EPSG:3310).")
+}
+
+ca_albers_info <- terra::crs(ca_albers_crs, describe = TRUE)
+if (is.null(ca_albers_info$code) || ca_albers_info$code != 3310) {
+  PEcAn.logger::logger.severe("`ca_albers_crs` is reserved for California's standard NAD83 / California Albers (EPSG:3310).")
+}
+ca_albers_name <- ca_albers_info[["name"]]
+
+#### Messages ####
+## Ensure pecan_archive_force is defined (allow override via env var)
+if (!exists("pecan_archive_force", inherits = FALSE)) {
+  pecan_archive_force <- isTRUE(as.logical(Sys.getenv("PECAN_ARCHIVE_FORCE", "FALSE")))
+}
+
+msg <- glue::glue(
+  "\n\n",
+  "##### SETTINGS SUMMARY #####\n\n",
+  "Running in {ifelse(PRODUCTION, '**PRODUCTION**', '**DEVELOPMENT**')} mode\n\n",
+  "### Directory Settings ###\n",
+  "- CCMMF directory: {ccmmf_dir}\n",
+  "- data_dir       : {data_dir}\n",
+  "- cache_dir      : {cache_dir}\n",
+  "- raw_data_dir.  : {raw_data_dir}\n",
+  "- pecan_outdir.  : {pecan_outdir}\n",
+  "- model_outdir.  : {model_outdir}\n\n",
+  "- pecan_archive_tgz : {ifelse(is.na(pecan_archive_tgz), '<unset>', pecan_archive_tgz)}\n",
+  "- pecan_archive_force : {pecan_archive_force}\n\n",
+  "### Other Settings ###\n",
+  "- will extract variables: {paste(outputs_to_extract, collapse = ', ')}\n",
+  "- ca_albers_crs : {ca_albers_crs}{if(!is.na(ca_albers_name)) paste0(' (', ca_albers_name, ')') else ''}\n"
+)
+if (!isTRUE(getOption("ccmmf.quiet_banner", FALSE))) {
+  PEcAn.logger::logger.info(msg, wrap = FALSE)
 }
 
 ## Global configuration settings for logging
@@ -14,65 +102,6 @@ options(
   readr.show_col_types = FALSE
 )
 
-## Set parallel processing options
-no_cores <- max(future::availableCores() - 1, 1)
-future::plan(future::multicore, workers = no_cores)
-
-
-# **set ccmmf_dir and pecan_outdir**
-# Define the CCMMF directory from environment variable
-ccmmf_dir <- Sys.getenv("CCMMF_DIR")
-if (ccmmf_dir == "") {
-  ccmmf_dir <- "/projectnb2/dietzelab/ccmmf"
-}
-pecan_outdir <- file.path(ccmmf_dir, "modelout", "ccmmf_phase_2b_mixed_pfts_20250701")
-# **Is this a test or production run?**
-# Set to FALSE during testing and development
-#
-# Global switch to toggle between fast, small scale runs for development and testing 
-# and full-scale production runs. Works by subsetting various data objects. 
-PRODUCTION <- TRUE
-
-# **Variables to extract**
-# see docs/workflow_documentation.qmd for complete list of outputs
-outputs_to_extract <- c(
-    "TotSoilCarb",
-    "AGB"
-)
-
-if(!PRODUCTION) {
-  # can subset for testing
-  # depending on what part of the workflow you are testing
-  # outputs_to_extract <- outputs_to_extract[1]
-}
-
-### Configuration Settings that can be set to default ###
-
-# Assume consistent directory structure for other directories
-data_dir     <- file.path(ccmmf_dir, "data")
-raw_data_dir <- file.path(ccmmf_dir, "data_raw")
-cache_dir <- file.path(ccmmf_dir, "cache")
-model_outdir  <- file.path(pecan_outdir, "out")
-
-# Misc
-set.seed(42)
-ca_albers_crs <- 3310
-
-#### Messagees ####
-PEcAn.logger::logger.info("\n\n",
-    "##### SETTINGS SUMMARY #####\n\n",
-    "Running in", ifelse(PRODUCTION, "**production**", "**development**"), "mode\n\n",
-    "### Directory Settings ###\n",
-	"- CCMMF directory:", ccmmf_dir, "\n",
-	"- data_dir       :", data_dir, "\n",
-	"- cache_dir      :", cache_dir, "\n",
-	"- raw_data_dir.  :", raw_data_dir, "\n",
-	"- pecan_outdir.  :", pecan_outdir, "\n",
-	"- model_outdir.  :", model_outdir, "\n\n",
-	"### Other Settings ###\n",
-	"- will extract variables:", paste(outputs_to_extract, collapse = ", "), "\n",
-	"- ca_albers_crs  :", ca_albers_crs, 
-       ifelse(ca_albers_crs == 3310, ", which is NAD83 / California Albers", ""), "\n",
-    wrap = FALSE
-  )
-
+## Source all R scripts in the R/ directory
+r_scripts <- list.files(file.path(here::here(), "R"), pattern = "\\.R$", full.names = TRUE)
+lapply(r_scripts, source)

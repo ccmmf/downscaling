@@ -1,0 +1,32 @@
+---
+title: "Downscaling Model Evaluation"
+format:
+  html:
+    self-contained: false
+    toc: true
+execute:
+  freeze: false
+---
+
+# Variable importance and Partial Dependence Plots (PDP)
+
+This page reports variable-importance and partial dependence plots for the Random Forest models used to downscale AGB and SOC.
+
+In the first plot, x axis is the importance of each variable, measured as the increase in mean squared error (MSE) when that variable is permuted (i.e., its values are randomly shuffled).
+Higher values indicate that the variable is more important for accurate predictions. 
+
+The next two plots show the partial dependence of the response variable (AGB or SOC) on the top two most important predictors, holding all other predictors at their average values. (= marginal effect of each predictor on the response variable). Here, the y axis is normalized.
+
+### AGB
+
+Here we see that vapor pressure deficit (vapr) is the most important variable, the second most important variable is precipitation (precip). Temperature (temp) and solar radiation (srad) are also important.
+
+PDPs show negative trend - increasing vapr leads to lower AGB. While  increasing precip leads to higher AGB up to a point, after which there is a decline before levelling off.
+
+![](../figures/agb_importance.png){width=100%}
+
+### SOC (TotSoilCarb)
+
+Here we see that vapor pressure deficit is again the most important variable, followed by temperature. PDPs show negative trends - increasing vapr or temp leads to lower SOC.
+
+![](../figures/soc_importance.png){width=100%}

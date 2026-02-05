@@ -1,5 +1,5 @@
 ## Simulate multi-PFT scenarios by aggregating SIPNET output from two PFTs
-## Two approaches: 
+## Two approaches:
 ##  - overlap (e.g. orchard + herbaceous ground cover; geometric overlap)
 ##  - discrete (e.g. annual crop monoculture with hedgerows; partitions area)
 ##
@@ -7,7 +7,7 @@
 ##   ensemble_output.csv (long)
 ##   site_cover_fractions.csv with columns:
 ##     site_id, year, woody_cover, annual_cover, scenario  (scenario ∈ {overlap, discrete})
-##     For development, a mock grid of (woody_cover, annual_cover, scenario) is generated and 
+##     For development, a mock grid of (woody_cover, annual_cover, scenario) is generated and
 ##     applied to all sites)
 ##
 ## Notation:
@@ -17,11 +17,10 @@
 source("000-config.R")
 
 PEcAn.logger::logger.info("*** Starting multi-PFT aggregation ***")
-source(here::here("R", "mixed_aggregation.R"))
 
 # ---- Load ensemble output ----------------------------------------------------
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
-ens_output <- readr::read_csv(ensemble_output_csv) |>
+ensemble_data <- readr::read_csv(ensemble_output_csv) |>
   # rename EFI std names for clarity
   # efi name   | new name
   # parameter  | ensemble_id
@@ -38,9 +37,9 @@ ens_output <- readr::read_csv(ensemble_output_csv) |>
 # cover_fractions_csv <- file.path(model_outdir, "site_cover_fractions.csv")
 
 # distinct site-year combinations
-distinct_site_year <- ens_output |>
+distinct_site_year <- ensemble_data |>
   dplyr::mutate(year = lubridate::year(datetime)) |>
-  dplyr::distinct(site_id, year) 
+  dplyr::distinct(site_id, year)
 
 # Scenarios for development
 # - 100% woody perennial (orchard / monoculture)
@@ -51,7 +50,7 @@ distinct_site_year <- ens_output |>
 # - Annual crop + 50% woody hedgerows
 scenarios <- tibble::tibble(
   annual_cover = c(0, 1, 0.25, 0.5, 0.75, 0.5),
-  woody_cover =  c(1, 0, 1,    1,   0.25, 0.5),
+  woody_cover = c(1, 0, 1, 1, 0.25, 0.5),
   mix_description = c(
     "100% woody", "100% annual",
     "100% woody + 25% annual", "100% woody + 50% annual",
@@ -68,31 +67,30 @@ scenarios <- tibble::tibble(
 # pfts
 woody_pft <- "woody perennial crop"
 annual_pft <- "annual crop"
-mixed_overlap_pft <- "woody_annual_overlap_100_50"  # new synthetic PFT label
+mixed_overlap_pft <- "woody_annual_overlap_100_50" # new synthetic PFT label
 
 # ensemble members
-ensemble_ids <- unique(ens_output$ensemble_id)
+ensemble_ids <- unique(ensemble_data$ensemble_id)
 
 # annual_init values for each site x ensemble: value at the earliest datetime
-annual_init <- ens_output |>
+annual_init <- ensemble_data |>
   dplyr::filter(pft == "annual crop") |>
   dplyr::group_by(site_id, variable, ensemble_id) |>
   dplyr::slice_min(order_by = datetime, n = 1, with_ties = FALSE) |>
   dplyr::mutate(
     annual_init = dplyr::case_when(
-      # TODO: think through this
-      # we want to add AGB to the ecosystem level value
-      # for SOC, we only want the diff
-      # this probably isn't the best place to store this logic
-      # also,  
+      # For incremental (overlap) mixing, use a baseline for annuals:
+      # - AGB: baseline ~ 0 at planting; carry forward only the increment.
+      # - TotSoilCarb (SOC): baseline is the initial SOC stock (value at first timestep).
+      #    baseline SOC is used to compute delta SOC increment
       variable == "AGB" ~ 0,
       variable == "TotSoilCarb" ~ value
-    ) 
-  ) |> 
+    )
+  ) |>
   dplyr::select(site_id, ensemble_id, variable, annual_init)
 
 # ---- Reshape ensemble output (wide by PFT) -----------------------------------
-.ens_wide <- ens_output |>
+.ens_wide <- ensemble_data |>
   dplyr::mutate(year = lubridate::year(datetime)) |>
   dplyr::select(
     datetime, year, site_id, lat, lon,
@@ -101,7 +99,7 @@ annual_init <- ens_output |>
   tidyr::pivot_wider(names_from = pft, values_from = value)
 
 scenarios_x_vars <- scenarios |>
-    tidyr::crossing(ensemble_id = ensemble_ids)
+  tidyr::crossing(ensemble_id = ensemble_ids)
 
 ens_wide <- .ens_wide |>
   dplyr::rename(
@@ -136,33 +134,49 @@ if (n_bad > 0) {
 
 # ---- Check for missing values ---------------------------------------
 # TBD
-if(any(is.na(ens_wide))) {
+if (any(is.na(ens_wide))) {
   PEcAn.logger::logger.severe(
     "Missing values found in ensemble wide data. Examples:\n"
   )
   head(ens_wide[is.na(ens_wide)], 10)
 }
 
-# ---- Combine values (row-wise) ----------------------------------------------
+# ---- Combine values (vectorized by method) ----------------------------------
 
-ens_combined <- ens_wide |>
-  dplyr::rowwise() |>
+# Weighted case (discrete area partition)
+ens_weighted <- ens_wide |>
+  dplyr::filter(method == "weighted") |>
   dplyr::mutate(
-    value_combined = combine_value(
+    value_combined = combine_mixed_crops(
       woody_value  = woody_value,
       annual_value = annual_value,
-      annual_init  = ifelse(method == "incremental", annual_init, NULL),
       annual_cover = annual_cover,
       woody_cover  = woody_cover,
-      method       = method
+      method       = "weighted"
     )
-  ) 
+  )
+
+# Incremental case (overlap; preserve woody baseline, add annual increment)
+ens_incremental <- ens_wide |>
+  dplyr::filter(method == "incremental") |>
+  dplyr::mutate(
+    value_combined = combine_mixed_crops(
+      woody_value  = woody_value,
+      annual_value = annual_value,
+      annual_cover = annual_cover,
+      woody_cover  = woody_cover,
+      annual_init  = annual_init,
+      method       = "incremental"
+    )
+  )
+
+ens_combined <- dplyr::bind_rows(ens_weighted, ens_incremental)
 
 ################################################################################
 # ---- Write outputs -----------------------------------------------------------
 
 
-# 
+#
 ens_wide_csv <- file.path(model_outdir, "multi_pft_ensemble_output.csv")
 readr::write_csv(ens_wide, ens_wide_csv)
 PEcAn.logger::logger.info("Wrote wide diagnostic: ", ens_wide_csv)
@@ -173,13 +187,18 @@ PEcAn.logger::logger.info("Wrote aggregated output: ", ens_combined_csv)
 
 # ---- Create EFI-compliant ensemble file with mixed overlap PFT ----
 # Original EFI-style rows (restore EFI column names)
-efi_original <- ens_output |>
+efi_original <- ensemble_data |>
   dplyr::rename(parameter = ensemble_id, prediction = value)
 
 # Extract the specific overlap scenario: 100% woody, 50% annual (orchard + 50% ground cover)
 mixed_overlap_rows <- ens_combined |>
   dplyr::ungroup() |>
   dplyr::filter(
+    # Use a single overlap scenario for EFI export:
+    #   orchard with 50% ground cover
+    #   this can be configurable if indicated during calibration / validation.
+    #   This parameter can be calibrated based on observed data,
+    #   and can vary, or not, by location
     mix_description == "100% woody + 50% annual"
   ) |>
   dplyr::select(
