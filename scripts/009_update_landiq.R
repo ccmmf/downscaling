@@ -22,7 +22,7 @@ config_file <- here::here("000-config.R")
 if (file.exists(config_file)) {
   source(config_file)
 } else {
-  PEcAn.logger::logger.error(
+  PEcAn.logger::logger.severe(
     "Config file not found, are you in the correct directory?", getwd()
   )
 }
