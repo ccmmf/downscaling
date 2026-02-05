@@ -507,6 +507,9 @@ for (pool in outputs_to_extract) {
         } else if (!is.null(mdl$y)) {
           y_train <- mdl$y
         }
+        # TODO OOB r2 is within-training only (bootstrap from same sites)
+        # Add spatial cross-validation (e.g., leave-one-site-out or spatial
+        # blocking).
         r2_oob <- extract_oob_r2(mdl, y_train)
         vi_rows[[length(vi_rows) + 1L]] <- tibble::tibble(
           pft = pft_i,
