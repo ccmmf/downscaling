@@ -41,6 +41,9 @@ end_date <- lubridate::as_date(max(ensemble_data$datetime))
 
 #--- load ca_fields ------------------------------------------------
 # this is a convenience time saver for development
+# cache sf object to avoid repeated reads in interactive sessions.
+# TODO: consider memoise::memoise() for production robustness or
+#       refactor to pass as function argument.
 if (!exists("ca_fields_full")) {
   ca_fields_full <- sf::read_sf(file.path(data_dir, "ca_fields.gpkg"))
 }
@@ -581,9 +584,7 @@ PEcAn.logger::logger.info(
 log_mem("Post primary downscaling loop :: ")
 
 PEcAn.logger::logger.info(
-  paste0("<U+0001F31F><U+0001F31F><U+0001F31F> Finished downscaling <U+0001F31F><U+0001F31F><U+0001F31F>"),
-  "\n\nCongratulations! You are almost there!\n\n",
-  rep("<U+0001F680>", 10)
+  "Finished downscaling.\nCongratulations! You are almost there.\n"
 )
 
 ### --- Print Metrics for Each Ensemble Member ---####
