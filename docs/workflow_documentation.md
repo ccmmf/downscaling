@@ -252,7 +252,6 @@ Simulates mixed-cropping scenarios by combining outputs across two PFTs using `c
 
 `combine_mixed_crops()` is pool-agnostic: pass any additive quantity expressed per unit area, including instantaneous stocks
 (`kg/m^2`) or total flux totals that have already been accumulated over the SIPNET output interval (e.g., hourly or annual `kg/m^2` of NEE).
-(`kg/m^2`) or total flux totals that have already been accumulated over the SIPNET output interval (e.g., hourly or annual `kg/m^2` of NEE).
 (`kg/m^2`) or total flux over a defined time step.
 
 Outputs include `multi_pft_ensemble_output.csv`, `combined_ensemble_output.csv`, and `ensemble_output_with_mixed.csv` with a synthetic mixed PFT.
