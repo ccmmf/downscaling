@@ -26,7 +26,8 @@
 #'
 #' @param woody_value numeric. Pool or accumulated flux for the woody PFT (kg/m2).
 #' @param annual_value numeric. Pool or accumulated flux for the annual PFT (kg/m2).
-#' @param annual_init numeric, required for method = "incremental"; the initial annual pool.
+#' @param annual_init numeric, required for method = "incremental"; the initial annual pool
+#'        size at t0 (kg C m-2). Used to compute the delta: (annual_value - annual_init).
 #' @param annual_cover numeric. Fractional cover of the annual PFT (0-1).
 #' @param woody_cover numeric. Fractional cover of the woody PFT (0-1). Must be 1 when `method` is "incremental".
 #' @param method character. One of "weighted" or "incremental".
