@@ -65,9 +65,8 @@ ens_county_preds <- downscale_preds |>
     n = dplyr::n(),
     total_c_Mg = sum(total_c_Mg), # total Mg C per county
     total_ha = sum(area_ha),
-    .groups = "drop_last"
+    .groups = "drop"
   ) |>
-  dplyr::ungroup() |>
   # counties with no fields will result in NA below
   dplyr::filter(total_ha > 0) |>
   dplyr::mutate(
@@ -136,7 +135,5 @@ readr::write_csv(
 PEcAn.logger::logger.info("County summaries written to", file.path(model_outdir, "county_summaries.csv"))
 
 PEcAn.logger::logger.info(
-  rep("<U+0001F31F><U+0001F31F><U+0001F31F>  ", 5), "\n\n",
-  "Finished aggregation to County level", "\n\n",
-  rep("<U+0001F31F><U+0001F31F><U+0001F31F>  ", 5)
+  "Finished aggregation to county level.\n"
 )
