@@ -15,15 +15,16 @@ The following figures illustrate the distribution of these design points, which 
 
 The environmental covariates used for clustering are:
 
-| Variable | Description | Source | Units |
-|----------|-------------|--------|-------|
-| temp | Mean annual temperature | ERA5 | °C |
-| precip | Mean annual precipitation | ERA5 | mm/year |
-| srad | Solar radiation | ERA5 | W/m² |
-| vapr | Vapor pressure deficit | ERA5 | kPa |
-| clay | Clay content | SoilGrids | % |
-| ocd | Organic carbon density | SoilGrids | g/kg |
-| twi | Topographic wetness index | SRTM-derived | - |
+| Variable | Description                 | Source        | Units     |
+|----------|-----------------------------|---------------|-----------|
+| temp     | Mean annual temperature     | ERA5          | °C        |
+| precip   | Mean annual precipitation   | ERA5          | mm/year   |
+| srad     | Solar radiation             | ERA5          | W/m²      |
+| vapr     | Vapor pressure deficit      | ERA5          | kPa       |
+| clay     | Clay content                | SoilGrids     | %         |
+| ocd      | Organic carbon density      | SoilGrids     | g/kg      |
+| twi      | Topographic wetness index   | SRTM-derived  | –         |
+
 
 ## Map of Selected Design Points
 
@@ -45,7 +46,7 @@ The clusters should show distinct groupings based on the environmental covariate
 
 ## Environmental Characteristics of each Cluster
 
-These plots present This the normalized mean values of environmental covariates for each cluster.
+These plots present the normalized mean values of environmental covariates for each cluster.
 
 This summary highlights the characteristics of each cluster based on the environmental covariates used for clustering.
 
