@@ -8,7 +8,7 @@ PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***"
 #'
 #' Below is a summary of the covariates dataset
 #'
-#' - site_id: Unique identifier for each polygon
+#' - site_id: Unique identifier for each polygon (LandIQ UniqueID)
 #' - crop: Crop type
 #' - pft: Plant functional type
 #' - temp: Mean Annual Temperature from ERA5
@@ -19,17 +19,30 @@ PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***"
 #' - ocd: Organic Carbon content from SoilGrids
 #' - twi: Topographic Wetness Index
 #' - climregion_id: identifier for each climate region
-selected_covariates <- c("temp", "precip", "srad", "vapr", "clay", "ocd", "twi")
+#' - eof_1 to eof_10: EOF scores capturing cropping system patterns
+selected_covariates <- c("temp", "precip", "srad", "vapr", "clay", "ocd", "twi",
+                         "eof_1", "eof_2", "eof_3", "eof_4", "eof_5",
+                         "eof_6", "eof_7", "eof_8", "eof_9", "eof_10")
 
-ca_fields <- sf::st_read(file.path(data_dir, "ca_fields.gpkg"))
+# Load harmonized CADWR field data (from 009_prepare_cadwr_crops.R)
+ca_fields <- sf::st_read(file.path(data_dir, "cadwr_crops_sites.gpkg"), quiet = TRUE)
 ca_climregions <- caladaptr::ca_aoipreset_geom("climregions") |>
   dplyr::rename(climregion_name = name, climregion_id = id)
 
+# Load site covariates and coordinates
 site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
-site_covariates <- readr::read_csv(site_covariates_csv) |>
-  dplyr::left_join(
-    ca_fields  |> dplyr::select(site_id, lat, lon),
-    by = "site_id")
+site_summary_csv <- file.path(data_dir, "cadwr_crops_site_summary.csv")
+
+site_covariates <- readr::read_csv(site_covariates_csv, show_col_types = FALSE) |>
+  dplyr::mutate(site_id = as.character(site_id))
+
+# Get lat/lon from site summary (created by 009)
+site_coords <- readr::read_csv(site_summary_csv, show_col_types = FALSE) |>
+  dplyr::mutate(site_id = as.character(site_id)) |>
+  dplyr::select(site_id, lat, lon)
+
+site_covariates <- site_covariates |>
+  dplyr::left_join(site_coords, by = "site_id")
 
 
 # Check that all selected_covariates are present, otherwise stop.
@@ -40,60 +53,92 @@ if (length(missing_covariates) > 0) {
   PEcAn.logger::logger.info("All expected covariates are present:", paste(selected_covariates, collapse = ", "))
 }
 
-#' ## Load Design Points
+#' ## Load Design Points and Reconcile site_ids
+#' 
+#' Phase 3: Convert old hash-based site_ids to LandIQ UniqueIDs
 
-# select anchor sites not already in design points
-woody_design_points <- readr::read_csv("data/design_points.csv") |>
-  dplyr::filter(pft == "woody perennial crop")
-anchor_sites <- readr::read_csv("data/anchor_sites.csv")
+# Load existing design points (may have old hash-based site_ids)
+old_design_points <- readr::read_csv("data/design_points.csv", show_col_types = FALSE)
+
+# Check if reconciliation is needed (old format has hash strings, new format is numeric)
+needs_reconciliation <- any(!grepl("^\\d+$", na.omit(old_design_points$site_id)))
+
+if (needs_reconciliation) {
+  PEcAn.logger::logger.info("Reconciling old site_ids to LandIQ UniqueIDs...")
+  
+  # Convert old design points to spatial
+  old_design_pts_sf <- old_design_points |>
+    dplyr::filter(!is.na(lat), !is.na(lon)) |>
+    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
+    sf::st_transform(crs = 3310)
+  
+  # Load new CADWR fields
+  ca_fields_albers <- ca_fields |>
+    sf::st_transform(crs = 3310)
+  
+  # Find nearest LandIQ field for each old design point
+  nearest_idx <- sf::st_nearest_feature(old_design_pts_sf, ca_fields_albers)
+  nearest_fields <- ca_fields_albers[nearest_idx, ]
+  
+  # Calculate distances to verify matches
+  distances <- sf::st_distance(old_design_pts_sf, nearest_fields, by_element = TRUE)
+  
+  # Build reconciled design points with new LandIQ site_ids
+  reconciled_design_points <- old_design_points |>
+    dplyr::filter(!is.na(lat), !is.na(lon)) |>
+    dplyr::mutate(
+      old_site_id = site_id,
+      site_id = as.character(nearest_fields$site_id),
+      distance_m = as.numeric(distances)
+    )
+  
+  # Warn about distant matches (>100m suggests field boundary changed)
+  far_matches <- reconciled_design_points |>
+    dplyr::filter(distance_m > 100)
+  
+  if (nrow(far_matches) > 0) {
+    PEcAn.logger::logger.warn(
+      nrow(far_matches), " design points matched to fields >100m away. ",
+      "Review these manually."
+    )
+    print(far_matches |> dplyr::select(old_site_id, site_id, lat, lon, distance_m, pft))
+  }
+  
+  # Get lat/lon from new site_ids
+  reconciled_design_points <- reconciled_design_points |>
+    dplyr::select(-lat, -lon, -distance_m) |>
+    dplyr::left_join(site_coords, by = "site_id")
+  
+  PEcAn.logger::logger.info(
+    "Reconciled ", nrow(reconciled_design_points), " design points to LandIQ UniqueIDs"
+  )
+  
+  woody_design_points <- reconciled_design_points |>
+    dplyr::filter(pft == "woody perennial crop") |>
+    dplyr::select(site_id, lat, lon, pft)
+  
+} else {
+  PEcAn.logger::logger.info("Design points already use LandIQ UniqueIDs")
+  woody_design_points <- old_design_points |>
+    dplyr::mutate(site_id = as.character(site_id)) |>
+    dplyr::filter(pft == "woody perennial crop") |>
+    dplyr::select(site_id, lat, lon, pft)
+}
+
+
+anchor_sites <- readr::read_csv("data/anchor_sites.csv", show_col_types = FALSE) |>
+  dplyr::mutate(site_id = as.character(site_id))
 woody_anchor_sites <- anchor_sites |>
   dplyr::filter(pft == "woody perennial crop")
-
-################################################
-### Reconciling site_ids from original woody_design_points_1b with the 
-### With new by matching on st_nearest
-### This will need to be done once 
-### But I'm not doing it now because in Phase 3 we will switch to the LandIQ site_ids
-
-# Convert to sf objects
-# woody_design_points_sf <- woody_design_points |>
-#   sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |> 
-#   sf::st_transform(crs = 3310)
-# anchor_sites_sf <- anchor_sites |>
-#   sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |> 
-#   sf::st_transform(crs = 3310)
-# woody_anchor_sites_sf <- anchor_sites_sf |>
-#   dplyr::filter(pft == "woody perennial crop")
-
-# nearest_idx <- sf::st_nearest_feature(woody_anchor_sites_sf, woody_design_points_sf)
-
-# # Build lookup table for only anchor_sites_sf that are matched
-# site_id_lookup <- tibble::tibble(
-#   old_site_id = woody_anchor_sites_sf$site_id,
-#   anchor_site_id = woody_design_points_sf$site_id[nearest_idx],
-#   distance_m = as.numeric(sf::st_distance(
-#     sf::st_geometry(woody_anchor_sites_sf),
-#     sf::st_geometry(woody_design_points_sf[nearest_idx, ]),
-#     by_element = TRUE
-#   ))
-# )
-
-# w <- woody_anchor_sites |> 
-#   dplyr::left_join(site_id_lookup, by = c("site_id" = "old_site_id")) 
-
-# woody_design_points  |> dplyr::inner_join(w, by = c("site_id" = "anchor_site_id")) 
-
-################################################
 
 # find site_ids in anchor_sites where pft = 'woody perennial crop' but are not in design points
 anchor_sites_woody <- anchor_sites |>
   dplyr::filter(pft == "woody perennial crop") |>
   dplyr::filter(!site_id %in% woody_design_points$site_id)
 
-#
-
+# Handle both old ("herbaceous crop") and new ("annual crop") PFT names
 herbaceous_anchor_site_ids <- anchor_sites |>
-  dplyr::filter(pft == "herbaceous crop") |>
+  dplyr::filter(pft %in% c("herbaceous crop", "annual crop")) |>
   dplyr::select(site_id)
 
 ## At some point we will need to do this by PFT
@@ -257,9 +302,12 @@ herb_design_points <- herb_design_points_ids |>
   dplyr::select(site_id, lat, lon, pft) |>
   dplyr::mutate(dplyr::across(c(lat, lon), ~ round(.x, 5))) 
 
-# Combine woody + herbaceous design points and write out
+# Combine woody + herbaceous design points
+# All site_ids are now LandIQ UniqueIDs
 all_design_points <- woody_design_points |>
-  dplyr::bind_rows(herb_design_points)  
+  dplyr::bind_rows(herb_design_points) |>
+  dplyr::select(site_id, lat, lon, pft)  # Clean output, no UniqueID column
+
 readr::write_csv(all_design_points, here::here("data", "design_points.csv"))
 
 PEcAn.logger::logger.info("design points written to data/design_points.csv")
