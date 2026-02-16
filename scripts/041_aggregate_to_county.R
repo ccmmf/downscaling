@@ -37,8 +37,8 @@ downscale_preds <- vroom::vroom(
     site_id = readr::col_character(),
     county = readr::col_character(),
     area_ha = readr::col_double(),
-    c_density_Mg_ha = readr::col_double(),
-    total_c_Mg = readr::col_double()
+    density_per_ha = readr::col_double(),
+    total_per_field = readr::col_double()
   )
 )
 
@@ -92,14 +92,13 @@ ens_county_preds <- downscale_preds |>
   dplyr::group_by(scenario, model_output, pft, county, ensemble) |>
   dplyr::summarize(
     n = dplyr::n(),
-    total_c_Mg = sum(total_c_Mg), # total Mg C per county
+    total_per_county = sum(total_per_field),
     total_ha = sum(area_ha),
     .groups = "drop"
   ) |>
   dplyr::filter(total_ha > 0) |>
   dplyr::mutate(
-    total_c_Tg = PEcAn.utils::ud_convert(total_c_Mg, "Mg", "Tg"),
-    c_density_Mg_ha = total_c_Mg / total_ha
+    density_per_ha = total_per_county / total_ha
   ) |>
   dplyr::arrange(scenario, model_output, pft, county, ensemble)
 
@@ -125,10 +124,10 @@ county_summaries <- ens_county_preds |>
   dplyr::group_by(scenario, model_output, pft, county) |>
   dplyr::summarize(
     n = max(n),
-    mean_total_c_Tg = mean(total_c_Tg),
-    sd_total_c_Tg = sd(total_c_Tg),
-    mean_c_density_Mg_ha = mean(c_density_Mg_ha),
-    sd_c_density_Mg_ha = sd(c_density_Mg_ha),
+    mean_total_per_county = mean(total_per_county),
+    sd_total_per_county = sd(total_per_county),
+    mean_density_per_ha = mean(density_per_ha),
+    sd_density_per_ha = sd(density_per_ha),
     mean_total_ha = mean(total_ha),
     sd_total_ha = sd(total_ha),
     .groups = "drop"
@@ -140,9 +139,9 @@ county_summaries <- ens_county_preds |>
           "At least one (model_output, pft, county) group has n == 1; variability across ensembles cannot be assessed."
         )
       }
-      if (any(df$sd_total_c_Tg == 0, na.rm = TRUE)) {
+      if (any(df$sd_total_per_county == 0, na.rm = TRUE)) {
         PEcAn.logger::logger.severe(
-          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_c_Tg == 0)."
+          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_per_county == 0)."
         )
       }
       df
@@ -150,7 +149,7 @@ county_summaries <- ens_county_preds |>
   ) |>
   dplyr::mutate(
     dplyr::across(
-      .cols = c(mean_total_c_Tg, sd_total_c_Tg, mean_c_density_Mg_ha, sd_c_density_Mg_ha),
+      .cols = c(mean_total_per_county, sd_total_per_county, mean_density_per_ha, sd_density_per_ha),
       .fns = ~ signif(.x, 3)
     )
   )
@@ -167,7 +166,7 @@ state_summaries <- ens_county_preds |>
   dplyr::summarize(
     n_counties = dplyr::n_distinct(county),
     n_fields = sum(n),
-    total_c_Tg = sum(total_c_Tg),
+    total_per_state = sum(total_per_county),
     total_ha = sum(total_ha),
     .groups = "drop"
   ) |>
@@ -175,16 +174,16 @@ state_summaries <- ens_county_preds |>
   dplyr::summarize(
     n_counties = max(n_counties),
     n_fields = max(n_fields),
-    mean_total_c_Tg = mean(total_c_Tg),
-    sd_total_c_Tg = sd(total_c_Tg),
+    mean_total_per_state = mean(total_per_state),
+    sd_total_per_state = sd(total_per_state),
     mean_total_ha = mean(total_ha),
     sd_total_ha = sd(total_ha),
     .groups = "drop"
   ) |>
   dplyr::mutate(
-    mean_c_density_Mg_ha = PEcAn.utils::ud_convert(mean_total_c_Tg, "Tg", "Mg") / mean_total_ha,
+    mean_density_per_ha = mean_total_per_state / mean_total_ha,
     dplyr::across(
-      .cols = c(mean_total_c_Tg, sd_total_c_Tg),
+      .cols = c(mean_total_per_state, sd_total_per_state),
       .fns = ~ signif(.x, 3)
     )
   )
@@ -207,8 +206,8 @@ if (file.exists(delta_csv)) {
       site_id = readr::col_character(),
       pft = readr::col_character(),
       ensemble = readr::col_double(),
-      delta_c_density_Mg_ha = readr::col_double(),
-      delta_total_c_Mg = readr::col_double(),
+      delta_density_per_ha = readr::col_double(),
+      delta_total = readr::col_double(),
       area_ha = readr::col_double(),
       county = readr::col_character(),
       model_output = readr::col_character()
@@ -225,33 +224,31 @@ if (file.exists(delta_csv)) {
     dplyr::group_by(scenario, model_output, pft, county, ensemble) |>
     dplyr::summarize(
       n = dplyr::n(),
-      delta_total_Mg = sum(delta_total_c_Mg),
+      delta_total_county = sum(delta_total),
       total_ha = sum(area_ha),
       .groups = "drop"
     ) |>
     dplyr::filter(total_ha > 0) |>
     dplyr::mutate(
-      delta_total_Tg = PEcAn.utils::ud_convert(delta_total_Mg, "Mg", "Tg"),
-      delta_density_Mg_ha = delta_total_Mg / total_ha
+      delta_density_per_ha = delta_total_county / total_ha
     )
   
   # Summarize across ensembles
   county_deltas <- ens_county_deltas |>
     dplyr::group_by(scenario, model_output, pft, county) |>
     dplyr::summarize(
-      # Number of fields in county should be same for each ensemble member
       n = max(n),
-      mean_delta_total_Tg = mean(delta_total_Tg),
-      sd_delta_total_Tg = sd(delta_total_Tg),
-      mean_delta_density_Mg_ha = mean(delta_density_Mg_ha),
-      sd_delta_density_Mg_ha = sd(delta_density_Mg_ha),
+      mean_delta_total_county = mean(delta_total_county),
+      sd_delta_total_county = sd(delta_total_county),
+      mean_delta_density_per_ha = mean(delta_density_per_ha),
+      sd_delta_density_per_ha = sd(delta_density_per_ha),
       mean_total_ha = mean(total_ha),
       .groups = "drop"
     ) |>
     dplyr::mutate(
       # Only save 3 significant digits
       dplyr::across(
-        .cols = c(mean_delta_total_Tg, sd_delta_total_Tg, mean_delta_density_Mg_ha, sd_delta_density_Mg_ha),
+        .cols = c(mean_delta_total_county, sd_delta_total_county, mean_delta_density_per_ha, sd_delta_density_per_ha),
         .fns = ~ signif(.x, 3)
       )
     )
@@ -283,14 +280,14 @@ metadata <- list(
   ),
   columns = list(
     scenario = "Management scenario identifier",
-    model_output = "Carbon pool (AGB, TotSoilCarb)",
+    model_output = "Model output variable (AGB, TotSoilCarb, N2O_flux, CH4_flux)",
     pft = "Plant functional type",
     county = "California county name",
     n = "Number of fields",
-    mean_total_c_Tg = "Mean total carbon stock (Tg)",
-    sd_total_c_Tg = "SD of total carbon stock across ensembles",
-    mean_c_density_Mg_ha = "Mean carbon density (Mg/ha)",
-    sd_c_density_Mg_ha = "SD of carbon density across ensembles"
+    mean_total_per_county = "Mean total per county across ensembles",
+    sd_total_per_county = "SD of total per county across ensembles",
+    mean_density_per_ha = "Mean density per ha across ensembles",
+    sd_density_per_ha = "SD of density per ha across ensembles"
   )
 )
 
