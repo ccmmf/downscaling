@@ -57,7 +57,7 @@ if (USE_PHASE_3_SCENARIOS) {
 
 # **Variables to extract**
 # see docs/workflow_documentation.qmd for complete list of outputs
-outputs_to_extract <- c("TotSoilCarb", "AGB")
+outputs_to_extract <- c("TotSoilCarb", "AGB", "N2O_flux", "CH4_flux")
 if (!PRODUCTION) {
   # can subset for testing
   # depending on what part of the workflow you are testing
