@@ -173,12 +173,11 @@ ens_results <- ens_results |>
         .groups = "drop"
     )
 
-# Warn if flux variables are present because users may need to treat them differently.
 if (any(ens_results$variable_type == "flux")) {
-    PEcAn.logger::logger.severe(
-        "Flux variables detected in ensemble output. Note: averaging flux (rate) variables",
-        "across ensembles/sites or over time can be misleading. Consider computing cumulative",
-        "fluxes over simulation period",
+    PEcAn.logger::logger.info(
+        "Flux variables detected in ensemble output. Monthly means of instantaneous",
+        "rates (e.g. kg m-2 s-1) are valid mean rates. Downstream scripts handle",
+        "unit conversion to reporting units (e.g. kg ha-1 yr-1)."
     )
 }
 
