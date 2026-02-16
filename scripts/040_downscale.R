@@ -186,6 +186,29 @@ extract_oob_r2 <- function(model, y_train = NULL) {
   NA_real_
 }
 
+# ---- unit-conversion helper -------------------------------------------------
+# convert model predictions from native units to reporting units.
+# pools (kg/m2) -> Mg/ha; fluxes (kg/m2/s) -> kg/ha/yr.
+convert_to_reporting_units <- function(prediction, model_output) {
+  std_vars <- PEcAn.utils::standard_vars
+
+  # determine which model_output values are fluxes
+  flux_vars <- std_vars |>
+    dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
+    dplyr::pull(Variable.Name)
+
+  is_flux <- model_output %in% flux_vars
+
+  seconds_per_year <- 365.25 * 86400
+  m2_per_ha <- 1e4
+
+  dplyr::if_else(
+    is_flux,
+    prediction * seconds_per_year * m2_per_ha,        # kg/m2/s -> kg/ha/yr
+    PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")  # kg/m2 -> Mg/ha
+  )
+}
+
 # ----define design points based on ensemble data-------------------------------
 # TODO: move this sanitization upstream to when ens data is created (030_extract_sipnet_output.R)
 # or better ... figure out why we so often run into mis-match!!!
@@ -579,10 +602,10 @@ for (scenario_i in scenarios) {
         dplyr::mutate(
           pft = pft_i,
           model_output = pool,
-          delta_c_density_Mg_ha = PEcAn.utils::ud_convert(delta_pred, "kg/m2", "Mg/ha"),
-          delta_total_c_Mg = delta_c_density_Mg_ha * area_ha
+          delta_density_per_ha = convert_to_reporting_units(delta_pred, pool),
+          delta_total = delta_density_per_ha * area_ha
         ) |>
-        dplyr::select(site_id, pft, ensemble, delta_c_density_Mg_ha, delta_total_c_Mg, area_ha, county, model_output)
+        dplyr::select(site_id, pft, ensemble, delta_density_per_ha, delta_total, area_ha, county, model_output)
       delta_output_records[[paste0(scenario_i, "::", pft_i, "::", pool)]] <- delta_df
     }
 
@@ -674,16 +697,14 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
     sep = "::",
     remove = TRUE
   ) |>
-  # Convert kg/m2 to Mg/ha using PEcAn.utils::ud_convert
-  dplyr::mutate(c_density_Mg_ha = PEcAn.utils::ud_convert(prediction, "kg/m2", "Mg/ha")) |>
-  # Calculate total Mg per field: c_density_Mg_ha * area_ha
-  dplyr::mutate(total_c_Mg = c_density_Mg_ha * area_ha) |>
-  dplyr::select(site_id, scenario, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output, -prediction)
+  dplyr::mutate(density_per_ha = convert_to_reporting_units(prediction, model_output)) |>
+  dplyr::mutate(total_per_field = density_per_ha * area_ha) |>
+  dplyr::select(site_id, scenario, pft, ensemble, density_per_ha, total_per_field, area_ha, county, model_output, -prediction)
 
 dp <- downscale_preds |>
   dplyr::select(
     site_id, scenario, pft, ensemble,
-    c_density_Mg_ha, total_c_Mg,
+    density_per_ha, total_per_field,
     area_ha, county, model_output
   )
 
@@ -815,10 +836,10 @@ if (length(woody_label) == 0 || length(annual_label) == 0) {
         dplyr::mutate(
           pft = "woody + annual",
           model_output = pool,
-          c_density_Mg_ha = PEcAn.utils::ud_convert(mixed_pred, "kg/m2", "Mg/ha"),
-          total_c_Mg = c_density_Mg_ha * area_ha
+          density_per_ha = convert_to_reporting_units(mixed_pred, pool),
+          total_per_field = density_per_ha * area_ha
         ) |>
-        dplyr::select(site_id, pft, ensemble, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+        dplyr::select(site_id, pft, ensemble, density_per_ha, total_per_field, area_ha, county, model_output)
       
       mixed_records[[pool]] <- mix_df
       
@@ -829,25 +850,25 @@ if (length(woody_label) == 0 || length(annual_label) == 0) {
           pft = pft_i,
           model_output = pool,
           scenario = "woody_100",
-          c_density_Mg_ha = PEcAn.utils::ud_convert(woody_pred, "kg/m2", "Mg/ha"),
-          total_c_Mg = c_density_Mg_ha * area_ha
+          density_per_ha = convert_to_reporting_units(woody_pred, pool),
+          total_per_field = density_per_ha * area_ha
         ) |>
-        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-      
+        dplyr::select(site_id, pft, ensemble, scenario, density_per_ha, total_per_field, area_ha, county, model_output)
+
       annual_scn <- ann_end_df |>
         dplyr::left_join(ca_fields, by = "site_id") |>
         dplyr::mutate(
           pft = pft_i,
           model_output = pool,
           scenario = "annual_100",
-          c_density_Mg_ha = PEcAn.utils::ud_convert(annual_end, "kg/m2", "Mg/ha"),
-          total_c_Mg = c_density_Mg_ha * area_ha
+          density_per_ha = convert_to_reporting_units(annual_end, pool),
+          total_per_field = density_per_ha * area_ha
         ) |>
-        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
-      
+        dplyr::select(site_id, pft, ensemble, scenario, density_per_ha, total_per_field, area_ha, county, model_output)
+
       mixed_scn <- mix_df |>
         dplyr::mutate(scenario = "woody_50_annual_50") |>
-        dplyr::select(site_id, pft, ensemble, scenario, c_density_Mg_ha, total_c_Mg, area_ha, county, model_output)
+        dplyr::select(site_id, pft, ensemble, scenario, density_per_ha, total_per_field, area_ha, county, model_output)
       
       # accumulate
       if (!exists("treatment_records", inherits = FALSE)) treatment_records <- list()
@@ -912,11 +933,11 @@ metadata <- list(
     pft = "Plant functional type",
     scenario = "Management scenario (baseline, compost, etc.)",
     ensemble = "Ensemble member identifier",
-    c_density_Mg_ha = "Predicted carbon density (Mg/ha)",
-    total_c_Mg = "Predicted total carbon (Mg) per field",
+    density_per_ha = "Predicted density per hectare: Mg/ha for pools, kg/ha/yr for fluxes",
+    total_per_field = "Predicted total per field: density_per_ha * area_ha",
     area_ha = "Field area in hectares",
     county = "California county name where the field is located",
-    model_output = "Type of SIPNET model output (e.g., AGB, TotSoilCarb)"
+    model_output = "Type of SIPNET model output (e.g., AGB, TotSoilCarb, N2O_flux, CH4_flux)"
   )
 )
 
