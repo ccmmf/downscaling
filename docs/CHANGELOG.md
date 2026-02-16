@@ -29,6 +29,7 @@ sections to include in release notes:
   - `aggregation_metadata.json` with column descriptions
 - Field-level density maps replacing county density choropleth maps (per CARB request)
 - Backward compatibility for multi-PFT workflows without scenario column
+- Support for N2O and CH4 flux variables throughout the downscaling pipeline (#11)
 
 ### Fixed
 
