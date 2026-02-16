@@ -44,15 +44,15 @@ purrr::pwalk(
       model_output == !!model_output
     )
     
-    p_stock <- ggplot2::ggplot(dat, ggplot2::aes(geometry = geom, fill = mean_total_c_Tg)) +
+    p_stock <- ggplot2::ggplot(dat, ggplot2::aes(geometry = geom, fill = mean_total_per_county)) +
       ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
       ggplot2::geom_sf() +
       ggplot2::scale_fill_viridis_c(option = "plasma", na.value = "white") +
       ggplot2::theme_minimal() +
       ggplot2::labs(
-        title = paste("County Carbon Stock:", model_output, "-", pft),
+        title = paste("County Total:", model_output, "-", pft),
         subtitle = paste("Scenario:", scenario),
-        fill = "Carbon\nStock (Tg)"
+        fill = "Total per\nCounty"
       )
     
     pft_key <- stringr::str_replace_all(pft, "[^A-Za-z0-9]+", "_")
@@ -81,8 +81,8 @@ dp <- vroom::vroom(
     site_id = readr::col_character(),
     pft = readr::col_character(),
     ensemble = readr::col_double(),
-    c_density_Mg_ha = readr::col_double(),
-    total_c_Mg = readr::col_double(),
+    density_per_ha = readr::col_double(),
+    total_per_field = readr::col_double(),
     area_ha = readr::col_double(),
     county = readr::col_character(),
     model_output = readr::col_character()
@@ -103,7 +103,7 @@ field_centroids <- ca_fields |>
 field_mean_density <- dp |>
   dplyr::group_by(scenario, model_output, pft, site_id) |>
   dplyr::summarize(
-    mean_c_density_Mg_ha = mean(c_density_Mg_ha, na.rm = TRUE),
+    mean_density_per_ha = mean(density_per_ha, na.rm = TRUE),
     .groups = "drop"
   ) |>
   dplyr::inner_join(
@@ -134,13 +134,13 @@ purrr::pwalk(
     
     p_field <- ggplot2::ggplot() +
       ggplot2::geom_sf(data = county_boundaries, fill = "gray95", color = "gray70", linewidth = 0.3) +
-      ggplot2::geom_sf(data = dat, ggplot2::aes(color = mean_c_density_Mg_ha), size = 0.4, alpha = 0.7) +
+      ggplot2::geom_sf(data = dat, ggplot2::aes(color = mean_density_per_ha), size = 0.4, alpha = 0.7) +
       ggplot2::scale_color_viridis_c(option = "plasma", na.value = "gray50") +
       ggplot2::theme_minimal() +
       ggplot2::labs(
-        title = paste("Field Carbon Density:", model_output, "-", pft),
+        title = paste("Field Density:", model_output, "-", pft),
         subtitle = paste("Scenario:", scenario),
-        color = "Density\n(Mg/ha)"
+        color = "Density\n(per ha)"
       )
     
     pft_key <- stringr::str_replace_all(pft, "[^A-Za-z0-9]+", "_")
@@ -169,9 +169,9 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
   PEcAn.logger::logger.info("Creating PFT difference maps (woody+annual - woody)")
   
   mix_sel <- mix |>
-    dplyr::select(site_id, ensemble, model_output, county, area_ha_mix = area_ha, total_c_Mg_mix = total_c_Mg)
+    dplyr::select(site_id, ensemble, model_output, county, area_ha_mix = area_ha, total_mix = total_per_field)
   wood_sel <- wood |>
-    dplyr::select(site_id, ensemble, model_output, county, area_ha_woody = area_ha, total_c_Mg_woody = total_c_Mg)
+    dplyr::select(site_id, ensemble, model_output, county, area_ha_woody = area_ha, total_woody = total_per_field)
   
   # Check for duplicates
   mix_dups <- mix_sel |>
@@ -189,19 +189,18 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
     diff_county <- mix_sel |>
       dplyr::inner_join(wood_sel, by = c("site_id", "ensemble", "model_output", "county")) |>
       dplyr::mutate(
-        diff_total_Mg = total_c_Mg_mix - total_c_Mg_woody,
+        diff_total = total_mix - total_woody,
         area_ha = dplyr::coalesce(area_ha_woody, area_ha_mix)
       ) |>
       dplyr::group_by(county, model_output, ensemble) |>
-      dplyr::summarise(diff_total_Mg = sum(diff_total_Mg), total_ha = sum(area_ha), .groups = "drop") |>
+      dplyr::summarise(diff_total = sum(diff_total), total_ha = sum(area_ha), .groups = "drop") |>
       dplyr::mutate(
-        diff_total_Tg = PEcAn.utils::ud_convert(diff_total_Mg, "Mg", "Tg"),
-        diff_density_Mg_ha = diff_total_Mg / total_ha
+        diff_density_per_ha = diff_total / total_ha
       ) |>
       dplyr::group_by(county, model_output) |>
       dplyr::summarise(
-        mean_diff_total_Tg = mean(diff_total_Tg),
-        mean_diff_density_Mg_ha = mean(diff_density_Mg_ha),
+        mean_diff_total = mean(diff_total),
+        mean_diff_density_per_ha = mean(diff_density_per_ha),
         .groups = "drop"
       ) |>
       dplyr::right_join(county_boundaries, by = "county")
@@ -210,7 +209,7 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
       dat_pool <- dplyr::filter(diff_county, model_output == pool)
       
       # Stock difference map only (density removed per CARB)
-      p_stock <- ggplot2::ggplot(dat_pool, ggplot2::aes(geometry = geom, fill = mean_diff_total_Tg)) +
+      p_stock <- ggplot2::ggplot(dat_pool, ggplot2::aes(geometry = geom, fill = mean_diff_total)) +
         ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
         ggplot2::geom_sf() +
         ggplot2::scale_fill_gradient2(
@@ -219,9 +218,9 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
         ) +
         ggplot2::theme_minimal() +
         ggplot2::labs(
-          title = paste("Difference in Carbon Stock: (woody + annual) - (woody)"),
+          title = paste("Difference in Total: (woody + annual) - (woody)"),
           subtitle = pool,
-          fill = "Delta (Tg)"
+          fill = "Delta (total)"
         )
       
       ggsave_optimized(
@@ -250,8 +249,8 @@ if (file.exists(delta_csv)) {
       site_id = readr::col_character(),
       pft = readr::col_character(),
       ensemble = readr::col_double(),
-      delta_c_density_Mg_ha = readr::col_double(),
-      delta_total_c_Mg = readr::col_double(),
+      delta_density_per_ha = readr::col_double(),
+      delta_total = readr::col_double(),
       area_ha = readr::col_double(),
       county = readr::col_character(),
       model_output = readr::col_character()
@@ -264,19 +263,14 @@ if (file.exists(delta_csv)) {
   
   delta_county <- deltas |>
     dplyr::group_by(scenario, model_output, pft, county, ensemble) |>
-    dplyr::summarize(
-      total_delta_Mg = sum(delta_total_c_Mg),
-      total_ha = sum(area_ha),
-      .groups = "drop"
-    ) |>
+    dplyr::summarize(total_delta = sum(delta_total), total_ha = sum(area_ha), .groups = "drop") |>
     dplyr::mutate(
-      delta_density_Mg_ha = total_delta_Mg / total_ha,
-      delta_total_Tg = PEcAn.utils::ud_convert(total_delta_Mg, "Mg", "Tg")
+      delta_density_per_ha = total_delta / total_ha
     ) |>
     dplyr::group_by(scenario, model_output, pft, county) |>
     dplyr::summarize(
-      mean_delta_density_Mg_ha = mean(delta_density_Mg_ha),
-      mean_delta_total_Tg = mean(delta_total_Tg),
+      mean_delta_density_per_ha = mean(delta_density_per_ha),
+      mean_delta_total = mean(total_delta),
       .groups = "drop"
     ) |>
     dplyr::right_join(county_boundaries, by = "county")
@@ -299,7 +293,7 @@ if (file.exists(delta_csv)) {
       scenario_key <- stringr::str_replace_all(scenario, "[^A-Za-z0-9]+", "_")
       
       # Stock delta map only (per CARB - no county density)
-      p_stk <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = mean_delta_total_Tg)) +
+      p_stk <- ggplot2::ggplot(datp, ggplot2::aes(geometry = geom, fill = mean_delta_total)) +
         ggplot2::geom_sf(data = county_boundaries, fill = "white", color = "black") +
         ggplot2::geom_sf() +
         ggplot2::scale_fill_gradient2(
@@ -308,9 +302,9 @@ if (file.exists(delta_csv)) {
         ) +
         ggplot2::theme_minimal() +
         ggplot2::labs(
-          title = paste("Delta Stock (start->end):", model_output, "-", pft),
+          title = paste("Delta (start->end):", model_output, "-", pft),
           subtitle = paste("Scenario:", scenario),
-          fill = "Delta (Tg)"
+          fill = "Delta (total)"
         )
       
       ggsave_optimized(
