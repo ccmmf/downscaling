@@ -221,18 +221,18 @@ if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
         dplyr::rename(site_id = base_site_id) |>
         dplyr::mutate(scenario = "baseline") |>  # Add scenario column for consistency
         dplyr::select(scenario, datetime, site_id, lat, lon, pft, parameter, variable, prediction)
-    
+
     # Classify variables as 'pool' (state) vs 'flux' (rate) using PEcAn standard_vars.
     std_vars <- PEcAn.utils::standard_vars
-    
+
     pool_vars <- std_vars |>
         dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
         dplyr::pull(Variable.Name)
-    
+
     flux_vars <- std_vars |>
         dplyr::filter(stringr::str_detect(tolower(Category), "flux")) |>
         dplyr::pull(Variable.Name)
-    
+
     ens_results <- ens_results |>
         dplyr::mutate(
             datetime = lubridate::floor_date(datetime, unit = "month"),
@@ -247,27 +247,25 @@ if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
             prediction = mean(prediction, na.rm = TRUE),
             .groups = "drop"
         )
-    
-    # Warn if flux variables are present because users may need to treat them differently.
+
     if (any(ens_results$variable_type == "flux")) {
-        PEcAn.logger::logger.severe(
-            "Flux variables detected in ensemble output. Note: averaging flux (rate) variables",
-            "across ensembles/sites or over time can be misleading. Consider computing cumulative",
-            "fluxes over simulation period",
+        PEcAn.logger::logger.info(
+            "Flux variables detected in ensemble output. Monthly means of instantaneous",
+            "rates (e.g. kg m-2 s-1) are valid mean rates. Downstream scripts handle",
+            "unit conversion to reporting units (e.g. kg ha-1 yr-1)."
         )
     }
-    
+
     # After extraction, ens_results$prediction is in kg C m-2 for both AGB and TotSoilCarb
-    
+
     # restore logging
     logger_level <- PEcAn.logger::logger.setLevel(logger_level)
-    
+
     ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
     readr::write_csv(ens_results, ensemble_output_csv)
     PEcAn.logger::logger.info(
-        "\nEnsemble output extraction complete.",
-        "\nResults saved to ", ensemble_output_csv
+        "Phase 2 extraction complete. Saved to ", ensemble_output_csv
     )
     PEcAn.logger::logger.setLevel(logger_level)
-    
+
 }
