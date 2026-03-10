@@ -8,7 +8,7 @@ PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***"
 #'
 #' Below is a summary of the covariates dataset
 #'
-#' - site_id: Unique identifier for each polygon (LandIQ UniqueID)
+#' - site_id: Unique identifier for each parcel (harmonized parcel_id)
 #' - crop: Crop type
 #' - pft: Plant functional type
 #' - temp: Mean Annual Temperature from ERA5
@@ -19,10 +19,10 @@ PEcAn.logger::logger.info("***Starting Clustering and Design Point Selection***"
 #' - ocd: Organic Carbon content from SoilGrids
 #' - twi: Topographic Wetness Index
 #' - climregion_id: identifier for each climate region
-#' - eof_1 to eof_10: EOF scores capturing cropping system patterns
-selected_covariates <- c("temp", "precip", "srad", "vapr", "clay", "ocd", "twi",
-                         "eof_1", "eof_2", "eof_3", "eof_4", "eof_5",
-                         "eof_6", "eof_7", "eof_8", "eof_9", "eof_10")
+#' - eof_1 to eof_N: EOF scores capturing cropping system patterns (N determined by 009)
+# EOF components are determined dynamically by 009 (80% variance threshold, max 10)
+# so we detect which eof_* columns actually exist after loading covariates
+base_covariates <- c("temp", "precip", "srad", "vapr", "clay", "ocd", "twi")
 
 # Load harmonized CADWR field data (from 009_prepare_cadwr_crops.R)
 ca_fields <- sf::st_read(file.path(data_dir, "cadwr_crops_sites.gpkg"), quiet = TRUE)
@@ -44,6 +44,14 @@ site_coords <- readr::read_csv(site_summary_csv, show_col_types = FALSE) |>
 site_covariates <- site_covariates |>
   dplyr::left_join(site_coords, by = "site_id")
 
+# detect EOF columns dynamically -- 009 picks n_components based on 80% variance
+eof_cols <- sort(grep("^eof_", colnames(site_covariates), value = TRUE))
+if (length(eof_cols) == 0) {
+  PEcAn.logger::logger.warn("No EOF columns found in site_covariates")
+}
+selected_covariates <- c(base_covariates, eof_cols)
+PEcAn.logger::logger.info("Using ", length(eof_cols), " EOF components: ",
+                           paste(eof_cols, collapse = ", "))
 
 # Check that all selected_covariates are present, otherwise stop.
 missing_covariates <- setdiff(selected_covariates, colnames(site_covariates))
@@ -53,78 +61,75 @@ if (length(missing_covariates) > 0) {
   PEcAn.logger::logger.info("All expected covariates are present:", paste(selected_covariates, collapse = ", "))
 }
 
-#' ## Load Design Points and Reconcile site_ids
-#' 
-#' Phase 3: Convert old hash-based site_ids to LandIQ UniqueIDs
+#' ## Load design points and reconcile site_ids
+#'
+#' site IDs changed from hash-based -> UniqueID -> parcel_id across phases.
+#' use match_site_ids_by_location() (see R/match_site_ids_by_location.R) to
+#' reconcile old design points to current parcel_id based site_ids.
 
-# Load existing design points (may have old hash-based site_ids)
-old_design_points <- readr::read_csv("data/design_points.csv", show_col_types = FALSE)
+old_design_points <- readr::read_csv("data/design_points.csv", show_col_types = FALSE) |>
+  dplyr::mutate(site_id = as.character(site_id))
 
-# Check if reconciliation is needed (old format has hash strings, new format is numeric)
-needs_reconciliation <- any(!grepl("^\\d+$", na.omit(old_design_points$site_id)))
+# check if reconciliation is needed -- current system uses numeric parcel_id
+# old formats used hash strings or UniqueIDs that don't match
+needs_reconciliation <- !all(old_design_points$site_id %in% site_covariates$site_id)
 
 if (needs_reconciliation) {
-  PEcAn.logger::logger.info("Reconciling old site_ids to LandIQ UniqueIDs...")
-  
-  # Convert old design points to spatial
-  old_design_pts_sf <- old_design_points |>
-    dplyr::filter(!is.na(lat), !is.na(lon)) |>
-    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
-    sf::st_transform(crs = 3310)
-  
-  # Load new CADWR fields
-  ca_fields_albers <- ca_fields |>
-    sf::st_transform(crs = 3310)
-  
-  # Find nearest LandIQ field for each old design point
-  nearest_idx <- sf::st_nearest_feature(old_design_pts_sf, ca_fields_albers)
-  nearest_fields <- ca_fields_albers[nearest_idx, ]
-  
-  # Calculate distances to verify matches
-  distances <- sf::st_distance(old_design_pts_sf, nearest_fields, by_element = TRUE)
-  
-  # Build reconciled design points with new LandIQ site_ids
-  reconciled_design_points <- old_design_points |>
-    dplyr::filter(!is.na(lat), !is.na(lon)) |>
-    dplyr::mutate(
-      old_site_id = site_id,
-      site_id = as.character(nearest_fields$site_id),
-      distance_m = as.numeric(distances)
-    )
-  
-  # Warn about distant matches (>100m suggests field boundary changed)
-  far_matches <- reconciled_design_points |>
-    dplyr::filter(distance_m > 100)
-  
-  if (nrow(far_matches) > 0) {
-    PEcAn.logger::logger.warn(
-      nrow(far_matches), " design points matched to fields >100m away. ",
-      "Review these manually."
-    )
-    print(far_matches |> dplyr::select(old_site_id, site_id, lat, lon, distance_m, pft))
-  }
-  
-  # Get lat/lon from new site_ids
-  reconciled_design_points <- reconciled_design_points |>
-    dplyr::select(-lat, -lon, -distance_m) |>
-    dplyr::left_join(site_coords, by = "site_id")
-  
-  PEcAn.logger::logger.info(
-    "Reconciled ", nrow(reconciled_design_points), " design points to LandIQ UniqueIDs"
+  PEcAn.logger::logger.info("Reconciling old site_ids to parcel_id based IDs...")
+
+  reconciled <- update_site_ids_by_location(
+    target_df = old_design_points,
+    reference_df = site_covariates,
+    id_col = "site_id",
+    target_lat_col = "lat",
+    target_lon_col = "lon",
+    reference_lat_col = "lat",
+    reference_lon_col = "lon",
+    crs = "EPSG:4326",
+    max_distance = 500
   )
-  
-  woody_design_points <- reconciled_design_points |>
+
+  # get updated lat/lon from new site_ids
+  reconciled <- reconciled |>
+    dplyr::select(-lat, -lon) |>
+    dplyr::left_join(site_coords, by = "site_id")
+
+  PEcAn.logger::logger.info("Reconciled ", nrow(reconciled), " design points")
+
+  woody_design_points <- reconciled |>
     dplyr::filter(pft == "woody perennial crop") |>
     dplyr::select(site_id, lat, lon, pft)
-  
+
 } else {
-  PEcAn.logger::logger.info("Design points already use LandIQ UniqueIDs")
+  PEcAn.logger::logger.info("Design points already use parcel_id based IDs")
   woody_design_points <- old_design_points |>
-    dplyr::mutate(site_id = as.character(site_id)) |>
     dplyr::filter(pft == "woody perennial crop") |>
     dplyr::select(site_id, lat, lon, pft)
 }
 
+# validate woody design points against current v4.1 PFT classification
+# parcels may have been reclassified between dataset versions
+woody_pft_check <- woody_design_points |>
+  dplyr::left_join(
+    site_covariates |> dplyr::select(site_id, pft),
+    by = "site_id",
+    suffix = c("_old", "_current")
+  )
+
+woody_pft_mismatch <- woody_pft_check |>
+  dplyr::filter(is.na(pft_current) | pft_current != "woody perennial crop")
+
+if (nrow(woody_pft_mismatch) > 0) {
+  PEcAn.logger::logger.warn(
+    nrow(woody_pft_mismatch), " woody design point(s) reclassified in v4.1 ",
+    "Removing: ", paste(woody_pft_mismatch$site_id, collapse = ", ")
+  )
+  woody_design_points <- woody_pft_check |>
+    dplyr::filter(!is.na(pft_current), pft_current == "woody perennial crop") |>
+    dplyr::select(site_id, lat, lon, pft = pft_old)
+}
+
+PEcAn.logger::logger.info(nrow(woody_design_points), " woody design points retained")
 
 anchor_sites <- readr::read_csv("data/anchor_sites.csv", show_col_types = FALSE) |>
   dplyr::mutate(site_id = as.character(site_id))
@@ -145,6 +150,26 @@ herbaceous_anchor_site_ids <- anchor_sites |>
 ## For now (2a) just clustering herbaceous fields
 anchor_sites_for_clust <- herbaceous_anchor_site_ids |>
   dplyr::left_join(site_covariates, by = "site_id")
+
+# validate anchor sites labeled herbaceous/annual in the raw file must also
+# have pft == "annual crop" in site_covariates (from CADWR).  Mismatches occur
+# when the nearest CADWR polygon has a different land use (e.g. research
+# stations classified as nursery, or towers near wetland/crop boundaries).
+if (nrow(anchor_sites_for_clust) > 0) {
+  pft_mismatch <- anchor_sites_for_clust |>
+    dplyr::filter(is.na(pft) | pft != "annual crop")
+
+  if (nrow(pft_mismatch) > 0) {
+    PEcAn.logger::logger.warn(
+      nrow(pft_mismatch), " anchor site(s) labeled herbaceous/annual in raw ",
+      "file but matched to a CADWR field with different PFT. Excluding from ",
+      "annual crop clustering: ",
+      paste(pft_mismatch$site_id, collapse = ", ")
+    )
+    anchor_sites_for_clust <- anchor_sites_for_clust |>
+      dplyr::filter(!is.na(pft), pft == "annual crop")
+  }
+}
 
 #' ### Subset LandIQ fields for clustering
 #'
@@ -207,8 +232,9 @@ if (anyNA(data_for_clust)) {
 
 perform_clustering <- function(data, k_range = 2:20) {
   # Select numeric variables for clustering
+  # exclude *_id columns and pft_* one-hot columns (constant within PFT subset -> zero variance)
   clust_data <- data |>
-    dplyr::select(where(is.numeric), -ends_with("id"))
+    dplyr::select(where(is.numeric), -ends_with("id"), -starts_with("pft_"))
 
   PEcAn.logger::logger.info(
     "Columns used for clustering: ",
@@ -302,11 +328,11 @@ herb_design_points <- herb_design_points_ids |>
   dplyr::select(site_id, lat, lon, pft) |>
   dplyr::mutate(dplyr::across(c(lat, lon), ~ round(.x, 5))) 
 
-# Combine woody + herbaceous design points
-# All site_ids are now LandIQ UniqueIDs
+# Combine woody + annual design points
+# all site_ids are harmonized parcel_ids
 all_design_points <- woody_design_points |>
   dplyr::bind_rows(herb_design_points) |>
-  dplyr::select(site_id, lat, lon, pft)  # Clean output, no UniqueID column
+  dplyr::select(site_id, lat, lon, pft)
 
 readr::write_csv(all_design_points, here::here("data", "design_points.csv"))
 
