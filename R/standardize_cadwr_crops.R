@@ -1,110 +1,124 @@
-#' Standardize CADWR Crops Data
+#' Standardize harmonized LandIQ crops data (v4.1) for downscaling
 #'
-#' Converts harmonized crops_all_years.csv to standardized format
-#' for the downscaling workflow.
+#' Reads harmonized LandIQ crops parquet and parcels geopackage to produce
+#' three outputs consumed by the downscaling pipeline:
+#'   - cadwr_crops_sites.gpkg        -- one polygon per field (parcel_id)
+#'   - cadwr_crops_attributes.csv    -- per-field-year-season crop records
+#'   - cadwr_crops_site_summary.csv  -- one-row-per-field summary
 #'
-#' @param input_csv Path to crops_all_years.csv
-#' @param output_dir Directory for output files
+#' Uses parcel_id as stable cross-year site identifier. The harmonized data (v4.1)
+#' uses NAs (no sentinel values) and EPSG:3310 coordinates
+#'
+#' @param input_parquet Path to crops_all_years.parq
+#' @param parcels_gpkg Path to parcels.gpkg with field polygon geometries
+#' @param output_dir Directory for output files (NULL = no write)
 #' @param pft_mapping_csv Path to CARB_PFTs_table.csv
-#' @param write_outputs Write output files?
-#' @return List with sites, attributes, site_summary
+#' @param write_outputs Logical; write output files to output_dir?
+#' @return Invisible list with sites (sf), attributes (tibble), site_summary (tibble)
 #' @export
-standardize_cadwr_crops <- function(input_csv,
+standardize_cadwr_crops <- function(input_parquet,
+                                    parcels_gpkg,
                                     output_dir = NULL,
                                     pft_mapping_csv = NULL,
                                     write_outputs = TRUE) {
 
-  if (!file.exists(input_csv)) {
-    PEcAn.logger::logger.severe("File not found: ", input_csv)
+  if (!file.exists(input_parquet)) {
+    PEcAn.logger::logger.severe("Parquet not found: ", input_parquet)
+  }
+  if (!file.exists(parcels_gpkg)) {
+    PEcAn.logger::logger.severe("Parcels gpkg not found: ", parcels_gpkg)
   }
 
-  PEcAn.logger::logger.info("Reading: ", input_csv)
-  crops_raw <- data.table::fread(input_csv, showProgress = FALSE)
-  PEcAn.logger::logger.info("Loaded ", nrow(crops_raw), " records, ", 
-                            dplyr::n_distinct(crops_raw$UniqueID, na.rm = TRUE), " fields")
+  # -- read crop records --
+  PEcAn.logger::logger.info("Reading: ", input_parquet)
+  crops_raw <- arrow::read_parquet(input_parquet) |> data.table::as.data.table()
+  PEcAn.logger::logger.info(
+    "Loaded ", format(nrow(crops_raw), big.mark = ","), " records, ",
+    dplyr::n_distinct(crops_raw$parcel_id), " parcels"
+  )
 
-  # Remove records with NA UniqueID
-  crops_raw <- crops_raw[!is.na(UniqueID)]
+  # -- compute centroids (centx/centy are EPSG:3310) --
+  # one centroid per parcel, transformed to WGS84 for lat/lon output
+  centroid_dt <- crops_raw[
+    !is.na(centx) & !is.na(centy),
+    .(centx = data.table::first(centx), centy = data.table::first(centy)),
+    by = parcel_id
+  ]
+  centroid_sf <- sf::st_as_sf(centroid_dt, coords = c("centx", "centy"), crs = 3310L) |>
+    sf::st_transform(4326L)
 
-  # Load PFT mapping
+  centroid_dt[, `:=`(
+    lon = sf::st_coordinates(centroid_sf)[, 1],
+    lat = sf::st_coordinates(centroid_sf)[, 2]
+  )]
+  coords_lookup <- centroid_dt[, .(parcel_id, lat, lon)]
+
+  # -- load PFT mapping --
   if (is.null(pft_mapping_csv)) {
-    pft_mapping_csv <- file.path(dirname(input_csv), "CARB_PFTs_table.csv")
+    PEcAn.logger::logger.severe("pft_mapping_csv is required")
+  }
+  if (!file.exists(pft_mapping_csv)) {
+    PEcAn.logger::logger.severe("PFT mapping not found: ", pft_mapping_csv)
   }
 
-  pft_map <- NULL
-  if (file.exists(pft_mapping_csv)) {
-    pft_map <- readr::read_csv(pft_mapping_csv, show_col_types = FALSE) |>
-      dplyr::select(class = crop_type, subclass = crop_code, crop_desc, pft_group) |>
-      dplyr::mutate(
-        subclass = as.character(subclass),
-        pft = dplyr::case_when(
-          pft_group == "woody" ~ "woody perennial crop",
-          pft_group == "herbaceous" ~ "annual crop",
-          TRUE ~ NA_character_
-        )
+  PEcAn.logger::logger.info("Loading PFT mapping: ", basename(pft_mapping_csv))
+  pft_map <- readr::read_csv(pft_mapping_csv, show_col_types = FALSE) |>
+    dplyr::select(class = crop_type, subclass = crop_code, crop_desc, pft_group) |>
+    dplyr::mutate(
+      subclass = as.character(subclass),
+      pft = dplyr::case_when(
+        pft_group == "woody" ~ "woody perennial crop",
+        pft_group == "herbaceous" ~ "annual crop",
+        TRUE ~ NA_character_
       )
-  }
+    )
 
-  # Get coordinates (EPSG:3857 -> WGS84)
-  coords <- crops_raw[!is.na(centx) & !is.na(centy),
-    .(centx = first(centx), centy = first(centy)),
-    by = UniqueID
-  ] |>
-    sf::st_as_sf(coords = c("centx", "centy"), crs = 3857) |>
-    sf::st_transform(4326)
+  # -- standardize crop attributes --
+  # parcel_id is the stable cross year identifier (UniqueID varies by year)
+  # SUBCLASS is numeric in v4.1; cast to character for PFT join
+  # NA subclass -> "0" to match class-level fallback rows in PFT table
+  # PCNT 0 means 100% in DWR data (single use field); non-zero = actual %
+  PEcAn.logger::logger.info("Standardizing crop attributes...")
 
-  coords$lon <- sf::st_coordinates(coords)[, 1]
-  coords$lat <- sf::st_coordinates(coords)[, 2]
-  coords <- sf::st_drop_geometry(coords)
-
-  # Standardize attributes
   crops_std <- crops_raw[!is.na(CLASS)] |>
     dplyr::as_tibble() |>
     dplyr::mutate(
-      site_id = as.character(UniqueID),
+      site_id = as.character(parcel_id),
       class = CLASS,
-      subclass = tidyr::replace_na(as.character(SUBCLASS), "0"),
-      pcnt = PCNT,
-      county = dplyr::if_else(COUNTY %in% c("", "****") | is.na(COUNTY), NA_character_, COUNTY)
+      subclass = tidyr::replace_na(as.character(as.integer(SUBCLASS)), "0"),
+      pcnt = dplyr::if_else(PCNT == 0 | is.na(PCNT), 100L, as.integer(PCNT)),
+      county = COUNTY
     ) |>
-    dplyr::left_join(coords, by = "UniqueID") |>
-    dplyr::select(site_id, year, season, lat, lon, county, class, subclass, pcnt)
+    dplyr::left_join(coords_lookup, by = "parcel_id") |>
+    dplyr::select(site_id, parcel_id, year, season, lat, lon, county, class, subclass, pcnt)
 
-  # Apply PFT mapping
-  if (!is.null(pft_map)) {
-    crops_std <- crops_std |>
-      dplyr::left_join(
-        pft_map |> dplyr::select(class, subclass, crop = crop_desc, pft),
-        by = c("class", "subclass")
-      )
-  } else {
-    crops_std$crop <- NA_character_
-    crops_std$pft <- NA_character_
-  }
+  # apply PFT mapping
+  crops_std <- crops_std |>
+    dplyr::left_join(
+      pft_map |> dplyr::select(class, subclass, crop = crop_desc, pft),
+      by = c("class", "subclass")
+    )
 
-  # Site summary
+  PEcAn.logger::logger.info(
+    "Standardized ", format(nrow(crops_std), big.mark = ","), " crop records"
+  )
+
+  # -- site summary (one row per parcel) --
   PEcAn.logger::logger.info("Computing site summaries...")
 
-  # Dominant PFT per site
   dominant_pft <- crops_std |>
     dplyr::filter(!is.na(pft), !is.na(pcnt)) |>
-    dplyr::group_by(site_id, pft) |>
-    dplyr::summarize(total_pcnt = sum(pcnt), .groups = "drop") |>
-    dplyr::group_by(site_id) |>
-    dplyr::slice_max(total_pcnt, n = 1, with_ties = FALSE) |>
+    dplyr::summarize(total_pcnt = sum(pcnt), .by = c(site_id, pft)) |>
+    dplyr::slice_max(total_pcnt, n = 1, with_ties = FALSE, by = site_id) |>
     dplyr::select(site_id, dominant_pft = pft)
 
-  # Dominant crop per site
   dominant_crop <- crops_std |>
     dplyr::filter(!is.na(crop)) |>
     dplyr::count(site_id, crop) |>
-    dplyr::group_by(site_id) |>
-    dplyr::slice_max(n, n = 1, with_ties = FALSE) |>
+    dplyr::slice_max(n, n = 1, with_ties = FALSE, by = site_id) |>
     dplyr::select(site_id, dominant_crop = crop)
 
-  # Site-level stats
   site_summary <- crops_std |>
-    dplyr::group_by(site_id) |>
     dplyr::summarize(
       lat = dplyr::first(na.omit(lat)),
       lon = dplyr::first(na.omit(lon)),
@@ -116,29 +130,47 @@ standardize_cadwr_crops <- function(input_csv,
       year_min = min(year),
       year_max = max(year),
       n_crops = dplyr::n_distinct(crop, na.rm = TRUE),
-      .groups = "drop"
+      .by = site_id
     ) |>
     dplyr::left_join(dominant_pft, by = "site_id") |>
     dplyr::left_join(dominant_crop, by = "site_id")
 
-  PEcAn.logger::logger.info("Created ", nrow(site_summary), " site summaries")
+  PEcAn.logger::logger.info("Created ", format(nrow(site_summary), big.mark = ","), " site summaries")
 
-  # Spatial layer
-  sites_sf <- site_summary |>
-    dplyr::filter(!is.na(lat), !is.na(lon)) |>
-    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE) |>
-    sf::st_transform(3310)
+  # -- build spatial layer from parcels.gpkg --
+  # real polygon geometries instead of centroid points
+  PEcAn.logger::logger.info("Loading parcel polygons: ", basename(parcels_gpkg))
+  parcels <- sf::st_read(parcels_gpkg, quiet = TRUE) |>
+    sf::st_transform(3310L)
 
+  parcels$site_id <- as.character(parcels$parcel_id)
 
+  # join summary attributes to parcel polygons
+  sites_sf <- parcels |>
+    dplyr::select(site_id, geom) |>
+    dplyr::inner_join(site_summary, by = "site_id")
+
+  # compute area from actual geometry
+  sites_sf$area_ha <- as.numeric(sf::st_area(sites_sf)) / 10000
+
+  PEcAn.logger::logger.info(
+    "Spatial layer: ", format(nrow(sites_sf), big.mark = ","),
+    " features in EPSG:3310"
+  )
+
+  # -- write outputs --
   if (write_outputs && !is.null(output_dir)) {
     sites_gpkg <- file.path(output_dir, "cadwr_crops_sites.gpkg")
     if (file.exists(sites_gpkg)) unlink(sites_gpkg)
     sf::st_write(sites_sf, sites_gpkg, quiet = TRUE)
+    PEcAn.logger::logger.info("Wrote: ", sites_gpkg)
 
-    readr::write_csv(crops_std, file.path(output_dir, "cadwr_crops_attributes.csv"))
+    readr::write_csv(
+      crops_std |> dplyr::select(-parcel_id),
+      file.path(output_dir, "cadwr_crops_attributes.csv")
+    )
     readr::write_csv(site_summary, file.path(output_dir, "cadwr_crops_site_summary.csv"))
-
-    PEcAn.logger::logger.info("Outputs: ", output_dir)
+    PEcAn.logger::logger.info("Wrote outputs to: ", output_dir)
   }
 
   invisible(list(
