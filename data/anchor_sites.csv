@@ -1,26 +1,26 @@
 site_id,lat,lon,external_site_id,site_name,crops,pft
-5102791,36.17085,-120.20107,US-ASH,San Joaquin Valley Almond High Salinity,Almond,woody perennial crop
-4209859,36.94728,-120.10533,US-ASL,San Joaquin Valley Almond Low Salinity,Almond,woody perennial crop
-4903170,36.1778,-120.20411,US-ASM,San Joaquin Valley Almond Medium Salinity,Almond,woody perennial crop
-1508725,36.23738,-119.92758,US-PSH,San Joaquin Valley Pistachio High Salinity,Pistachio,woody perennial crop
-1200188,36.82779,-120.13964,US-PSL,San Joaquin Valley Pistachio Low Salinity,Pistachio,woody perennial crop
-1508025,38.09935,-121.50155,US-Bi1,Bouldin Island Alfalfa,Alfalfa,herbaceous crop
-5410257,38.10959,-121.53611,US-Bi2,Bouldin Island Corn,Corn,herbaceous crop
-1309613,32.81366,-115.44298,US-Dea,UC Desert REC Alfalfa,Alfalfa,herbaceous crop
-3917458,38.12878,-121.53546,US-DS1,Staten Corn 1,Corn,herbaceous crop
-3920931,38.12937,-121.5124,US-DS2,Staten Corn 2,Corn,herbaceous crop
-2405817,38.12346,-121.54983,US-DS3,Staten Rice 1,Rice,herbaceous crop
-5005499,36.35596,-119.09228,US-Lin,Lindcove Orchard,Oranges,woody perennial crop
-2400860,39.5771,-121.86224,US-RGB,Butte County Rice Farm,Rice,herbaceous crop
-5413105,37.69947,-121.13911,US-RGF,Stanislaus Forage Farm,Forage crops,herbaceous crop
-5008112,39.59614,-122.02261,US-RGG,Glenn County Rice Farm,Rice,herbaceous crop
-4402686,39.67869,-122.00275,US-RGO,Glenn County Organic Rice,Organic rice,herbaceous crop
-3921035,38.17418,-121.50495,US-Si1,Staten Island Fallow,Fallow,non crop
-3917432,38.1744,-121.51742,US-Si2,Staten Island Flooded,Rice,herbaceous crop
-2409971,38.09222,-121.64036,US-Tw2,Twitchell Corn,Corn,herbaceous crop
-2802696,38.11572,-121.64507,US-Tw3,Twitchell Alfalfa,Alfalfa,herbaceous crop
-402934,38.10812,-121.65528,US-Twt,Twitchell Island,NA,non crop
-1012103,38.54295,-121.87235,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
-1040031,36.34039,-120.10866,west-side,West Side Research Center,Row crops including cotton,herbaceous crop
-1503017,38.50306,-121.97784,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
-3320580,33.96685,-117.34049,ucr-citrus,UC Riverside Citrus Research,Citrus variety collection,woody perennial crop
+26336,36.17114,-120.19718,US-ASH,San Joaquin Valley Almond High Salinity,Almond,woody perennial crop
+159849,36.94729,-120.10535,US-ASL,San Joaquin Valley Almond Low Salinity,Almond,woody perennial crop
+534243,36.1778,-120.20411,US-ASM,San Joaquin Valley Almond Medium Salinity,Almond,woody perennial crop
+169473,36.23738,-119.92755,US-PSH,San Joaquin Valley Pistachio High Salinity,Pistachio,woody perennial crop
+557284,36.82778,-120.13963,US-PSL,San Joaquin Valley Pistachio Low Salinity,Pistachio,woody perennial crop
+328163,38.09936,-121.50154,US-Bi1,Bouldin Island Alfalfa,Alfalfa,herbaceous crop
+565118,38.10958,-121.53613,US-Bi2,Bouldin Island Corn,Corn,herbaceous crop
+522375,32.81281,-115.44207,US-Dea,UC Desert REC Alfalfa,Alfalfa,herbaceous crop
+205678,38.13153,-121.55174,US-DS1,Staten Corn 1,Corn,herbaceous crop
+592578,38.13799,-121.51401,US-DS2,Staten Corn 2,Corn,herbaceous crop
+413887,38.12346,-121.54982,US-DS3,Staten Rice 1,Rice,herbaceous crop
+590334,36.35733,-119.09283,US-Lin,Lindcove Orchard,Oranges,woody perennial crop
+440393,39.57712,-121.86221,US-RGB,Butte County Rice Farm,Rice,herbaceous crop
+420343,37.69949,-121.1391,US-RGF,Stanislaus Forage Farm,Forage crops,herbaceous crop
+132390,39.59614,-122.0226,US-RGG,Glenn County Rice Farm,Rice,herbaceous crop
+218534,38.1741,-121.50302,US-Si1,Staten Island Fallow,Fallow,non crop
+52519,38.17441,-121.51733,US-Si2,Staten Island Flooded,Rice,herbaceous crop
+248496,38.11573,-121.64507,US-Tw3,Twitchell Alfalfa,Alfalfa,herbaceous crop
+296871,38.54294,-121.87237,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
+16073,38.50244,-121.97646,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
+415399,33.96684,-117.34049,ucr-citrus,UC Riverside Citrus Research,Citrus variety collection,woody perennial crop
+535358,39.68222,-122.0026,US-RGO,Glenn County Organic Rice,Organic rice,herbaceous crop
+589581,38.09222,-121.64036,US-Tw2,Twitchell Corn,Corn,herbaceous crop
+590073,38.10809,-121.65527,US-Twt,Twitchell Island,NA,non crop
+452888,36.34204,-120.1055,west-side,West Side Research Center,Row crops including cotton,herbaceous crop
