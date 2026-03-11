@@ -13,7 +13,7 @@ PRODUCTION <- args$production
 
 # Manual override for interactive sessions
 if (rlang::is_interactive()) {
-  PRODUCTION <- FALSE  # change this (just for testing)
+  PRODUCTION <- TRUE
 }
 
 ## Set parallel processing options
@@ -50,7 +50,6 @@ management_scenarios <- c(
   "stacked"
 )
 
-model_outdir <- file.path(pecan_outdir, "out")
 # override paths if using Phase 3
 if (USE_PHASE_3_SCENARIOS) {
   pecan_outdir <- phase_3_outdir
