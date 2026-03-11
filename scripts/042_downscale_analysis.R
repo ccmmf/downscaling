@@ -222,12 +222,12 @@ for (row in seq_len(nrow(spec_table))) {
   yl <- c(floor(min(y_range)), ceiling(max(y_range)))
 
   randomForest::partialPlot(rf,
-    pred.data = design_covariates, x.var = top_predictors[1], ylim = yl,
+    pred.data = design_covariates, x.var = top_predictors[1],
     main = paste("Partial Dependence -", top_predictors[1]),
     xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
   )
   randomForest::partialPlot(rf,
-    pred.data = design_covariates, x.var = top_predictors[2], ylim = yl,
+    pred.data = design_covariates, x.var = top_predictors[2],
     main = paste("Partial Dependence -", top_predictors[2]),
     xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
   )
