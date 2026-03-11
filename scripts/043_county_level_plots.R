@@ -21,7 +21,7 @@ scenarios <- unique(county_summaries$scenario)
 PEcAn.logger::logger.info("Scenarios to plot: ", paste(scenarios, collapse = ", "))
 
 # ----------County-level STOCK maps----------
-# NOTE: Per CARB request, county-level density choropleth maps are no longer 
+# NOTE: Per CARB request, county-level density choropleth maps are no longer
 # produced. Density is shown at field level instead.
 
 co_stocks <- county_summaries |>
@@ -174,7 +174,7 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
     dplyr::select(site_id, ensemble, model_output, county, area_ha_woody = area_ha, total_c_Mg_woody = total_c_Mg)
   
   # Check for duplicates
- mix_dups <- mix_sel |>
+  mix_dups <- mix_sel |>
     dplyr::count(site_id, ensemble, model_output, county) |>
     dplyr::filter(n > 1)
   wood_dups <- wood_sel |>
