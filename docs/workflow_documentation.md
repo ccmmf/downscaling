@@ -324,7 +324,7 @@ Builds Random Forest models to predict carbon pools for all fields; aggregates t
 - `county_<scenario>_<pft>_<pool>_carbon_stock.webp`: County-level stock maps per scenario
 - `field_<scenario>_<pft>_<pool>_carbon_density.webp`: Field-level density point maps per scenario
 - `county_diff_woody_plus_annual_minus_woody_<pool>_carbon_stock.webp`: Difference maps (mixed - woody) - stock only
-- `county_delta_<scenario>_<pft>_<pool>_carbon_stock.webp`: Start→end delta stock maps when available
+- `county_delta_<scenario>_<pft>_<pool>_carbon_stock.webp`: Start-to-end delta stock maps when available
 
 ## Running on BU Cluster
 
