@@ -82,7 +82,7 @@ ggsave_optimized <- function(
       if (isTRUE(png_quantize)) {
         img <- magick::image_read(filename)
         img <- magick::image_quantize(img, max = png_max)
-        magick::image_write(img, path = filename, format = "png", compression_level = 9)
+        magick::image_write(img, path = filename, format = "png")
       }
     }
     return(invisible(filename))

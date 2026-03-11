@@ -72,6 +72,11 @@ raw_data_dir <- file.path(ccmmf_dir, "data_raw")
 cache_dir <- file.path(ccmmf_dir, "cache")
 model_outdir <- file.path(pecan_outdir, "out")
 
+# Phase 3 cache lives alongside Phase 3 model output
+if (USE_PHASE_3_SCENARIOS) {
+  cache_dir <- file.path(phase_3_outdir, "cache")
+}
+
 # Misc
 set.seed(42)
 ca_albers_crs <- "EPSG:3310"
