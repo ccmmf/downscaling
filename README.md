@@ -59,3 +59,36 @@ Rscript scripts/041_aggregate_to_county.R
 Rscript scripts/042_downscale_analysis.R
 Rscript scripts/043_county_level_plots.R
 ```
+
+## Unit Conventions
+
+### Densities (per area)
+
+- **Stock density**
+  - TotSoilCarb, AGB: Mg C ha⁻¹
+
+- **Flux / change density**
+  - ΔSOC: Mg C ha⁻¹ yr⁻¹
+  - CH₄, N₂O: kg gas ha⁻¹ yr⁻¹
+
+### Area-aggregated totals
+
+- **Stock totals**
+  - TotSoilCarb, AGB: Gg C (or Tg C statewide)
+
+- **Flux / change totals**
+  - ΔSOC: Gg C yr⁻¹
+  - CH₄, N₂O: Gg gas yr⁻¹
+
+### Cross-source comparability
+
+- Convert CH₄, N₂O, and ΔSOC to CO₂e
+  - Sub-state: kt CO₂e yr⁻¹
+  - Statewide: MMT CO₂e yr⁻¹
+
+**Notes**
+- SOC and biomass are reported in units of C
+- CH₄ and N₂O are reported as mass of the gas (not C or N)
+- Convert ΔSOC to CO₂e using 44/12
+- Choose units so typical values fall in a readable range (~1–100)
+- State the GWP basis used for CH₄ and N₂O (CARB uses AR4)
