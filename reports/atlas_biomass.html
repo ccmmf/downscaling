@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
+
+<title>CCMMF Downscaling - Biomass Atlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/atlas_model_drivers.html" rel="next">
+<link href="../reports/atlas_ghg_emissions.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Biomass Atlas</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">CCMMF Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link active">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#county-level-aboveground-biomass" id="toc-county-level-aboveground-biomass" class="nav-link active" data-scroll-target="#county-level-aboveground-biomass">County-Level Aboveground Biomass</a>
+  <ul class="collapse">
+  <li><a href="#mixed-comparison-baseline-scenario-differences" id="toc-mixed-comparison-baseline-scenario-differences" class="nav-link" data-scroll-target="#mixed-comparison-baseline-scenario-differences">Mixed Comparison: Baseline + Scenario Differences</a></li>
+  <li><a href="#all-scenarios-side-by-side" id="toc-all-scenarios-side-by-side" class="nav-link" data-scroll-target="#all-scenarios-side-by-side">All Scenarios Side-by-Side</a></li>
+  <li><a href="#individual-agb-scenarios" id="toc-individual-agb-scenarios" class="nav-link" data-scroll-target="#individual-agb-scenarios">Individual AGB Scenarios</a></li>
+  <li><a href="#individual-agb-difference-maps" id="toc-individual-agb-difference-maps" class="nav-link" data-scroll-target="#individual-agb-difference-maps">Individual AGB Difference Maps</a></li>
+  </ul></li>
+  <li><a href="#field-level-agb-density" id="toc-field-level-agb-density" class="nav-link" data-scroll-target="#field-level-agb-density">Field-Level AGB Density</a>
+  <ul class="collapse">
+  <li><a href="#all-scenarios" id="toc-all-scenarios" class="nav-link" data-scroll-target="#all-scenarios">All Scenarios</a></li>
+  <li><a href="#individual-field-agb-maps" id="toc-individual-field-agb-maps" class="nav-link" data-scroll-target="#individual-field-agb-maps">Individual Field AGB Maps</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Biomass Atlas</h1>
+<p class="subtitle lead">Aboveground Biomass Under Management Scenarios</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akash B V </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Aboveground biomass (AGB) represents the total mass of living plant material above the soil surface – stems, leaves, and reproductive structures. For annual crops, AGB is a snapshot of standing biomass at the modeled time point. Because these are harvested crops, end-of-season AGB values are typically small. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Context for AGB values
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>AGB in annual croplands reflects biomass remaining after harvest. Statewide totals are very small (on the order of hundreds of Mg total) compared to soil carbon pools (~114 Tg C). Differences between scenarios in AGB are ecologically real but small in absolute magnitude. AGB is most useful as an indicator of crop productivity differences and residue availability for soil carbon cycling.</p>
+</div>
+</div>
+<section id="county-level-aboveground-biomass" class="level2">
+<h2 class="anchored" data-anchor-id="county-level-aboveground-biomass">County-Level Aboveground Biomass</h2>
+<section id="mixed-comparison-baseline-scenario-differences" class="level3">
+<h3 class="anchored" data-anchor-id="mixed-comparison-baseline-scenario-differences">Mixed Comparison: Baseline + Scenario Differences</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp" class="lightbox" data-gallery="agb-mixed" title="Baseline absolute + scenario differences for AGB"><img src="../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Mixed comparison showing baseline AGB alongside scenario differences"></a></p>
+<p></p><figcaption class="figure-caption">Baseline absolute + scenario differences for AGB</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="all-scenarios-side-by-side" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side">All Scenarios Side-by-Side</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">All Scenarios (Absolute)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_county_annual_crop_AGB_stock_comparison.webp" class="lightbox" data-gallery="agb-county" title="Faceted county AGB – all scenarios"><img src="../figures/facet_county_annual_crop_AGB_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted county-level AGB maps for all scenarios"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county AGB – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_county_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-county-diff" title="Faceted county AGB differences"><img src="../figures/facet_diff_county_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted county-level AGB difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county AGB differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="individual-agb-scenarios" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-agb-scenarios">Individual AGB Scenarios</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-6" role="tab" aria-controls="tabset-2-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_baseline_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Baseline"><img src="../figures/county_baseline_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_compost_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Compost"><img src="../figures/county_compost_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Compost county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Compost</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_reduced_till_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Reduced Till"><img src="../figures/county_reduced_till_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Reduced Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_zero_till_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Zero Till"><img src="../figures/county_zero_till_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Zero Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_reduced_irrig_drip_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Drip Irrigation"><img src="../figures/county_reduced_irrig_drip_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Drip Irrigation</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-2-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_stacked_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Stacked"><img src="../figures/county_stacked_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked county total AGB map"></a></p>
+<p></p><figcaption class="figure-caption">County AGB – Stacked</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="individual-agb-difference-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-agb-difference-maps">Individual AGB Difference Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_compost_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline AGB difference map"></a></p>
+<p></p><figcaption class="figure-caption">AGB difference – Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_till_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline AGB difference map"></a></p>
+<p></p><figcaption class="figure-caption">AGB difference – Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_zero_till_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline AGB difference map"></a></p>
+<p></p><figcaption class="figure-caption">AGB difference – Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Drip Irrig. vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline AGB difference map"></a></p>
+<p></p><figcaption class="figure-caption">AGB difference – Drip Irrig. vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_stacked_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline AGB difference map"></a></p>
+<p></p><figcaption class="figure-caption">AGB difference – Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="field-level-agb-density" class="level2">
+<h2 class="anchored" data-anchor-id="field-level-agb-density">Field-Level AGB Density</h2>
+<section id="all-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios">All Scenarios</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">All Scenarios (Density)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_field_annual_crop_AGB_density_comparison.webp" class="lightbox" data-gallery="agb-field" title="Faceted field AGB density – all scenarios"><img src="../figures/facet_field_annual_crop_AGB_density_comparison.webp" class="img-fluid figure-img" alt="Faceted field-level AGB density maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field AGB density – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_field_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-field-diff" title="Faceted field AGB differences"><img src="../figures/facet_diff_field_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level AGB difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field AGB differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="individual-field-agb-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-field-agb-maps">Individual Field AGB Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-4" role="tab" aria-controls="tabset-5-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-5" role="tab" aria-controls="tabset-5-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-6" role="tab" aria-controls="tabset-5-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_baseline_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Baseline"><img src="../figures/field_baseline_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_compost_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Compost"><img src="../figures/field_compost_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Compost</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_reduced_till_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Reduced Till"><img src="../figures/field_reduced_till_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Reduced Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_zero_till_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Zero Till"><img src="../figures/field_zero_till_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Zero Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-5-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_reduced_irrig_drip_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Drip Irrigation"><img src="../figures/field_reduced_irrig_drip_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Drip Irrigation</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-5-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_stacked_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Stacked"><img src="../figures/field_stacked_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level AGB density map"></a></p>
+<p></p><figcaption class="figure-caption">Field AGB density – Stacked</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GHG Emissions (N₂O &amp; CH₄)</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/atlas_model_drivers.html" class="pagination-link">
+        <span class="nav-page-text">Model Drivers</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","closeEffect":"zoom","loop":true,"descPosition":"bottom"});</script>
+
+
+
+</body></html>

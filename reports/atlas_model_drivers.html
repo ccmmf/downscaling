@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
+
+<title>CCMMF Downscaling - Model Drivers</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/downscaling_results.html" rel="next">
+<link href="../reports/atlas_biomass.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Model Drivers</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">CCMMF Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link active">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#model-performance-overview" id="toc-model-performance-overview" class="nav-link active" data-scroll-target="#model-performance-overview">Model Performance Overview</a></li>
+  <li><a href="#environmental-predictors" id="toc-environmental-predictors" class="nav-link" data-scroll-target="#environmental-predictors">Environmental Predictors</a></li>
+  <li><a href="#ale-and-ice-diagnostic-plots" id="toc-ale-and-ice-diagnostic-plots" class="nav-link" data-scroll-target="#ale-and-ice-diagnostic-plots">ALE and ICE Diagnostic Plots</a></li>
+  <li><a href="#total-soil-carbon-totsoilcarb" id="toc-total-soil-carbon-totsoilcarb" class="nav-link" data-scroll-target="#total-soil-carbon-totsoilcarb">Total Soil Carbon (TotSoilCarb)</a></li>
+  <li><a href="#aboveground-biomass-agb" id="toc-aboveground-biomass-agb" class="nav-link" data-scroll-target="#aboveground-biomass-agb">Aboveground Biomass (AGB)</a></li>
+  <li><a href="#n2o-flux" id="toc-n2o-flux" class="nav-link" data-scroll-target="#n2o-flux">N<sub>2</sub>O Flux</a></li>
+  <li><a href="#ch4-flux" id="toc-ch4-flux" class="nav-link" data-scroll-target="#ch4-flux">CH<sub>4</sub> Flux</a></li>
+  <li><a href="#why-these-drivers-matter" id="toc-why-these-drivers-matter" class="nav-link" data-scroll-target="#why-these-drivers-matter">Why These Drivers Matter</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Model Drivers</h1>
+<p class="subtitle lead">Environmental Predictors Driving Spatial Variation in Downscaled Predictions</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akash B V </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at ~200 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal <strong>which environmental factors drive the spatial variation</strong> seen in the maps. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<section id="model-performance-overview" class="level2">
+<h2 class="anchored" data-anchor-id="model-performance-overview">Model Performance Overview</h2>
+<p>Before interpreting predictor effects, it is important to understand how well each Random Forest model captures spatial variation. Out-of-bag (OOB) R² measures predictive accuracy on held-out training sites.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4"></p>
+<p></p><figcaption class="figure-caption">Variable importance across all four response variables. Importance is measured as the median increase in MSE when each predictor is permuted, with IQR across 20 ensemble members.</figcaption><p></p>
+</figure>
+</div>
+<table class="table">
+<caption>Downscaling model performance by response variable. R² is the median across 20 ensemble members.</caption>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Median OOB R²</th>
+<th>IQR</th>
+<th>Top Predictors</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N<sub>2</sub>O Flux</td>
+<td>0.52</td>
+<td>0.38–0.72</td>
+<td>vapr, temp</td>
+<td>Best spatial model</td>
+</tr>
+<tr class="even">
+<td>TotSoilCarb</td>
+<td>0.34</td>
+<td>0.26–0.41</td>
+<td>ocd, vapr</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>AGB</td>
+<td>0.09</td>
+<td>−0.04–0.52</td>
+<td>precip, vapr</td>
+<td>Poor – high variance across ensembles</td>
+</tr>
+<tr class="even">
+<td>CH<sub>4</sub> Flux</td>
+<td>−0.15</td>
+<td>−0.17–−0.13</td>
+<td><em>none meaningful</em></td>
+<td>No spatial signal (near-zero baseline)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpreting CH<sub>4</sub> Model Quality
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes in SIPNET because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. With essentially no spatial variation in the training data, the Random Forest has no signal to learn – the negative R² confirms the model performs worse than a constant mean. The CH<sub>4</sub> ALE/ICE plots below reflect noise, not ecology. See the <a href="../reports/variable_importance.html">Model Evaluation</a> page for full diagnostics.</p>
+</div>
+</div>
+</section>
+<section id="environmental-predictors" class="level2">
+<h2 class="anchored" data-anchor-id="environmental-predictors">Environmental Predictors</h2>
+<p>The downscaling model uses eight predictors (seven environmental covariates plus field area):</p>
+<table class="table">
+<caption>Covariates used in the Random Forest downscaling model.</caption>
+<colgroup>
+<col style="width: 18%">
+<col style="width: 23%">
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Source</th>
+<th>Units</th>
+<th>Ecological Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>clay</code></td>
+<td>Clay content</td>
+<td>SoilGrids</td>
+<td>%</td>
+<td>Soil texture controls water holding capacity and physical protection of organic matter</td>
+</tr>
+<tr class="even">
+<td><code>ocd</code></td>
+<td>Organic carbon density</td>
+<td>SoilGrids</td>
+<td>g/kg</td>
+<td>Existing soil organic matter – both a predictor and correlated with the output</td>
+</tr>
+<tr class="odd">
+<td><code>twi</code></td>
+<td>Topographic wetness index</td>
+<td>SRTM-derived</td>
+<td>-</td>
+<td>Topographic position controls water accumulation and drainage</td>
+</tr>
+<tr class="even">
+<td><code>temp</code></td>
+<td>Mean annual temperature</td>
+<td>ERA5</td>
+<td>°C</td>
+<td>Temperature drives decomposition rates and plant productivity</td>
+</tr>
+<tr class="odd">
+<td><code>precip</code></td>
+<td>Mean annual precipitation</td>
+<td>ERA5</td>
+<td>mm/yr</td>
+<td>Moisture availability for plant growth and microbial activity</td>
+</tr>
+<tr class="even">
+<td><code>srad</code></td>
+<td>Solar radiation</td>
+<td>ERA5</td>
+<td>W/m²</td>
+<td>Energy input for photosynthesis</td>
+</tr>
+<tr class="odd">
+<td><code>vapr</code></td>
+<td>Vapor pressure deficit</td>
+<td>ERA5</td>
+<td>kPa</td>
+<td>Atmospheric moisture demand – controls plant water stress</td>
+</tr>
+<tr class="even">
+<td><code>area_ha</code></td>
+<td>Field area</td>
+<td>CADWR</td>
+<td>ha</td>
+<td>Structural covariate capturing field-size effects on model predictions</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ale-and-ice-diagnostic-plots" class="level2">
+<h2 class="anchored" data-anchor-id="ale-and-ice-diagnostic-plots">ALE and ICE Diagnostic Plots</h2>
+<p><strong>ALE (Accumulated Local Effects)</strong> plots show the average marginal effect of each predictor on the model output across its range. Steeper slopes indicate stronger influence.</p>
+<p><strong>ICE (Individual Conditional Expectation)</strong> plots show how <strong>each individual anchor site</strong> responds to changes in a predictor while holding all others constant. When ICE lines diverge, it indicates interaction effects – the predictor’s influence depends on other site characteristics.</p>
+<hr>
+</section>
+<section id="total-soil-carbon-totsoilcarb" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="total-soil-carbon-totsoilcarb">Total Soil Carbon (TotSoilCarb)</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="lightbox" title="TotSoilCarb ALE – Predictor 1" data-gallery="tsc-ale"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of soil carbon"></a></p>
+<p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="lightbox" title="TotSoilCarb ALE – Predictor 2" data-gallery="tsc-ale"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of soil carbon"></a></p>
+<p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Higher organic carbon density (ocd) –&gt; higher soil carbon: sites with more existing organic matter retain more carbon through the simulation. Vapor pressure (vapr) shows a negative relationship – higher vapr (warmer, more humid conditions) correlates with lower soil carbon, consistent with faster decomposition at higher temperatures (vapr and temp are highly correlated, r = 0.86).</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="lightbox" title="TotSoilCarb ICE – Predictor 1" data-gallery="tsc-ice"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of soil carbon"></a></p>
+<p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="lightbox" title="TotSoilCarb ICE – Predictor 2" data-gallery="tsc-ice"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of soil carbon"></a></p>
+<p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>ICE lines that move broadly in parallel indicate the predictor has a <strong>consistent effect</strong> across different site types. Diverging lines would indicate interactions with other environmental gradients.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="aboveground-biomass-agb" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="aboveground-biomass-agb">Aboveground Biomass (AGB)</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_agb_ALE_predictor1.svg" class="lightbox" title="AGB ALE – Predictor 1" data-gallery="agb-ale"><img src="../figures/annual_crop_agb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of aboveground biomass"></a></p>
+<p></p><figcaption class="figure-caption">AGB ALE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_agb_ALE_predictor2.svg" class="lightbox" title="AGB ALE – Predictor 2" data-gallery="agb-ale"><img src="../figures/annual_crop_agb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of aboveground biomass"></a></p>
+<p></p><figcaption class="figure-caption">AGB ALE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Precipitation (precip) and vapor pressure deficit (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Higher VPD –&gt; more plant water stress –&gt; lower biomass. The wide IQR (−0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_agb_ICE_predictor1.svg" class="lightbox" title="AGB ICE – Predictor 1" data-gallery="agb-ice"><img src="../figures/annual_crop_agb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of AGB"></a></p>
+<p></p><figcaption class="figure-caption">AGB ICE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_agb_ICE_predictor2.svg" class="lightbox" title="AGB ICE – Predictor 2" data-gallery="agb-ice"><img src="../figures/annual_crop_agb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of AGB"></a></p>
+<p></p><figcaption class="figure-caption">AGB ICE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="n2o-flux" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="n2o-flux">N<sub>2</sub>O Flux</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="lightbox" title="N2O ALE – Predictor 1" data-gallery="n2o-ale"><img src="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of N2O flux"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="lightbox" title="N2O ALE – Predictor 2" data-gallery="n2o-ale"><img src="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of N2O flux"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Vapor pressure deficit (vapr) and mean annual temperature (temp) are the top predictors of spatial variation in N<sub>2</sub>O flux (OOB R² = 0.52, our best spatial model). Higher vapr and temperature are associated with greater N<sub>2</sub>O emissions, consistent with warmer conditions promoting nitrification and denitrification. These two predictors are highly correlated (r = 0.86), reflecting California’s north–south climate gradient.</p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="lightbox" title="N2O ICE – Predictor 1" data-gallery="n2o-ice"><img src="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of N2O"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="lightbox" title="N2O ICE – Predictor 2" data-gallery="n2o-ice"><img src="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of N2O"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="ch4-flux" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="ch4-flux">CH<sub>4</sub> Flux</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="lightbox" title="CH4 ALE – Predictor 1" data-gallery="ch4-ale"><img src="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of CH4 flux"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="lightbox" title="CH4 ALE – Predictor 2" data-gallery="ch4-ale"><img src="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of CH4 flux"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Low Model Quality
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The CH<sub>4</sub> downscaling model has negative OOB R² (−0.15), indicating it has no predictive skill for spatial variation. Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes (statewide total ≈ 4,700 kg CH<sub>4</sub>/yr) because methanogenesis requires sustained soil saturation that does not occur under standard irrigation, leaving the Random Forest with no spatial signal to learn. The top “predictors” (area_ha, clay) carry no ecological meaning here – they reflect noise fitting. Interpret these plots accordingly.</p>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="lightbox" title="CH4 ICE – Predictor 1" data-gallery="ch4-ice"><img src="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of CH4"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 1</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<figure class="figure">
+<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="lightbox" title="CH4 ICE – Predictor 2" data-gallery="ch4-ice"><img src="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of CH4"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 2</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-these-drivers-matter" class="level2">
+<h2 class="anchored" data-anchor-id="why-these-drivers-matter">Why These Drivers Matter</h2>
+<p>Understanding what drives spatial variation is essential for targeting conservation practices:</p>
+<ol type="1">
+<li><strong>If soil type dominates</strong> (clay, ocd) – practice benefits are site-specific, and adoption should prioritize fields with responsive soil types.</li>
+<li><strong>If climate dominates</strong> (temp, vapr, precip) – practice effects vary with regional climate, suggesting geographic targeting based on climate zones.</li>
+<li><strong>If the practice effect is uniform</strong> regardless of drivers – broad-scale adoption is efficient because benefits are not geographically restricted.</li>
+</ol>
+<p>The field-level difference maps in the <a href="../reports/atlas_soil_carbon.html">Soil Carbon Atlas</a> and <a href="../reports/atlas_ghg_emissions.html">GHG Emissions Atlas</a> show which pattern applies for each variable and scenario.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/atlas_biomass.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aboveground Biomass</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/downscaling_results.html" class="pagination-link">
+        <span class="nav-page-text">Downscaling Results</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":true,"selector":".lightbox","descPosition":"bottom"});</script>
+
+
+
+</body></html>

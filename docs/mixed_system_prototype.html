@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-02-18">
+<meta name="dcterms.date" content="2026-04-06">
 
-<title>Downscaling - Mixed-System Prototype (Two-PFT Aggregation)</title>
+<title>CCMMF Downscaling - Mixed-System Prototype (Two-PFT Aggregation)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,6 +32,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../docs/references.html" rel="next">
+<link href="../docs/workflow_documentation.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -41,6 +43,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -64,7 +69,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
 <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../site_libs/datatables-binding-0.34.0/datatables.js"></script>
 <script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
@@ -97,7 +102,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">Downscaling</a> 
+      <a href="../">CCMMF Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
@@ -118,12 +123,47 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Reports</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
@@ -143,12 +183,12 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Docs</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
@@ -230,7 +270,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 18, 2026</p>
+      <p class="date">April 6, 2026</p>
     </div>
   </div>
   
@@ -454,10 +494,10 @@ X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annu
 <h3 class="anchored" data-anchor-id="run-configuration">Run Configuration</h3>
 <p>These runs use SIPNET grass and temperate deciduous PFT parameterizations to represent annual and perennial woody crops, respectively.</p>
 <p>These simulations were run from 2016 through 2024 across 10 sites, with an ensemble size of 20.</p>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/setup_cd3345636edd8f69c53a1f9622a60d84">
 
 </div>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/plot-helpers_1b00ef38666cdc802f262c89fb567cce">
 
 </div>
 </section>
@@ -465,7 +505,7 @@ X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annu
 <section id="mixed-system-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="mixed-system-dataset">Mixed-system dataset</h2>
 <p>The <code>combined_ensemble_output.csv</code> file contains the combined outputs for different scenarios (discrete, overlap).</p>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/data-prep_60a8df1cda67b4689e75f9730beb6321">
 
 </div>
 </section>
@@ -486,7 +526,7 @@ X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annu
 </div>
 <p><strong>Selecting Representative Sites</strong></p>
 <p>Next we select representative sites based on their productivity. We use AGB in the 100% woody scenario as an indicator of productivity. We select sites that are near the 15th, 50th, and 85th percentiles of AGB and categorize them as low, medium, and high productivity.</p>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/select-representative-sites_0629f4a8c8f842df5cadcd5aad3b441f">
 
 </div>
 <section id="summary-statistics" class="level3">
@@ -495,7 +535,7 @@ X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annu
 <!-- 
 TODO add initial conditions to table
 -->
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/summary-table_be88911138b567b31d6624eaab4ab040">
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <caption>Summary statistics (mean and standard deviation) for carbon pools by mixture type.</caption>
@@ -559,18 +599,26 @@ TODO: compare difference from t0 and b/w woody and annual in time series plots
 If annual monoculture SOC < woody monoculture SOC, then should addition of herbacious cover reduce SOC relative to woody monoculture?
 --></li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/carbon-pools_9ac559a3a52f25501c6a6949e8e6bb05">
 <div class="cell-output-display">
-<p><img src="mixed_system_prototype_files/figure-html/carbon-pools-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="mixed_system_prototype_files/figure-html/carbon-pools-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="mixed_system_prototype_files/figure-html/carbon-pools-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
 <section id="effect-size-final-year-agb-and-soc-compared-to-annual-monoculture" class="level3">
 <h3 class="anchored" data-anchor-id="effect-size-final-year-agb-and-soc-compared-to-annual-monoculture">Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)</h3>
 <p>These plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Because we are considering the healthy soils practice of adding a woody component like a hedgerow to an annual cropping system, we use annual monoculture as the point of comparison.</p>
-<div class="cell">
+<div class="cell" data-hash="mixed_system_prototype_cache/html/effect-size-probabilistic_fdad5fed01771179013914858794a53b">
 <div class="cell-output-display">
-<p><img src="mixed_system_prototype_files/figure-html/effect-size-probabilistic-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="mixed_system_prototype_files/figure-html/effect-size-probabilistic-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="mixed_system_prototype_files/figure-html/effect-size-probabilistic-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -581,13 +629,29 @@ If annual monoculture SOC < woody monoculture SOC, then should addition of herba
 <p>These maps are generated from the downscaled outputs that are presented in the <a href="../reports/downscaling_results.html#results">Downscaling Results</a> page.</p>
 <section id="change-in-carbon-stocks-tg" class="level3">
 <h3 class="anchored" data-anchor-id="change-in-carbon-stocks-tg">Change in Carbon Stocks (Tg):</h3>
-<p><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp" class="img-fluid"></p>
-<p><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp" class="img-fluid"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 </section>
 <section id="change-in-carbon-density-mgha" class="level3">
 <h3 class="anchored" data-anchor-id="change-in-carbon-density-mgha">Change in Carbon Density (Mg/ha):</h3>
-<p><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp" class="img-fluid"></p>
-<p><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp" class="img-fluid"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
 </section>
 </section>
 <section id="other-approaches-considered" class="level2">
@@ -632,7 +696,7 @@ Except that the lines are wiggly
 ### Time Series (All Sites)
 
 
-::: {.cell}
+::: {.cell hash='mixed_system_prototype_cache/html/unnamed-chunk-1_6e3bf6c021525a834f039591b2b6231e'}
 ::: {.cell-output-display}
 ![](mixed_system_prototype_files/figure-html/unnamed-chunk-1-1.png){width=672}
 :::
@@ -650,7 +714,7 @@ Here we focus on representative sites for each mixture.
 We selected 3 sites that represent low, medium, and high productivity (AGB) defined as the 15th, 50th, and 85th percentiles of AGB.
 
 
-::: {.cell}
+::: {.cell hash='mixed_system_prototype_cache/html/unnamed-chunk-2_b3557e47fc0b890c1eb40e49a7431024'}
 ::: {.cell-output-display}
 ![](mixed_system_prototype_files/figure-html/unnamed-chunk-2-1.png){width=672}
 :::
@@ -892,7 +956,20 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../docs/workflow_documentation.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Technical Documentation</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":true,"closeEffect":"zoom"});</script>
 
 
 

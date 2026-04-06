@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-02-18">
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
 
-<title>Downscaling - Downscaling Model Evaluation</title>
+<title>CCMMF Downscaling - Downscaling Model Evaluation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,6 +32,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../docs/workflow_documentation.html" rel="next">
+<link href="../reports/design_points_analysis.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -83,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">Downscaling</a> 
+      <a href="../">CCMMF Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
@@ -104,12 +106,47 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Reports</a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
@@ -129,12 +166,12 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Docs</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
@@ -161,11 +198,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#variable-importance-and-partial-dependence-plots-pdp" id="toc-variable-importance-and-partial-dependence-plots-pdp" class="nav-link active" data-scroll-target="#variable-importance-and-partial-dependence-plots-pdp">Variable importance and Partial Dependence Plots (PDP)</a>
-  <ul class="collapse">
-  <li><a href="#agb" id="toc-agb" class="nav-link" data-scroll-target="#agb">AGB</a></li>
-  <li><a href="#soc-totsoilcarb" id="toc-soc-totsoilcarb" class="nav-link" data-scroll-target="#soc-totsoilcarb">SOC (TotSoilCarb)</a></li>
-  </ul></li>
+  <li><a href="#out-of-bag-performance" id="toc-out-of-bag-performance" class="nav-link active" data-scroll-target="#out-of-bag-performance">Out-of-Bag Performance</a></li>
+  <li><a href="#variable-importance" id="toc-variable-importance" class="nav-link" data-scroll-target="#variable-importance">Variable Importance</a></li>
+  <li><a href="#predictor-collinearity" id="toc-predictor-collinearity" class="nav-link" data-scroll-target="#predictor-collinearity">Predictor Collinearity</a></li>
   </ul>
 </nav>
     </div>
@@ -175,6 +210,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">Downscaling Model Evaluation</h1>
+<p class="subtitle lead">Out-of-Bag Performance, Variable Importance, and Predictor Collinearity</p>
 </div>
 
 
@@ -184,14 +220,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>David LeBauer </p>
+             <p>Akash B V </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 18, 2026</p>
+      <p class="date">April 6, 2026</p>
     </div>
   </div>
   
@@ -201,24 +237,196 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="variable-importance-and-partial-dependence-plots-pdp" class="level1">
-<h1>Variable importance and Partial Dependence Plots (PDP)</h1>
-<p>This page reports variable-importance and partial dependence plots for the Random Forest models used to downscale AGB and SOC.</p>
-<p>In the first plot, x axis is the importance of each variable, measured as the increase in mean squared error (MSE) when that variable is permuted (i.e., its values are randomly shuffled). Higher values indicate that the variable is more important for accurate predictions.</p>
-<p>The next two plots show the partial dependence of the response variable (AGB or SOC) on the top two most important predictors, holding all other predictors at their average values. (= marginal effect of each predictor on the response variable). Here, the y axis is normalized.</p>
-<section id="agb" class="level3">
-<h3 class="anchored" data-anchor-id="agb">AGB</h3>
-<p>Here we see that vapor pressure deficit (vapr) is the most important variable, the second most important variable is precipitation (precip). Temperature (temp) and solar radiation (srad) are also important.</p>
-<p>PDPs show negative trend - increasing vapr leads to lower AGB. While increasing precip leads to higher AGB up to a point, after which there is a decline before levelling off.</p>
-<p><img src="../figures/agb_importance.png" class="img-fluid" style="width:100.0%"></p>
+<p>This page summarizes model diagnostics for the Random Forest downscaling models. For ecological interpretation of predictor effects (ALE/ICE plots), see the <a href="../reports/atlas_model_drivers.html">Model Drivers</a> page.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<section id="out-of-bag-performance" class="level2">
+<h2 class="anchored" data-anchor-id="out-of-bag-performance">Out-of-Bag Performance</h2>
+<p>Out-of-bag (OOB) R² measures how well each Random Forest predicts held-out training sites. It is computed separately for each of 20 ensemble members; the table shows the median and interquartile range.</p>
+<table class="table">
+<caption>Downscaling model performance summary. Values from 20-member ensemble Random Forests trained at ~200 design point sites.</caption>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Median OOB R²</th>
+<th>IQR</th>
+<th>Top 2 Predictors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>N<sub>2</sub>O Flux</td>
+<td>0.52</td>
+<td>0.38–0.72</td>
+<td>vapr, temp</td>
+</tr>
+<tr class="even">
+<td>TotSoilCarb</td>
+<td>0.34</td>
+<td>0.26–0.41</td>
+<td>ocd, vapr</td>
+</tr>
+<tr class="odd">
+<td>AGB</td>
+<td>0.09</td>
+<td>−0.04–0.52</td>
+<td>precip, vapr</td>
+</tr>
+<tr class="even">
+<td>CH<sub>4</sub> Flux</td>
+<td>−0.15</td>
+<td>−0.17–−0.13</td>
+<td><em>none meaningful</em></td>
+</tr>
+</tbody>
+</table>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+CH<sub>4</sub> Model Has No Predictive Skill
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Non-flooded annual croplands produce negligible CH<sub>4</sub> in SIPNET because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. The statewide baseline is ≈ 4,700 kg CH<sub>4</sub>/yr – effectively zero. With no spatial variation in the training data, the Random Forest cannot distinguish signal from noise. The negative R² confirms the model performs worse than predicting the mean. CH<sub>4</sub> importance rankings and ALE/ICE plots reflect noise, not ecology. Meaningful CH<sub>4</sub> fluxes are expected when rice paddies are included in future model runs.</p>
+</div>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+AGB Model Quality
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The AGB model’s wide IQR (−0.04 to 0.52) across ensembles means some ensemble members have no spatial predictive power while others are moderate. This inconsistency should be considered when interpreting AGB spatial maps.</p>
+</div>
+</div>
 </section>
-<section id="soc-totsoilcarb" class="level3">
-<h3 class="anchored" data-anchor-id="soc-totsoilcarb">SOC (TotSoilCarb)</h3>
-<p>Here we see that vapor pressure deficit is again the most important variable, followed by temperature. PDPs show negative trends - increasing vapr or temp leads to lower SOC.</p>
-<p><img src="../figures/soc_importance.png" class="img-fluid" style="width:100.0%"></p>
+<section id="variable-importance" class="level2">
+<h2 class="anchored" data-anchor-id="variable-importance">Variable Importance</h2>
+<p>Variable importance is the increase in mean squared error (MSE) when each predictor is randomly permuted. Higher values indicate the model depends more on that variable. Importance is summarized as the median across 20 ensemble members; error bars show the IQR.</p>
+<table class="table">
+<caption>Top 4 predictors by median IncMSE for each variable. N<sub>2</sub>O and CH<sub>4</sub> importance values are near-zero due to the scale of the response; relative rankings are meaningful for N<sub>2</sub>O but not for CH<sub>4</sub>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Rank</th>
+<th>TotSoilCarb</th>
+<th>AGB</th>
+<th>N<sub>2</sub>O Flux</th>
+<th>CH<sub>4</sub> Flux</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td>ocd (18.4)</td>
+<td>precip (9.7)</td>
+<td>vapr</td>
+<td><em>all ≈ 0</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td>vapr (12.8)</td>
+<td>vapr (8.7)</td>
+<td>temp</td>
+<td><em>all ≈ 0</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td>temp (12.0)</td>
+<td>ocd (7.9)</td>
+<td>precip</td>
+<td><em>all ≈ 0</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td>precip (6.9)</td>
+<td>temp (7.4)</td>
+<td>srad</td>
+<td><em>all ≈ 0</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="predictor-collinearity" class="level2">
+<h2 class="anchored" data-anchor-id="predictor-collinearity">Predictor Collinearity</h2>
+<p>The environmental predictors are correlated due to California’s climate gradients. High collinearity is why this project uses ALE plots (which handle correlated predictors correctly) rather than Partial Dependence Plots.</p>
+<table class="table">
+<caption>Pairwise correlations among environmental predictors with |r| &gt; 0.30. Computed from 377,807 cropland fields (all crop types; the current atlas uses the ~132,000 annual cropland subset).</caption>
+<thead>
+<tr class="header">
+<th>Predictor Pair</th>
+<th>Pearson r</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>temp &lt;–&gt; vapr</td>
+<td>+0.86</td>
+<td>Strong</td>
+</tr>
+<tr class="even">
+<td>precip &lt;–&gt; srad</td>
+<td>−0.86</td>
+<td>Strong</td>
+</tr>
+<tr class="odd">
+<td>srad &lt;–&gt; vapr</td>
+<td>+0.58</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>temp &lt;–&gt; precip</td>
+<td>−0.56</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>ocd &lt;–&gt; vapr</td>
+<td>−0.55</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>temp &lt;–&gt; srad</td>
+<td>+0.54</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>precip &lt;–&gt; vapr</td>
+<td>−0.52</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>ocd &lt;–&gt; srad</td>
+<td>−0.53</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>ocd &lt;–&gt; precip</td>
+<td>+0.49</td>
+<td>Moderate</td>
+</tr>
+</tbody>
+</table>
+<p>The strong correlations (temp&lt;–&gt;vapr, precip&lt;–&gt;srad) reflect California’s north–south and coastal–inland climate gradients. This means predictor rankings should be interpreted cautiously: when vapr appears as the top predictor, the signal may partly reflect temperature (r = 0.86). ALE plots account for this by using only local conditional differences.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -355,6 +563,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/design_points_analysis.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Design Points Analysis</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/workflow_documentation.html" class="pagination-link">
+        <span class="nav-page-text">Technical Documentation</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

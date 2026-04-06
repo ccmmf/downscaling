@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-02-18">
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
 
-<title>Downscaling - Design Points Analysis</title>
+<title>CCMMF Downscaling - Design Points Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,6 +32,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../reports/variable_importance.html" rel="next">
+<link href="../reports/downscaling_results.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -83,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">Downscaling</a> 
+      <a href="../">CCMMF Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
@@ -104,12 +106,47 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Reports</a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
@@ -129,12 +166,12 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Docs</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
@@ -173,6 +210,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">Design Points Analysis</h1>
+<p class="subtitle lead">Selection and Validation of Representative Simulation Sites</p>
 </div>
 
 
@@ -182,14 +220,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>David LeBauer </p>
+             <p>Akash B V </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 18, 2026</p>
+      <p class="date">April 6, 2026</p>
     </div>
   </div>
   
@@ -199,7 +237,20 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Design points are representative locations selected to capture the range of environmental conditions across California croplands from CADWR (2018). These are the locations where SIPNET is run to produce outputs later used in downscaling to all ~600k crop fields.</p>
+<p>Design points are representative locations selected to capture the range of environmental conditions across California croplands from the CADWR statewide crop mapping dataset. These are the locations where SIPNET is run to produce outputs later used in downscaling to all cropland fields (~600k total fields across all crop types; ~132,000 annual cropland fields in the current atlas).</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
 <p>We used clustering to select design points that represent the range of environmental conditions across California croplands. The following figures illustrate the distribution of these design points, which were clustered based on environmental covariates.</p>
 <p>The environmental covariates used for clustering are:</p>
 <table class="table">
@@ -258,7 +309,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 <section id="map-of-selected-design-points" class="level2">
 <h2 class="anchored" data-anchor-id="map-of-selected-design-points">Map of Selected Design Points</h2>
-<p>Here we check the geographic distribution of design points relative to the distribution of all croplands. Grey areas are the fields in the CADWR (2018) land use dataset. Boundaries are Climate Zones from CalAdapt (Lyons, 2025).</p>
+<p>Here we check the geographic distribution of design points relative to the distribution of all croplands. Grey areas are the fields in the CADWR land use dataset. Boundaries are Climate Zones from CalAdapt (Lyons, 2025).</p>
 <p>The design points should be well distributed across California croplands and Climate Zones.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -427,6 +478,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/downscaling_results.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Results</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/variable_importance.html" class="pagination-link">
+        <span class="nav-page-text">Downscaling Model Evaluation</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

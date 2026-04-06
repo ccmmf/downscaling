@@ -8,7 +8,7 @@
 
 <meta name="author" content="David LeBauer">
 
-<title>Downscaling - Technical Documentation</title>
+<title>CCMMF Downscaling - Technical Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -94,6 +94,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../docs/mixed_system_prototype.html" rel="next">
+<link href="../reports/variable_importance.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -103,6 +105,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -145,7 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">Downscaling</a> 
+      <a href="../">CCMMF Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
@@ -166,12 +171,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Reports</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
@@ -191,12 +231,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Docs</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link active">Technical Documentation</a>
@@ -280,7 +320,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>It uses an ensemble-based approach to uncertainty propagation and analysis, maintaining ensemble structure to propagate errors through the prediction and aggregation processes.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../figures/spatial_downscaling_workflow.webp" class="img-fluid figure-img" style="width:5in"></p>
+<p><a href="../figures/spatial_downscaling_workflow.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Spatial downscaling workflow using machine learning with environmental covariates"><img src="../figures/spatial_downscaling_workflow.webp" class="img-fluid figure-img" style="width:5in"></a></p>
 <p></p><figcaption class="figure-caption">Spatial downscaling workflow using machine learning with environmental covariates</figcaption><p></p>
 </figure>
 </div>
@@ -337,12 +377,53 @@ TODO: Add workflow diagram; should be generated by Targets
 </ul></li>
 </ul>
 </section>
+<section id="management-scenario-configuration" class="level4">
+<h4 class="anchored" data-anchor-id="management-scenario-configuration">Management Scenario Configuration</h4>
+<p>To compare carbon outcomes under different agricultural practices, enable management scenario mode:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>USE_PHASE_3_SCENARIOS <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When enabled, the workflow processes multiple management scenarios in a single run. Each scenario represents a different combination of practices applied to annual croplands.</p>
+<p><strong>Available Management Scenarios:</strong></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>baseline</td>
+<td>Conventional management practices</td>
+</tr>
+<tr class="even">
+<td>compost</td>
+<td>Compost application replacing mineral N fertilizer</td>
+</tr>
+<tr class="odd">
+<td>reduced_till</td>
+<td>Reduced tillage intensity (0.10)</td>
+</tr>
+<tr class="even">
+<td>zero_till</td>
+<td>No tillage (0.00)</td>
+</tr>
+<tr class="odd">
+<td>reduced_irrig_drip</td>
+<td>Drip irrigation replacing canopy irrigation</td>
+</tr>
+<tr class="even">
+<td>stacked</td>
+<td>Combined: compost + reduced tillage + drip irrigation</td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="data-preparation" class="level3">
 <h3 class="anchored" data-anchor-id="data-preparation">1. Data Preparation</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/009_update_landiq.R</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/010_prepare_covariates.R</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/011_prepare_anchor_sites.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/009_update_landiq.R</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/010_prepare_covariates.R</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/011_prepare_anchor_sites.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>These scripts prepare data for clustering and downscaling:</p>
 <ul>
 <li>Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes</li>
@@ -423,8 +504,8 @@ TODO: Add workflow diagram; should be generated by Targets
 </section>
 <section id="design-point-selection" class="level3">
 <h3 class="anchored" data-anchor-id="design-point-selection">2. Design Point Selection</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/020_cluster_and_select_design_points.R</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/021_clustering_diagnostics.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/020_cluster_and_select_design_points.R</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/021_clustering_diagnostics.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Uses k-means clustering to select representative fields plus anchor sites:</p>
 <ul>
 <li>Subsample LandIQ fields and include anchor sites for clustering</li>
@@ -569,36 +650,36 @@ TODO: Add workflow diagram; should be generated by Targets
 <section id="extract-sipnet-output" class="level3">
 <h3 class="anchored" data-anchor-id="extract-sipnet-output">4. Extract SIPNET Output</h3>
 <p>First, uncompress the model output. Only the netCDF files are needed.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set paths</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="va">ccmmf_dir</span><span class="op">=</span>/projectnb2/dietzelab/ccmmf</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="va">archive_file</span><span class="op">=</span><span class="st">"</span><span class="va">$ccmmf_dir</span><span class="st">/lebauer_agu_2025_20251210.tgz"</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="va">output_dir</span><span class="op">=</span><span class="st">"</span><span class="va">$ccmmf_dir</span><span class="st">/modelout/ccmmf_phase_3_scenarios_20251210"</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure output directory exists</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$output_dir</span><span class="st">"</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> <span class="at">--use-compress-program</span><span class="op">=</span><span class="st">"pigz -d"</span> <span class="at">-xf</span> <span class="dt">\</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">$archive_file</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-C</span> <span class="st">"</span><span class="va">$output_dir</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--strip-components</span><span class="op">=</span>1 <span class="dt">\</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-same-owner</span> <span class="co">#\</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  --wildcards \</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#  'lebauer_agu_2025/output_/out/' \</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#  'lebauer_agu_2025/output_/out/ENS--/[0-9][0-9][0-9][0-9].nc'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set paths</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">ccmmf_dir</span><span class="op">=</span>/projectnb2/dietzelab/ccmmf</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">archive_file</span><span class="op">=</span><span class="st">"</span><span class="va">$ccmmf_dir</span><span class="st">/lebauer_agu_2025_20251210.tgz"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="va">output_dir</span><span class="op">=</span><span class="st">"</span><span class="va">$ccmmf_dir</span><span class="st">/modelout/ccmmf_phase_3_scenarios_20251210"</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure output directory exists</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$output_dir</span><span class="st">"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> <span class="at">--use-compress-program</span><span class="op">=</span><span class="st">"pigz -d"</span> <span class="at">-xf</span> <span class="dt">\</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">$archive_file</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">-C</span> <span class="st">"</span><span class="va">$output_dir</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--strip-components</span><span class="op">=</span>1 <span class="dt">\</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-same-owner</span> <span class="co">#\</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  --wildcards \</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#  'lebauer_agu_2025/output_/out/' \</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#  'lebauer_agu_2025/output_/out/ENS--/[0-9][0-9][0-9][0-9].nc'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Extracts and formats SIPNET outputs for downscaling:</p>
 <ul>
 <li>Extract output variables (AGB, TotSoilCarb) from SIPNET simulations</li>
 <li>Aggregate site-level ensemble outputs into long and 4D array formats</li>
 <li>Save CSV and NetCDF files following EFI standards</li>
 </ul>
-<p><strong>Inputs:</strong> - <code>out/ENS-&lt;ensemble_number&gt;-&lt;site_id&gt;/YYYY.nc</code></p>
-<p><strong>Outputs:</strong> - <code>out/ensemble_output.csv</code>: Long format data</p>
+<p><strong>Inputs:</strong> - <code>out/ENS-&lt;ensemble_number&gt;-&lt;site_id&gt;/YYYY.nc</code> - <code>results_monthly_&lt;variable&gt;.Rdata</code> (management scenario mode) - <code>site_info.csv</code> (management scenario mode)</p>
+<p><strong>Outputs:</strong> - <code>out/ensemble_output.csv</code>: Long format data with columns: - <code>scenario</code>: Management scenario identifier (when scenarios enabled) - <code>datetime</code>, <code>site_id</code>, <code>lat</code>, <code>lon</code>, <code>pft</code>, <code>parameter</code>, <code>variable</code>, <code>prediction</code></p>
 </section>
 <section id="mixed-cropping-systems" class="level3">
 <h3 class="anchored" data-anchor-id="mixed-cropping-systems">5. Mixed Cropping Systems</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/031_aggregate_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/031_aggregate_sipnet_output.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Simulates mixed-cropping scenarios by combining outputs across two PFTs using <code>combine_mixed_crops()</code> (see Mixed System Prototype). Two methods are supported:</p>
 <ul>
 <li>weighted: area-partitioned mix where <code>woody_cover + annual_cover = 1</code></li>
@@ -609,10 +690,10 @@ TODO: Add workflow diagram; should be generated by Targets
 </section>
 <section id="downscale-aggregate-to-county-and-plot" class="level3">
 <h3 class="anchored" data-anchor-id="downscale-aggregate-to-county-and-plot">6. Downscale, Aggregate to County, and Plot</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Builds Random Forest models to predict carbon pools for all fields; aggregates to county-level; summarizes variable importance; and produces maps:</p>
 <ul>
 <li>Train models on SIPNET ensemble runs at design points</li>
@@ -621,23 +702,23 @@ TODO: Add workflow diagram; should be generated by Targets
 <li>Output maps and statistics of carbon density and totals</li>
 </ul>
 <p><strong>Inputs:</strong> - <code>model_outdir/ensemble_output.csv</code>: SIPNET outputs extracted in step 4 - <code>data/site_covariates.csv</code>: Environmental covariates</p>
-<p><strong>Outputs from <code>040_downscale.R</code>:</strong> - <code>model_outdir/downscaled_preds.csv</code>: Per-site, per-ensemble predictions with totals and densities - <code>model_outdir/downscaled_preds_metadata.json</code>: Metadata for predictions - <code>model_outdir/training_sites.csv</code>: Training site list per PFT and pool - <code>cache/models/*_models.rds</code>: Saved RF models per spec - <code>cache/training_data/*_training.csv</code>: Training covariate matrices per spec - <code>model_outdir/downscaled_deltas.csv</code>: Optional start→end deltas when available</p>
-<p><strong>Outputs from <code>041_aggregate_to_county.R</code>:</strong> - <code>model_outdir/county_summaries.csv</code>: County statistics (means/SDs across ensembles for stocks and densities)</p>
+<p><strong>Outputs from <code>040_downscale.R</code>:</strong> - <code>model_outdir/downscaled_preds.csv</code>: Per-site, per-ensemble predictions with columns: - <code>site_id</code>, <code>scenario</code>, <code>pft</code>, <code>ensemble</code>, <code>c_density_Mg_ha</code>, <code>total_c_Mg</code>, <code>area_ha</code>, <code>county</code>, <code>model_output</code> - <code>model_outdir/downscaled_preds_metadata.json</code>: Metadata including scenarios list - <code>model_outdir/downscaled_deltas.csv</code>: Carbon change from simulation start to end per scenario - <code>model_outdir/training_sites.csv</code>: Training site list per scenario, PFT, and pool - <code>cache/models/*_models.rds</code>: Saved RF models per spec - <code>cache/training_data/*_training.csv</code>: Training covariate matrices per spec</p>
+<p><strong>Outputs from <code>041_aggregate_to_county.R</code>:</strong> - <code>model_outdir/county_aggregated_preds.csv</code>: County statistics per scenario with columns: - <code>scenario</code>, <code>model_output</code>, <code>pft</code>, <code>county</code>, <code>n</code>, <code>mean_total_c_Tg</code>, <code>sd_total_c_Tg</code>, <code>mean_c_density_Mg_ha</code>, <code>sd_c_density_Mg_ha</code>, <code>mean_total_ha</code>, <code>sd_total_ha</code> - <code>model_outdir/county_aggregated_deltas.csv</code>: County-level carbon change per scenario - <code>model_outdir/state_summaries.csv</code>: State-level totals per scenario - <code>model_outdir/aggregation_metadata.json</code>: Metadata for aggregated outputs</p>
 <p><strong>Outputs from <code>042_downscale_analysis.R</code> (saved in <code>figures/</code>):</strong> - <code>&lt;pft&gt;_&lt;pool&gt;_importance_partial_plots.png</code>: Variable importance with partial plots for top predictors - <code>&lt;pft&gt;_&lt;pool&gt;_ALE_predictor&lt;i&gt;.svg</code> and <code>&lt;pft&gt;_&lt;pool&gt;_ICE_predictor&lt;i&gt;.svg</code>: ALE and ICE plots</p>
-<p><strong>Outputs from <code>043_county_level_plots.R</code> (saved in <code>figures/</code>):</strong> - <code>county_&lt;pft&gt;_&lt;pool&gt;_carbon_stock.webp</code> and <code>county_&lt;pft&gt;_&lt;pool&gt;_carbon_density.webp</code>: County-level maps - <code>county_diff_woody_plus_annual_minus_woody_&lt;pool&gt;_carbon_{density,stock}.webp</code>: Scenario difference maps - <code>county_delta_&lt;pft&gt;_&lt;pool&gt;_carbon_{density,stock}.webp</code>: Start→end delta maps when available</p>
+<p><strong>Outputs from <code>043_county_level_plots.R</code> (saved in <code>figures/</code>):</strong> - <code>county_&lt;scenario&gt;_&lt;pft&gt;_&lt;pool&gt;_carbon_stock.webp</code>: County-level stock maps per scenario - <code>field_&lt;scenario&gt;_&lt;pft&gt;_&lt;pool&gt;_carbon_density.webp</code>: Field-level density point maps per scenario - <code>county_diff_woody_plus_annual_minus_woody_&lt;pool&gt;_carbon_stock.webp</code>: Difference maps (mixed - woody) - stock only - <code>county_delta_&lt;scenario&gt;_&lt;pft&gt;_&lt;pool&gt;_carbon_stock.webp</code>: Start-to-end delta stock maps when available</p>
 </section>
 </section>
 <section id="running-on-bu-cluster" class="level2">
 <h2 class="anchored" data-anchor-id="running-on-bu-cluster">Running on BU Cluster</h2>
 <p>Interactive session (example):</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qrsh</span> <span class="at">-l</span> h_rt=3:00:00 <span class="at">-pe</span> omp 16 <span class="at">-l</span> buyin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qrsh</span> <span class="at">-l</span> h_rt=3:00:00 <span class="at">-pe</span> omp 16 <span class="at">-l</span> buyin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Submit a batch job (example using downscaling step):</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qsub</span> <span class="dt">\</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-l</span> h_rt=4:00:00 <span class="dt">\</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-pe</span> omp 8 <span class="dt">\</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> logs/040.out <span class="dt">\</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> logs/040.err <span class="dt">\</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-b</span> y Rscript scripts/040_downscale.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qsub</span> <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-l</span> h_rt=4:00:00 <span class="dt">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-pe</span> omp 8 <span class="dt">\</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> logs/040.out <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> logs/040.err <span class="dt">\</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-b</span> y Rscript scripts/040_downscale.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="documentation-site-quarto" class="level2">
 <h2 class="anchored" data-anchor-id="documentation-site-quarto">Documentation Site (Quarto)</h2>
@@ -792,7 +873,20 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/variable_importance.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Model Evaluation</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/mixed_system_prototype.html" class="pagination-link">
+        <span class="nav-page-text">Mixed System Prototype</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":true,"openEffect":"zoom","selector":".lightbox"});</script>
 
 
 

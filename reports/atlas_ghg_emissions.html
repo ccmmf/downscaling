@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
+
+<title>CCMMF Downscaling - GHG Emissions Atlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/atlas_biomass.html" rel="next">
+<link href="../reports/atlas_soil_carbon.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">GHG Emissions Atlas</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">CCMMF Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link active">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#nitrous-oxide-n2o-emissions" id="toc-nitrous-oxide-n2o-emissions" class="nav-link active" data-scroll-target="#nitrous-oxide-n2o-emissions">Nitrous Oxide (N<sub>2</sub>O) Emissions</a>
+  <ul class="collapse">
+  <li><a href="#combined-view-baseline-scenario-differences" id="toc-combined-view-baseline-scenario-differences" class="nav-link" data-scroll-target="#combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</a></li>
+  <li><a href="#county-level-n2o-all-scenarios" id="toc-county-level-n2o-all-scenarios" class="nav-link" data-scroll-target="#county-level-n2o-all-scenarios">County-Level N<sub>2</sub>O: All Scenarios</a></li>
+  <li><a href="#individual-n2o-difference-maps" id="toc-individual-n2o-difference-maps" class="nav-link" data-scroll-target="#individual-n2o-difference-maps">Individual N<sub>2</sub>O Difference Maps</a></li>
+  <li><a href="#field-level-n2o" id="toc-field-level-n2o" class="nav-link" data-scroll-target="#field-level-n2o">Field-Level N<sub>2</sub>O</a></li>
+  </ul></li>
+  <li><a href="#methane-ch4-emissions" id="toc-methane-ch4-emissions" class="nav-link" data-scroll-target="#methane-ch4-emissions">Methane (CH<sub>4</sub>) Emissions</a>
+  <ul class="collapse">
+  <li><a href="#combined-view-baseline-scenario-differences-1" id="toc-combined-view-baseline-scenario-differences-1" class="nav-link" data-scroll-target="#combined-view-baseline-scenario-differences-1">Combined View: Baseline + Scenario Differences</a></li>
+  <li><a href="#county-level-ch4-all-scenarios" id="toc-county-level-ch4-all-scenarios" class="nav-link" data-scroll-target="#county-level-ch4-all-scenarios">County-Level CH<sub>4</sub>: All Scenarios</a></li>
+  <li><a href="#individual-ch4-difference-maps" id="toc-individual-ch4-difference-maps" class="nav-link" data-scroll-target="#individual-ch4-difference-maps">Individual CH<sub>4</sub> Difference Maps</a></li>
+  <li><a href="#field-level-ch4" id="toc-field-level-ch4" class="nav-link" data-scroll-target="#field-level-ch4">Field-Level CH<sub>4</sub></a></li>
+  </ul></li>
+  <li><a href="#ghg-trade-off-summary" id="toc-ghg-trade-off-summary" class="nav-link" data-scroll-target="#ghg-trade-off-summary">GHG Trade-off Summary</a></li>
+  <li><a href="#county-level-co2e-maps" id="toc-county-level-co2e-maps" class="nav-link" data-scroll-target="#county-level-co2e-maps">County-Level CO<sub>2</sub>e Maps</a>
+  <ul class="collapse">
+  <li><a href="#soc-co2e" id="toc-soc-co2e" class="nav-link" data-scroll-target="#soc-co2e">SOC CO<sub>2</sub>e</a></li>
+  <li><a href="#n2o-co2e" id="toc-n2o-co2e" class="nav-link" data-scroll-target="#n2o-co2e">N<sub>2</sub>O CO<sub>2</sub>e</a></li>
+  <li><a href="#net-co2e" id="toc-net-co2e" class="nav-link" data-scroll-target="#net-co2e">Net CO<sub>2</sub>e</a></li>
+  </ul></li>
+  <li><a href="#note-on-gwp-version-sensitivity" id="toc-note-on-gwp-version-sensitivity" class="nav-link" data-scroll-target="#note-on-gwp-version-sensitivity">Note on GWP Version Sensitivity</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">GHG Emissions Atlas</h1>
+<p class="subtitle lead">Nitrous Oxide and Methane Fluxes – Trade-off Analysis</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akash B V </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Greenhouse gas trade-offs determine the <strong>net climate benefit</strong> of conservation practices. A practice that increases soil carbon (good) but also increases N<sub>2</sub>O or CH<sub>4</sub> emissions may have a reduced or even negative net benefit when expressed in CO<sub>2</sub> equivalents. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Critical Interpretation Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For GHG flux maps, the interpretation of differences is reversed from soil carbon: increases in emissions represent a <strong>climate cost</strong>, while decreases represent a <strong>climate benefit</strong>.</p>
+</div>
+</div>
+<hr>
+<section id="nitrous-oxide-n2o-emissions" class="level2">
+<h2 class="anchored" data-anchor-id="nitrous-oxide-n2o-emissions">Nitrous Oxide (N<sub>2</sub>O) Emissions</h2>
+<p>N<sub>2</sub>O is a potent greenhouse gas (~298x CO<sub>2</sub> over 100 years, GWP<sub>100</sub> AR4; IPCC 2007). It is produced by soil microbes during nitrification and denitrification processes. Tillage, nitrogen inputs (e.g.&nbsp;compost), and water management all influence N<sub>2</sub>O production.</p>
+<section id="combined-view-baseline-scenario-differences" class="level3">
+<h3 class="anchored" data-anchor-id="combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/mixed_county_annual_crop_N2O_flux_baseline_plus_diffs.webp" class="lightbox" data-gallery="n2o-mixed" title="Baseline absolute + scenario differences for N2O flux"><img src="../figures/mixed_county_annual_crop_N2O_flux_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline N2O emissions alongside scenario differences"></a></p>
+<p></p><figcaption class="figure-caption">Baseline absolute + scenario differences for N<sub>2</sub>O flux</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Compost and stacked scenarios show the largest N<sub>2</sub>O reductions (-37.1% and -35.2% statewide, respectively). Reduced till (+22.3%) and drip irrigation (+12.9%) increase N<sub>2</sub>O emissions. Zero till shows a small decrease (-1.6%).</p>
+</div>
+</div>
+</section>
+<section id="county-level-n2o-all-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="county-level-n2o-all-scenarios">County-Level N<sub>2</sub>O: All Scenarios</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">All Scenarios (Absolute)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_county_annual_crop_N2O_flux_stock_comparison.webp" class="lightbox" data-gallery="n2o-county" title="Faceted county N2O – all scenarios"><img src="../figures/facet_county_annual_crop_N2O_flux_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted county-level N2O flux maps for all scenarios"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county N<sub>2</sub>O – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_county_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-county-diff" title="Faceted county N2O differences"><img src="../figures/facet_diff_county_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted county-level N2O difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county N<sub>2</sub>O differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="individual-n2o-difference-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-n2o-difference-maps">Individual N<sub>2</sub>O Difference Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_compost_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-diff" title="N2O difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline N2O flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O difference – Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Compost <em>reduces</em> N<sub>2</sub>O by 37.1% statewide. This reduction is consistent with the mechanism of microbial N immobilization: mature compost with a high C:N ratio promotes assimilation of mineral N into microbial biomass, reducing the substrate available for nitrification and denitrification (Valkama et al.&nbsp;2024, European Journal of Soil Science). The magnitude is within the range reported in field studies, though above the meta-analytic mean (~25%), likely reflecting assumptions about compost maturity and application rate.</p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_till_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-diff" title="N2O difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline N2O flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O difference – Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Increase (+22.3%).</p>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_zero_till_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-diff" title="N2O difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline N2O flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O difference – Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Slight decrease (-1.6%).</p>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-diff" title="N2O difference – Drip Irrigation vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline N2O flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O difference – Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Increase (+12.9%). The modeled N<sub>2</sub>O increase under drip irrigation reflects SIPNET’s representation of intermediate soil moisture conditions that can favor nitrification pathways. This result should be interpreted with caution, as global meta-analyses of drip vs.&nbsp;flood irrigation report mixed findings depending on fertilizer type, application frequency, and soil conditions (Kuang et al.&nbsp;2021, Global Change Biology). The direction and magnitude of drip irrigation effects on N<sub>2</sub>O remain an active area of research.</p>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_stacked_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-diff" title="N2O difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline N2O flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O difference – Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Largest reduction (-35.2%). The stacked scenario combines compost’s N immobilization effect with drip irrigation’s moisture regulation, producing a net N<sub>2</sub>O reduction dominated by the compost mechanism.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="field-level-n2o" class="level3">
+<h3 class="anchored" data-anchor-id="field-level-n2o">Field-Level N<sub>2</sub>O</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">All Scenarios (Density)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_field_annual_crop_N2O_flux_density_comparison.webp" class="lightbox" data-gallery="n2o-field" title="Faceted field N2O density – all scenarios"><img src="../figures/facet_field_annual_crop_N2O_flux_density_comparison.webp" class="img-fluid figure-img" alt="Faceted field-level N2O flux density maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field N<sub>2</sub>O density – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_field_annual_crop_N2O_flux_vs_baseline.webp" class="lightbox" data-gallery="n2o-field-diff" title="Faceted field N2O differences"><img src="../figures/facet_diff_field_annual_crop_N2O_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level N2O difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field N<sub>2</sub>O differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="methane-ch4-emissions" class="level2">
+<h2 class="anchored" data-anchor-id="methane-ch4-emissions">Methane (CH<sub>4</sub>) Emissions</h2>
+<p>CH<sub>4</sub> is a potent greenhouse gas (~25x CO<sub>2</sub> over 100 years, GWP<sub>100</sub> AR4; IPCC 2007; ~72x over 20 years). Agricultural soils can be sources or sinks of methane depending on soil moisture, oxygen availability, and organic carbon substrate. Methanogenesis (CH<sub>4</sub> production) occurs under anaerobic conditions; methanotrophy (CH<sub>4</sub> consumption) occurs in well-aerated soils.</p>
+<section id="combined-view-baseline-scenario-differences-1" class="level3">
+<h3 class="anchored" data-anchor-id="combined-view-baseline-scenario-differences-1">Combined View: Baseline + Scenario Differences</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/mixed_county_annual_crop_CH4_flux_baseline_plus_diffs.webp" class="lightbox" data-gallery="ch4-mixed" title="Baseline absolute + scenario differences for CH4 flux"><img src="../figures/mixed_county_annual_crop_CH4_flux_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline CH4 emissions alongside scenario differences"></a></p>
+<p></p><figcaption class="figure-caption">Baseline absolute + scenario differences for CH<sub>4</sub> flux</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+CH<sub>4</sub> Baseline Is Effectively Zero for Non-Flooded Annual Crops
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur in non-flooded annual croplands. The statewide CH<sub>4</sub> baseline is 0.005 Gg CH<sub>4</sub> yr⁻¹ (0.003 kg CH<sub>4</sub> ha⁻¹ yr⁻¹) – effectively zero. All scenario differences are therefore negligible in absolute terms: the largest change (compost) adds only 0.049 Gg CH<sub>4</sub> yr⁻¹ (≈ 1.2 Gg CO<sub>2</sub>e yr⁻¹ at GWP<sub>100</sub> = 25), compared to an annualized SOC sequestration rate of ~8,900 Gg CO<sub>2</sub>e yr⁻¹. <strong>Percentage changes from a near-zero baseline are misleading and should not be interpreted.</strong> Meaningful CH<sub>4</sub> fluxes are expected when rice paddies are included in future model runs.</p>
+</div>
+</div>
+</section>
+<section id="county-level-ch4-all-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="county-level-ch4-all-scenarios">County-Level CH<sub>4</sub>: All Scenarios</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">All Scenarios (Absolute)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_county_annual_crop_CH4_flux_stock_comparison.webp" class="lightbox" data-gallery="ch4-county" title="Faceted county CH4 – all scenarios"><img src="../figures/facet_county_annual_crop_CH4_flux_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted county-level CH4 flux maps for all scenarios"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county CH<sub>4</sub> – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_county_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-county-diff" title="Faceted county CH4 differences"><img src="../figures/facet_diff_county_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted county-level CH4 difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted county CH<sub>4</sub> differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="individual-ch4-difference-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-ch4-difference-maps">Individual CH<sub>4</sub> Difference Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-4" role="tab" aria-controls="tabset-5-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-5" role="tab" aria-controls="tabset-5-5" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_compost_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-diff" title="CH4 difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline CH4 flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> difference – Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>CH<sub>4</sub> emissions increase from 0.005 to 0.054 Gg CH<sub>4</sub> yr⁻¹. This absolute increase is negligible relative to soil carbon gains (see callout above).</p>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_till_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-diff" title="CH4 difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline CH4 flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> difference – Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Negligible change from an already near-zero baseline.</p>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_zero_till_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-diff" title="CH4 difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline CH4 flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> difference – Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Small increase from a near-zero baseline. Not meaningfully different from zero.</p>
+</div>
+<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-diff" title="CH4 difference – Drip Irrigation vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline CH4 flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> difference – Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p><strong>Eliminates CH<sub>4</sub> entirely.</strong> Drip irrigation suppresses the anaerobic conditions required for methanogenesis.</p>
+</div>
+<div id="tabset-5-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_stacked_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-diff" title="CH4 difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline CH4 flux difference map"></a></p>
+<p></p><figcaption class="figure-caption">CH<sub>4</sub> difference – Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>CH<sub>4</sub> decreases slightly. Despite combining compost (which increases CH<sub>4</sub>), drip irrigation’s suppression of anaerobic conditions dominates in the stacked scenario. All changes are negligible in absolute terms given the near-zero baseline.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="field-level-ch4" class="level3">
+<h3 class="anchored" data-anchor-id="field-level-ch4">Field-Level CH<sub>4</sub></h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">All Scenarios (Density)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">All Differences from Baseline</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_field_annual_crop_CH4_flux_density_comparison.webp" class="lightbox" data-gallery="ch4-field" title="Faceted field CH4 density – all scenarios"><img src="../figures/facet_field_annual_crop_CH4_flux_density_comparison.webp" class="img-fluid figure-img" alt="Faceted field-level CH4 flux density maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field CH<sub>4</sub> density – all scenarios</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_field_annual_crop_CH4_flux_vs_baseline.webp" class="lightbox" data-gallery="ch4-field-diff" title="Faceted field CH4 differences"><img src="../figures/facet_diff_field_annual_crop_CH4_flux_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level CH4 difference maps"></a></p>
+<p></p><figcaption class="figure-caption">Faceted field CH<sub>4</sub> differences</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="ghg-trade-off-summary" class="level2">
+<h2 class="anchored" data-anchor-id="ghg-trade-off-summary">GHG Trade-off Summary</h2>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Net Climate Benefit Requires CO<sub>2</sub>-Equivalent Accounting
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A practice’s net climate benefit depends on the <strong>magnitude</strong> of soil carbon gains versus GHG emission changes, expressed in common units (CO<sub>2</sub>e). The <a href="../reports/atlas_overview.html#tbl-co2e">CO<sub>2</sub>e Summary Table</a> on the overview page quantifies these trade-offs using GWP<sub>100</sub> AR4 values (CH<sub>4</sub> = 25, N<sub>2</sub>O = 298; IPCC 2007, WG1 Table 2.14).</p>
+<p>Key findings in CO<sub>2</sub>e terms (Gg CO<sub>2</sub>e yr⁻¹ vs baseline):</p>
+<ul>
+<li><strong>Compost</strong>: Best net benefit (-11,060). SOC sequestration (-8,933) and N<sub>2</sub>O reduction (-2,128) dominate. CH<sub>4</sub> increase is +1.2 Gg CO<sub>2</sub>e yr⁻¹ – negligible.</li>
+<li><strong>Stacked</strong>: Second-best net benefit (-10,247). SOC (-8,227) and N<sub>2</sub>O (-2,020) both contribute strongly.</li>
+<li><strong>Drip irrigation</strong>: Net benefit (-3,634). SOC gain (-4,374) offsets N<sub>2</sub>O increase (+740). Eliminates CH<sub>4</sub> entirely.</li>
+<li><strong>Reduced till</strong>: Net cost (+2,337). Small SOC loss (+1,059) and N<sub>2</sub>O increase (+1,278).</li>
+<li><strong>Zero till</strong>: Approximately neutral (+77).</li>
+</ul>
+<p>These CO<sub>2</sub>e estimates represent the maximum technical potential assuming simultaneous adoption across all 1.86 million hectares. SOC accumulation rates typically decline as soils approach a new equilibrium, so extrapolation beyond the 8-year simulation period would overestimate long-term mitigation. CH<sub>4</sub> contributes &lt;1% of the net CO<sub>2</sub>e in every scenario; meaningful CH<sub>4</sub> contributions are expected when rice paddies are modeled (Phase 7).</p>
+<p>These trade-offs are precisely why SIPNET’s N-cycle extension and multi-variable output are essential for comprehensive climate assessment.</p>
+</div>
+</div>
+</section>
+<section id="county-level-co2e-maps" class="level2">
+<h2 class="anchored" data-anchor-id="county-level-co2e-maps">County-Level CO<sub>2</sub>e Maps</h2>
+<p>The maps below translate the GHG trade-offs into geographic patterns using GWP<sub>100</sub> AR4 values. Green counties show net climate benefit (negative CO<sub>2</sub>e); purple counties show net climate cost (positive CO<sub>2</sub>e). Color scales are symmetric around zero and consistent across scenarios within each component.</p>
+<section id="soc-co2e" class="level3">
+<h3 class="anchored" data-anchor-id="soc-co2e">SOC CO<sub>2</sub>e</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">All Scenarios</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-4" role="tab" aria-controls="tabset-7-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-5" role="tab" aria-controls="tabset-7-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-6" role="tab" aria-controls="tabset-7-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_co2e_county_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc" title="Faceted SOC CO2e by scenario"><img src="../figures/facet_co2e_county_co2e_soc.webp" class="img-fluid figure-img" alt="Faceted county-level SOC CO2e maps for all scenarios vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Faceted SOC CO<sub>2</sub>e by scenario</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_compost_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc-ind" title="SOC CO2e: Compost vs Baseline"><img src="../figures/co2e_county_compost_co2e_soc.webp" class="img-fluid figure-img" alt="County-level SOC CO2e map for compost vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">SOC CO<sub>2</sub>e: Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_till_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc-ind" title="SOC CO2e: Reduced Till vs Baseline"><img src="../figures/co2e_county_reduced_till_co2e_soc.webp" class="img-fluid figure-img" alt="County-level SOC CO2e map for reduced till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">SOC CO<sub>2</sub>e: Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-7-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_zero_till_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc-ind" title="SOC CO2e: Zero Till vs Baseline"><img src="../figures/co2e_county_zero_till_co2e_soc.webp" class="img-fluid figure-img" alt="County-level SOC CO2e map for zero till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">SOC CO<sub>2</sub>e: Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-7-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_irrig_drip_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc-ind" title="SOC CO2e: Drip Irrigation vs Baseline"><img src="../figures/co2e_county_reduced_irrig_drip_co2e_soc.webp" class="img-fluid figure-img" alt="County-level SOC CO2e map for drip irrigation vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">SOC CO<sub>2</sub>e: Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-7-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_stacked_co2e_soc.webp" class="lightbox" data-gallery="co2e-soc-ind" title="SOC CO2e: Stacked vs Baseline"><img src="../figures/co2e_county_stacked_co2e_soc.webp" class="img-fluid figure-img" alt="County-level SOC CO2e map for stacked vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">SOC CO<sub>2</sub>e: Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="n2o-co2e" class="level3">
+<h3 class="anchored" data-anchor-id="n2o-co2e">N<sub>2</sub>O CO<sub>2</sub>e</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">All Scenarios</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-4" role="tab" aria-controls="tabset-8-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-5" role="tab" aria-controls="tabset-8-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-6" role="tab" aria-controls="tabset-8-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_co2e_county_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o" title="Faceted N2O CO2e by scenario"><img src="../figures/facet_co2e_county_co2e_n2o.webp" class="img-fluid figure-img" alt="Faceted county-level N2O CO2e maps for all scenarios vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Faceted N<sub>2</sub>O CO<sub>2</sub>e by scenario</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_compost_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o-ind" title="N2O CO2e: Compost vs Baseline"><img src="../figures/co2e_county_compost_co2e_n2o.webp" class="img-fluid figure-img" alt="County-level N2O CO2e map for compost vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O CO<sub>2</sub>e: Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_till_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o-ind" title="N2O CO2e: Reduced Till vs Baseline"><img src="../figures/co2e_county_reduced_till_co2e_n2o.webp" class="img-fluid figure-img" alt="County-level N2O CO2e map for reduced till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O CO<sub>2</sub>e: Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-8-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_zero_till_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o-ind" title="N2O CO2e: Zero Till vs Baseline"><img src="../figures/co2e_county_zero_till_co2e_n2o.webp" class="img-fluid figure-img" alt="County-level N2O CO2e map for zero till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O CO<sub>2</sub>e: Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-8-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_irrig_drip_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o-ind" title="N2O CO2e: Drip Irrigation vs Baseline"><img src="../figures/co2e_county_reduced_irrig_drip_co2e_n2o.webp" class="img-fluid figure-img" alt="County-level N2O CO2e map for drip irrigation vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O CO<sub>2</sub>e: Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-8-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_stacked_co2e_n2o.webp" class="lightbox" data-gallery="co2e-n2o-ind" title="N2O CO2e: Stacked vs Baseline"><img src="../figures/co2e_county_stacked_co2e_n2o.webp" class="img-fluid figure-img" alt="County-level N2O CO2e map for stacked vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">N<sub>2</sub>O CO<sub>2</sub>e: Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="net-co2e" class="level3">
+<h3 class="anchored" data-anchor-id="net-co2e">Net CO<sub>2</sub>e</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">All Scenarios</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-5" role="tab" aria-controls="tabset-9-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-6" role="tab" aria-controls="tabset-9-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_co2e_county_co2e_net.webp" class="lightbox" data-gallery="co2e-net" title="Faceted Net CO2e by scenario"><img src="../figures/facet_co2e_county_co2e_net.webp" class="img-fluid figure-img" alt="Faceted county-level net CO2e maps for all scenarios vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Faceted Net CO<sub>2</sub>e by scenario</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_compost_co2e_net.webp" class="lightbox" data-gallery="co2e-net-ind" title="Net CO2e: Compost vs Baseline"><img src="../figures/co2e_county_compost_co2e_net.webp" class="img-fluid figure-img" alt="County-level net CO2e map for compost vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Net CO<sub>2</sub>e: Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_till_co2e_net.webp" class="lightbox" data-gallery="co2e-net-ind" title="Net CO2e: Reduced Till vs Baseline"><img src="../figures/co2e_county_reduced_till_co2e_net.webp" class="img-fluid figure-img" alt="County-level net CO2e map for reduced till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Net CO<sub>2</sub>e: Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-9-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_zero_till_co2e_net.webp" class="lightbox" data-gallery="co2e-net-ind" title="Net CO2e: Zero Till vs Baseline"><img src="../figures/co2e_county_zero_till_co2e_net.webp" class="img-fluid figure-img" alt="County-level net CO2e map for zero till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Net CO<sub>2</sub>e: Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-9-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_reduced_irrig_drip_co2e_net.webp" class="lightbox" data-gallery="co2e-net-ind" title="Net CO2e: Drip Irrigation vs Baseline"><img src="../figures/co2e_county_reduced_irrig_drip_co2e_net.webp" class="img-fluid figure-img" alt="County-level net CO2e map for drip irrigation vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Net CO<sub>2</sub>e: Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-9-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/co2e_county_stacked_co2e_net.webp" class="lightbox" data-gallery="co2e-net-ind" title="Net CO2e: Stacked vs Baseline"><img src="../figures/co2e_county_stacked_co2e_net.webp" class="img-fluid figure-img" alt="County-level net CO2e map for stacked vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Net CO<sub>2</sub>e: Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="note-on-gwp-version-sensitivity" class="level2">
+<h2 class="anchored" data-anchor-id="note-on-gwp-version-sensitivity">Note on GWP Version Sensitivity</h2>
+<p>All CO<sub>2</sub>e calculations in this atlas use GWP<sub>100</sub> values from the IPCC Fourth Assessment Report (AR4, 2007): CH<sub>4</sub> = 25, N<sub>2</sub>O = 298. More recent assessments report somewhat different values: AR5 (2013) uses CH<sub>4</sub> = 28, N<sub>2</sub>O = 265; AR6 (2021) uses CH<sub>4</sub> = 27.0, N<sub>2</sub>O = 273. Switching to AR5 or AR6 values would moderately reduce the estimated CO<sub>2</sub>e benefit from N<sub>2</sub>O reductions (by ~11%) and slightly increase the CH<sub>4</sub> contribution (by ~12%). The qualitative conclusions – compost and stacked as the strongest net benefits, CH<sub>4</sub> as negligible for non-flooded crops – are robust to GWP version choice. Results can be recomputed with alternative GWP values using the <code>to_co2e()</code> function in the analysis pipeline.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/atlas_soil_carbon.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Soil Carbon</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/atlas_biomass.html" class="pagination-link">
+        <span class="nav-page-text">Aboveground Biomass</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","loop":true,"openEffect":"zoom","closeEffect":"zoom","selector":".lightbox"});</script>
+
+
+
+</body></html>

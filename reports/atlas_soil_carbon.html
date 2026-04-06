@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-04-06">
+
+<title>CCMMF Downscaling - Soil Carbon Atlas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/atlas_ghg_emissions.html" rel="next">
+<link href="../reports/atlas_overview.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Soil Carbon Atlas</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">CCMMF Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link active">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#county-level-total-soil-carbon" id="toc-county-level-total-soil-carbon" class="nav-link active" data-scroll-target="#county-level-total-soil-carbon">County-Level Total Soil Carbon</a>
+  <ul class="collapse">
+  <li><a href="#combined-view-baseline-scenario-differences" id="toc-combined-view-baseline-scenario-differences" class="nav-link" data-scroll-target="#combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</a></li>
+  <li><a href="#all-scenarios-side-by-side" id="toc-all-scenarios-side-by-side" class="nav-link" data-scroll-target="#all-scenarios-side-by-side">All Scenarios Side-by-Side</a></li>
+  <li><a href="#individual-scenario-maps" id="toc-individual-scenario-maps" class="nav-link" data-scroll-target="#individual-scenario-maps">Individual Scenario Maps</a></li>
+  </ul></li>
+  <li><a href="#county-level-difference-maps-scenario-baseline" id="toc-county-level-difference-maps-scenario-baseline" class="nav-link" data-scroll-target="#county-level-difference-maps-scenario-baseline">County-Level Difference Maps (Scenario − Baseline)</a>
+  <ul class="collapse">
+  <li><a href="#all-scenarios-compared" id="toc-all-scenarios-compared" class="nav-link" data-scroll-target="#all-scenarios-compared">All Scenarios Compared</a></li>
+  <li><a href="#individual-difference-maps" id="toc-individual-difference-maps" class="nav-link" data-scroll-target="#individual-difference-maps">Individual Difference Maps</a></li>
+  </ul></li>
+  <li><a href="#field-level-soil-carbon-density" id="toc-field-level-soil-carbon-density" class="nav-link" data-scroll-target="#field-level-soil-carbon-density">Field-Level Soil Carbon Density</a>
+  <ul class="collapse">
+  <li><a href="#all-scenarios-side-by-side-1" id="toc-all-scenarios-side-by-side-1" class="nav-link" data-scroll-target="#all-scenarios-side-by-side-1">All Scenarios Side-by-Side</a></li>
+  <li><a href="#individual-scenario-maps-1" id="toc-individual-scenario-maps-1" class="nav-link" data-scroll-target="#individual-scenario-maps-1">Individual Scenario Maps</a></li>
+  </ul></li>
+  <li><a href="#field-level-soil-carbon-differences" id="toc-field-level-soil-carbon-differences" class="nav-link" data-scroll-target="#field-level-soil-carbon-differences">Field-Level Soil Carbon Differences</a>
+  <ul class="collapse">
+  <li><a href="#all-scenarios-compared-1" id="toc-all-scenarios-compared-1" class="nav-link" data-scroll-target="#all-scenarios-compared-1">All Scenarios Compared</a></li>
+  <li><a href="#individual-difference-maps-1" id="toc-individual-difference-maps-1" class="nav-link" data-scroll-target="#individual-difference-maps-1">Individual Difference Maps</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Soil Carbon Atlas</h1>
+<p class="subtitle lead">Total Soil Carbon Stocks and Density Across Management Scenarios</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akash B V </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Soil carbon is the primary metric for climate change mitigation in agriculture. Higher soil carbon stocks indicate more atmospheric CO<sub>2</sub> sequestered into persistent soil organic matter pools. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<section id="county-level-total-soil-carbon" class="level2">
+<h2 class="anchored" data-anchor-id="county-level-total-soil-carbon">County-Level Total Soil Carbon</h2>
+<p>County maps show the <strong>total mass</strong> of soil carbon (Gg C) summed across all annual cropland fields in each county. Central Valley counties (Kern, Fresno, Tulare, San Joaquin) dominate because they contain the most cropland area – not necessarily because of higher per-hectare soil carbon.</p>
+<section id="combined-view-baseline-scenario-differences" class="level3">
+<h3 class="anchored" data-anchor-id="combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</h3>
+<p>The most powerful comparison view. The first panel shows <strong>absolute baseline</strong> soil carbon stocks. Panels 2–6 show each scenario’s <strong>difference from baseline</strong> (positive values indicate increases, negative values indicate decreases).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="lightbox" title="Baseline absolute + scenario differences for soil carbon" data-gallery="mixed"><img src="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline soil carbon alongside scenario differences for each county"></a></p>
+<p></p><figcaption class="figure-caption">Baseline absolute + scenario differences for soil carbon</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Compost, drip irrigation, and stacked scenarios increase county-level soil carbon relative to baseline. Reduced till (-2.0%) and zero till (-0.3%) show slight decreases. The stacked and compost scenarios show the strongest gains, particularly in the high-acreage Central Valley counties where even modest per-hectare increases translate to large county totals.</p>
+</div>
+</div>
+</section>
+<section id="all-scenarios-side-by-side" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side">All Scenarios Side-by-Side</h3>
+<p>All six scenarios on a consistent color scale for direct visual comparison.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="lightbox" title="All scenarios – county total soil carbon" data-gallery="county-facet"><img src="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing county-level total soil carbon for all six management scenarios on a consistent scale"></a></p>
+<p></p><figcaption class="figure-caption">All scenarios – county total soil carbon</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="individual-scenario-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-scenario-maps">Individual Scenario Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Baseline" data-gallery="county-stock"><img src="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Baseline agricultural practices. This is the reference against which all management scenarios are compared.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Compost" data-gallery="county-stock"><img src="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Compost scenario county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Compost</figcaption><p></p>
+</figure>
+</div>
+<p>Compost application directly adds organic carbon to soil. Expected to show the strongest per-practice effect on soil carbon because it physically increases C inputs beyond what crops alone provide.</p>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Reduced Till" data-gallery="county-stock"><img src="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Reduced Till</figcaption><p></p>
+</figure>
+</div>
+<p>Reduced tillage preserves soil aggregates, slowing decomposition of protected organic matter. The effect is through reduced C loss rather than increased C inputs.</p>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Zero Till" data-gallery="county-stock"><img src="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Zero Till</figcaption><p></p>
+</figure>
+</div>
+<p>No mechanical soil disturbance. Surface residue builds a mulch layer over time. Soil carbon effects in the literature are debated – some studies show vertical redistribution rather than net gain.</p>
+</div>
+<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Drip Irrigation" data-gallery="county-stock"><img src="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Drip Irrigation</figcaption><p></p>
+</figure>
+</div>
+<p>Conversion from flood/sprinkler to drip irrigation. Soil carbon gain likely mediated through altered moisture regimes affecting decomposition rates and root growth.</p>
+</div>
+<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Stacked" data-gallery="county-stock"><img src="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked scenario county total soil carbon map"></a></p>
+<p></p><figcaption class="figure-caption">County total soil carbon – Stacked</figcaption><p></p>
+</figure>
+</div>
+<p>All practices combined. Represents maximum adoption.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="county-level-difference-maps-scenario-baseline" class="level2">
+<h2 class="anchored" data-anchor-id="county-level-difference-maps-scenario-baseline">County-Level Difference Maps (Scenario − Baseline)</h2>
+<p>These maps directly answer: <strong>“Does this practice increase or decrease soil carbon compared to current management?”</strong></p>
+<p>Positive differences indicate increases in soil carbon (climate benefit); negative differences indicate decreases.</p>
+<section id="all-scenarios-compared" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios-compared">All Scenarios Compared</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="All scenario differences from baseline – county total soil carbon" data-gallery="county-diff-facet"><img src="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted difference maps showing soil carbon changes from baseline for five management scenarios"></a></p>
+<p></p><figcaption class="figure-caption">All scenario differences from baseline – county total soil carbon</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Compost, drip irrigation, and stacked scenarios show clear soil carbon gains. Reduced tillage and zero tillage show minimal or slightly negative effects. The spatial pattern of gains broadly follows cropland area – the largest absolute gains occur where there is the most cropland to respond.</p>
+</div>
+</div>
+</section>
+<section id="individual-difference-maps" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-difference-maps">Individual Difference Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Compost vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline soil carbon difference map"></a></p>
+<p></p><figcaption class="figure-caption">Soil carbon difference – Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Compost increases soil carbon substantially across the Central Valley. The effect is driven by direct organic matter addition. Statewide total increases from 114.1 to 133.6 Tg C (+17.1%).</p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Reduced Till vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline soil carbon difference map"></a></p>
+<p></p><figcaption class="figure-caption">Soil carbon difference – Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Slight decrease in soil carbon (-2.0% statewide). This is consistent with recent meta-analyses showing that no-till effects on total SOC stocks are often small or negligible when measured through the full soil profile, particularly over simulation periods of less than a decade (Powlson et al.&nbsp;2014, Nature Climate Change). In SIPNET, reduced tillage alters N cycling dynamics that can transiently increase decomposition rates. Longer simulation periods may be needed to detect net accumulation.</p>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Zero Till vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline soil carbon difference map"></a></p>
+<p></p><figcaption class="figure-caption">Soil carbon difference – Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Essentially neutral soil carbon response (-0.3%). Consistent with findings that no-till effects on total 0–30 cm SOC stocks are often modest for annual croplands and may primarily reflect vertical redistribution rather than net accumulation (Powlson et al.&nbsp;2014, Nature Climate Change; Luo et al.&nbsp;2010, Agriculture, Ecosystems &amp; Environment). The near-zero response over 8 years is within the range reported in global meta-analyses.</p>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Drip Irrigation vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline soil carbon difference map"></a></p>
+<p></p><figcaption class="figure-caption">Soil carbon difference – Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Moderate gains (+8.4% statewide).</p>
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Stacked vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline soil carbon difference map"></a></p>
+<p></p><figcaption class="figure-caption">Soil carbon difference – Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Strong combined gain (+15.7%), second only to compost, with consistent increases across all counties. The stacked scenario combines compost’s direct C input with tillage reduction and drip irrigation’s moisture regulation.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="field-level-soil-carbon-density" class="level2">
+<h2 class="anchored" data-anchor-id="field-level-soil-carbon-density">Field-Level Soil Carbon Density</h2>
+<p>Field density maps show <strong>per-hectare</strong> soil carbon (Mg C ha⁻¹) at each of ~132,000 individual agricultural fields. This isolates the per-area effect from county cropland area, revealing how <strong>soil type, climate, and topography</strong> drive spatial variation.</p>
+<section id="all-scenarios-side-by-side-1" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side-1">All Scenarios Side-by-Side</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="lightbox" title="All scenarios – field-level soil carbon density" data-gallery="field-facet"><img src="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing field-level soil carbon density for all six scenarios"></a></p>
+<p></p><figcaption class="figure-caption">All scenarios – field-level soil carbon density</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="individual-scenario-maps-1" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-scenario-maps-1">Individual Scenario Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-6" role="tab" aria-controls="tabset-3-6" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Baseline" data-gallery="field-density"><img src="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Spatial variation reflects underlying environmental gradients: soil clay content, organic carbon density, temperature, and moisture. Sacramento Valley (north) tends to show higher per-hectare SOC than San Joaquin Valley (south), consistent with cooler temperatures slowing decomposition.</p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Compost" data-gallery="field-density"><img src="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Compost</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Reduced Till" data-gallery="field-density"><img src="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Reduced Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Zero Till" data-gallery="field-density"><img src="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Zero Till</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Drip Irrigation" data-gallery="field-density"><img src="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Drip Irrigation</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-3-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-6-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Stacked" data-gallery="field-density"><img src="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level soil carbon density map"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon density – Stacked</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="field-level-soil-carbon-differences" class="level2">
+<h2 class="anchored" data-anchor-id="field-level-soil-carbon-differences">Field-Level Soil Carbon Differences</h2>
+<p>Field-level difference maps reveal <strong>where</strong> practices have the greatest per-hectare impact, independent of county cropland area. These are the most spatially informative maps in the atlas.</p>
+<section id="all-scenarios-compared-1" class="level3">
+<h3 class="anchored" data-anchor-id="all-scenarios-compared-1">All Scenarios Compared</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="All scenario differences – field soil carbon density" data-gallery="field-diff-facet"><img src="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level difference maps for soil carbon density across management scenarios"></a></p>
+<p></p><figcaption class="figure-caption">All scenario differences – field soil carbon density</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Compost and stacked scenarios show relatively uniform increases across nearly all fields, indicating the practice effect is <strong>geographically consistent</strong> – compost increases soil carbon regardless of local soil or climate conditions. This uniformity suggests that compost benefits are not restricted to specific regions or soil types.</p>
+</div>
+</div>
+</section>
+<section id="individual-difference-maps-1" class="level3 tabset">
+<h3 class="tabset anchored" data-anchor-id="individual-difference-maps-1">Individual Difference Maps</h3>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-5" role="tab" aria-controls="tabset-4-5" aria-selected="false">Stacked</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Compost vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for compost vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon difference – Compost vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Near-uniform increases across all fields. The compost effect on soil carbon is driven primarily by the practice itself (direct organic matter input) rather than by site-specific soil or climate conditions.</p>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Reduced Till vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for reduced till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon difference – Reduced Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Zero Till vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for zero till vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon difference – Zero Till vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Drip Irrigation vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for drip irrigation vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon difference – Drip Irrigation vs Baseline</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div id="tabset-4-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-5-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Stacked vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for stacked vs baseline"></a></p>
+<p></p><figcaption class="figure-caption">Field soil carbon difference – Stacked vs Baseline</figcaption><p></p>
+</figure>
+</div>
+<p>Largest per-hectare gains. The uniform spatial pattern indicates the combined practices work consistently across California’s diverse agricultural environments.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../reports/atlas_overview.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview &amp; Key Findings</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link">
+        <span class="nav-page-text">GHG Emissions (N₂O &amp; CH₄)</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"loop":true,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","closeEffect":"zoom"});</script>
+
+
+
+</body></html>

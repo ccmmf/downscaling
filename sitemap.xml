@@ -2,30 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ccmmf.github.io/downscaling/index.html</loc>
-    <lastmod>2026-02-18T08:40:53.609Z</lastmod>
+    <lastmod>2026-04-06T04:05:03.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccmmf.github.io/downscaling/reports/atlas_overview.html</loc>
+    <lastmod>2026-04-06T04:05:04.425Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccmmf.github.io/downscaling/reports/atlas_soil_carbon.html</loc>
+    <lastmod>2026-04-06T04:05:04.959Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccmmf.github.io/downscaling/reports/atlas_ghg_emissions.html</loc>
+    <lastmod>2026-04-06T04:05:05.527Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccmmf.github.io/downscaling/reports/atlas_biomass.html</loc>
+    <lastmod>2026-04-06T04:05:05.998Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccmmf.github.io/downscaling/reports/atlas_model_drivers.html</loc>
+    <lastmod>2026-04-06T04:05:06.477Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/reports/downscaling_results.html</loc>
-    <lastmod>2026-02-18T08:40:54.095Z</lastmod>
+    <lastmod>2026-04-06T04:05:06.905Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/reports/design_points_analysis.html</loc>
-    <lastmod>2026-02-18T08:40:54.432Z</lastmod>
+    <lastmod>2026-04-06T04:05:07.295Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/reports/variable_importance.html</loc>
-    <lastmod>2026-02-18T08:40:54.742Z</lastmod>
+    <lastmod>2026-04-06T04:05:07.708Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/docs/workflow_documentation.html</loc>
-    <lastmod>2026-02-18T08:40:55.399Z</lastmod>
+    <lastmod>2026-04-06T04:05:08.417Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/docs/references.html</loc>
-    <lastmod>2026-02-18T08:40:55.693Z</lastmod>
+    <lastmod>2026-04-06T04:05:08.736Z</lastmod>
   </url>
   <url>
     <loc>https://ccmmf.github.io/downscaling/docs/mixed_system_prototype.html</loc>
-    <lastmod>2026-02-18T08:42:14.279Z</lastmod>
+    <lastmod>2026-04-06T04:05:09.391Z</lastmod>
   </url>
 </urlset>
