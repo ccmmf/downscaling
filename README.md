@@ -83,8 +83,8 @@ Rscript scripts/043_county_level_plots.R
 ### Cross-source comparability
 
 - Convert CH₄, N₂O, and ΔSOC to CO₂e
-  - Sub-state: kt CO₂e yr⁻¹
-  - Statewide: MMT CO₂e yr⁻¹
+  - Sub-state: Gg CO₂e yr⁻¹
+  - Statewide: Tg CO₂e yr⁻¹
 
 **Notes**
 - SOC and biomass are reported in units of C
