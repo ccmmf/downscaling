@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-06">
+<meta name="dcterms.date" content="2026-04-09">
 
 <title>CCMMF Downscaling - Model Drivers</title>
 <style>
@@ -235,7 +235,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 6, 2026</p>
+      <p class="date">April 9, 2026</p>
     </div>
   </div>
   
@@ -245,7 +245,7 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at ~200 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal <strong>which environmental factors drive the spatial variation</strong> seen in the maps. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
+<p>The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at 100 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal <strong>which environmental factors drive the spatial variation</strong> seen in the maps. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
 <div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -304,14 +304,14 @@ Validation Status
 <tr class="odd">
 <td>AGB</td>
 <td>0.09</td>
-<td>−0.04–0.52</td>
+<td>-0.04–0.52</td>
 <td>precip, vapr</td>
 <td>Poor – high variance across ensembles</td>
 </tr>
 <tr class="even">
 <td>CH<sub>4</sub> Flux</td>
-<td>−0.15</td>
-<td>−0.17–−0.13</td>
+<td>-0.15</td>
+<td>-0.17–-0.13</td>
 <td><em>none meaningful</em></td>
 <td>No spatial signal (near-zero baseline)</td>
 </tr>
@@ -327,7 +327,7 @@ Interpreting CH<sub>4</sub> Model Quality
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes in SIPNET because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. With essentially no spatial variation in the training data, the Random Forest has no signal to learn – the negative R² confirms the model performs worse than a constant mean. The CH<sub>4</sub> ALE/ICE plots below reflect noise, not ecology. See the <a href="../reports/variable_importance.html">Model Evaluation</a> page for full diagnostics.</p>
+<p>Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes in SIPNET (approximately 10⁻¹⁴ kg m⁻² at the modeled sites) because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. With essentially no spatial variation in the training data, the Random Forest has no signal to learn – the negative OOB R² (-0.15) confirms the model performs worse than a constant mean. The CH<sub>4</sub> ALE/ICE plots below reflect noise, not ecology.</p>
 </div>
 </div>
 </section>
@@ -428,13 +428,13 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="lightbox" title="TotSoilCarb ALE – Predictor 1" data-gallery="tsc-ale"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of soil carbon"></a></p>
+<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="lightbox" data-gallery="tsc-ale" title="TotSoilCarb ALE – Predictor 1"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of soil carbon"></a></p>
 <p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="lightbox" title="TotSoilCarb ALE – Predictor 2" data-gallery="tsc-ale"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of soil carbon"></a></p>
+<p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="lightbox" data-gallery="tsc-ale" title="TotSoilCarb ALE – Predictor 2"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of soil carbon"></a></p>
 <p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -447,13 +447,13 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="lightbox" title="TotSoilCarb ICE – Predictor 1" data-gallery="tsc-ice"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of soil carbon"></a></p>
+<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="lightbox" data-gallery="tsc-ice" title="TotSoilCarb ICE – Predictor 1"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of soil carbon"></a></p>
 <p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="lightbox" title="TotSoilCarb ICE – Predictor 2" data-gallery="tsc-ice"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of soil carbon"></a></p>
+<p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="lightbox" data-gallery="tsc-ice" title="TotSoilCarb ICE – Predictor 2"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of soil carbon"></a></p>
 <p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -475,32 +475,32 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_agb_ALE_predictor1.svg" class="lightbox" title="AGB ALE – Predictor 1" data-gallery="agb-ale"><img src="../figures/annual_crop_agb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of aboveground biomass"></a></p>
+<p><a href="../figures/annual_crop_agb_ALE_predictor1.svg" class="lightbox" data-gallery="agb-ale" title="AGB ALE – Predictor 1"><img src="../figures/annual_crop_agb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of aboveground biomass"></a></p>
 <p></p><figcaption class="figure-caption">AGB ALE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_agb_ALE_predictor2.svg" class="lightbox" title="AGB ALE – Predictor 2" data-gallery="agb-ale"><img src="../figures/annual_crop_agb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of aboveground biomass"></a></p>
+<p><a href="../figures/annual_crop_agb_ALE_predictor2.svg" class="lightbox" data-gallery="agb-ale" title="AGB ALE – Predictor 2"><img src="../figures/annual_crop_agb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of aboveground biomass"></a></p>
 <p></p><figcaption class="figure-caption">AGB ALE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Precipitation (precip) and vapor pressure deficit (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Higher VPD –&gt; more plant water stress –&gt; lower biomass. The wide IQR (−0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
+<p>Precipitation (precip) and vapor pressure deficit (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Higher VPD –&gt; more plant water stress –&gt; lower biomass. The wide IQR (-0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_agb_ICE_predictor1.svg" class="lightbox" title="AGB ICE – Predictor 1" data-gallery="agb-ice"><img src="../figures/annual_crop_agb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of AGB"></a></p>
+<p><a href="../figures/annual_crop_agb_ICE_predictor1.svg" class="lightbox" data-gallery="agb-ice" title="AGB ICE – Predictor 1"><img src="../figures/annual_crop_agb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of AGB"></a></p>
 <p></p><figcaption class="figure-caption">AGB ICE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_agb_ICE_predictor2.svg" class="lightbox" title="AGB ICE – Predictor 2" data-gallery="agb-ice"><img src="../figures/annual_crop_agb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of AGB"></a></p>
+<p><a href="../figures/annual_crop_agb_ICE_predictor2.svg" class="lightbox" data-gallery="agb-ice" title="AGB ICE – Predictor 2"><img src="../figures/annual_crop_agb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of AGB"></a></p>
 <p></p><figcaption class="figure-caption">AGB ICE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -521,13 +521,13 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="lightbox" title="N2O ALE – Predictor 1" data-gallery="n2o-ale"><img src="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of N2O flux"></a></p>
+<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="lightbox" data-gallery="n2o-ale" title="N2O ALE – Predictor 1"><img src="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of N2O flux"></a></p>
 <p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="lightbox" title="N2O ALE – Predictor 2" data-gallery="n2o-ale"><img src="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of N2O flux"></a></p>
+<p><a href="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="lightbox" data-gallery="n2o-ale" title="N2O ALE – Predictor 2"><img src="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of N2O flux"></a></p>
 <p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -540,13 +540,13 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="lightbox" title="N2O ICE – Predictor 1" data-gallery="n2o-ice"><img src="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of N2O"></a></p>
+<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="lightbox" data-gallery="n2o-ice" title="N2O ICE – Predictor 1"><img src="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of N2O"></a></p>
 <p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="lightbox" title="N2O ICE – Predictor 2" data-gallery="n2o-ice"><img src="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of N2O"></a></p>
+<p><a href="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="lightbox" data-gallery="n2o-ice" title="N2O ICE – Predictor 2"><img src="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of N2O"></a></p>
 <p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -567,13 +567,13 @@ Interpreting CH<sub>4</sub> Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="lightbox" title="CH4 ALE – Predictor 1" data-gallery="ch4-ale"><img src="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of CH4 flux"></a></p>
+<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="lightbox" data-gallery="ch4-ale" title="CH4 ALE – Predictor 1"><img src="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of CH4 flux"></a></p>
 <p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="lightbox" title="CH4 ALE – Predictor 2" data-gallery="ch4-ale"><img src="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of CH4 flux"></a></p>
+<p><a href="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="lightbox" data-gallery="ch4-ale" title="CH4 ALE – Predictor 2"><img src="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of CH4 flux"></a></p>
 <p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
@@ -589,7 +589,7 @@ Low Model Quality
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The CH<sub>4</sub> downscaling model has negative OOB R² (−0.15), indicating it has no predictive skill for spatial variation. Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes (statewide total ≈ 4,700 kg CH<sub>4</sub>/yr) because methanogenesis requires sustained soil saturation that does not occur under standard irrigation, leaving the Random Forest with no spatial signal to learn. The top “predictors” (area_ha, clay) carry no ecological meaning here – they reflect noise fitting. Interpret these plots accordingly.</p>
+<p>The CH<sub>4</sub> downscaling model has negative OOB R² (-0.15), indicating it has no predictive skill for spatial variation. Non-flooded annual croplands produce near-zero CH<sub>4</sub> fluxes (raw SIPNET output on the order of 10⁻¹⁴ kg m⁻²; statewide downscaled total roughly 13,600 kg CH<sub>4</sub> yr⁻¹) because methanogenesis requires sustained soil saturation that does not occur under standard irrigation, leaving the Random Forest with no spatial signal to learn. The top “predictors” (area_ha, clay) carry no ecological meaning here – they reflect noise fitting. Interpret these plots accordingly.</p>
 </div>
 </div>
 </div>
@@ -598,13 +598,13 @@ Low Model Quality
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="lightbox" title="CH4 ICE – Predictor 1" data-gallery="ch4-ice"><img src="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of CH4"></a></p>
+<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="lightbox" data-gallery="ch4-ice" title="CH4 ICE – Predictor 1"><img src="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of CH4"></a></p>
 <p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 1</figcaption><p></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
 <figure class="figure">
-<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="lightbox" title="CH4 ICE – Predictor 2" data-gallery="ch4-ice"><img src="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of CH4"></a></p>
+<p><a href="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="lightbox" data-gallery="ch4-ice" title="CH4 ICE – Predictor 2"><img src="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of CH4"></a></p>
 <p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 2</figcaption><p></p>
 </figure>
 </div>
