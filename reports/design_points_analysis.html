@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-09">
+<meta name="dcterms.date" content="2026-04-10">
 
 <title>CCMMF Downscaling - Design Points Analysis</title>
 <style>
@@ -235,7 +235,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 9, 2026</p>
+      <p class="date">April 10, 2026</p>
     </div>
   </div>
   
@@ -264,7 +264,7 @@ Validation Status
 </section>
 <section id="selection-method" class="level2">
 <h2 class="anchored" data-anchor-id="selection-method">Selection Method</h2>
-<p>Design points were selected using k-medoids clustering on seven environmental covariates extracted at each CADWR cropland field centroid. K-medoids (partitioning around medoids) was chosen over k-means because it selects actual field locations as cluster centers, guaranteeing that each design point corresponds to a real field with measured covariates rather than an interpolated centroid that may not exist in the landscape.</p>
+<p>Design points were selected using hierarchical k-means clustering (<code>factoextra::hkmeans</code>) on eight covariates (seven environmental variables plus field area) extracted at each CADWR cropland field centroid. The algorithm first performs agglomerative hierarchical clustering to generate initial cluster assignments, then refines them with k-means. The optimal number of clusters was determined using elbow and silhouette criteria. Design points were then randomly sampled from the clustered fields, so each design point corresponds to a real field with measured covariates.</p>
 <p>The environmental covariates used for clustering are:</p>
 <table class="table">
 <caption>Environmental covariates used for design point selection.</caption>
@@ -303,15 +303,15 @@ Validation Status
 <td>srad</td>
 <td>Solar radiation</td>
 <td>ERA5</td>
-<td>W/m²</td>
+<td>J/m²</td>
 <td>Photosynthetic energy input</td>
 </tr>
 <tr class="even">
 <td>vapr</td>
-<td>Vapor pressure deficit</td>
+<td>Vapor pressure</td>
 <td>ERA5</td>
 <td>kPa</td>
-<td>Atmospheric moisture demand</td>
+<td>Atmospheric moisture, strongly correlated with temperature</td>
 </tr>
 <tr class="odd">
 <td>clay</td>
@@ -324,7 +324,7 @@ Validation Status
 <td>ocd</td>
 <td>Organic carbon density</td>
 <td>SoilGrids</td>
-<td>g/kg</td>
+<td>hg/m<sup>3</sup></td>
 <td>Existing soil organic matter</td>
 </tr>
 <tr class="odd">
@@ -382,7 +382,7 @@ Validation Status
 <p></p><figcaption class="figure-caption">Normalized environmental profiles for each design point cluster. Each axis is scaled to the observed range across all design points.</figcaption><p></p>
 </figure>
 </div>
-<p>Clusters with distinct profiles confirm that the k-medoids algorithm captured real environmental gradients in California’s agricultural landscape – for example, separating hot/dry southern Central Valley sites from cool/wet northern Sacramento Valley sites. This diversity in training conditions is what allows the Random Forest to learn how SIPNET outputs vary across environmental gradients and then predict to unseen fields.</p>
+<p>Clusters with distinct profiles confirm that the clustering algorithm captured real environmental gradients in California’s agricultural landscape – for example, separating hot/dry southern Central Valley sites from cool/wet northern Sacramento Valley sites. This diversity in training conditions is what allows the Random Forest to learn how SIPNET outputs vary across environmental gradients and then predict to unseen fields.</p>
 
 
 </section>
@@ -534,7 +534,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","loop":true,"descPosition":"bottom"});</script>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":true,"descPosition":"bottom","openEffect":"zoom"});</script>
 
 
 

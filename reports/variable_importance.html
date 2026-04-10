@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-09">
+<meta name="dcterms.date" content="2026-04-10">
 
 <title>CCMMF Downscaling - Downscaling Model Evaluation</title>
 <style>
@@ -236,7 +236,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 9, 2026</p>
+      <p class="date">April 10, 2026</p>
     </div>
   </div>
   
@@ -262,7 +262,7 @@ Validation Status
 </div>
 <section id="out-of-bag-performance" class="level2">
 <h2 class="anchored" data-anchor-id="out-of-bag-performance">Out-of-Bag Performance</h2>
-<p>Out-of-bag (OOB) R² measures how well each Random Forest predicts held-out training sites. It is computed separately for each of 20 ensemble members; the table shows the median and interquartile range. OOB R² is a conservative estimate of spatial predictive accuracy because it uses only the approximately 20% of training sites not included in each bootstrap sample.</p>
+<p>Out-of-bag (OOB) R² measures how well each Random Forest predicts held-out training sites. It is computed separately for each of 20 ensemble members; the table shows the median and interquartile range. OOB R² is a conservative estimate of spatial predictive accuracy because it uses only the approximately one-third of training sites not included in each bootstrap sample (each bootstrap draws n with replacement from n, leaving ~37% out-of-bag).</p>
 <table class="table">
 <caption>Downscaling model performance summary. Values from 20-member ensemble Random Forests trained at 100 annual crop anchor sites.</caption>
 <colgroup>
@@ -344,7 +344,7 @@ AGB Model Quality
 <p>Variable importance is measured as the increase in mean squared error (MSE) when each predictor is randomly permuted while all others are held constant. Higher values indicate the model depends more on that variable for accurate predictions. Importance is summarized as the median across 20 ensemble members; error bars in the figure show the IQR.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/variable_importance_summary.png" class="lightbox" title="Variable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members." data-gallery="varimp"><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4 showing ocd and vapr as top soil carbon predictors, vapr and precip as top N2O predictors"></a></p>
+<p><a href="../figures/variable_importance_summary.png" class="lightbox" title="Variable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members." data-gallery="varimp"><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4 showing ocd and vapr as top soil carbon predictors, vapr and temp as top N2O predictors"></a></p>
 <p></p><figcaption class="figure-caption">Variable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members.</figcaption><p></p>
 </figure>
 </div>
@@ -393,7 +393,7 @@ AGB Model Quality
 <section id="interpretation" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
 <p><strong>Soil carbon</strong> is most strongly driven by existing organic carbon density (ocd), which is both a predictor and correlated with the output. This reflects the well-known positive feedback between soil organic matter and further C retention – SOM persistence is controlled by environmental and biological interactions rather than molecular recalcitrance alone (Schmidt et al.&nbsp;2011, Nature). Climate variables (vapr, temp) rank second and third, capturing the temperature-driven decomposition gradient across California.</p>
-<p><strong>N<sub>2</sub>O flux</strong> is driven by climate variables (vapr, temp, precip), consistent with the well-established temperature and moisture sensitivity of soil nitrification and denitrification processes (Butterbach-Bahl et al.&nbsp;2013, Philosophical Transactions of the Royal Society B). The dominance of vapor pressure deficit likely reflects its correlation with both temperature (r = 0.86) and evaporative demand, which together control soil moisture availability for N-cycling microbes.</p>
+<p><strong>N<sub>2</sub>O flux</strong> is driven by climate variables (vapr, temp, precip), consistent with the well-established temperature and moisture sensitivity of soil nitrification and denitrification processes (Butterbach-Bahl et al.&nbsp;2013, Philosophical Transactions of the Royal Society B). The dominance of vapor pressure likely reflects its strong correlation with temperature (r = 0.86); together they capture the north-south climate gradient that controls soil moisture availability for N-cycling microbes.</p>
 <p><strong>AGB</strong> shows precipitation and vapor pressure as top predictors, consistent with water availability limiting annual crop productivity in California’s Mediterranean climate. However, the low and variable R² means these relationships are not reliably captured.</p>
 <p><strong>CH<sub>4</sub> flux</strong> shows no meaningful importance for any predictor, confirming the training data contains no spatial signal for the model to learn.</p>
 </section>
@@ -615,7 +615,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":true,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom","loop":true});</script>
 
 
 

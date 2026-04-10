@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-09">
+<meta name="dcterms.date" content="2026-04-10">
 
 <title>CCMMF Downscaling - Model Drivers</title>
 <style>
@@ -235,7 +235,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 9, 2026</p>
+      <p class="date">April 10, 2026</p>
     </div>
   </div>
   
@@ -364,7 +364,7 @@ Interpreting CH<sub>4</sub> Model Quality
 <td><code>ocd</code></td>
 <td>Organic carbon density</td>
 <td>SoilGrids</td>
-<td>g/kg</td>
+<td>hg/m<sup>3</sup></td>
 <td>Existing soil organic matter – both a predictor and correlated with the output</td>
 </tr>
 <tr class="odd">
@@ -392,15 +392,15 @@ Interpreting CH<sub>4</sub> Model Quality
 <td><code>srad</code></td>
 <td>Solar radiation</td>
 <td>ERA5</td>
-<td>W/m²</td>
+<td>J/m²</td>
 <td>Energy input for photosynthesis</td>
 </tr>
 <tr class="odd">
 <td><code>vapr</code></td>
-<td>Vapor pressure deficit</td>
+<td>Vapor pressure</td>
 <td>ERA5</td>
 <td>kPa</td>
-<td>Atmospheric moisture demand – controls plant water stress</td>
+<td>Atmospheric moisture – strongly correlated with temperature (r = 0.86)</td>
 </tr>
 <tr class="even">
 <td><code>area_ha</code></td>
@@ -487,7 +487,7 @@ Interpreting CH<sub>4</sub> Model Quality
 </div>
 </div>
 </div>
-<p>Precipitation (precip) and vapor pressure deficit (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Higher VPD –&gt; more plant water stress –&gt; lower biomass. The wide IQR (-0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
+<p>Precipitation (precip) and vapor pressure (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Vapor pressure is strongly correlated with temperature (r = 0.86); its negative relationship with AGB likely reflects faster turnover under warmer conditions rather than a direct moisture effect. The wide IQR (-0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="quarto-layout-panel">
@@ -533,7 +533,7 @@ Interpreting CH<sub>4</sub> Model Quality
 </div>
 </div>
 </div>
-<p>Vapor pressure deficit (vapr) and mean annual temperature (temp) are the top predictors of spatial variation in N<sub>2</sub>O flux (OOB R² = 0.52, our best spatial model). Higher vapr and temperature are associated with greater N<sub>2</sub>O emissions, consistent with warmer conditions promoting nitrification and denitrification. These two predictors are highly correlated (r = 0.86), reflecting California’s north–south climate gradient.</p>
+<p>Vapor pressure (vapr) and mean annual temperature (temp) are the top predictors of spatial variation in N<sub>2</sub>O flux (OOB R² = 0.52, our best spatial model). Higher vapr and temperature are associated with greater N<sub>2</sub>O emissions, consistent with warmer conditions promoting nitrification and denitrification. These two predictors are highly correlated (r = 0.86), reflecting California’s north-south climate gradient.</p>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="quarto-layout-panel">
@@ -775,7 +775,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":true,"selector":".lightbox","descPosition":"bottom"});</script>
+<script>var lightboxQuarto = GLightbox({"loop":true,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});</script>
 
 
 
