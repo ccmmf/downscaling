@@ -6,12 +6,14 @@ Once a new release is made this file will be updated to create a new `Unreleased
 
 For more information about this file see also [Keep a Changelog](http://keepachangelog.com/) .
 
-<!-- 
+
 sections to include in release notes:
 
 ## [Unreleased]
 
 ### Added
+
+- Support for N2O and CH4 flux variables throughout the downscaling pipeline (#11)
 
 ### Fixed
 
@@ -19,7 +21,7 @@ sections to include in release notes:
 
 ### Removed
 
--->
+
 
 ## 0.2.0-2a
 

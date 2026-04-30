@@ -20,8 +20,8 @@ downscale_preds <- vroom::vroom(
     site_id = readr::col_character(),
     county = readr::col_character(),
     area_ha = readr::col_double(),
-    c_density_Mg_ha = readr::col_double(),
-    total_c_Mg = readr::col_double()
+    density_per_ha = readr::col_double(),
+    total_per_field = readr::col_double()
   )
 )
 
@@ -59,25 +59,22 @@ if (nrow(na_summary) > 0) {
 }
 
 ens_county_preds <- downscale_preds |>
-  # Now aggregate to get county level totals for each pool x ensemble
   dplyr::group_by(model_output, pft, county, ensemble) |>
   dplyr::summarize(
     n = dplyr::n(),
-    total_c_Mg = sum(total_c_Mg), # total Mg C per county
+    total_per_county = sum(total_per_field),
     total_ha = sum(area_ha),
     .groups = "drop"
   ) |>
-  # counties with no fields will result in NA below
   dplyr::filter(total_ha > 0) |>
   dplyr::mutate(
-    total_c_Tg = PEcAn.utils::ud_convert(total_c_Mg, "Mg", "Tg"),
-    c_density_Mg_ha = total_c_Mg / total_ha
+    density_per_ha = total_per_county / total_ha
   ) |>
   dplyr::arrange(model_output, pft, county, ensemble)
 
 ens_members_by_county <- ens_county_preds |>
   dplyr::group_by(model_output, pft, county) |>
-  dplyr::summarize(n_vals = dplyr::n_distinct(total_c_Mg), .groups = "drop")
+  dplyr::summarize(n_vals = dplyr::n_distinct(total_per_county), .groups = "drop")
 
 if (all(ens_members_by_county$n_vals == length(ensemble_ids))) {
   PEcAn.logger::logger.info("All counties have the correct number of ensemble members: (", length(ensemble_ids), ")")
@@ -95,12 +92,11 @@ if (all(ens_members_by_county$n_vals == length(ensemble_ids))) {
 county_summaries <- ens_county_preds |>
   dplyr::group_by(model_output, pft, county) |>
   dplyr::summarize(
-    # Number of fields in county should be same for each ensemble member
     n = max(n),
-    mean_total_c_Tg = mean(total_c_Tg),
-    sd_total_c_Tg = sd(total_c_Tg),
-    mean_c_density_Mg_ha = mean(c_density_Mg_ha),
-    sd_c_density_Mg_ha = sd(c_density_Mg_ha),
+    mean_total_per_county = mean(total_per_county),
+    sd_total_per_county = sd(total_per_county),
+    mean_density_per_ha = mean(density_per_ha),
+    sd_density_per_ha = sd(density_per_ha),
     mean_total_ha = mean(total_ha),
     sd_total_ha = sd(total_ha),
     .groups = "drop"
@@ -112,18 +108,17 @@ county_summaries <- ens_county_preds |>
           "At least one (model_output, pft, county) group has n == 1; variability across ensembles cannot be assessed."
         )
       }
-      if (any(df$sd_total_c_Tg == 0, na.rm = TRUE)) {
+      if (any(df$sd_total_per_county == 0, na.rm = TRUE)) {
         PEcAn.logger::logger.severe(
-          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_c_Tg == 0)."
+          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_per_county == 0)."
         )
       }
       df
     }
   ) |>
   dplyr::mutate(
-    # Only save 3 significant digits
     dplyr::across(
-      .cols = c(mean_total_c_Tg, sd_total_c_Tg, mean_c_density_Mg_ha, sd_c_density_Mg_ha),
+      .cols = c(mean_total_per_county, sd_total_per_county, mean_density_per_ha, sd_density_per_ha),
       .fns = ~ signif(.x, 3)
     )
   )
