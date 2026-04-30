@@ -61,12 +61,17 @@ match_anchor_sites <- function(
     idx <- sf::st_nearest_feature(unmatched, ca_fields)
     nearest_fields <- ca_fields |> dplyr::slice(idx)
     
-    # assign values and calculate distances
+    # extract centroid coordinates for nearest fields
+    nearest_coords <- nearest_fields |>
+      sf::st_transform(4326) |>
+      sf::st_centroid() |>
+      sf::st_coordinates()
+    
     unmatched_dist <- unmatched |>
       dplyr::mutate(
         site_id = nearest_fields$site_id,
-        lat = nearest_fields$lat,
-        lon = nearest_fields$lon,
+        lon = nearest_coords[, 1],
+        lat = nearest_coords[, 2],
         distance_m = sf::st_distance(geometry, nearest_fields, by_element = TRUE)
       )
     
@@ -109,15 +114,20 @@ match_anchor_sites <- function(
 }
 
 # First subset ca_fields to only include those with covariates
-if (!exists("ca_fields")) {
-  ca_fields_gpkg <- file.path(data_dir, "ca_fields.gpkg") 
-  ca_fields <- sf::st_read(ca_fields_gpkg) |>
-    sf::st_transform(crs = ca_albers_crs)
+cadwr_fields_gpkg <- file.path(data_dir, "cadwr_crops_sites.gpkg")
+if (!file.exists(cadwr_fields_gpkg)) {
+  PEcAn.logger::logger.severe(
+    "CADWR fields not found. Run 009_prepare_cadwr_crops.R first.\n",
+    "Expected: ", cadwr_fields_gpkg
+  )
 }
-if (!exists("site_covariates")) {
-  site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
-  site_covariates <- readr::read_csv(site_covariates_csv)
-}
+
+ca_fields <- sf::st_read(cadwr_fields_gpkg, quiet = TRUE) |>
+  sf::st_transform(crs = ca_albers_crs)
+
+site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
+site_covariates <- readr::read_csv(site_covariates_csv, show_col_types = FALSE) |>
+  dplyr::mutate(site_id = as.character(site_id))
 
 ca_fields_with_covariates <- ca_fields |>
   dplyr::filter(site_id %in% site_covariates$site_id)
@@ -141,7 +151,7 @@ if (any(is.na(anchor_sites_with_ids |> dplyr::select(site_id, lat, lon)))) {
 # Check for anchor sites with any covariate missing
 missing_cov <- anchor_sites_with_ids |>
   sf::st_drop_geometry() |>
-  dplyr::left_join(site_covariates |> sf::st_drop_geometry(), by = "site_id") |>
+  dplyr::left_join(site_covariates, by = "site_id") |>
   dplyr::select(
     site_id, lat, lon,
     clay, ocd, twi, temp, precip
