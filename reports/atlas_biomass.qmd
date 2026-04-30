@@ -1,0 +1,139 @@
+---
+title: "Biomass Atlas"
+subtitle: "Aboveground Biomass Under Management Scenarios"
+author: "Akash B V"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+lightbox: true
+---
+
+Aboveground biomass (AGB) represents the total mass of living plant material above the soil surface -- stems, leaves, and reproductive structures. For annual crops, AGB is a snapshot of standing biomass at the modeled time point. Because these are harvested crops, end-of-season AGB values are typically small. See the [Scenario Definition Table](atlas_overview.qmd#tbl-scenario-def) for practice parameters and simulation details.
+
+::: {.callout-warning}
+## Validation Status
+
+These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.
+:::
+
+::: {.callout-note}
+## Context for AGB values
+
+AGB in annual croplands reflects biomass remaining after harvest. Statewide totals are very small (~40 Mg total across all fields) compared to soil carbon pools (~112 Tg C). For tillage and compost scenarios, AGB differences from baseline are effectively zero (0.0%), confirming that these management practices do not alter crop standing biomass in SIPNET. Drip irrigation and stacked scenarios show a -18.6% AGB reduction, reflecting altered water availability affecting end-of-season residue. AGB is most useful as an indicator of crop productivity differences and residue availability for soil carbon cycling.
+:::
+
+## County-Level Aboveground Biomass
+
+### Mixed Comparison: Baseline + Scenario Differences
+
+![Baseline absolute + scenario differences for AGB](../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp){.lightbox group="agb-mixed" fig-alt="Mixed comparison showing baseline AGB alongside scenario differences"}
+
+### All Scenarios Side-by-Side
+
+::: {.panel-tabset}
+#### All Scenarios (Absolute)
+
+![Faceted county AGB -- all scenarios](../figures/facet_county_annual_crop_AGB_stock_comparison.webp){.lightbox group="agb-county" fig-alt="Faceted county-level AGB maps for all scenarios"}
+
+#### All Differences from Baseline
+
+![Faceted county AGB differences](../figures/facet_diff_county_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-county-diff" fig-alt="Faceted county-level AGB difference maps"}
+:::
+
+### Individual AGB Scenarios {.tabset}
+
+::: {.panel-tabset}
+#### Baseline
+
+![County AGB -- Baseline](../figures/county_baseline_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Baseline county total AGB map"}
+
+#### Compost
+
+![County AGB -- Compost](../figures/county_compost_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Compost county total AGB map"}
+
+#### Reduced Till
+
+![County AGB -- Reduced Till](../figures/county_reduced_till_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Reduced till county total AGB map"}
+
+#### Zero Till
+
+![County AGB -- Zero Till](../figures/county_zero_till_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Zero till county total AGB map"}
+
+#### Drip Irrigation
+
+![County AGB -- Drip Irrigation](../figures/county_reduced_irrig_drip_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Drip irrigation county total AGB map"}
+
+#### Stacked
+
+![County AGB -- Stacked](../figures/county_stacked_annual_crop_AGB_carbon_stock.webp){.lightbox group="agb-stock" fig-alt="Stacked county total AGB map"}
+:::
+
+### Individual AGB Difference Maps {.tabset}
+
+::: {.panel-tabset}
+#### Compost
+
+![AGB difference -- Compost vs Baseline](../figures/diff_county_compost_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-diff" fig-alt="Compost minus baseline AGB difference map"}
+
+#### Reduced Till
+
+![AGB difference -- Reduced Till vs Baseline](../figures/diff_county_reduced_till_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-diff" fig-alt="Reduced till minus baseline AGB difference map"}
+
+#### Zero Till
+
+![AGB difference -- Zero Till vs Baseline](../figures/diff_county_zero_till_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-diff" fig-alt="Zero till minus baseline AGB difference map"}
+
+#### Drip Irrigation
+
+![AGB difference -- Drip Irrig. vs Baseline](../figures/diff_county_reduced_irrig_drip_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-diff" fig-alt="Drip irrigation minus baseline AGB difference map"}
+
+#### Stacked
+
+![AGB difference -- Stacked vs Baseline](../figures/diff_county_stacked_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-diff" fig-alt="Stacked minus baseline AGB difference map"}
+:::
+
+------------------------------------------------------------------------
+
+## Field-Level AGB Density
+
+### All Scenarios
+
+::: {.panel-tabset}
+#### All Scenarios (Density)
+
+![Faceted field AGB density -- all scenarios](../figures/facet_field_annual_crop_AGB_density_comparison.webp){.lightbox group="agb-field" fig-alt="Faceted field-level AGB density maps"}
+
+#### All Differences from Baseline
+
+![Faceted field AGB differences](../figures/facet_diff_field_annual_crop_AGB_vs_baseline.webp){.lightbox group="agb-field-diff" fig-alt="Faceted field-level AGB difference maps"}
+:::
+
+### Individual Field AGB Maps {.tabset}
+
+::: {.panel-tabset}
+#### Baseline
+
+![Field AGB density -- Baseline](../figures/field_baseline_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Baseline field-level AGB density map"}
+
+#### Compost
+
+![Field AGB density -- Compost](../figures/field_compost_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Compost field-level AGB density map"}
+
+#### Reduced Till
+
+![Field AGB density -- Reduced Till](../figures/field_reduced_till_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Reduced till field-level AGB density map"}
+
+#### Zero Till
+
+![Field AGB density -- Zero Till](../figures/field_zero_till_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Zero till field-level AGB density map"}
+
+#### Drip Irrigation
+
+![Field AGB density -- Drip Irrigation](../figures/field_reduced_irrig_drip_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Drip irrigation field-level AGB density map"}
+
+#### Stacked
+
+![Field AGB density -- Stacked](../figures/field_stacked_annual_crop_AGB_carbon_density.webp){.lightbox group="agb-field-density" fig-alt="Stacked field-level AGB density map"}
+:::

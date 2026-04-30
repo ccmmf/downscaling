@@ -4,123 +4,141 @@ author: "David LeBauer"
 date: today
 format:
   html:
-    self-contained: false
-    df-print: default
     toc: true
-execute:
-  echo: false
+    toc-depth: 3
+lightbox: true
 ---
 
-
-
-# Overview
-
-Here we present results of aggregating from field scale pool sizes <!-- and fluxes--> to county-level estimates of county-level carbon stocks and densities for soil carbon stocks to 30cm and aboveground biomass.
-
-**Not validated, for illustrative purposes only.**
-
-For detailed information about methods and workflow, see the [Workflow Documentation](../docs/workflow_documentation.md).
-
-Estimates for woody and mixed woody + annual systems are done for all fields in the LandIQ dataset with tree and vinyard crops; estimates for annual systems are done for all fields with herbaceous annual crops.
-
-In the mixed scenario, ground cover is planted in all orchards. The methods for simulating the addition of ground cover to orchards are described in [Mixed System Prototype](../docs/mixed_system_prototype.qmd). Briefly, it combines downscaled model outputs from the woody perennial crop and annual crop PFTs to represent the effect of ground cover on carbon pools.
-
-# Results
-
-## County-Level Carbon Stocks and Densities
-
-The maps below are organized to compare across PFTs. First we show total county carbon (Stocks, Tg), then area‑normalized density (Density, Mg/ha), each split by carbon pool and PFT.
-
-### Stocks
-
-#### Soil Carbon (TotSoilCarb)
-
-##### Annual Crop
-
-![](../figures/county_annual_crop_TotSoilCarb_carbon_stock.webp)
-
-##### Woody Perennial Crop (Orchards & Vineyards)
-
-![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
-
-##### Woody + Annual (Orchards & Vineyards with Ground Cover)
-
-![](../figures/county_woody_annual_TotSoilCarb_carbon_stock.webp)
-
-#### Aboveground Biomass (AGB)
-
-##### Annual Crop
-
-![](../figures/county_annual_crop_AGB_carbon_stock.webp)
-
-##### Woody Perennial Crop (Orchards & Vineyards)
-
-![](../figures/county_woody_perennial_crop_AGB_carbon_stock.webp)
-
-##### Woody + Annual (Orchards & Vineyards with Ground Cover)
-
-![](../figures/county_woody_annual_AGB_carbon_stock.webp)
-
-### Density
-
-#### Soil Carbon (TotSoilCarb)
-
-##### Annual Crop
-
-![](../figures/county_annual_crop_TotSoilCarb_carbon_density.webp)
-
-##### Woody Perennial Crop (Orchards & Vineyards)
-
-![](../figures/county_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
-
-##### Woody + Annual (Orchards & Vineyards with Ground Cover)
-![](../figures/county_woody_annual_TotSoilCarb_carbon_density.webp)
-
-#### Aboveground Biomass (AGB)
-
-##### Annual Crop
-
-![](../figures/county_annual_crop_AGB_carbon_density.webp)
-
-##### Woody Perennial Crop (Orchards & Vineyards)
-
-![](../figures/county_woody_perennial_crop_AGB_carbon_density.webp)
-
-##### Woody + Annual (Orchards & Vineyards with Ground Cover)
-
-![](../figures/county_woody_annual_AGB_carbon_density.webp)
-
-### Tables: County Stocks and Density (by PFT) and PFT Comparison
-
-The first table summarizes county-level metrics for each PFT. The second table pivots carbon pools to highlight differences across cropping systems..
-
-```{r, options, include=FALSE}
+```{r setup, include=FALSE}
 options(ccmmf.quiet_banner = TRUE)
 source(here::here("000-config.R"))
 ```
 
+## Overview
+
+This page presents baseline results from the Random Forest downscaling of SIPNET model outputs from 100 anchor sites to approximately 132,000 annual cropland fields across 57 California counties. Results include county-level totals, field-level density maps, and mixed baseline-plus-scenario-difference comparisons for soil carbon, aboveground biomass, and GHG fluxes (N~2~O, CH~4~). For detailed interpretation of scenario effects, see the [Soil Carbon Atlas](atlas_soil_carbon.qmd) and [GHG Emissions Atlas](atlas_ghg_emissions.qmd).
+
+::: {.callout-warning}
+## Validation Status
+
+These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.
+:::
+
+For detailed information about methods and workflow, see the [Workflow Documentation](../docs/workflow_documentation.md).
+
+## County-Level Baseline Carbon Stocks
+
+County-level maps show the total mass summed across all annual cropland fields in each county. Central Valley counties (Kern, Fresno, Tulare, San Joaquin) dominate because they contain the most cropland area. Units are Gg (gigagrams) for carbon pools and Gg yr⁻¹ for GHG fluxes.
+
+### Soil Carbon (TotSoilCarb)
+
+![County total soil carbon -- Baseline. Statewide total: 112.3 Tg C at 30 cm depth.](../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp){.lightbox group="county-baseline" fig-alt="Baseline county total soil carbon map showing highest stocks in Central Valley counties"}
+
+The spatial pattern reflects county-level cropland area more than per-hectare soil properties. Kern, Fresno, and Tulare counties show the highest totals because they contain the largest share of California's annual cropland. See the [field-level density maps](#field-level-baseline-density) below for the per-hectare view that isolates soil and climate effects from area.
+
+### Aboveground Biomass (AGB)
+
+![County total aboveground biomass -- Baseline. Statewide total: approximately 40 Mg C.](../figures/county_baseline_annual_crop_AGB_carbon_stock.webp){.lightbox group="county-baseline" fig-alt="Baseline county total aboveground biomass map"}
+
+AGB in annual croplands reflects standing biomass at the modeled time point. Values are very small compared to soil carbon pools because annual crops are harvested. AGB is most useful as a relative indicator of crop productivity differences across regions.
+
+### Nitrous Oxide (N~2~O) Flux
+
+![County total N~2~O flux -- Baseline. Statewide total: 12.91 Gg N~2~O yr⁻¹.](../figures/county_baseline_annual_crop_N2O_flux_carbon_stock.webp){.lightbox group="county-baseline" fig-alt="Baseline county total N2O emission map showing highest emissions in southern Central Valley and Imperial Valley"}
+
+N~2~O emissions are highest in the southern San Joaquin Valley (Kern, Tulare, Kings, Fresno) and Imperial County. This pattern reflects the combined influence of large cropland areas and warmer temperatures that promote nitrification and denitrification. The north-south gradient in per-hectare N~2~O emission rates is driven by temperature and vapor pressure (see [Model Drivers](atlas_model_drivers.qmd)).
+
+### Methane (CH~4~) Flux
+
+![County total CH~4~ flux -- Baseline. Statewide total: 0.014 Gg CH~4~ yr⁻¹ -- effectively zero.](../figures/county_baseline_annual_crop_CH4_flux_carbon_stock.webp){.lightbox group="county-baseline" fig-alt="Baseline county CH4 emission map showing near-zero values across all counties"}
+
+::: {.callout-warning}
+## CH~4~ Is Effectively Zero
+
+Non-flooded annual croplands produce negligible CH~4~ because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. The statewide total of 0.014 Gg CH~4~ yr⁻¹ is effectively machine-precision zero in the process model. Any spatial pattern in this map reflects noise in the downscaling model (OOB R² = -0.15), not real ecological variation. Meaningful CH~4~ fluxes are expected when rice paddies are included in future model runs.
+:::
+
+## Field-Level Baseline Density {#field-level-baseline-density}
+
+Area-normalized density (per hectare) at the individual field level isolates per-area effects from county cropland area. These maps reveal how soil type, climate, and topography drive spatial variation independent of how much cropland each county contains.
+
+### Soil Carbon (TotSoilCarb)
+
+![Field-level soil carbon density -- Baseline (Mg C ha⁻¹)](../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp){.lightbox group="field-baseline" fig-alt="Baseline field-level soil carbon density map showing higher per-hectare values in Sacramento Valley"}
+
+Sacramento Valley fields (north) tend to show higher per-hectare soil carbon than San Joaquin Valley fields (south), consistent with cooler temperatures slowing organic matter decomposition. This gradient is driven primarily by organic carbon density (ocd) and vapor pressure (vapr) -- see [Model Drivers](atlas_model_drivers.qmd).
+
+### Aboveground Biomass (AGB)
+
+![Field-level AGB density -- Baseline (Mg C ha⁻¹)](../figures/field_baseline_annual_crop_AGB_carbon_density.webp){.lightbox group="field-baseline" fig-alt="Baseline field-level AGB density map"}
+
+### Nitrous Oxide (N~2~O) Flux
+
+![Field-level N~2~O flux density -- Baseline (kg N~2~O ha⁻¹ yr⁻¹)](../figures/field_baseline_annual_crop_N2O_flux_carbon_density.webp){.lightbox group="field-baseline" fig-alt="Baseline field-level N2O flux density map showing north-south gradient with higher emissions in warmer southern fields"}
+
+Per-hectare N~2~O emissions show a clear north-south gradient: southern fields (Imperial Valley, southern San Joaquin) emit 20--30 kg N~2~O ha⁻¹ yr⁻¹ while northern fields emit 5--10 kg N~2~O ha⁻¹ yr⁻¹. This gradient reflects the strong temperature and vapor pressure dependence of soil N~2~O production through nitrification and denitrification pathways.
+
+### Methane (CH~4~) Flux
+
+![Field-level CH~4~ flux density -- Baseline (kg CH~4~ ha⁻¹ yr⁻¹)](../figures/field_baseline_annual_crop_CH4_flux_carbon_density.webp){.lightbox group="field-baseline" fig-alt="Baseline field-level CH4 flux density map showing near-zero values"}
+
+All field-level CH~4~ values are effectively zero (0.007 kg CH~4~ ha⁻¹ yr⁻¹ statewide average). Any spatial variation is noise from the downscaling model, not a real ecological signal.
+
+## Mixed Comparison: Baseline + Scenario Differences
+
+These panels show the baseline map alongside the five scenario difference maps for each variable. The first panel uses an absolute scale; panels 2--6 use a diverging scale centered on zero. See the [Scenario Definition Table](atlas_overview.qmd#tbl-scenario-def) for practice parameters and simulation details. For detailed interpretation, see the [Soil Carbon Atlas](atlas_soil_carbon.qmd) and [GHG Emissions Atlas](atlas_ghg_emissions.qmd).
+
+### Soil Carbon (TotSoilCarb)
+
+![Baseline absolute + scenario differences for total soil carbon](../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp){.lightbox group="mixed" fig-alt="Mixed comparison showing baseline soil carbon alongside scenario differences: compost +12.2%, stacked +16.6%, drip +3.3%, tillage small positive"}
+
+All five management scenarios increase soil carbon relative to baseline. Compost (+12.2%) and stacked (+16.6%) show the largest gains. See [Soil Carbon Atlas](atlas_soil_carbon.qmd) for detailed scenario analysis.
+
+### Aboveground Biomass (AGB)
+
+![Baseline absolute + scenario differences for aboveground biomass](../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp){.lightbox group="mixed" fig-alt="Mixed comparison showing baseline AGB alongside scenario differences: tillage and compost no change, drip and stacked -18.6%"}
+
+Compost and tillage scenarios show no AGB change (0%). Drip irrigation and stacked scenarios show -18.6% AGB reduction, reflecting altered water availability affecting end-of-season residue.
+
+### Nitrous Oxide (N~2~O) Flux
+
+![Baseline absolute + scenario differences for N~2~O flux](../figures/mixed_county_annual_crop_N2O_flux_baseline_plus_diffs.webp){.lightbox group="mixed" fig-alt="Mixed comparison showing baseline N2O alongside scenario differences: compost -39.5%, stacked -27.3%, drip +12.0%"}
+
+Compost (-39.5%) and stacked (-27.3%) reduce N~2~O emissions. Drip irrigation (+12.0%) increases N~2~O. Tillage scenarios show essentially no change. See [GHG Emissions Atlas](atlas_ghg_emissions.qmd) for detailed trade-off analysis.
+
+### Methane (CH~4~) Flux
+
+![Baseline absolute + scenario differences for CH~4~ flux](../figures/mixed_county_annual_crop_CH4_flux_baseline_plus_diffs.webp){.lightbox group="mixed" fig-alt="Mixed comparison showing baseline CH4 alongside scenario differences -- all effectively zero"}
+
+All CH~4~ values are effectively zero for non-flooded annual croplands. Percentage differences shown in panel titles are misleading because the baseline is machine-precision zero. See the [GHG Emissions Atlas](atlas_ghg_emissions.qmd) for discussion.
+
+## Interactive Data Tables
+
+### County Stocks and Density (Baseline)
+
 ```{r,load_inputs, message=FALSE, warning=FALSE}
 
-# Load county summaries data
+# Load county aggregated predictions (baseline only for this overview page)
 county_summaries <- readr::read_csv(
-  file.path(model_outdir, "county_summaries.csv"),
+  file.path(model_outdir, "county_aggregated_preds.csv"),
   show_col_types = FALSE
-)
+) |>
+  dplyr::filter(scenario == "baseline")
 
 # Long table with PFT + area
 county_summaries_table <- county_summaries |>
   dplyr::mutate(
-    `Mean Total C (Tg/county)` = paste0(signif(mean_total_c_Tg, 2), " (", signif(sd_total_c_Tg, 2), ")"),
-    `Mean C Density (Mg/ha)`   = paste0(signif(mean_c_density_Mg_ha, 2), " (", signif(sd_c_density_Mg_ha, 2), ")"),
-    `Area (ha)`                = signif(mean_total_ha, 3)
+    `Mean Total (Tg/county)` = paste0(signif(mean_total_per_county / 1e6, 2), " (", signif(sd_total_per_county / 1e6, 2), ")"),
+    `Mean Density (Mg/ha)`   = paste0(signif(mean_density_per_ha, 2), " (", signif(sd_density_per_ha, 2), ")"),
+    `Area (ha)`              = signif(mean_total_ha, 3)
   ) |>
   dplyr::rename(
-    `Carbon Pool` = model_output,
-    `PFT`         = pft,
-    `County`      = county,
-    `# Fields`    = n
+    `Variable` = model_output,
+    `PFT`      = pft,
+    `County`   = county,
+    `# Fields` = n
   ) |>
-  dplyr::select(`Carbon Pool`, `PFT`, `County`, `# Fields`, `Area (ha)`, `Mean Total C (Tg/county)`, `Mean C Density (Mg/ha)`)
+  dplyr::select(`Variable`, `PFT`, `County`, `# Fields`, `Area (ha)`, `Mean Total (Tg/county)`, `Mean Density (Mg/ha)`)
 
 htmlwidgets::setWidgetIdSeed(123)
 
@@ -141,17 +159,17 @@ DT::datatable(
   rownames = FALSE, escape = FALSE
 )
 
-# Wide comparison: TotSoilCarb density by PFT
+# Wide comparison: density by PFT
 density_wide <- county_summaries |>
-  dplyr::select(County = county, `Carbon Pool` = model_output, PFT = pft, `C Density (Mg/ha)` = mean_c_density_Mg_ha) |>
-  tidyr::pivot_wider(names_from = PFT, values_from = `C Density (Mg/ha)`) |>
-  dplyr::arrange(`Carbon Pool`, County)
+  dplyr::select(County = county, Variable = model_output, PFT = pft, `Density (Mg/ha)` = mean_density_per_ha) |>
+  tidyr::pivot_wider(names_from = PFT, values_from = `Density (Mg/ha)`) |>
+  dplyr::arrange(Variable, County)
 
 # Drop rows where the row-wise max value is < MASK_THRESHOLD * colsum of the column where that max occurs,
 # evaluated within each Carbon Pool separately
 if (exists("MASK_THRESHOLD")) {
   mask_group <- function(df) {
-    vals <- as.matrix(dplyr::select(df, -County, -`Carbon Pool`))
+    vals <- as.matrix(dplyr::select(df, -County, -Variable))
     vals2 <- vals; vals2[is.na(vals2)] <- -Inf
     col_sums <- colSums(vals, na.rm = TRUE)
     if (all(!is.finite(col_sums)) || sum(col_sums, na.rm = TRUE) <= 0) return(df)
@@ -162,7 +180,7 @@ if (exists("MASK_THRESHOLD")) {
     df[keep, , drop = FALSE]
   }
   density_wide <- density_wide |>
-    dplyr::group_split(`Carbon Pool`, .keep = TRUE) |>
+    dplyr::group_split(Variable, .keep = TRUE) |>
     purrr::map(mask_group) |>
     dplyr::bind_rows()
 }
@@ -184,135 +202,3 @@ DT::datatable(
   rownames = FALSE, escape = FALSE
 )
 ```
-
-<!-- 
-OMIT - need to find appropriate t0 value for annual AGB 
-Or completely omit delta for annual AGB and focus on C in woody biomass 
-## Start-to-End Delta by PFT
-
-The following maps show county-level changes (start-to-end) in carbon density and stock for each PFT and pool. Positive values indicate an increase over the modeled period.
-
-### Annual Crop
-
-
-TotSoilCarb density: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_density.webp)
-
-TotSoilCarb stock: ![](../figures/county_delta_annual_crop_TotSoilCarb_carbon_stock.webp)
-
-AGB density: ![](../figures/county_delta_annual_crop_AGB_carbon_density.webp)
-
-AGB stock: ![](../figures/county_delta_annual_crop_AGB_carbon_stock.webp)
-
-### Woody Perennial Crop
-
-TotSoilCarb density: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_density.webp)
-
-TotSoilCarb stock: ![](../figures/county_delta_woody_perennial_crop_TotSoilCarb_carbon_stock.webp)
-
-AGB density: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_density.webp)
-
-AGB stock: ![](../figures/county_delta_woody_perennial_crop_AGB_carbon_stock.webp)
-
-### Per-county Mixed-Woody Differences (Tables)
-
-```{r}
-# Compute Mixed – Woody differences from matched fields for both pools
-dp <- vroom::vroom(
-  file.path(model_outdir, "downscaled_preds.csv"),
-  col_types = readr::cols(
-    site_id = readr::col_character(),
-    pft = readr::col_character(),
-    ensemble = readr::col_double(),
-    c_density_Mg_ha = readr::col_double(),
-    total_c_Mg = readr::col_double(),
-    area_ha = readr::col_double(),
-    county = readr::col_character(),
-    model_output = readr::col_character()
-  )
-)
-mix <- dp |> dplyr::filter(pft == "woody + annual") |>
-  dplyr::select(site_id, ensemble, model_output, county, total_c_Mg_mix = total_c_Mg)
-wood <- dp |> dplyr::filter(pft == "woody perennial crop") |>
-  dplyr::select(site_id, ensemble, model_output, county, total_c_Mg_woody = total_c_Mg)
-diff_tbl <- mix |>
-  dplyr::inner_join(wood, by = c("site_id","ensemble","model_output","county")) |>
-  dplyr::mutate(diff_total_Mg = total_c_Mg_mix - total_c_Mg_woody) |>
-  dplyr::group_by(model_output, county, ensemble) |>
-  dplyr::summarise(diff_total_Mg = sum(diff_total_Mg), .groups = "drop") |>
-  dplyr::group_by(model_output, county) |>
-  dplyr::summarise(delta_Tg = PEcAn.utils::ud_convert(mean(diff_total_Mg), "Mg", "Tg"), .groups = "drop") |>
-  dplyr::mutate(`Delta Total C (Tg)` = ifelse(abs(delta_Tg) < 0.005, 0, round(delta_Tg, 3))) |>
-  dplyr::select(model_output, county, `Delta Total C (Tg)`) |>
-  dplyr::arrange(model_output, county)
-
-DT::datatable(
-  diff_tbl,
-  extensions = c('Scroller','SearchPanes','Select'),
-  options = list(
-    dom = 'Plrtip',
-    pageLength = 10,
-    searchHighlight = FALSE,
-    deferRender = TRUE,
-    scroller = TRUE,
-    scrollY = "60vh",
-    searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
-    columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1)))
-  ),
-  class = "stripe hover compact",
-  rownames = FALSE, escape = FALSE
-)
-```
-
-
-### Per-county Start-to-End Deltas
-
-```{r}
-delta_csv <- file.path(model_outdir, "downscaled_deltas.csv")
-if (file.exists(delta_csv)) {
-  deltas <- vroom::vroom(
-    delta_csv,
-    col_types = readr::cols(
-      site_id = readr::col_character(),
-      pft = readr::col_character(),
-      ensemble = readr::col_double(),
-      delta_c_density_Mg_ha = readr::col_double(),
-      delta_total_c_Mg = readr::col_double(),
-      area_ha = readr::col_double(),
-      county = readr::col_character(),
-      model_output = readr::col_character()
-    )
-  )
-  delta_tbl <- deltas |>
-    dplyr::group_by(model_output, pft, county, ensemble) |>
-    dplyr::summarise(total_delta_Mg = sum(delta_total_c_Mg), total_ha = sum(area_ha), .groups = "drop") |>
-    dplyr::mutate(`Delta Density (Mg/ha)` = total_delta_Mg / total_ha,
-                   `Delta Total (Tg)` = PEcAn.utils::ud_convert(total_delta_Mg, "Mg", "Tg")) |>
-    dplyr::group_by(model_output, pft, county) |>
-    dplyr::summarise(`Delta Density (Mg/ha)` = mean(`Delta Density (Mg/ha)`),
-                     `Delta Total (Tg)` = mean(`Delta Total (Tg)`), .groups = "drop") |>
-    dplyr::mutate(`Delta Density (Mg/ha)` = round(`Delta Density (Mg/ha)`, 4),
-                   `Delta Total (Tg)` = round(`Delta Total (Tg)`, 3)) |>
-    dplyr::rename(`Carbon Pool` = model_output, `PFT` = pft, County = county) |>
-    dplyr::arrange(`Carbon Pool`, `PFT`, County)
-
-  DT::datatable(
-    delta_tbl,
-    extensions = c('Scroller','SearchPanes','Select'),
-    options = list(
-      dom = 'Plrtip',
-      pageLength = 10,
-      searchHighlight = FALSE,
-      deferRender = TRUE,
-      scroller = TRUE,
-      scrollY = "60vh",
-      searchPanes = list(cascadePanes = TRUE, initCollapsed = TRUE),
-      columnDefs = list(list(searchPanes = list(show = TRUE), targets = c(0,1,2)))
-    ),
-    class = "stripe hover compact",
-    rownames = FALSE, escape = FALSE
-  )
-} else {
-  cat("Delta file not found.")
-}
-```
--->

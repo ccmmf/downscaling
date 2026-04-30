@@ -16,15 +16,16 @@
 
 source("000-config.R")
 
-# skip for single-PFT management scenarios (multi-PFT aggregation not applicable)
-# TODO: extend to support multi-PFT management scenarios when woody crop scenarios are added
-if (exists("USE_PHASE_3_SCENARIOS") && USE_PHASE_3_SCENARIOS) {
-  PEcAn.logger::logger.info(
-    "Skipping multi-PFT aggregation (single PFT scenarios).",
-    "Proceeding directly to 040_downscale.R"
-  )
-  quit(save = "no", status = 0)
-}
+# Skip: multi-PFT aggregation is not applicable for single-PFT management
+# scenarios. We hard-exit so the master orchestrator sees exit code 0 and
+# moves on to 040_downscale.R. The body below stays put as scaffolding
+# for when woody crop scenarios bring multi-PFT runs back.
+## TODO: extend to multi-PFT management scenarios when woody crop scenarios land.
+PEcAn.logger::logger.info(
+  "Skipping multi-PFT aggregation (single PFT scenarios).",
+  "Proceeding directly to 040_downscale.R"
+)
+quit(save = "no", status = 0)
 
 PEcAn.logger::logger.info("*** Starting multi-PFT aggregation ***")
 

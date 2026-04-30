@@ -8,6 +8,11 @@ project:
   render:
     # Explicit pages to render
     - index.qmd # renders README
+    - reports/atlas_overview.qmd
+    - reports/atlas_soil_carbon.qmd
+    - reports/atlas_ghg_emissions.qmd
+    - reports/atlas_biomass.qmd
+    - reports/atlas_model_drivers.qmd
     - reports/downscaling_results.qmd
     - reports/design_points_analysis.qmd
     - reports/variable_importance.qmd
@@ -16,14 +21,27 @@ project:
     - docs/mixed_system_prototype.qmd
 
 website:
-  title: "Downscaling"
+  title: "MAGiC Downscaling"
   search: true
+  page-navigation: true
   sidebar:
     style: docked
-    collapse-level: 1
+    collapse-level: 2
     contents:
       - href: index.qmd
         text: Home
+      - section: "Map Atlas"
+        contents:
+          - href: reports/atlas_overview.qmd
+            text: Overview & Key Findings
+          - href: reports/atlas_soil_carbon.qmd
+            text: Soil Carbon
+          - href: reports/atlas_ghg_emissions.qmd
+            text: "GHG Emissions (N\u2082O & CH\u2084)"
+          - href: reports/atlas_biomass.qmd
+            text: Aboveground Biomass
+          - href: reports/atlas_model_drivers.qmd
+            text: Model Drivers
       - section: Reports
         contents:
           - href: reports/downscaling_results.qmd
@@ -45,6 +63,10 @@ website:
         text: "Status: Draft"
       - icon: github
         href: https://github.com/ccmmf/downscaling
+
+filters:
+  - lightbox
+lightbox: auto
 
 format:
   html:

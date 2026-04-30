@@ -95,12 +95,21 @@ for (row in seq_len(nrow(spec_table))) {
   models <- readRDS(mdl_path)
   df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
   rf <- models[[1]]
-  # Use design-point covariates for ALE/ICE as in the original script
+  # Use design-point covariates for ALE/ICE -- keep original units for interpretable axes
   design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |> as.data.frame()
   requireNamespace("randomForest", quietly = TRUE)
+  # The RF was trained on scaled (z-score) covariates inside ensemble_downscale(),
+  # but the cached training CSV stores unscaled values. We scale inside the
+  # predict function so iml sweeps over original-unit axes while the model
+  # receives the z-scores it expects.
+  scale_center <- colMeans(design_covariates)
+  scale_sd <- apply(design_covariates, 2, stats::sd)
   predictor_obj <- iml::Predictor$new(
     model = rf, data = design_covariates, y = NULL,
-    predict.function = function(m, newdata) stats::predict(m, newdata)
+    predict.function = function(m, newdata) {
+      scaled <- as.data.frame(scale(newdata, center = scale_center, scale = scale_sd))
+      stats::predict(m, scaled)
+    }
   )
   top_predictors <- importance_summary |>
     dplyr::filter(model_output == pool, pft == pft_i) |>
@@ -134,8 +143,9 @@ for (row in seq_len(nrow(spec_table))) {
   trn_path <- file.path(cache_dir, "training_data", paste0(spec_key, "_training.csv"))
   rf <- NULL
 
-  # Here, the cached training CSV corresponds to the design-point covariates used to train the RF.
+  # Cached training CSV holds the design-point covariates that trained the RF.
   design_covariates <- NULL
+  scaled_design_covariates <- NULL
   if (file.exists(mdl_path) && file.exists(trn_path)) {
     models <- readRDS(mdl_path)
     df_spec <- readr::read_csv(trn_path, show_col_types = FALSE)
@@ -143,6 +153,11 @@ for (row in seq_len(nrow(spec_table))) {
     if (inherits(rf, "randomForest")) {
       design_covariates <- dplyr::select(df_spec, dplyr::all_of(covariate_names)) |>
         as.data.frame()
+      # The RF was trained on scaled covariates; partialPlot calls predict()
+      # internally so we must pass data in the same (z-score) scale.
+      scaled_design_covariates <- as.data.frame(
+        scale(design_covariates)
+      )
     }
   }
   if (is.null(rf)) {
@@ -215,22 +230,71 @@ for (row in seq_len(nrow(spec_table))) {
     segments(lcl_importance, seq_along(predictor), ucl_importance, seq_along(predictor), col = "gray50")
   )
 
-  # Panel 2 and 3: Partial plots for top predictors
+  # Panel 2 and 3: partial plots for top predictors
   par(mar = c(5, 5, 4, 2))
-  # Set common y-limits from training response
-  y_range <- range(rf$y, na.rm = TRUE)
-  yl <- c(floor(min(y_range)), ceiling(max(y_range)))
 
   randomForest::partialPlot(rf,
-    pred.data = design_covariates, x.var = top_predictors[1],
+    pred.data = scaled_design_covariates, x.var = top_predictors[1],
     main = paste("Partial Dependence -", top_predictors[1]),
-    xlab = top_predictors[1], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+    xlab = paste(top_predictors[1], "(scaled)"), ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
   )
   randomForest::partialPlot(rf,
-    pred.data = design_covariates, x.var = top_predictors[2],
+    pred.data = scaled_design_covariates, x.var = top_predictors[2],
     main = paste("Partial Dependence -", top_predictors[2]),
-    xlab = top_predictors[2], ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
+    xlab = paste(top_predictors[2], "(scaled)"), ylab = paste("Predicted", pool, "-", pft_i), col = "steelblue", lwd = 2
   )
   dev.off()
   PEcAn.logger::logger.info("Saved importance/PDP figure:", importance_partial_plot_fig)
 }
+
+## Combined variable importance summary (all model outputs in one faceted figure)
+facet_labels <- c(
+  "TotSoilCarb" = "Soil Carbon (TotSoilCarb)",
+  "AGB"         = "Aboveground Biomass (AGB)",
+  "N2O_flux"    = "N2O Flux",
+  "CH4_flux"    = "CH4 Flux"
+)
+
+vi_plot_data <- importance_summary |>
+  dplyr::mutate(
+    facet_label = dplyr::recode(model_output, !!!facet_labels),
+    predictor = reorder(predictor, median_importance)
+  )
+
+# Smart label: use plain numbers for large values, scientific notation for tiny ones
+smart_label <- function(x) {
+  ifelse(
+    is.na(x) | x == 0, "0",
+    ifelse(abs(x) >= 0.01,
+      formatC(x, format = "f", digits = 1, big.mark = ","),
+      formatC(x, format = "e", digits = 1)
+    )
+  )
+}
+
+vi_summary_plot <- ggplot2::ggplot(
+  vi_plot_data,
+  ggplot2::aes(x = median_importance, y = predictor)
+) +
+  ggplot2::geom_pointrange(
+    ggplot2::aes(xmin = lcl_importance, xmax = ucl_importance),
+    color = "steelblue", size = 0.5
+  ) +
+  ggplot2::facet_wrap(~facet_label, scales = "free_x", ncol = 2) +
+  ggplot2::scale_x_continuous(labels = smart_label) +
+  ggplot2::labs(
+    x = "Importance (Median increase in MSE, IQR)",
+    y = NULL
+  ) +
+  ggplot2::theme_minimal(base_size = 13) +
+  ggplot2::theme(
+    strip.text = ggplot2::element_text(face = "bold", size = 12),
+    axis.text.x = ggplot2::element_text(size = 8, angle = 30, hjust = 1)
+  )
+
+ggsave_optimized(
+  filename = here::here("figures", "variable_importance_summary.png"),
+  plot = vi_summary_plot,
+  width = 10, height = 7, units = "in"
+)
+PEcAn.logger::logger.info("Saved combined variable importance summary plot")

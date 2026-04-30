@@ -251,7 +251,7 @@ This section compares three treatment scenarios on the same set of woody sites u
 - 100% woody + 50% annual (overlap)
 - 100% annual (counterfactual on woody sites)
 
-```{r woody-treatments}
+```{r woody-treatments, cache=FALSE}
 treat_path <- file.path(model_outdir, "treatments_woody_sites.csv")
 if (file.exists(treat_path)) {
     tr <- readr::read_csv(treat_path, show_col_types = FALSE)
