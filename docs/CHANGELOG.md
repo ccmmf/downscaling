@@ -6,20 +6,31 @@ Once a new release is made this file will be updated to create a new `Unreleased
 
 For more information about this file see also [Keep a Changelog](http://keepachangelog.com/) .
 
-<!-- 
+
 sections to include in release notes:
 
 ## [Unreleased]
 
 ### Added
 
+- Management scenario support for comparing agricultural practices
+  - Configuration flag `USE_PHASE_3_SCENARIOS` in `000-config.R`
+  - Six scenarios: baseline, compost, reduced_till, zero_till, reduced_irrig_drip, stacked
+  - Scenario-aware extraction from pre-aggregated `.Rdata` files
+  - `scenario` column added to all output CSVs
+  - `scenarios` array in metadata JSON
+- Early exit in `031_aggregate_sipnet_output.R` for single-PFT runs
+- Parquet output for large files (>100k rows) via `write_output()` helper
+
 ### Fixed
+
+- Empty vector handling in mixed-scenario logic (`040_downscale.R`)
 
 ### Changed
 
 ### Removed
 
--->
+
 
 ## 0.2.0-2a
 
