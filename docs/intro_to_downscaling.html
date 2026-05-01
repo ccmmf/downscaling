@@ -277,7 +277,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#s3-credentials" id="toc-s3-credentials" class="nav-link" data-scroll-target="#s3-credentials">S3 credentials</a></li>
   <li><a href="#conda-environment" id="toc-conda-environment" class="nav-link" data-scroll-target="#conda-environment">Conda environment</a></li>
   <li><a href="#clone-the-downscaling-repo" id="toc-clone-the-downscaling-repo" class="nav-link" data-scroll-target="#clone-the-downscaling-repo">Clone the downscaling repo</a></li>
-  <li><a href="#extra-r-packages" id="toc-extra-r-packages" class="nav-link" data-scroll-target="#extra-r-packages">Extra R packages</a></li>
   </ul></li>
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
   <li><a href="#point-the-pipeline-at-the-data" id="toc-point-the-pipeline-at-the-data" class="nav-link" data-scroll-target="#point-the-pipeline-at-the-data">Point the pipeline at the data</a></li>
@@ -330,7 +329,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>For this intro we focus on soil carbon (<code>TotSoilCarb</code>) for one ensemble member of the baseline scenario in 2024. Aboveground biomass and the GHG fluxes (N2O, CH4) flow through the same pipeline with different reporting units, and we’ll cover those in a follow-up session.</p>
 <p>The workflow has the following components, run in this order:</p>
 <ul>
-<li>System setup – the conda environment plus a few extra R packages</li>
+<li>System setup – the conda environment</li>
 <li>Input data – two small archives from S3 (model output slice and geometry layers)</li>
 <li>Run the pipeline – five short scripts (030 -&gt; 043), one per step</li>
 <li>Inspect the outputs</li>
@@ -388,37 +387,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">-b</span> develop https://github.com/ccmmf/downscaling.git</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="extra-r-packages" class="level2">
-<h2 class="anchored" data-anchor-id="extra-r-packages">Extra R packages</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> tools/install_downscaling_deps.R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(Note: a few minutes the first time; near-instant on re-runs.)</p>
-</section>
 </section>
 <section id="input-data" class="level1">
 <h1>Input data</h1>
 <p>Two archives from S3. The first is a slim slice of phase-3 SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is the California field and county geometry layers downscaling reads.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>(Note: for the full phase-3 data, swap in <code>ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz</code> – about 95 GB, 30-60 minutes to fetch.)</p>
 <p>Verify the layout:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In <code>modelout/...</code> you should see <code>output_baseline/</code> and <code>site_info.csv</code>. In <code>data/</code> you should see <code>ca_fields.gpkg</code>, <code>ca_field_attributes.csv</code>, <code>site_covariates.csv</code>, and <code>ca_counties.gpkg</code>.</p>
 </section>
 <section id="point-the-pipeline-at-the-data" class="level1">
 <h1>Point the pipeline at the data</h1>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The pipeline reads <code>CCMMF_DIR/modelout/...</code> and <code>CCMMF_DIR/data/...</code>, so this single env var wires everything.</p>
 </section>
 <section id="extract-sipnet-output-script-030" class="level1">
 <h1>Extract SIPNET output (script 030)</h1>
 <p>030 reads each ensemble’s netCDF output, monthly-aggregates, and writes one long CSV (<code>ensemble_output.csv</code>).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>--mode demo</code> runs one scenario (baseline), one variable (TotSoilCarb), one ensemble member, one year (2024). Finishes in seconds.</p>
 </section>
 <section id="multi-pft-aggregation-script-031-skipped-here" class="level1">
@@ -428,13 +422,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="downscale-to-fields-script-040" class="level1">
 <h1>Downscale to fields (script 040)</h1>
 <p>For each (scenario, PFT, carbon pool), 040 fits a Random Forest per ensemble member and predicts to every LandIQ field. Fitting one RF per ensemble member carries the ensemble spread through to the field-level predictions.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In demo mode there is one (scenario, PFT, pool) combo and one ensemble member. Predicts to roughly 10,000 target fields. A couple of minutes.</p>
 <p>Outputs land at <code>$CCMMF_DIR/modelout/.../downscaled_preds.csv</code> (and <code>.parquet</code>).</p>
 </section>
 <section id="roll-up-to-county-script-041" class="level1">
 <h1>Roll up to county (script 041)</h1>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Per-county totals from the field-level predictions.</p>
 <p>Outputs:</p>
 <ul>
@@ -445,7 +439,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="per-ensemble-metrics-and-variable-importance-script-042" class="level1">
 <h1>Per-ensemble metrics and variable importance (script 042)</h1>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.</p>
 <p>Outputs in <code>figures/</code>:</p>
 <ul>
@@ -455,7 +449,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="county-maps-and-scenario-deltas-script-043" class="level1">
 <h1>County maps and scenario deltas (script 043)</h1>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.</p>
 </section>
 <section id="where-to-go-next" class="level1">
