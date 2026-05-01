@@ -134,9 +134,12 @@ county_summaries <- ens_county_preds |>
   ) |>
   (\(df) {
     if (any(df$n == 1, na.rm = TRUE)) {
-      PEcAn.logger::logger.severe(
-        "At least one (model_output, pft, county) group has n == 1; variability across ensembles cannot be assessed."
-      )
+      msg <- "Some (model_output, pft, county) groups have n == 1; variability across ensembles can't be assessed."
+      if (DEMO) {
+        PEcAn.logger::logger.warn(msg, " Expected in demo mode (single ensemble member).")
+      } else {
+        PEcAn.logger::logger.severe(msg)
+      }
     }
     zero_var <- df |> dplyr::filter(sd_total_per_county == 0)
     if (nrow(zero_var) > 0) {

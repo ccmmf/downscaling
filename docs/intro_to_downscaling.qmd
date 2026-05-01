@@ -25,7 +25,7 @@ For this intro we focus on soil carbon (`TotSoilCarb`) for one ensemble member o
 
 The workflow has the following components, run in this order:
 
-* System setup -- the conda environment plus a few extra R packages
+* System setup -- the conda environment
 * Input data -- two small archives from S3 (model output slice and geometry layers)
 * Run the pipeline -- five short scripts (030 -> 043), one per step
 * Inspect the outputs
@@ -98,14 +98,6 @@ The pipeline scripts live in the repo. Grab them now -- the rest of the steps be
 git clone -b develop https://github.com/ccmmf/downscaling.git
 cd downscaling
 ```
-
-## Extra R packages
-
-```bash
-Rscript tools/install_downscaling_deps.R
-```
-
-(Note: a few minutes the first time; near-instant on re-runs.)
 
 # Input data
 
