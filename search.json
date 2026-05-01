@@ -431,7 +431,7 @@
     "href": "docs/intro_to_downscaling.html#conda-environment",
     "title": "Intro to MAGiC Downscaling",
     "section": "Conda environment",
-    "text": "Conda environment\nMake sure aws is on PATH. Module names vary by cluster – on NCSA module spider aws/2.5-6, on BU SCC module load awscli/2.13.5. Check module spider aws on a new cluster.\nexport AWS_ENDPOINT_URL=https://s3.garage.ccmmf.ncsa.cloud\n\naws s3 cp s3://carb/deploy/setup-pecan-env.sh ./\nbash setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all\n(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)\nActivate it in any new shell:\nconda activate ~/.conda/envs/pecan-all"
+    "text": "Conda environment\nMake sure aws is on PATH. Module names vary by cluster – on NCSA module spider aws/2.5-6, on BU SCC module load awscli/2.13.5. Check module spider aws on a new cluster.\naws s3 cp s3://carb/deploy/setup-pecan-env.sh ./\nbash setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all\n(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)\nActivate it in any new shell:\nconda activate ~/.conda/envs/pecan-all"
   },
   {
     "objectID": "docs/intro_to_downscaling.html#extra-r-packages",
@@ -439,5 +439,12 @@
     "title": "Intro to MAGiC Downscaling",
     "section": "Extra R packages",
     "text": "Extra R packages\nRscript tools/install_downscaling_deps.R\n(Note: a few minutes the first time; near-instant on re-runs.)"
+  },
+  {
+    "objectID": "docs/intro_to_downscaling.html#s3-credentials",
+    "href": "docs/intro_to_downscaling.html#s3-credentials",
+    "title": "Intro to MAGiC Downscaling",
+    "section": "S3 credentials",
+    "text": "S3 credentials\nThe demo data and the pecan-all env tarball live in an S3 bucket hosted by NCSA at s3.garage.ccmmf.ncsa.cloud. Drop your credentials and the endpoint into the standard aws CLI config files:\nmkdir -p ~/.aws\n\ncat << EOF >> ~/.aws/credentials\n[default]\naws_access_key_id = [your key ID]\naws_secret_access_key = [your secret key]\nEOF\n\ncat << EOF >> ~/.aws/config\n[default]\nregion = garage\nendpoint_url = https://s3.garage.ccmmf.ncsa.cloud\nEOF\n\nchmod 600 ~/.aws/credentials ~/.aws/config\nQuick sanity check:\naws s3 ls s3://carb/data_raw/"
   }
 ]
