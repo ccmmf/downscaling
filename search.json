@@ -418,5 +418,26 @@
     "title": "Mixed-System Prototype (Two-PFT Aggregation)",
     "section": "Appendix",
     "text": "Appendix\n\nHealthy Soils Practices and Model Representation\n\n\nTable 3: Healthy Soils Program practices, model representation, and priority for implementation in SIPNET.\n\n\n\n\n\n\n\n\n\nAgronomic Practice\nModel Representation\nExpected GHG Impact on State GHG Inventory\nExpected Adoption (CARB 2022 Scoping Plan)\nPriority\n\n\n\n\nCover Crops\nPlanting/harvest like commodity; PFT/mixture params.\nHigh\nHigh\nHigh\n\n\nNon-Crop Carbon Amendments (manure/compost)\nAdd surface C & organic N (low C:N litter analog).\nHigh\nHigh\nHigh\n\n\nN Fertilization\nIncrease soil inorganic N pools.\nHigh\nHigh\nHigh\n\n\nTransition to Certified Organic\nComposite of shifts (fertility, amendments, tillage).\nHigh\nHigh\nHigh\n\n\nNo-till / Reduced till\nLower decomposition pulses (freq & magnitude).\nHigh\nMedium\nHigh\n\n\nPolycultures / Mixtures\nIndependent PFT runs; combine by fractional contribution.\nMedium\nMedium\nMedium\n\n\n(Water management placeholder)\nIncrease soil water content.\nHigh\n\n\n\n\nAnnual → Perennial\nChange PFT; partial biomass retained.\nHigh\nLow\nLow\n\n\nAgroforestry / Woody Buffers\nIndependent woody runs; spatial aggregation.\nHigh\nLow\nLow"
+  },
+  {
+    "objectID": "docs/intro_to_downscaling.html",
+    "href": "docs/intro_to_downscaling.html",
+    "title": "Intro to MAGiC Downscaling",
+    "section": "",
+    "text": "This walks through the MAGiC downscaling pipeline end to end. SIPNET ensemble outputs come in at one end; field-level and county-level carbon predictions come out the other.\nFor this intro we focus on soil carbon (TotSoilCarb) for one ensemble member of the baseline scenario in 2024. Aboveground biomass and the GHG fluxes (N2O, CH4) flow through the same pipeline with different reporting units, and we’ll cover those in a follow-up session.\nThe workflow has the following components, run in this order:\n\nSystem setup – the conda environment plus a few extra R packages\nInput data – two small archives from S3 (model output slice and geometry layers)\nRun the pipeline – five short scripts (030 -> 043), one per step\nInspect the outputs\n\n\n\n\nensemble_output.csv – monthly SIPNET output in long format\ndownscaled_preds.csv – per-field carbon predictions\ncounty_aggregated_preds.csv – per-county totals\nfigures/ – variable importance, ALE / PDP plots, county maps, scenario deltas\n\n\n\n\nInstructions assume a Linux cluster with conda and aws CLI v2 available. Substitute equivalents on other systems as needed."
+  },
+  {
+    "objectID": "docs/intro_to_downscaling.html#conda-environment",
+    "href": "docs/intro_to_downscaling.html#conda-environment",
+    "title": "Intro to MAGiC Downscaling",
+    "section": "Conda environment",
+    "text": "Conda environment\nMake sure aws is on PATH. Module names vary by cluster – on NCSA module spider aws/2.5-6, on BU SCC module load awscli/2.13.5. Check module spider aws on a new cluster.\nexport AWS_ENDPOINT_URL=https://s3.garage.ccmmf.ncsa.cloud\n\naws s3 cp s3://carb/deploy/setup-pecan-env.sh ./\nbash setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all\n(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)\nActivate it in any new shell:\nconda activate ~/.conda/envs/pecan-all"
+  },
+  {
+    "objectID": "docs/intro_to_downscaling.html#extra-r-packages",
+    "href": "docs/intro_to_downscaling.html#extra-r-packages",
+    "title": "Intro to MAGiC Downscaling",
+    "section": "Extra R packages",
+    "text": "Extra R packages\nRscript tools/install_downscaling_deps.R\n(Note: a few minutes the first time; near-instant on re-runs.)"
   }
 ]
