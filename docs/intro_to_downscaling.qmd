@@ -47,8 +47,9 @@ The pipeline runs inside a conda environment that ships R, PEcAn, and most CRAN 
 
 ## Conda environment
 
+Make sure `aws` is on PATH. Module names vary by cluster -- on NCSA `module load aws/2.5-6`, on BU SCC `module load awscli/2.13.5`. Check `module spider aws` on a new cluster.
+
 ```bash
-module load awscli/2.13.5
 export AWS_ENDPOINT_URL=https://s3.garage.ccmmf.ncsa.cloud
 
 aws s3 cp s3://carb/deploy/setup-pecan-env.sh ./
