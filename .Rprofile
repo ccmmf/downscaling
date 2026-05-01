@@ -9,10 +9,12 @@ options(repos = c(
 #   Sys.getenv("RENV_PATHS_LIBRARY"),
 #   renv:::renv_platform_prefix()
 # ))
+# renv autoloader off; the pipeline runs inside a conda env that already
+# provides R + all packages. Uncomment to opt into renv-managed isolation.
 options(renv.config.autoloader.enabled = FALSE)
-if (requireNamespace("renv", quietly = TRUE)) {
-  renv::activate()
-}
+#if (requireNamespace("renv", quietly = TRUE)) {
+#  renv::activate()
+#}
 
 options(bitmapType = "cairo")
 
