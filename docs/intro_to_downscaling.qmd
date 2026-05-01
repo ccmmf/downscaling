@@ -3,17 +3,17 @@ title: "Intro to MAGiC Downscaling"
 author:
   - "David LeBauer"
   - "Akash BV"
+date: today
+quarto-cache: true
 format:
-  html: default
-  pdf: default
-format-links: false
-toc: true
-number-sections: true
-fig-width: 10
-fig-height: 6
-fig-dpi: 300
+  html:
+    self-contained: false
+    df-print: default
 execute:
+  cache: true
   echo: true
+  warning: false
+  message: false
   eval: false
 ---
 
@@ -45,13 +45,39 @@ Instructions assume a Linux cluster with conda and `aws` CLI v2 available. Subst
 
 The pipeline runs inside a conda environment that ships R, PEcAn, and most CRAN packages preinstalled. A small top-up script adds the handful of extras the downscaling pipeline needs on top.
 
-## Conda environment
+## S3 credentials
 
-Make sure `aws` is on PATH. Module names vary by cluster -- on NCSA `module load aws/2.5-6`, on BU SCC `module load awscli/2.13.5`. Check `module spider aws` on a new cluster.
+The demo data and the `pecan-all` env tarball live in an S3 bucket hosted by NCSA at `s3.garage.ccmmf.ncsa.cloud`. Drop your credentials and the endpoint into the standard aws CLI config files:
 
 ```bash
-export AWS_ENDPOINT_URL=https://s3.garage.ccmmf.ncsa.cloud
+mkdir -p ~/.aws
 
+cat << EOF >> ~/.aws/credentials
+[default]
+aws_access_key_id = [your key ID]
+aws_secret_access_key = [your secret key]
+EOF
+
+cat << EOF >> ~/.aws/config
+[default]
+region = garage
+endpoint_url = https://s3.garage.ccmmf.ncsa.cloud
+EOF
+
+chmod 600 ~/.aws/credentials ~/.aws/config
+```
+
+Quick sanity check:
+
+```bash
+aws s3 ls s3://carb/data_raw/
+```
+
+## Conda environment
+
+Make sure `aws` is on PATH. Module names vary by cluster -- on NCSA `module spider aws/2.5-6`, on BU SCC `module load awscli/2.13.5`. Check `module spider aws` on a new cluster.
+
+```bash
 aws s3 cp s3://carb/deploy/setup-pecan-env.sh ./
 bash setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all
 ```
@@ -62,6 +88,15 @@ Activate it in any new shell:
 
 ```bash
 conda activate ~/.conda/envs/pecan-all
+```
+
+## Clone the downscaling repo
+
+The pipeline scripts live in the repo. Grab them now -- the rest of the steps below assume you're inside the cloned directory.
+
+```bash
+git clone -b develop https://github.com/ccmmf/downscaling.git
+cd downscaling
 ```
 
 ## Extra R packages
@@ -101,8 +136,6 @@ In `modelout/...` you should see `output_baseline/` and `site_info.csv`. In `dat
 
 ```bash
 export CCMMF_DIR=~/ccmmf_demo
-git clone -b develop https://github.com/ccmmf/downscaling.git
-cd downscaling
 ```
 
 The pipeline reads `CCMMF_DIR/modelout/...` and `CCMMF_DIR/data/...`, so this single env var wires everything.
