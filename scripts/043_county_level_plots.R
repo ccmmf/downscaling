@@ -1021,6 +1021,22 @@ if (file.exists(delta_csv)) {
 
 
 # section 9 - county-level CO2e maps. GWP-100 AR4. negative = climate benefit.
+required_co2e_vars <- c("TotSoilCarb", "N2O_flux", "CH4_flux")
+have_co2e_vars <- all(required_co2e_vars %in% county_summaries$model_output)
+have_non_baseline_co2e <- length(
+  setdiff(unique(as.character(county_summaries$scenario)), "baseline")
+) > 0
+
+if (!have_co2e_vars) {
+  PEcAn.logger::logger.warn(
+    "CO2e maps require ", paste(required_co2e_vars, collapse = ", "),
+    "; skipping (have: ",
+    paste(unique(county_summaries$model_output), collapse = ", "), ")"
+  )
+} else if (!have_non_baseline_co2e) {
+  PEcAn.logger::logger.info("only baseline scenario; skipping CO2e maps")
+} else {
+
 PEcAn.logger::logger.info("CO2e maps")
 
 co2e_gwp <- "AR4"
@@ -1172,6 +1188,8 @@ for (comp_i in co2e_components) {
     plot = p_facet, width = 18, height = 12, units = "in", dpi = 150, bg = "white"
   )
   PEcAn.logger::logger.info("faceted CO2e: ", comp_i)
+}
+
 }
 
 PEcAn.logger::logger.info("done")
