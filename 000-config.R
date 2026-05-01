@@ -2,19 +2,22 @@
 
 parser <- argparse::ArgumentParser()
 
-## Set development vs production mode ##
-# Dev mode speeds up workflows by subsetting data for testing and debugging
-parser$add_argument("--production",
-  type = "logical", default = TRUE,
-  help = "Set to true for production mode, false for faster development (default: TRUE)"
+## Run mode: production (full), dev (subsetted), demo (single slice) ##
+parser$add_argument("--mode",
+  type = "character", default = "production",
+  choices = c("production", "dev", "demo"),
+  help = "Run mode: production (full), dev (subsetted for fast iteration), demo (single slice for walkthroughs)"
 )
 args <- parser$parse_args()
-PRODUCTION <- args$production
+MODE <- args$mode
+PRODUCTION <- MODE == "production"
+DEMO       <- MODE == "demo"
 
-# Interactive sessions always run in PRODUCTION mode. Dev mode is opt-in
-# only via --production FALSE on the command line.
+# Interactive sessions always run in production mode.
 if (rlang::is_interactive()) {
   PRODUCTION <- TRUE
+  DEMO       <- FALSE
+  MODE       <- "production"
 }
 
 ## Set parallel processing options
@@ -47,9 +50,13 @@ management_scenarios <- c(
 # see docs/workflow_documentation.qmd for complete list of outputs
 outputs_to_extract <- c("TotSoilCarb", "AGB", "N2O_flux", "CH4_flux")
 if (!PRODUCTION) {
-  # can subset for testing
-  # depending on what part of the workflow you are testing
+  # Dev mode: subset to one variable to keep iterations quick
   outputs_to_extract <- outputs_to_extract[1]
+}
+if (DEMO) {
+  # Demo: one variable, one scenario. Site/ensemble/year slicing happens in 030.
+  outputs_to_extract   <- "TotSoilCarb"
+  management_scenarios <- "baseline"
 }
 
 ### Configuration Settings that can be set to default ###
@@ -94,7 +101,7 @@ ca_albers_name <- ca_albers_info[["name"]]
 msg <- glue::glue(
   "\n\n",
   "Settings summary\n\n",
-  "Running in {ifelse(PRODUCTION, 'PRODUCTION', 'DEVELOPMENT')} mode\n\n",
+  "Running in {toupper(MODE)} mode\n\n",
   "Directory settings\n",
   "- CCMMF directory: {ccmmf_dir}\n",
   "- data_dir       : {data_dir}\n",

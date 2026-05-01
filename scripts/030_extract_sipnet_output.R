@@ -62,16 +62,6 @@ for (scenario in management_scenarios) {
 
     ensemble_size <- dplyr::n_distinct(ens_dirs$ens)
 
-    # Catch half-finished runs early
-    actual_ens_dirs <- dir(scenario_model_outdir)
-    if (!all(ens_dirs$dir %in% actual_ens_dirs)) {
-        missing_dirs <- setdiff(ens_dirs$dir, actual_ens_dirs)
-        PEcAn.logger::logger.severe(
-            "Missing ensemble directories in ", scenario_model_outdir, ": ",
-            paste(missing_dirs, collapse = ", ")
-        )
-    }
-
     # Attach lat/lon to each site_id
     site_meta <- ens_dirs |>
         dplyr::distinct(site_id) |>
@@ -83,11 +73,16 @@ for (scenario in management_scenarios) {
     site_ids <- unique(site_meta$site_id)
     ens_ids <- 1:ensemble_size
 
-    if (!PRODUCTION) {
+    if (!PRODUCTION && !DEMO) {
         # Dev mode: trim to a small slice so iterations stay quick
         site_ids <- site_ids[1:10]
         ens_ids <- ens_ids[1:10]
         start_year <- end_year - 1
+    }
+    if (DEMO) {
+        # Demo: one ensemble member, all sites, single year
+        ens_ids    <- 1L
+        start_year <- end_year
     }
 
     ens_dirs_subset <- ens_dirs |>
@@ -96,6 +91,17 @@ for (scenario in management_scenarios) {
             as.numeric(ens) %in% ens_ids
         ) |>
         dplyr::mutate(dir = file.path(scenario_model_outdir, dir))
+
+    # Catch half-finished runs: only flag dirs we actually plan to read
+    actual_ens_dirs <- dir(scenario_model_outdir)
+    missing <- setdiff(basename(ens_dirs_subset$dir), actual_ens_dirs)
+    if (length(missing) > 0) {
+        PEcAn.logger::logger.severe(
+            "Missing ensemble directories in ", scenario_model_outdir, ": ",
+            paste(head(missing, 10), collapse = ", "),
+            if (length(missing) > 10) " ..." else ""
+        )
+    }
 
     # PEcAn.utils::read.output prints one log line per file. Mute the
     # logger for the duration of the read, then restore it.
