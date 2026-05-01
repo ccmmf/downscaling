@@ -446,5 +446,12 @@
     "title": "Intro to MAGiC Downscaling",
     "section": "S3 credentials",
     "text": "S3 credentials\nThe demo data and the pecan-all env tarball live in an S3 bucket hosted by NCSA at s3.garage.ccmmf.ncsa.cloud. Drop your credentials and the endpoint into the standard aws CLI config files:\nmkdir -p ~/.aws\n\ncat << EOF >> ~/.aws/credentials\n[default]\naws_access_key_id = [your key ID]\naws_secret_access_key = [your secret key]\nEOF\n\ncat << EOF >> ~/.aws/config\n[default]\nregion = garage\nendpoint_url = https://s3.garage.ccmmf.ncsa.cloud\nEOF\n\nchmod 600 ~/.aws/credentials ~/.aws/config\nQuick sanity check:\naws s3 ls s3://carb/data_raw/"
+  },
+  {
+    "objectID": "docs/intro_to_downscaling.html#clone-the-downscaling-repo",
+    "href": "docs/intro_to_downscaling.html#clone-the-downscaling-repo",
+    "title": "Intro to MAGiC Downscaling",
+    "section": "Clone the downscaling repo",
+    "text": "Clone the downscaling repo\nThe pipeline scripts live in the repo. Grab them now – the rest of the steps below assume you’re inside the cloned directory.\ngit clone -b develop https://github.com/ccmmf/downscaling.git\ncd downscaling"
   }
 ]
