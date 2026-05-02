@@ -35,7 +35,9 @@ The workflow has the following components, run in this order:
 * `ensemble_output.csv` -- monthly SIPNET output in long format
 * `downscaled_preds.csv` -- per-field carbon predictions
 * `county_aggregated_preds.csv` -- per-county totals
-* `figures/` -- variable importance, ALE / PDP plots, county maps, scenario deltas
+* `figures/` -- variable importance, ALE / ICE plots, county and field maps, time-series deltas
+
+(Demo mode runs only `TotSoilCarb` for the `baseline` scenario, so scenario-vs-baseline diff maps and CO2e maps are skipped. The full pipeline produces those when you run the four-variable, multi-scenario archive.)
 
 ## Caveats
 
@@ -43,29 +45,37 @@ Instructions assume a Linux cluster with conda and `aws` CLI v2 available. Subst
 
 # System setup
 
-The pipeline runs inside a conda environment that ships R, PEcAn, and most CRAN packages preinstalled. A small top-up script adds the handful of extras the downscaling pipeline needs on top.
+The pipeline runs inside a conda environment that ships R, PEcAn, and every CRAN + github package the downscaling scripts need.
 
 ## S3 credentials
 
-The demo data and the `pecan-all` env tarball live in an S3 bucket hosted by NCSA at `s3.garage.ccmmf.ncsa.cloud`. Drop your credentials and the endpoint into the standard aws CLI config files:
+The demo data and the `pecan-all` env tarball live in an S3 bucket hosted by NCSA at `s3.garage.ccmmf.ncsa.cloud`. Drop your credentials into a named profile (`ccmmf-garage`) so it doesn't collide with any AWS profile you already use:
 
 ```bash
 mkdir -p ~/.aws
 
-cat << EOF >> ~/.aws/credentials
-[default]
+cat << 'EOF' >> ~/.aws/credentials
+[ccmmf-garage]
 aws_access_key_id = [your key ID]
 aws_secret_access_key = [your secret key]
 EOF
 
-cat << EOF >> ~/.aws/config
-[default]
+cat << 'EOF' >> ~/.aws/config
+[profile ccmmf-garage]
 region = garage
 endpoint_url = https://s3.garage.ccmmf.ncsa.cloud
 EOF
 
 chmod 600 ~/.aws/credentials ~/.aws/config
 ```
+
+Activate the profile for the rest of this session so every `aws s3` call uses it without `--profile` flags:
+
+```bash
+export AWS_PROFILE=ccmmf-garage
+```
+
+(Re-run the `export` if you open a new terminal -- it only lives for the current shell.)
 
 Quick sanity check:
 
