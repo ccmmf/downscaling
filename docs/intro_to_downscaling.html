@@ -340,8 +340,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>ensemble_output.csv</code> – monthly SIPNET output in long format</li>
 <li><code>downscaled_preds.csv</code> – per-field carbon predictions</li>
 <li><code>county_aggregated_preds.csv</code> – per-county totals</li>
-<li><code>figures/</code> – variable importance, ALE / PDP plots, county maps, scenario deltas</li>
+<li><code>figures/</code> – variable importance, ALE / ICE plots, county and field maps, time-series deltas</li>
 </ul>
+<p>(Demo mode runs only <code>TotSoilCarb</code> for the <code>baseline</code> scenario, so scenario-vs-baseline diff maps and CO2e maps are skipped. The full pipeline produces those when you run the four-variable, multi-scenario archive.)</p>
 </section>
 <section id="caveats" class="level2">
 <h2 class="anchored" data-anchor-id="caveats">Caveats</h2>
@@ -350,69 +351,72 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="system-setup" class="level1">
 <h1>System setup</h1>
-<p>The pipeline runs inside a conda environment that ships R, PEcAn, and most CRAN packages preinstalled. A small top-up script adds the handful of extras the downscaling pipeline needs on top.</p>
+<p>The pipeline runs inside a conda environment that ships R, PEcAn, and every CRAN + github package the downscaling scripts need.</p>
 <section id="s3-credentials" class="level2">
 <h2 class="anchored" data-anchor-id="s3-credentials">S3 credentials</h2>
-<p>The demo data and the <code>pecan-all</code> env tarball live in an S3 bucket hosted by NCSA at <code>s3.garage.ccmmf.ncsa.cloud</code>. Drop your credentials and the endpoint into the standard aws CLI config files:</p>
+<p>The demo data and the <code>pecan-all</code> env tarball live in an S3 bucket hosted by NCSA at <code>s3.garage.ccmmf.ncsa.cloud</code>. Drop your credentials into a named profile (<code>ccmmf-garage</code>) so it doesn’t collide with any AWS profile you already use:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.aws</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;&gt;</span> ~/.aws/credentials</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">[default]</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; 'EOF'</span> <span class="op">&gt;&gt;</span> ~/.aws/credentials</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">[ccmmf-garage]</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="st">aws_access_key_id = [your key ID]</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="st">aws_secret_access_key = [your secret key]</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;&gt;</span> ~/.aws/config</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">[default]</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; 'EOF'</span> <span class="op">&gt;&gt;</span> ~/.aws/config</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">[profile ccmmf-garage]</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="st">region = garage</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">endpoint_url = https://s3.garage.ccmmf.ncsa.cloud</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/.aws/credentials ~/.aws/config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Activate the profile for the rest of this session so every <code>aws s3</code> call uses it without <code>--profile</code> flags:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>ccmmf-garage</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(Re-run the <code>export</code> if you open a new terminal – it only lives for the current shell.)</p>
 <p>Quick sanity check:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="conda-environment" class="level2">
 <h2 class="anchored" data-anchor-id="conda-environment">Conda environment</h2>
 <p>Make sure <code>aws</code> is on PATH. Module names vary by cluster – on NCSA <code>module spider aws/2.5-6</code>, on BU SCC <code>module load awscli/2.13.5</code>. Check <code>module spider aws</code> on a new cluster.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/deploy/setup-pecan-env.sh ./</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/deploy/setup-pecan-env.sh ./</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)</p>
 <p>Activate it in any new shell:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="clone-the-downscaling-repo" class="level2">
 <h2 class="anchored" data-anchor-id="clone-the-downscaling-repo">Clone the downscaling repo</h2>
 <p>The pipeline scripts live in the repo. Grab them now – the rest of the steps below assume you’re inside the cloned directory.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">-b</span> develop https://github.com/ccmmf/downscaling.git</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">-b</span> develop https://github.com/ccmmf/downscaling.git</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="input-data" class="level1">
 <h1>Input data</h1>
 <p>Two archives from S3. The first is a slim slice of phase-3 SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is the California field and county geometry layers downscaling reads.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>(Note: for the full phase-3 data, swap in <code>ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz</code> – about 95 GB, 30-60 minutes to fetch.)</p>
 <p>Verify the layout:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In <code>modelout/...</code> you should see <code>output_baseline/</code> and <code>site_info.csv</code>. In <code>data/</code> you should see <code>ca_fields.gpkg</code>, <code>ca_field_attributes.csv</code>, <code>site_covariates.csv</code>, and <code>ca_counties.gpkg</code>.</p>
 </section>
 <section id="point-the-pipeline-at-the-data" class="level1">
 <h1>Point the pipeline at the data</h1>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The pipeline reads <code>CCMMF_DIR/modelout/...</code> and <code>CCMMF_DIR/data/...</code>, so this single env var wires everything.</p>
 </section>
 <section id="extract-sipnet-output-script-030" class="level1">
 <h1>Extract SIPNET output (script 030)</h1>
 <p>030 reads each ensemble’s netCDF output, monthly-aggregates, and writes one long CSV (<code>ensemble_output.csv</code>).</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>--mode demo</code> runs one scenario (baseline), one variable (TotSoilCarb), one ensemble member, one year (2024). Finishes in seconds.</p>
 </section>
 <section id="multi-pft-aggregation-script-031-skipped-here" class="level1">
@@ -422,13 +426,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="downscale-to-fields-script-040" class="level1">
 <h1>Downscale to fields (script 040)</h1>
 <p>For each (scenario, PFT, carbon pool), 040 fits a Random Forest per ensemble member and predicts to every LandIQ field. Fitting one RF per ensemble member carries the ensemble spread through to the field-level predictions.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In demo mode there is one (scenario, PFT, pool) combo and one ensemble member. Predicts to roughly 10,000 target fields. A couple of minutes.</p>
 <p>Outputs land at <code>$CCMMF_DIR/modelout/.../downscaled_preds.csv</code> (and <code>.parquet</code>).</p>
 </section>
 <section id="roll-up-to-county-script-041" class="level1">
 <h1>Roll up to county (script 041)</h1>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Per-county totals from the field-level predictions.</p>
 <p>Outputs:</p>
 <ul>
@@ -439,7 +443,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="per-ensemble-metrics-and-variable-importance-script-042" class="level1">
 <h1>Per-ensemble metrics and variable importance (script 042)</h1>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.</p>
 <p>Outputs in <code>figures/</code>:</p>
 <ul>
@@ -449,7 +453,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="county-maps-and-scenario-deltas-script-043" class="level1">
 <h1>County maps and scenario deltas (script 043)</h1>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.</p>
 </section>
 <section id="where-to-go-next" class="level1">
