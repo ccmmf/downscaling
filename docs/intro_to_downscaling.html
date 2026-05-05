@@ -2,16 +2,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.313">
+<meta name="generator" content="quarto-1.9.35">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David LeBauer">
 <meta name="author" content="Akash BV">
-<meta name="dcterms.date" content="2026-05-01">
+<meta name="dcterms.date" content="2026-05-05">
 
-<title>MAGiC Downscaling - Intro to MAGiC Downscaling</title>
+<title>Intro to MAGiC Downscaling – MAGiC Downscaling</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -20,9 +23,11 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -49,43 +54,13 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -98,22 +73,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <meta name="quarto:offset" content="../">
 <link href="../docs/workflow_documentation.html" rel="next">
 <link href="../reports/variable_importance.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-787e033c7b6f65c9dfccb6078e5d2d34.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -122,23 +104,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
 
-<body class="nav-sidebar docked">
+<body class="nav-sidebar docked quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Intro to MAGiC Downscaling</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/intro_to_downscaling.html">Docs</a></li><li class="breadcrumb-item"><a href="../docs/intro_to_downscaling.html">Intro to Downscaling</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -146,114 +138,130 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">MAGiC Downscaling</a> 
         <div class="sidebar-tools-main">
-    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
-    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Map Atlas</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Soil Carbon</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aboveground Biomass</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Points Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link active">Intro to Downscaling (Office Hours Walkthrough)</a>
+  <a href="../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Intro to Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
       </ul>
@@ -261,31 +269,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
-  <ul class="collapse">
-  <li><a href="#what-gets-produced" id="toc-what-gets-produced" class="nav-link" data-scroll-target="#what-gets-produced">What gets produced</a></li>
-  <li><a href="#caveats" id="toc-caveats" class="nav-link" data-scroll-target="#caveats">Caveats</a></li>
-  </ul></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#system-setup" id="toc-system-setup" class="nav-link" data-scroll-target="#system-setup">System setup</a>
   <ul class="collapse">
-  <li><a href="#s3-credentials" id="toc-s3-credentials" class="nav-link" data-scroll-target="#s3-credentials">S3 credentials</a></li>
-  <li><a href="#conda-environment" id="toc-conda-environment" class="nav-link" data-scroll-target="#conda-environment">Conda environment</a></li>
-  <li><a href="#clone-the-downscaling-repo" id="toc-clone-the-downscaling-repo" class="nav-link" data-scroll-target="#clone-the-downscaling-repo">Clone the downscaling repo</a></li>
-  </ul></li>
+  <li><a href="#check-aws-access" id="toc-check-aws-access" class="nav-link" data-scroll-target="#check-aws-access">Check AWS access</a></li>
+  <li><a href="#setup-conda-environment" id="toc-setup-conda-environment" class="nav-link" data-scroll-target="#setup-conda-environment">Setup Conda environment</a></li>
+  <li><a href="#clone-the-downscaling-repository" id="toc-clone-the-downscaling-repository" class="nav-link" data-scroll-target="#clone-the-downscaling-repository">Clone the downscaling repository</a></li>
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
-  <li><a href="#point-the-pipeline-at-the-data" id="toc-point-the-pipeline-at-the-data" class="nav-link" data-scroll-target="#point-the-pipeline-at-the-data">Point the pipeline at the data</a></li>
-  <li><a href="#extract-sipnet-output-script-030" id="toc-extract-sipnet-output-script-030" class="nav-link" data-scroll-target="#extract-sipnet-output-script-030">Extract SIPNET output (script 030)</a></li>
-  <li><a href="#multi-pft-aggregation-script-031-skipped-here" id="toc-multi-pft-aggregation-script-031-skipped-here" class="nav-link" data-scroll-target="#multi-pft-aggregation-script-031-skipped-here">Multi-PFT aggregation (script 031, skipped here)</a></li>
-  <li><a href="#downscale-to-fields-script-040" id="toc-downscale-to-fields-script-040" class="nav-link" data-scroll-target="#downscale-to-fields-script-040">Downscale to fields (script 040)</a></li>
-  <li><a href="#roll-up-to-county-script-041" id="toc-roll-up-to-county-script-041" class="nav-link" data-scroll-target="#roll-up-to-county-script-041">Roll up to county (script 041)</a></li>
-  <li><a href="#per-ensemble-metrics-and-variable-importance-script-042" id="toc-per-ensemble-metrics-and-variable-importance-script-042" class="nav-link" data-scroll-target="#per-ensemble-metrics-and-variable-importance-script-042">Per-ensemble metrics and variable importance (script 042)</a></li>
-  <li><a href="#county-maps-and-scenario-deltas-script-043" id="toc-county-maps-and-scenario-deltas-script-043" class="nav-link" data-scroll-target="#county-maps-and-scenario-deltas-script-043">County maps and scenario deltas (script 043)</a></li>
+  </ul></li>
+  <li><a href="#extract-sipnet-output" id="toc-extract-sipnet-output" class="nav-link" data-scroll-target="#extract-sipnet-output">Extract SIPNET output</a></li>
+  <li><a href="#downscaling-from-model-outputs-to-fields" id="toc-downscaling-from-model-outputs-to-fields" class="nav-link" data-scroll-target="#downscaling-from-model-outputs-to-fields">Downscaling from Model Outputs to fields</a></li>
+  <li><a href="#inspect-downscaled-outputs" id="toc-inspect-downscaled-outputs" class="nav-link" data-scroll-target="#inspect-downscaled-outputs">Inspect downscaled outputs</a></li>
+  <li><a href="#make-quick-plots" id="toc-make-quick-plots" class="nav-link" data-scroll-target="#make-quick-plots">Make quick plots</a></li>
+  <li><a href="#aggregate-to-county" id="toc-aggregate-to-county" class="nav-link" data-scroll-target="#aggregate-to-county">Aggregate to county</a></li>
+  <li><a href="#per-ensemble-metrics-and-variable-importance-script-042-follow-up" id="toc-per-ensemble-metrics-and-variable-importance-script-042-follow-up" class="nav-link" data-scroll-target="#per-ensemble-metrics-and-variable-importance-script-042-follow-up">Per-ensemble metrics and variable importance (script 042, follow-up)</a></li>
+  <li><a href="#county-maps-and-scenario-deltas-script-043-follow-up" id="toc-county-maps-and-scenario-deltas-script-043-follow-up" class="nav-link" data-scroll-target="#county-maps-and-scenario-deltas-script-043-follow-up">County maps and scenario deltas (script 043, follow-up)</a></li>
   <li><a href="#where-to-go-next" id="toc-where-to-go-next" class="nav-link" data-scroll-target="#where-to-go-next">Where to go next</a></li>
   </ul>
 </nav>
@@ -293,9 +298,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/intro_to_downscaling.html">Docs</a></li><li class="breadcrumb-item"><a href="../docs/intro_to_downscaling.html">Intro to Downscaling</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Intro to MAGiC Downscaling</h1>
+<h1 class="title">Intro to MAGiC Downscaling</h1>
 </div>
 
 
@@ -313,7 +318,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 1, 2026</p>
+      <p class="date">May 5, 2026</p>
     </div>
   </div>
   
@@ -321,129 +326,223 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </div>
   
 
+
 </header>
+
 
 <section id="overview" class="level1">
 <h1>Overview</h1>
-<p>This walks through the MAGiC downscaling pipeline end to end. SIPNET ensemble outputs come in at one end; field-level and county-level carbon predictions come out the other.</p>
-<p>For this intro we focus on soil carbon (<code>TotSoilCarb</code>) for one ensemble member of the baseline scenario in 2024. Aboveground biomass and the GHG fluxes (N2O, CH4) flow through the same pipeline with different reporting units, and we’ll cover those in a follow-up session.</p>
-<p>The workflow has the following components, run in this order:</p>
-<ul>
-<li>System setup – the conda environment</li>
-<li>Input data – two small archives from S3 (model output slice and geometry layers)</li>
-<li>Run the pipeline – five short scripts (030 -&gt; 043), one per step</li>
-<li>Inspect the outputs</li>
-</ul>
-<section id="what-gets-produced" class="level2">
-<h2 class="anchored" data-anchor-id="what-gets-produced">What gets produced</h2>
-<ul>
-<li><code>ensemble_output.csv</code> – monthly SIPNET output in long format</li>
-<li><code>downscaled_preds.csv</code> – per-field carbon predictions</li>
-<li><code>county_aggregated_preds.csv</code> – per-county totals</li>
-<li><code>figures/</code> – variable importance, ALE / ICE plots, county and field maps, time-series deltas</li>
-</ul>
-<p>(Demo mode runs only <code>TotSoilCarb</code> for the <code>baseline</code> scenario, so scenario-vs-baseline diff maps and CO2e maps are skipped. The full pipeline produces those when you run the four-variable, multi-scenario archive.)</p>
-</section>
-<section id="caveats" class="level2">
-<h2 class="anchored" data-anchor-id="caveats">Caveats</h2>
-<p>Instructions assume a Linux cluster with conda and <code>aws</code> CLI v2 available. Substitute equivalents on other systems as needed.</p>
-</section>
+<p>This document gives a brief overview of the MAGiC downscaling pipeline. The downscaling workflow follows the ensemble workflow: it starts from SIPNET NetCDF outputs from a subset of representative design points, uses machine learning to downscale to field-level carbon predictions, and then aggregates to county-level statistics.</p>
+<div class="cell" data-layout-align="default">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  A[PEcAn/SIPNET NetCDF outputs] --&gt; B[Extract to CSV\nscript 030]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  B --&gt; C[Downscale to fields\nscript 040]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  C --&gt; D[Aggregate to county \nscript 041]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>For this intro we focus on soil carbon (<code>TotSoilCarb</code>) for one ensemble member of the baseline scenario in 2024. Other model outputs, including but not limited to aboveground biomass and GHG fluxes (N2O, CH4), can be downscaled and aggregated with the same pipeline.</p>
+<p>Pre-requisites for this demo include: * System setup - AWS CLI - A Conda environment - The github.com/ccmmf/downscaling repository cloned locally - A Linux computing environment * Input data – two archives downloaded from S3 storage: - Output from SIPNET runs at design points - CADWR Land Use Maps</p>
+<p>This tutorial will cover the following components:</p>
+<ol type="1">
+<li>Workflow Overview: how SIPNET outputs become field-level predictions and county-level aggregates</li>
+<li>Extract SIPNET output: script 030 converts NetCDF files to <code>ensemble_output.csv</code></li>
+<li>Downscale to fields: script 040 fits Random Forest models and predicts to fields</li>
+<li>Inspect outputs: look at tables and quick plots to understand the downscaled predictions</li>
+<li>Wrap-up: recap and aggregation preview</li>
+</ol>
+<p><strong>Demo Mode</strong> This demo runs a simplified version of the pipeline to focus on the core downscaling steps. The full pipeline includes more variables, scenarios, and ensemble members, which add complexity but follow the same overall structure.</p>
+<p>The <code>--mode demo</code> flags in the commands below constrain the pipeline to a single slice of the data: * One variable (TotSoilCarb) is downscaled * One scenario (baseline), so it does not include scenario-vs-baseline comparisons. * One ensemble member</p>
+<p>Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.</p>
+<p>Outputs: * <code>ensemble_output.csv</code> – monthly SIPNET output in long format * <code>downscaled_preds.csv</code> – per-field carbon predictions</p>
 </section>
 <section id="system-setup" class="level1">
 <h1>System setup</h1>
-<p>The pipeline runs inside a conda environment that ships R, PEcAn, and every CRAN + github package the downscaling scripts need.</p>
-<section id="s3-credentials" class="level2">
-<h2 class="anchored" data-anchor-id="s3-credentials">S3 credentials</h2>
-<p>The demo data and the <code>pecan-all</code> env tarball live in an S3 bucket hosted by NCSA at <code>s3.garage.ccmmf.ncsa.cloud</code>. Drop your credentials into a named profile (<code>ccmmf-garage</code>) so it doesn’t collide with any AWS profile you already use:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.aws</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; 'EOF'</span> <span class="op">&gt;&gt;</span> ~/.aws/credentials</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">[ccmmf-garage]</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="st">aws_access_key_id = [your key ID]</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="st">aws_secret_access_key = [your secret key]</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; 'EOF'</span> <span class="op">&gt;&gt;</span> ~/.aws/config</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">[profile ccmmf-garage]</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="st">region = garage</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">endpoint_url = https://s3.garage.ccmmf.ncsa.cloud</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/.aws/credentials ~/.aws/config</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Activate the profile for the rest of this session so every <code>aws s3</code> call uses it without <code>--profile</code> flags:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>ccmmf-garage</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(Re-run the <code>export</code> if you open a new terminal – it only lives for the current shell.)</p>
-<p>Quick sanity check:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The pipeline runs inside a conda environment that includes the software required by the downscaling scripts.</p>
+<p>The demo data and the <code>pecan-all</code> env tarball are downloaded from an S3 bucket hosted at NCSA.</p>
+<section id="check-aws-access" class="level2">
+<h2 class="anchored" data-anchor-id="check-aws-access">Check AWS access</h2>
+<p>First, confirm that the AWS CLI is available:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If that command is not found, load the AWS CLI as a module on your HPC system or install it from the <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI installation instructions</a>.</p>
+<p>Next, confirm that you can read the CCMMF S3 bucket:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If the bucket listing fails because of missing credentials, configure the <code>ccmmf-garage</code> profile.</p>
+<p>Add this section to <code>~/.aws/credentials</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">[ccmmf-garage]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws_access_key_id</span> = [your key ID]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws_secret_access_key</span> = [your secret key]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add this section to <code>~/.aws/config</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">[profile</span> ccmmf-garage]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">region</span> = garage</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">endpoint_url</span> = https://s3.garage.ccmmf.ncsa.cloud</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Make sure the credential files are readable only by you:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/.aws/credentials ~/.aws/config</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Activate the profile for the current shell and check access again:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>ccmmf-garage</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="conda-environment" class="level2">
-<h2 class="anchored" data-anchor-id="conda-environment">Conda environment</h2>
-<p>Make sure <code>aws</code> is on PATH. Module names vary by cluster – on NCSA <code>module spider aws/2.5-6</code>, on BU SCC <code>module load awscli/2.13.5</code>. Check <code>module spider aws</code> on a new cluster.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/deploy/setup-pecan-env.sh ./</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)</p>
-<p>Activate it in any new shell:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="setup-conda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="setup-conda-environment">Setup Conda environment</h2>
+<p>We will use a conda environment that provides R, PEcAn, and all of the R packages the pipeline scripts depend on. The environment is available as a tarball on S3.</p>
+<p>In this example, ~/.conda/envs/pecan-all is the target location, but you may want to put this somewhere other than your home directory.</p>
+<p>Note that this may take 30 minutes or more to download and install.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/deploy/setup-pecan-env.sh ./</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To activate the pecan-all environment in a new shell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="clone-the-downscaling-repo" class="level2">
-<h2 class="anchored" data-anchor-id="clone-the-downscaling-repo">Clone the downscaling repo</h2>
-<p>The pipeline scripts live in the repo. Grab them now – the rest of the steps below assume you’re inside the cloned directory.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">-b</span> develop https://github.com/ccmmf/downscaling.git</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="clone-the-downscaling-repository" class="level2">
+<h2 class="anchored" data-anchor-id="clone-the-downscaling-repository">Clone the downscaling repository</h2>
+<p>The pipeline scripts live in the downscaling repo, which is located at https://github.com/ccmmf/downscaling. Clone the repository to your working directory – the rest of the steps below assume you’re inside the cloned directory.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">-b</span> develop https://github.com/ccmmf/downscaling.git</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-</section>
-<section id="input-data" class="level1">
-<h1>Input data</h1>
-<p>Two archives from S3. The first is a slim slice of phase-3 SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is the California field and county geometry layers downscaling reads.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(Note: for the full phase-3 data, swap in <code>ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz</code> – about 95 GB, 30-60 minutes to fetch.)</p>
+<section id="input-data" class="level2">
+<h2 class="anchored" data-anchor-id="input-data">Input data</h2>
+<p>We install two data archives from S3. The first is the demo subset of SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is a vector file of California crop fields and county geometry layers derived from the CADWR Land Use Dataset [Cite].</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/ccmmf_demo/modelout ~/ccmmf_demo/data</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/modelout/</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz <span class="at">-</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar</span> xzf <span class="at">-</span> <span class="at">-C</span> ~/ccmmf_demo/data/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Note: to run a full production run, you can download <code>ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz</code>. This is about 95 GB and may take 30 minutes or longer to download.</p>
 <p>Verify the layout:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/ccmmf_demo/data/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>In <code>modelout/...</code> you should see <code>output_baseline/</code> and <code>site_info.csv</code>. In <code>data/</code> you should see <code>ca_fields.gpkg</code>, <code>ca_field_attributes.csv</code>, <code>site_covariates.csv</code>, and <code>ca_counties.gpkg</code>.</p>
+<p>These are the PEcAn model output files that script 030 will extract:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out <span class="dt">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-name</span> <span class="st">"2024.nc"</span> <span class="kw">|</span> <span class="fu">head</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>What does one of these files contain?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ncdump</span> <span class="at">-h</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out/ENS-00001-2eab840584d9a6ea/2024.nc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Show the covariate table that script 040 will use:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 5 ~/ccmmf_demo/data/site_covariates.csv <span class="kw">|</span> <span class="ex">column</span> <span class="at">-s,</span> <span class="at">-t</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Set the <code>CCMMF_DIR</code> environment variable so that the pipeline knows where to find the data:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This tells the pipeline where to find <code>$CCMMF_DIR/modelout/...</code> and <code>$CCMMF_DIR/data/...</code>, as well as where to write pipeline outputs.</p>
 </section>
-<section id="point-the-pipeline-at-the-data" class="level1">
-<h1>Point the pipeline at the data</h1>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>~/ccmmf_demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The pipeline reads <code>CCMMF_DIR/modelout/...</code> and <code>CCMMF_DIR/data/...</code>, so this single env var wires everything.</p>
 </section>
-<section id="extract-sipnet-output-script-030" class="level1">
-<h1>Extract SIPNET output (script 030)</h1>
-<p>030 reads each ensemble’s netCDF output, monthly-aggregates, and writes one long CSV (<code>ensemble_output.csv</code>).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>--mode demo</code> runs one scenario (baseline), one variable (TotSoilCarb), one ensemble member, one year (2024). Finishes in seconds.</p>
+<section id="extract-sipnet-output" class="level1">
+<h1>Extract SIPNET output</h1>
+<p>The <code>030_extract_sipnet_output.R</code> script reads the PEcAn standard netCDF model output, aggregates to monthly values, and writes these values to a long CSV, <code>ensemble_output.csv</code>.</p>
+<p>Let’s run it in demo mode:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Confirm and inspect the output:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model_outdir <span class="ot">&lt;-</span> <span class="st">"~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>ensemble_output <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="fu">file.path</span>(model_outdir, <span class="st">"ensemble_output.csv"</span>), </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(ensemble_output)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>ensemble_output <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">sites =</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(site_id),</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ensembles =</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(parameter),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">variables =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(variable), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">min</span>(datetime),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">end =</span> <span class="fu">max</span>(datetime)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
-<section id="multi-pft-aggregation-script-031-skipped-here" class="level1">
-<h1>Multi-PFT aggregation (script 031, skipped here)</h1>
-<p>031 only matters when multiple PFTs share a site. The phase-3 runs are single-PFT, so 031 early-exits.</p>
+<section id="downscaling-from-model-outputs-to-fields" class="level1">
+<h1>Downscaling from Model Outputs to fields</h1>
+<p>Now that we have extracted the model outputs to a tabular format, we can use these outputs to train machine learning models that predict field-level carbon stocks and fluxes.</p>
+<p>This happens in <code>scripts/040_downscale.R</code>.</p>
+<p>For each run, <code>scripts/040_downscale.R</code>:</p>
+<ol type="1">
+<li>Loads <code>ensemble_output.csv</code>, site covariates, and field attributes.</li>
+<li>Iterates over each <code>(scenario, PFT, carbon pool)</code> combination.</li>
+<li>Fits one Random Forest model per ensemble member for that combination.</li>
+<li>Predicts to fields for that PFT.</li>
+<li>Writes outputs including <code>downscaled_preds.csv</code> (and <code>.parquet</code> for large outputs).</li>
+</ol>
+<p>Fitting one RF model per ensemble member preserves and propagates uncertainty structure throughout the full modeling workflow.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In demo mode there is one (scenario, PFT, pool) combo and one ensemble member and it predicts to roughly 10,000 target fields within a couple of minutes.</p>
+<p>Outputs are written to <code>$CCMMF_DIR/modelout/.../downscaled_preds.csv</code> (and <code>.parquet</code>).</p>
 </section>
-<section id="downscale-to-fields-script-040" class="level1">
-<h1>Downscale to fields (script 040)</h1>
-<p>For each (scenario, PFT, carbon pool), 040 fits a Random Forest per ensemble member and predicts to every LandIQ field. Fitting one RF per ensemble member carries the ensemble spread through to the field-level predictions.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>In demo mode there is one (scenario, PFT, pool) combo and one ensemble member. Predicts to roughly 10,000 target fields. A couple of minutes.</p>
-<p>Outputs land at <code>$CCMMF_DIR/modelout/.../downscaled_preds.csv</code> (and <code>.parquet</code>).</p>
+<section id="inspect-downscaled-outputs" class="level1">
+<h1>Inspect downscaled outputs</h1>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/downscaled_preds.csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>model_outdir <span class="ot">&lt;-</span> <span class="st">"~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="fu">file.path</span>(model_outdir, <span class="st">"downscaled_preds.csv"</span>), <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(preds)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>preds <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fields =</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(site_id),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">counties =</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(county),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_density =</span> <span class="fu">min</span>(density_per_ha, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_density =</span> <span class="fu">mean</span>(density_per_ha, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_density =</span> <span class="fu">max</span>(density_per_ha, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Focus on <code>density_per_ha</code>, <code>scenario</code>, <code>pft</code>, <code>ensemble</code>, <code>county</code>, and <code>model_output</code>. The <code>area_ha</code> column is useful later for converting density to total field carbon, but it is not the main explanatory variable for this first demo.</p>
 </section>
-<section id="roll-up-to-county-script-041" class="level1">
-<h1>Roll up to county (script 041)</h1>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Per-county totals from the field-level predictions.</p>
-<p>Outputs:</p>
-<ul>
-<li><code>county_aggregated_preds.csv</code></li>
-<li><code>state_summaries.csv</code></li>
-<li><code>aggregation_metadata.json</code> – records what was rolled up</li>
-</ul>
+<section id="make-quick-plots" class="level1">
+<h1>Make quick plots</h1>
+<p>Use <code>density_per_ha</code> for the first plot because it is the direct field-level downscaling result.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>model_outdir <span class="ot">&lt;-</span> <span class="st">"~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">file.path</span>(model_outdir, <span class="st">"downscaled_preds.csv"</span>), <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(preds, <span class="fu">aes</span>(<span class="at">x =</span> density_per_ha)) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">40</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Downscaled Total Soil Carbon"</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Density (Mg C / ha)"</span>,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of fields"</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Join predictions to covariates to show how predicted soil carbon varies with a predictor such as organic carbon density (<code>ocd</code>) or temperature (<code>temp</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"~/ccmmf_demo/data/site_covariates.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> preds <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    covariates <span class="sc">|&gt;</span> <span class="fu">select</span>(site_id, ocd, temp, vapr, clay, precip, srad, twi),</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"site_id"</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(ocd), <span class="sc">!</span><span class="fu">is.na</span>(density_per_ha))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>plot_sample <span class="ot">&lt;-</span> plot_data <span class="sc">|&gt;</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="fu">min</span>(<span class="fu">nrow</span>(plot_data), <span class="dv">5000</span>))</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_sample, <span class="fu">aes</span>(<span class="at">x =</span> ocd, <span class="at">y =</span> density_per_ha)) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Predicted Soil Carbon vs. Soil Organic Carbon Density"</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"SoilGrids organic carbon density covariate"</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted density (Mg C / ha)"</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
-<section id="per-ensemble-metrics-and-variable-importance-script-042" class="level1">
-<h1>Per-ensemble metrics and variable importance (script 042)</h1>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/042_downscale_analysis.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="aggregate-to-county" class="level1">
+<h1>Aggregate to county</h1>
+<p>This section is still under construction, will be presented in a follow-up demo.</p>
+<p>The <code>041_aggregate_to_county.R</code> script computes per-county totals from field-level predictions. This is a downstream aggregation step and is intentionally skipped in the first live demo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/041_aggregate_to_county.R --mode demo</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="per-ensemble-metrics-and-variable-importance-script-042-follow-up" class="level1">
+<h1>Per-ensemble metrics and variable importance (script 042, follow-up)</h1>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/042_downscale_analysis.R --mode demo</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.</p>
 <p>Outputs in <code>figures/</code>:</p>
 <ul>
@@ -451,9 +550,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>per-spec ALE / ICE SVG files</li>
 </ul>
 </section>
-<section id="county-maps-and-scenario-deltas-script-043" class="level1">
-<h1>County maps and scenario deltas (script 043)</h1>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/043_county_level_plots.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="county-maps-and-scenario-deltas-script-043-follow-up" class="level1">
+<h1>County maps and scenario deltas (script 043, follow-up)</h1>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/043_county_level_plots.R --mode demo</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.</p>
 </section>
 <section id="where-to-go-next" class="level1">
@@ -470,151 +569,419 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
-    }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
-    });
-  }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
-    } else {
-      return undefined;
+      return false;
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/variable_importance.html" class="pagination-link">
+      <a href="../reports/variable_importance.html" class="pagination-link" aria-label="Downscaling Model Evaluation">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Model Evaluation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../docs/workflow_documentation.html" class="pagination-link">
+      <a href="../docs/workflow_documentation.html" class="pagination-link" aria-label="Technical Documentation">
         <span class="nav-page-text">Technical Documentation</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

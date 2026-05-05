@@ -2,15 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.313">
+<meta name="generator" content="quarto-1.9.35">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-10">
+<meta name="dcterms.date" content="2026-05-05">
 
-<title>MAGiC Downscaling - Model Drivers</title>
+<title>Model Drivers – MAGiC Downscaling</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -19,7 +22,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -34,15 +37,16 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="../">
 <link href="../reports/downscaling_results.html" rel="next">
 <link href="../reports/atlas_biomass.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-787e033c7b6f65c9dfccb6078e5d2d34.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -52,7 +56,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -61,23 +71,30 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
 
 </head>
 
-<body class="nav-sidebar docked">
+<body class="nav-sidebar docked quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Model Drivers</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_model_drivers.html">Model Drivers</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -85,109 +102,130 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">MAGiC Downscaling</a> 
         <div class="sidebar-tools-main">
-    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
-    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Map Atlas</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Soil Carbon</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aboveground Biomass</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link active">Model Drivers</a>
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Points Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  <a href="../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
       </ul>
@@ -195,6 +233,7 @@ ul.task-list li input[type="checkbox"] {
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -215,9 +254,9 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_model_drivers.html">Model Drivers</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Model Drivers</h1>
+<h1 class="title">Model Drivers</h1>
 <p class="subtitle lead">Environmental Predictors Driving Spatial Variation in Downscaled Predictions</p>
 </div>
 
@@ -235,7 +274,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 10, 2026</p>
+      <p class="date">May 5, 2026</p>
     </div>
   </div>
   
@@ -243,16 +282,18 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
+
 <p>The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at 100 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal <strong>which environmental factors drive the spatial variation</strong> seen in the maps. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
-<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Validation Status
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Validation Status
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -264,11 +305,11 @@ Validation Status
 <p>Before interpreting predictor effects, it is important to understand how well each Random Forest model captures spatial variation. Out-of-bag (OOB) R² measures predictive accuracy on held-out training sites.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4"></p>
-<p></p><figcaption class="figure-caption">Variable importance across all four response variables. Importance is measured as the median increase in MSE when each predictor is permuted, with IQR across 20 ensemble members.</figcaption><p></p>
+<p><a href="../figures/variable_importance_summary.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Variable importance across all four response variables. Importance is measured as the median increase in MSE when each predictor is permuted, with IQR across 20 ensemble members."><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4"></a></p>
+<figcaption>Variable importance across all four response variables. Importance is measured as the median increase in MSE when each predictor is permuted, with IQR across 20 ensemble members.</figcaption>
 </figure>
 </div>
-<table class="table">
+<table class="caption-top table">
 <caption>Downscaling model performance by response variable. R² is the median across 20 ensemble members.</caption>
 <colgroup>
 <col style="width: 20%">
@@ -317,13 +358,13 @@ Validation Status
 </tr>
 </tbody>
 </table>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Interpreting CH<sub>4</sub> Model Quality
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Interpreting CH<sub>4</sub> Model Quality
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -334,7 +375,7 @@ Interpreting CH<sub>4</sub> Model Quality
 <section id="environmental-predictors" class="level2">
 <h2 class="anchored" data-anchor-id="environmental-predictors">Environmental Predictors</h2>
 <p>The downscaling model uses eight predictors (seven environmental covariates plus field area):</p>
-<table class="table">
+<table class="caption-top table">
 <caption>Covariates used in the Random Forest downscaling model.</caption>
 <colgroup>
 <col style="width: 18%">
@@ -420,42 +461,50 @@ Interpreting CH<sub>4</sub> Model Quality
 </section>
 <section id="total-soil-carbon-totsoilcarb" class="level2 tabset">
 <h2 class="tabset anchored" data-anchor-id="total-soil-carbon-totsoilcarb">Total Soil Carbon (TotSoilCarb)</h2>
-<div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">ICE – Top Predictors</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="lightbox" data-gallery="tsc-ale" title="TotSoilCarb ALE – Predictor 1"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of soil carbon"></a></p>
-<p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 1</figcaption><p></p>
+<figcaption>TotSoilCarb ALE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="lightbox" data-gallery="tsc-ale" title="TotSoilCarb ALE – Predictor 2"><img src="../figures/annual_crop_tot_soil_carb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of soil carbon"></a></p>
-<p></p><figcaption class="figure-caption">TotSoilCarb ALE – Predictor 2</figcaption><p></p>
+<figcaption>TotSoilCarb ALE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
 <p>Higher organic carbon density (ocd) –&gt; higher soil carbon: sites with more existing organic matter retain more carbon through the simulation. Vapor pressure (vapr) shows a negative relationship – higher vapr (warmer, more humid conditions) correlates with lower soil carbon, consistent with faster decomposition at higher temperatures (vapr and temp are highly correlated, r = 0.86).</p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="lightbox" data-gallery="tsc-ice" title="TotSoilCarb ICE – Predictor 1"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of soil carbon"></a></p>
-<p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 1</figcaption><p></p>
+<figcaption>TotSoilCarb ICE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="lightbox" data-gallery="tsc-ice" title="TotSoilCarb ICE – Predictor 2"><img src="../figures/annual_crop_tot_soil_carb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of soil carbon"></a></p>
-<p></p><figcaption class="figure-caption">TotSoilCarb ICE – Predictor 2</figcaption><p></p>
+<figcaption>TotSoilCarb ICE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
@@ -467,42 +516,50 @@ Interpreting CH<sub>4</sub> Model Quality
 </section>
 <section id="aboveground-biomass-agb" class="level2 tabset">
 <h2 class="tabset anchored" data-anchor-id="aboveground-biomass-agb">Aboveground Biomass (AGB)</h2>
-<div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">ICE – Top Predictors</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_agb_ALE_predictor1.svg" class="lightbox" data-gallery="agb-ale" title="AGB ALE – Predictor 1"><img src="../figures/annual_crop_agb_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of aboveground biomass"></a></p>
-<p></p><figcaption class="figure-caption">AGB ALE – Predictor 1</figcaption><p></p>
+<figcaption>AGB ALE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_agb_ALE_predictor2.svg" class="lightbox" data-gallery="agb-ale" title="AGB ALE – Predictor 2"><img src="../figures/annual_crop_agb_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of aboveground biomass"></a></p>
-<p></p><figcaption class="figure-caption">AGB ALE – Predictor 2</figcaption><p></p>
+<figcaption>AGB ALE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
 <p>Precipitation (precip) and vapor pressure (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Vapor pressure is strongly correlated with temperature (r = 0.86); its negative relationship with AGB likely reflects faster turnover under warmer conditions rather than a direct moisture effect. The wide IQR (-0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.</p>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_agb_ICE_predictor1.svg" class="lightbox" data-gallery="agb-ice" title="AGB ICE – Predictor 1"><img src="../figures/annual_crop_agb_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of AGB"></a></p>
-<p></p><figcaption class="figure-caption">AGB ICE – Predictor 1</figcaption><p></p>
+<figcaption>AGB ICE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_agb_ICE_predictor2.svg" class="lightbox" data-gallery="agb-ice" title="AGB ICE – Predictor 2"><img src="../figures/annual_crop_agb_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of AGB"></a></p>
-<p></p><figcaption class="figure-caption">AGB ICE – Predictor 2</figcaption><p></p>
+<figcaption>AGB ICE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
@@ -513,42 +570,50 @@ Interpreting CH<sub>4</sub> Model Quality
 </section>
 <section id="n2o-flux" class="level2 tabset">
 <h2 class="tabset anchored" data-anchor-id="n2o-flux">N<sub>2</sub>O Flux</h2>
-<div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">ICE – Top Predictors</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="lightbox" data-gallery="n2o-ale" title="N2O ALE – Predictor 1"><img src="../figures/annual_crop_n2o_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of N2O flux"></a></p>
-<p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 1</figcaption><p></p>
+<figcaption>N<sub>2</sub>O ALE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="lightbox" data-gallery="n2o-ale" title="N2O ALE – Predictor 2"><img src="../figures/annual_crop_n2o_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of N2O flux"></a></p>
-<p></p><figcaption class="figure-caption">N<sub>2</sub>O ALE – Predictor 2</figcaption><p></p>
+<figcaption>N<sub>2</sub>O ALE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
 <p>Vapor pressure (vapr) and mean annual temperature (temp) are the top predictors of spatial variation in N<sub>2</sub>O flux (OOB R² = 0.52, our best spatial model). Higher vapr and temperature are associated with greater N<sub>2</sub>O emissions, consistent with warmer conditions promoting nitrification and denitrification. These two predictors are highly correlated (r = 0.86), reflecting California’s north-south climate gradient.</p>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="lightbox" data-gallery="n2o-ice" title="N2O ICE – Predictor 1"><img src="../figures/annual_crop_n2o_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of N2O"></a></p>
-<p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 1</figcaption><p></p>
+<figcaption>N<sub>2</sub>O ICE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="lightbox" data-gallery="n2o-ice" title="N2O ICE – Predictor 2"><img src="../figures/annual_crop_n2o_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of N2O"></a></p>
-<p></p><figcaption class="figure-caption">N<sub>2</sub>O ICE – Predictor 2</figcaption><p></p>
+<figcaption>N<sub>2</sub>O ICE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
@@ -559,33 +624,37 @@ Interpreting CH<sub>4</sub> Model Quality
 </section>
 <section id="ch4-flux" class="level2 tabset">
 <h2 class="tabset anchored" data-anchor-id="ch4-flux">CH<sub>4</sub> Flux</h2>
-<div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">ICE – Top Predictors</a></li></ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">ALE – Top Predictors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">ICE – Top Predictors</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="lightbox" data-gallery="ch4-ale" title="CH4 ALE – Predictor 1"><img src="../figures/annual_crop_ch4_flux_ALE_predictor1.svg" class="img-fluid figure-img" alt="ALE plot for top predictor of CH4 flux"></a></p>
-<p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 1</figcaption><p></p>
+<figcaption>CH<sub>4</sub> ALE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="lightbox" data-gallery="ch4-ale" title="CH4 ALE – Predictor 2"><img src="../figures/annual_crop_ch4_flux_ALE_predictor2.svg" class="img-fluid figure-img" alt="ALE plot for second predictor of CH4 flux"></a></p>
-<p></p><figcaption class="figure-caption">CH<sub>4</sub> ALE – Predictor 2</figcaption><p></p>
+<figcaption>CH<sub>4</sub> ALE – Predictor 2</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="callout-warning callout callout-style-default callout-captioned">
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
-Low Model Quality
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Low Model Quality
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -594,19 +663,23 @@ Low Model Quality
 </div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="lightbox" data-gallery="ch4-ice" title="CH4 ICE – Predictor 1"><img src="../figures/annual_crop_ch4_flux_ICE_predictor1.svg" class="img-fluid figure-img" alt="ICE plot for top predictor of CH4"></a></p>
-<p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 1</figcaption><p></p>
+<figcaption>CH<sub>4</sub> ICE – Predictor 1</figcaption>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center" style="flex-basis: 50.0%;justify-content: center;">
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="lightbox" data-gallery="ch4-ice" title="CH4 ICE – Predictor 2"><img src="../figures/annual_crop_ch4_flux_ICE_predictor2.svg" class="img-fluid figure-img" alt="ICE plot for second predictor of CH4"></a></p>
-<p></p><figcaption class="figure-caption">CH<sub>4</sub> ICE – Predictor 2</figcaption><p></p>
+<figcaption>CH<sub>4</sub> ICE – Predictor 2</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
@@ -630,152 +703,451 @@ Low Model Quality
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
-    }
-  });
-  clipboard.on('success', function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  });
-  function tippyHover(el, contentFn) {
-    const config = {
-      allowHTML: true,
-      content: contentFn,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start'
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      return note.innerHTML;
-    });
-  }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
-    } else {
-      return undefined;
+      return false;
     }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
       });
     }
-  }
-});
-</script>
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/atlas_biomass.html" class="pagination-link">
+      <a href="../reports/atlas_biomass.html" class="pagination-link" aria-label="Aboveground Biomass">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Aboveground Biomass</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reports/downscaling_results.html" class="pagination-link">
+      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Downscaling Results">
         <span class="nav-page-text">Downscaling Results</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"loop":true,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
 
 
 
