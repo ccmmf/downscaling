@@ -14,7 +14,7 @@ execute:
   echo: true
   warning: false
   message: false
-  eval: false
+  eval: true
 ---
 
 # Overview
@@ -24,9 +24,9 @@ The downscaling workflow follows the ensemble workflow: it starts from SIPNET Ne
 
 ```{mermaid}
 flowchart LR
-  A[PEcAn/SIPNET NetCDF outputs] --> B[Extract to CSV\nscript 030]
-  B --> C[Downscale to fields\nscript 040]
-  C --> D[Aggregate to county \nscript 041]
+    A["PEcAn/SIPNET NetCDF outputs"] --> B["Extract to CSV<br/>script 030"]
+    B --> C["Downscale to fields<br/>script 040"]
+    C --> D["Aggregate to county<br/>script 041"]
 ```
 
 For this intro we focus on soil carbon (`TotSoilCarb`) for one ensemble member of the baseline scenario in 2024. Other model outputs, including but not limited to aboveground biomass and GHG fluxes (N2O, CH4), can be downscaled and aggregated with the same pipeline.
