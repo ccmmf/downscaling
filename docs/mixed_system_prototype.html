@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David LeBauer">
+<meta name="dcterms.date" content="2026-04-10">
+
+<title>MAGiC Downscaling - Mixed-System Prototype (Two-PFT Aggregation)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../docs/references.html" rel="next">
+<link href="../docs/workflow_documentation.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../site_libs/dt-ext-scroller-1.13.6/css/scroller.dataTables.min.css" rel="stylesheet">
+<script src="../site_libs/dt-ext-scroller-1.13.6/js/dataTables.scroller.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Mixed-System Prototype (Two-PFT Aggregation)</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">MAGiC Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">Soil Carbon</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link active">Mixed System Prototype</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#challenge" id="toc-challenge" class="nav-link active" data-scroll-target="#challenge">Challenge</a></li>
+  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">Approach</a>
+  <ul class="collapse">
+  <li><a href="#context" id="toc-context" class="nav-link" data-scroll-target="#context">Context</a></li>
+  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
+  <li><a href="#sec-mixture-methods" id="toc-sec-mixture-methods" class="nav-link" data-scroll-target="#sec-mixture-methods">Mixture Methods</a></li>
+  </ul></li>
+  <li><a href="#demonstration" id="toc-demonstration" class="nav-link" data-scroll-target="#demonstration">Demonstration</a></li>
+  <li><a href="#illustrative-examples" id="toc-illustrative-examples" class="nav-link" data-scroll-target="#illustrative-examples">Illustrative Examples</a>
+  <ul class="collapse">
+  <li><a href="#run-configuration" id="toc-run-configuration" class="nav-link" data-scroll-target="#run-configuration">Run Configuration</a></li>
+  </ul></li>
+  <li><a href="#mixed-system-dataset" id="toc-mixed-system-dataset" class="nav-link" data-scroll-target="#mixed-system-dataset">Mixed-system dataset</a></li>
+  <li><a href="#county-comparisons-on-woody-sites-downscaled" id="toc-county-comparisons-on-woody-sites-downscaled" class="nav-link" data-scroll-target="#county-comparisons-on-woody-sites-downscaled">County Comparisons on Woody Sites (Downscaled)</a>
+  <ul class="collapse">
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary Statistics</a></li>
+  <li><a href="#carbon-pool-sizes-for-different-mixture-types" id="toc-carbon-pool-sizes-for-different-mixture-types" class="nav-link" data-scroll-target="#carbon-pool-sizes-for-different-mixture-types">Carbon Pool Sizes For Different Mixture Types</a></li>
+  <li><a href="#effect-size-final-year-agb-and-soc-compared-to-annual-monoculture" id="toc-effect-size-final-year-agb-and-soc-compared-to-annual-monoculture" class="nav-link" data-scroll-target="#effect-size-final-year-agb-and-soc-compared-to-annual-monoculture">Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)</a></li>
+  </ul></li>
+  <li><a href="#effect-on-county-level-carbon-stocks" id="toc-effect-on-county-level-carbon-stocks" class="nav-link" data-scroll-target="#effect-on-county-level-carbon-stocks">Effect on County Level Carbon Stocks</a>
+  <ul class="collapse">
+  <li><a href="#change-in-carbon-stocks-tg" id="toc-change-in-carbon-stocks-tg" class="nav-link" data-scroll-target="#change-in-carbon-stocks-tg">Change in Carbon Stocks (Tg):</a></li>
+  <li><a href="#change-in-carbon-density-mgha" id="toc-change-in-carbon-density-mgha" class="nav-link" data-scroll-target="#change-in-carbon-density-mgha">Change in Carbon Density (Mg/ha):</a></li>
+  </ul></li>
+  <li><a href="#other-approaches-considered" id="toc-other-approaches-considered" class="nav-link" data-scroll-target="#other-approaches-considered">Other Approaches Considered</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#healthy-soils-practices-and-model-representation" id="toc-healthy-soils-practices-and-model-representation" class="nav-link" data-scroll-target="#healthy-soils-practices-and-model-representation">Healthy Soils Practices and Model Representation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Mixed-System Prototype (Two-PFT Aggregation)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 10, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This document presents a prototype workflow for modeling croplands with multiple crops (“mixed cropping systems”).</p>
+<section id="challenge" class="level2">
+<h2 class="anchored" data-anchor-id="challenge">Challenge</h2>
+<p>CARB identifies multiple practices from the Healthy Soils Program (https://www.cdfa.ca.gov/oars/healthysoils/) that rely on mixed cropping systems—such as hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover-crop mixtures (CARB, 2022 and Appendix <a href="#tbl-hsp">Table&nbsp;3</a>).</p>
+<p>It is important to be able to represent scenarios that contain multiple crops at the same time. The challenge is that SIPNET simulates only one Plant Functional Type (PFT) - a standard approach used in many land surface, biogeochemistry, and crop models.</p>
+</section>
+<section id="approach" class="level2">
+<h2 class="anchored" data-anchor-id="approach">Approach</h2>
+<section id="context" class="level3">
+<h3 class="anchored" data-anchor-id="context">Context</h3>
+<p>Here we consider methods of simulating cropping systems where two <em>ecophysiologically distinct</em> PFTs are present at the same time. These include woody buffers and orchards with ground cover. Here, ecophysiologically distinct means that the two PFTs have different growth forms (woody vs herbaceous) and/or phenology (perennial vs annual).</p>
+<p>We do not consider mixtures of plant species that are similar enough to represent as a single PFT, including cover crop mixtures and agroforestry. We note that the approach described below could be applied to these practices, and this will be considered if the additional complexity can be justified by potential reduction in uncertainty.</p>
+<p>We also do not consider practices in which different crops are planted in sequence. These include crop rotations, cover crops, and land use change. These scenarios can be represented as sequential model runs that change PFTs while maintaining a continuously evolving system state.</p>
+</section>
+<section id="algorithm" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm">Algorithm</h3>
+<p>The general approach for combining multiple PFTs into an aggregate estimate of carbon pool size (and later, GHG fluxes) is to:</p>
+<ol type="1">
+<li>Run SIPNET separately for each PFT.</li>
+<li>Combine the model outputs from the individual PFT.</li>
+</ol>
+<p>Technical details of these steps are described in more detail below.</p>
+<section id="initial-conditions-generation-ic" class="level4">
+<h4 class="anchored" data-anchor-id="initial-conditions-generation-ic">Initial Conditions Generation (IC)</h4>
+<ol type="1">
+<li>Run once for each PFT at each site.</li>
+<li>Meteorology and soil initial conditions:
+<ul>
+<li>Use the same meteorological driver data (ERA5 ensemble).</li>
+<li>Use the same soil texture and soil organic carbon.</li>
+</ul></li>
+<li>Settings File:
+<ul>
+<li>For each mixed site, create a separate configuration file for each PFT; append <code>-PFT</code> to the site ID.</li>
+</ul></li>
+<li>For herbaceous crops:
+<ul>
+<li>Annual herbaceous: assume start with bare ground (zero biomass).</li>
+<li>Perennial herbaceous: start as bare ground run; consider methods for estimating initial biomass in later iterations.</li>
+</ul></li>
+<li>For woody crops:
+<ul>
+<li>Generate initial conditions.</li>
+</ul></li>
+</ol>
+</section>
+<section id="model-execution" class="level4">
+<h4 class="anchored" data-anchor-id="model-execution">Model Execution</h4>
+<ul>
+<li>Execute PEcAn SIPNET model independently for each PFT and site combination.
+<ul>
+<li>Use ensemble methods to propagate uncertainty and variance in model parameters, meteorological drivers and initial conditions.</li>
+</ul></li>
+<li>Following PEcAn convention, netCDFs will be in <code>out/ENS-{ensemble_number}-{site_id}-{pft}</code>.</li>
+</ul>
+</section>
+<section id="post-processing-outputs" class="level4">
+<h4 class="anchored" data-anchor-id="post-processing-outputs">Post-processing Outputs</h4>
+<ul>
+<li>Combine outputs: For each mixed site, combine model outputs using one of the approaches defined below.</li>
+<li>Standardize Results: Outputs are formatted into ensemble files (<code>combined_ensemble_output.csv</code>) for downstream analysis and visualization.</li>
+</ul>
+</section>
+<section id="downscaling-and-analysis" class="level4">
+<h4 class="anchored" data-anchor-id="downscaling-and-analysis">Downscaling and Analysis</h4>
+<ol type="1">
+<li><strong>Downscaling:</strong>
+<ul>
+<li>Apply machine learning models trained separately for each PFT to downscale outputs.</li>
+<li>Combine downscaled outputs using one of the methods described below.</li>
+</ul></li>
+<li><strong>Analysis:</strong>
+<ul>
+<li>Calibrate using site level mixtures.</li>
+<li>Validate against downscaled outputs.</li>
+</ul></li>
+</ol>
+</section>
+</section>
+<section id="sec-mixture-methods" class="level3">
+<h3 class="anchored" data-anchor-id="sec-mixture-methods">Mixture Methods</h3>
+<p>These formulas are implemented in <code>combine_mixed_crops()</code>. This function expects additive quantities per unit area (stocks or flux totals already integrated over a defined time step.</p>
+<section id="two-cases-for-mixed-cropping-systems-discrete-and-overlap" class="level4">
+<h4 class="anchored" data-anchor-id="two-cases-for-mixed-cropping-systems-discrete-and-overlap">Two Cases for Mixed Cropping Systems: Discrete and Overlap</h4>
+<p>In a mixed cropping system, we define <span class="math inline">\(f_{woody}\)</span> and <span class="math inline">\(f_{annual}\)</span> as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not “canopy cover” since that changes over time. Think of this as “percent of a monoculture”. This method will build on SIPNET’s single PFT design - the outputs from two separate single PFT runs simulate will be combined.</p>
+<div id="tbl-methods" class="anchored">
+<table class="table">
+<caption>Table&nbsp;1: Methods for combining two plant functional types (PFTs) in mixed cropping systems.</caption>
+<colgroup>
+<col style="width: 39%">
+<col style="width: 23%">
+<col style="width: 15%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Example System</th>
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: center;">Eqn.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Annual Crops + Woody Hedgerow</td>
+<td style="text-align: left;">Discrete</td>
+<td style="text-align: left;">Weighted Average</td>
+<td style="text-align: center;"><a href="#eq-discrete">1</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchard + Ground Cover</td>
+<td style="text-align: left;">Overlap</td>
+<td style="text-align: left;">Incremental</td>
+<td style="text-align: center;"><a href="#eq-overlap">2</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Notation</strong></p>
+<p>We define the following values:</p>
+<ul>
+<li><span class="math inline">\(X\)</span> is the carbon stock (AGB or SOC).</li>
+<li>For a finite time interval <span class="math inline">\(\Delta t\)</span> starting at <span class="math inline">\(t_0\)</span> (the start of the simulation) the change is <span class="math inline">\(\Delta X_{\Delta t} = X(t_0 + \Delta t) - X(t_0)\)</span>.</li>
+<li><span class="math inline">\(f_{woody}\)</span> and <span class="math inline">\(f_{annual}\)</span> are the fractional contributions of each PFT to ecosystem dynamics. In the case of the discrete method, these represent cover and sum to 1. In the overlap case, <span class="math inline">\(f_{woody} = 1\)</span> and <span class="math inline">\(f_{annual} &lt; 1\)</span>.</li>
+</ul>
+</section>
+<section id="scenario-1-discrete-weighted" class="level4">
+<h4 class="anchored" data-anchor-id="scenario-1-discrete-weighted">Scenario 1: Discrete (Weighted)</h4>
+<p>For the Discrete case, we use a <em>Weighted Average</em> approach (<a href="#eq-discrete">Equation&nbsp;1</a>).</p>
+<p>The Discrete case refers to mixed systems where the two different crops do not overlap. This covers two key scenarios: 1) each PFT occupies a distinct zones such as an annual crop with woody hedgerows or 2) a mixture of annuals. In this annual mixture case, the approach assumes that the plants do not overlap - even though this is not the case, it is a reasonable simplification. In the <strong>discrete case</strong>, the field scale ecosystem dynamics are approximated by weighting SIPNET outputs by the fractional area of each crop type within a field: <span id="eq-discrete"><span class="math display">\[
+X_{\textrm{site}} = f_{\textrm{woody}}\cdot X_{\textrm{woody}} + f_{\textrm{annual}}\cdot X_{\textrm{annual}}
+\tag{1}\]</span></span></p>
+</section>
+<section id="scenario-2-overlap" class="level4">
+<h4 class="anchored" data-anchor-id="scenario-2-overlap">Scenario 2: Overlap</h4>
+<p>For the Overlap case, we use an <em>Incremental</em> approach (<a href="#eq-overlap">Equation&nbsp;2</a>).</p>
+<p>This scenario applies when a ground cover is added to an existing orchard orchard. We set <span class="math inline">\(f_\textrm{woody} = 1\)</span>, reflecting the assumption that the addition of ground cover does not reduce the contribution of the woody species to ecosystem dynamics. Lowering this fraction below 1 at the moment of planting would represent an unrealistic scenario in which adding ground cover also reduced standing orchard biomass and associated impact of the woody species on ecosystem function. When woody biomass removal occurs, it is represented as a distinct harvest event.</p>
+<p>The contribution of the ground cover is added <em>incrementally</em> to the system. The parameter <span class="math inline">\(f_\text{annual}\)</span> represents the “ecosystem impact factor” - the fraction of a monoculture’s influence on ecosystem functioning that the ground cover contributes to this mixed system.</p>
+<p>This factor is always less than 1 (<span class="math inline">\(f_\textrm{annual} &lt; 1\)</span>), as it accounts for both the percent of area covered by the ground cover and the reduction in its ecosystem impact due to competition for light and other resources.</p>
+<p>Thus, when ground cover is added, it is treated as an addition to the ecosystem, and the orchard (woody monoculture) is assumed to remain unchanged.</p>
+<p><span id="eq-overlap"><span class="math display">\[
+X_\textrm{site} = X_\textrm{woody} + f_\textrm{annual}\cdot\Delta X_\textrm{annual}
+\tag{2}\]</span></span></p>
+</section>
+</section>
+</section>
+<section id="demonstration" class="level2">
+<h2 class="anchored" data-anchor-id="demonstration">Demonstration</h2>
+<p>Here we illustrate this approach using the orchard + ground cover and annual crop + hedgerows scenarios.</p>
+<p>We consider a set of mixtures used in the examples and figures below (<a href="#tbl-mixture-scenarios">Table&nbsp;2</a>); the percent columns indicate the fractional contribution of each Plant Functional Type (PFT).</p>
+<div id="tbl-mixture-scenarios" class="anchored">
+<table class="table">
+<caption>Table&nbsp;2: Set of mixture scenarios used for demonstration.</caption>
+<colgroup>
+<col style="width: 62%">
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: right;">Woody (%)</th>
+<th style="text-align: right;">Annual (%)</th>
+<th style="text-align: left;">Method</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">100% woody perennial</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">monoculture</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">100% annual herbaceous</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">monoculture</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Orchard + 25% herbaceous ground cover</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">overlap</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchard + 50% herbaceous ground cover</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">overlap</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Annual crop + 25% woody hedgerows</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: left;">discrete</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Annual crop + 50% woody hedgerows</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">discrete</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="illustrative-examples" class="level2">
+<h2 class="anchored" data-anchor-id="illustrative-examples">Illustrative Examples</h2>
+<section id="run-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="run-configuration">Run Configuration</h3>
+<p>These runs use SIPNET grass and temperate deciduous PFT parameterizations to represent annual and perennial woody crops, respectively.</p>
+<p>These simulations were run from 2016 through 2024 across 10 sites, with an ensemble size of 20.</p>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/setup_cd3345636edd8f69c53a1f9622a60d84">
+
+</div>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/plot-helpers_1b00ef38666cdc802f262c89fb567cce">
+
+</div>
+</section>
+</section>
+<section id="mixed-system-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="mixed-system-dataset">Mixed-system dataset</h2>
+<p>The <code>combined_ensemble_output.csv</code> file contains the combined outputs for different scenarios (discrete, overlap).</p>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/data-prep_60a8df1cda67b4689e75f9730beb6321">
+
+</div>
+</section>
+<section id="county-comparisons-on-woody-sites-downscaled" class="level2">
+<h2 class="anchored" data-anchor-id="county-comparisons-on-woody-sites-downscaled">County Comparisons on Woody Sites (Downscaled)</h2>
+<p>This section compares three treatment scenarios on the same set of woody sites using the downscaled outputs:</p>
+<ul>
+<li>100% woody (baseline)</li>
+<li>100% woody + 50% annual (overlap)</li>
+<li>100% annual (counterfactual on woody sites)</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-30e4409849e39179307f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-30e4409849e39179307f">{"x":{"filter":"none","vertical":false,"extensions":["Scroller"],"data":[["AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","AGB","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb","TotSoilCarb"],["annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","annual_100","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50","woody_50_annual_50"],["Alameda","Amador","Butte","Calaveras","Colusa","Contra Costa","Del Norte","El Dorado","Fresno","Glenn","Humboldt","Imperial","Inyo","Kern","Kings","Lake","Los Angeles","Madera","Marin","Mariposa","Mendocino","Merced","Modoc","Mono","Monterey","Napa","Nevada","Orange","Placer","Riverside","Sacramento","San Benito","San Bernardino","San Diego","San Joaquin","San Luis Obispo","San Mateo","Santa Barbara","Santa Clara","Santa Cruz","Shasta","Siskiyou","Solano","Sonoma","Stanislaus","Sutter","Tehama","Trinity","Tulare","Tuolumne","Ventura","Yolo","Yuba","Alameda","Amador","Butte","Calaveras","Colusa","Contra Costa","Del Norte","El Dorado","Fresno","Glenn","Humboldt","Imperial","Inyo","Kern","Kings","Lake","Los Angeles","Madera","Marin","Mariposa","Mendocino","Merced","Modoc","Mono","Monterey","Napa","Nevada","Orange","Placer","Riverside","Sacramento","San Benito","San Bernardino","San Diego","San Joaquin","San Luis Obispo","San Mateo","Santa Barbara","Santa Clara","Santa Cruz","Shasta","Siskiyou","Solano","Sonoma","Stanislaus","Sutter","Tehama","Trinity","Tulare","Tuolumne","Ventura","Yolo","Yuba","Alameda","Amador","Butte","Calaveras","Colusa","Contra Costa","Del Norte","El Dorado","Fresno","Glenn","Humboldt","Imperial","Inyo","Kern","Kings","Lake","Los Angeles","Madera","Marin","Mariposa","Mendocino","Merced","Modoc","Mono","Monterey","Napa","Nevada","Orange","Placer","Riverside","Sacramento","San Benito","San Bernardino","San Diego","San Joaquin","San Luis Obispo","San Mateo","Santa Barbara","Santa Clara","Santa Cruz","Shasta","Siskiyou","Solano","Sonoma","Stanislaus","Sutter","Tehama","Trinity","Tulare","Tuolumne","Ventura","Yolo","Yuba","Alameda","Amador","Butte","Calaveras","Colusa","Contra Costa","Del Norte","El Dorado","Fresno","Glenn","Humboldt","Imperial","Inyo","Kern","Kings","Lake","Los Angeles","Madera","Marin","Mariposa","Mendocino","Merced","Modoc","Mono","Monterey","Napa","Nevada","Orange","Placer","Riverside","Sacramento","San Benito","San Bernardino","San Diego","San Joaquin","San Luis Obispo","San Mateo","Santa Barbara","Santa Clara","Santa Cruz","Shasta","Siskiyou","Solano","Sonoma","Stanislaus","Sutter","Tehama","Trinity","Tulare","Tuolumne","Ventura","Yolo","Yuba"],[-0.07161840147074788,-0.08099018900171114,-1.855669466024508,-0.04573452434641004,-1.499725956366142,-0.08318611286578804,-0.0001566776566516451,-0.06793357373346791,-11.486195818792,-1.919847492375844,-0.003740830370702251,-0.1474566573300519,-0.0004797995176281623,-9.4989993691542,-2.002825950460204,-0.3482407961401639,-0.01723621881379651,-5.105889931770216,-0.005360643277438187,-0.002135829149495999,-0.3724516701648592,-3.439553846543788,-0.0004046037260185316,-0.0002911615487756899,-1.115512697920224,-0.8686565010858699,-0.009799012382297384,-0.02691933312837477,-0.1060437426786027,-0.6742454395895578,-0.844048897916609,-0.1410955521170826,-0.08466072887028279,-0.5530388754796173,-4.887079510496266,-1.135418214927596,-0.004010039709250089,-0.6249301196702218,-0.07688509930462933,-0.1062339310061755,-0.04691752025212199,-0.00168335373717485,-0.6518957043938582,-1.211815524566345,-4.422161104521834,-1.33500030161406,-1.371638780939631,-0.00225366791811771,-7.549093414772983,-0.004246083497617507,-0.8537856419106842,-1.518781609955721,-0.5973269123478957,0.005339114605489165,0.006584799982656361,0.1068281283998305,0.003572521864709716,0.07170596680090968,0.006547140223005815,1.250269132195558e-05,0.005522842473720785,0.4818187761460599,0.09738588245964053,0.0002942154201999465,0.0021921078345776,1.520706117845146e-05,0.1588429310793984,0.0758077086550264,0.0252492946160231,0.0005419535409151889,0.2382727251870849,0.0004158053764337652,0.000142845445489643,0.02813187862411032,0.1777555703670481,3.09576145946006e-05,2.135416129174674e-05,0.08264305918151571,0.06622006471624653,0.0007282451973268048,0.001548719745611278,0.005673515217602981,0.01907913187189159,0.05921940243855384,0.0107329961853842,0.001705403528258306,0.02442030753544699,0.3750255248188674,0.06650366160201426,0.0003141932167597134,0.03827569798121366,0.006035156279454668,0.008460128412587711,0.003222382197768353,0.0001277561592896031,0.04012459974582683,0.09458884386729305,0.2791115904329295,0.06710706778141784,0.09117004463378597,0.0001765137726683018,0.370073142888641,0.0003354139829730282,0.02186362618175963,0.08250824526636213,0.03136156922986955,-0.007464540074429808,-0.008148610296342926,-0.216315139103199,-0.004687795029629741,-0.1819344601296775,-0.008530797568799417,-1.41217132717319e-05,-0.006583427638782783,-1.435305198109527,-0.2248464751853998,-0.0003831928754213019,-0.01886859638179841,-5.74162836421958e-05,-1.293145428752884,-0.2571984793143552,-0.03622502639331732,-0.002186461516073678,-0.6482112487053417,-0.0005081682033458096,-0.0002346711388632677,-0.03916912809807802,-0.4338460279192924,-3.608805842475886e-05,-2.395362368358514e-05,-0.1166500814844023,-0.08494415419050366,-0.001006314558463065,-0.002986162875428227,-0.01277416630381068,-0.08525412592436327,-0.09670551084429829,-0.01441738870766962,-0.01116865673371198,-0.0702335227497799,-0.5263402120280309,-0.1295298985361465,-0.0003668799988637422,-0.06816212229312762,-0.00780994270280555,-0.01086141085053511,-0.005334816965899949,-0.0001827418653828608,-0.07770183412363818,-0.1212434163209609,-0.521146047615809,-0.1592509643250932,-0.1639206527884367,-0.0002389472133483357,-0.9528645489520633,-0.0004219472044540886,-0.1126136573311143,-0.1849861712996669,-0.07176246768478534,-0.04262811132046284,-0.04451106895514403,-1.152405449997862,-0.02536015238140434,-0.9438033425529654,-0.04994059031288801,-9.407387134843269e-05,-0.0374441214341886,-6.535906822844709,-1.167298744970206,-0.002148452630914518,-0.0977247878765657,-0.0002547929979866159,-5.177212061856611,-1.115852701439325,-0.2012550160976954,-0.009665530705623874,-3.127833125684551,-0.002984697372149812,-0.00125508007506133,-0.2096737349804341,-2.186372998873409,-0.0002380863755397131,-0.0001228894126119034,-0.63591871223903,-0.5104943802329718,-0.005604324354908679,-0.01412379962305651,-0.06293950447157307,-0.3967606260748279,-0.4969102017584309,-0.08234293665533739,-0.04870830488606379,-0.310068053575313,-2.828665339768099,-0.6606014596750169,-0.002309782268772139,-0.3423170545185428,-0.04499516559014476,-0.0631449390946181,-0.02769108708242269,-0.0009207199078757381,-0.4158489197187654,-0.6975529705216317,-2.706159196831846,-0.8392502920644302,-0.7910179428238903,-0.00128608294643997,-4.069916597074215,-0.002309814999918028,-0.6115911762632855,-0.9487411346816327,-0.3652275222671676],[-47.09296753918289,-49.35853005835089,-45.27829794180465,-48.65105097662983,-44.27328794360043,-47.30855093497786,-47.21796113532555,-49.2264291014975,-44.76258978932518,-45.47883401877392,-47.87613604141703,-36.22688430461195,-43.05884771927757,-45.54584624735587,-45.10898469867215,-47.85435402598521,-46.61730168852977,-44.72925500253443,-49.02266308709361,-47.78761333010451,-48.49549420102453,-45.16077317900871,-47.24634925945519,-52.35102508560047,-47.88155160193504,-47.79080181295946,-48.5468460659043,-48.53637062639643,-46.05169868574747,-41.02134441810859,-47.04044886410146,-47.3887817357319,-43.72193546285226,-47.17824009054405,-47.13778004003759,-46.82748106823919,-48.40047772735064,-47.82206099030837,-47.31155712519814,-46.99194713595237,-47.01018897829429,-47.99214206359772,-45.58202887330101,-48.09867586556514,-46.36219372798532,-44.59220022164172,-47.36457684801638,-48.05917721177129,-47.15153669574342,-49.38013040389262,-42.50436427159391,-45.56676135727594,-45.47810332453272,3.510756253153396,4.013029872856642,2.606604201240337,3.800344397126331,2.116826012095686,3.723406540443094,3.767937340546588,4.001994868369735,1.87768488102347,2.306952193724968,3.765446728965429,0.5385530795583193,1.364733617861056,0.7616208229168251,1.707391882442529,3.469693088386016,1.465774598880571,2.087346501287954,3.802507614059323,3.196062249003582,3.66294331845954,2.333901242080579,3.614979737752371,3.839491300162805,3.547317668475799,3.643223742571912,3.607915381016149,2.792388474518852,2.46384187025469,1.16078151035299,3.300409821100985,3.604816778189814,0.8807335348467902,2.083229919403202,3.617266848297362,2.742776990622353,3.792257157649694,2.929003908901279,3.713757849796075,3.742287453380406,3.228746857535178,3.642307383602159,2.80560318439975,3.754365288643726,2.926222116635614,2.241536424507387,3.148227248529579,3.764133399063255,2.311471910372127,3.900720800189312,1.088445958692624,2.47542734084692,2.38774556506975,-4.908338306931245,-4.966075906272206,-5.278085077629985,-4.986739409970724,-5.370872395715345,-4.851526984445897,-4.255862148304903,-4.770522380831562,-5.593494906324853,-5.326337412358013,-4.904203723711756,-4.635602559359807,-5.152733429532407,-6.200379701540523,-5.792796056615467,-4.977949903746303,-5.913532267505257,-5.678541180146489,-4.647158435078794,-5.250594901928093,-5.100060965490471,-5.696326598045488,-4.214071455075249,-4.306876232879482,-5.007013283110805,-4.673365401643991,-4.985543038178218,-5.384141850074151,-5.547447145162092,-5.186892869067124,-5.389581870169646,-4.842268068805005,-5.767907924184099,-5.9914305225292,-5.07675577766171,-5.342136308654457,-4.428177400002784,-5.216028267690053,-4.805879860599475,-4.804480448723446,-5.345353982561011,-5.2099409474921,-5.433088794204192,-4.81232305102095,-5.463725415935645,-5.31936275826178,-5.660405978501299,-5.095518456045571,-5.951579252955549,-4.907065061530677,-5.606292350438549,-5.549988666411252,-5.463709825770094,-28.03028581266473,-27.12675401838349,-28.11866998412609,-26.97738926806288,-27.86194168981801,-28.40157905144524,-28.35105206517187,-27.13298134851198,-25.47093229366676,-27.65187655980246,-27.4964647533308,-24.00884875731941,-22.86599401866494,-24.8237204146981,-25.13198035187864,-27.65594639281752,-26.14152011827295,-27.40083459566728,-27.29482379617659,-28.08149768884953,-27.30080763055783,-28.70671589748409,-27.80180045141719,-22.09559177526125,-27.29576695225278,-28.08582647093065,-27.76527482021229,-25.46563727594898,-27.33278760388364,-24.13906470567692,-27.69374972654395,-27.65594941930523,-25.15477236200528,-26.45106108191293,-27.28357586703699,-27.24485298886601,-27.87866788372574,-26.19542016609337,-27.68795730810361,-27.93178800532887,-27.74578088875484,-26.24957526379097,-29.07710134886783,-27.68686615084306,-28.37153011318286,-28.03296524694524,-27.31493937155671,-27.42555268906625,-25.42064473596542,-26.86215802605351,-30.44709686498416,-28.46430361711418,-27.80697579712497]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>model_output<\/th>\n      <th>scenario<\/th>\n      <th>county<\/th>\n      <th>delta_total_Tg<\/th>\n      <th>delta_density_Mg_ha<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollY":"50vh","scroller":true,"deferRender":true,"columnDefs":[{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatSignif(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatSignif(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[3,4]},{"name":"model_output","targets":0},{"name":"scenario","targets":1},{"name":"county","targets":2},{"name":"delta_total_Tg","targets":3},{"name":"delta_density_Mg_ha","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Selecting Representative Sites</strong></p>
+<p>Next we select representative sites based on their productivity. We use AGB in the 100% woody scenario as an indicator of productivity. We select sites that are near the 15th, 50th, and 85th percentiles of AGB and categorize them as low, medium, and high productivity.</p>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/select-representative-sites_0629f4a8c8f842df5cadcd5aad3b441f">
+
+</div>
+<section id="summary-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="summary-statistics">Summary Statistics</h3>
+
+<!-- 
+TODO add initial conditions to table
+-->
+<div class="cell" data-hash="mixed_system_prototype_cache/html/summary-table_be88911138b567b31d6624eaab4ab040">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Summary statistics (mean and standard deviation) for carbon pools by mixture type.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mixture</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">AGB</th>
+<th style="text-align: left;">SOC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">100% woody</td>
+<td style="text-align: left;">monoculture</td>
+<td style="text-align: left;">4.0 (2.4)</td>
+<td style="text-align: left;">1.7 (0.6)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">100% annual</td>
+<td style="text-align: left;">monoculture</td>
+<td style="text-align: left;">0.3 (0.7)</td>
+<td style="text-align: left;">1.3 (0.8)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">100% woody + 25% annual</td>
+<td style="text-align: left;">overlap</td>
+<td style="text-align: left;">4.1 (2.5)</td>
+<td style="text-align: left;">0.5 (0.9)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">100% woody + 50% annual</td>
+<td style="text-align: left;">overlap</td>
+<td style="text-align: left;">4.2 (2.5)</td>
+<td style="text-align: left;">-0.8 (1.4)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">75% annual + 25% woody</td>
+<td style="text-align: left;">discrete</td>
+<td style="text-align: left;">1.2 (0.9)</td>
+<td style="text-align: left;">1.4 (0.7)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">50% annual + 50% woody</td>
+<td style="text-align: left;">discrete</td>
+<td style="text-align: left;">2.1 (1.3)</td>
+<td style="text-align: left;">1.5 (0.6)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="carbon-pool-sizes-for-different-mixture-types" class="level3">
+<h3 class="anchored" data-anchor-id="carbon-pool-sizes-for-different-mixture-types">Carbon Pool Sizes For Different Mixture Types</h3>
+<p>What we expect to see here:</p>
+<ul>
+<li>Discrete mixtures: Carbon pools scale approximately as the fractional (area) weighted average of the two monocultures.</li>
+<li>Overlap mixtures: Pools are dominated by the woody monoculture plus a modest incremental contribution from the annual component. <!-- 
+TODO: compare difference from t0 and b/w woody and annual in time series plots
+If annual monoculture SOC < woody monoculture SOC, then should addition of herbacious cover reduce SOC relative to woody monoculture?
+--></li>
+</ul>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/carbon-pools_9ac559a3a52f25501c6a6949e8e6bb05">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="mixed_system_prototype_files/figure-html/carbon-pools-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="mixed_system_prototype_files/figure-html/carbon-pools-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="effect-size-final-year-agb-and-soc-compared-to-annual-monoculture" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-final-year-agb-and-soc-compared-to-annual-monoculture">Effect Size (Final Year AGB and SOC Compared to Annual Monoculture)</h3>
+<p>These plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Because we are considering the healthy soils practice of adding a woody component like a hedgerow to an annual cropping system, we use annual monoculture as the point of comparison.</p>
+<div class="cell" data-hash="mixed_system_prototype_cache/html/effect-size-probabilistic_fdad5fed01771179013914858794a53b">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="mixed_system_prototype_files/figure-html/effect-size-probabilistic-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="mixed_system_prototype_files/figure-html/effect-size-probabilistic-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="effect-on-county-level-carbon-stocks" class="level2">
+<h2 class="anchored" data-anchor-id="effect-on-county-level-carbon-stocks">Effect on County Level Carbon Stocks</h2>
+<p>Here we present county-level maps showing the impact of adding 50% ground cover to orchards on carbon stocks and densities. Positive values indicate an increase relative to woody-only.</p>
+<p>These maps are generated from the downscaled outputs that are presented in the <a href="../reports/downscaling_results.html#results">Downscaling Results</a> page.</p>
+<section id="change-in-carbon-stocks-tg" class="level3">
+<h3 class="anchored" data-anchor-id="change-in-carbon-stocks-tg">Change in Carbon Stocks (Tg):</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_stock.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+<section id="change-in-carbon-density-mgha" class="level3">
+<h3 class="anchored" data-anchor-id="change-in-carbon-density-mgha">Change in Carbon Density (Mg/ha):</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="../figures/county_diff_woody_plus_annual_minus_woody_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="../figures/county_diff_woody_plus_annual_minus_woody_AGB_carbon_density.webp" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="other-approaches-considered" class="level2">
+<h2 class="anchored" data-anchor-id="other-approaches-considered">Other Approaches Considered</h2>
+<p>We evaluated several alternative approaches for representing mixed cropping systems:</p>
+<ol type="1">
+<li>Fractional coverage approach (mosaic / tiling) Each PFT is simulated separately and then combined by fractional area weighting (Li &amp; Arora, 2011). This is the “Discrete” method described above (<a href="#eq-discrete">Equation&nbsp;1</a>).</li>
+<li>Composite PFT approach A new parameter set is defined to represent the mixture as a single “composite” PFT (e.g., DayCent: Parton et al., 1998).<br>
+</li>
+<li>Vegetation demography approach Individual or cohort based models explicitly represent competition for light and resources among PFTs, as well as disturbance and successional dynamics (Fisher et al., 2018).</li>
+</ol>
+<p>Limitations:</p>
+<ul>
+<li>Composite PFTs: By lumping mixture components into a single parameterization prevents explicit evaluation of the incremental contribution of individual PFTs - it would be harder to compare an orchard monoculture to an orchard+ground cover system. It can also bias estimates of pools and fluxes relative to the weighted mixture model (Li &amp; Arora, 2011).</li>
+<li>Fractional weighting: While more realistic, this approach requires careful treatment of long-lived pools (e.g., soil organic carbon, woody biomass). If the PFTs share a common soil, raw stocks cannot be summed without double-counting; instead, <span class="math inline">\(\Delta\)</span> stocks relative to a common baseline (or shared-pool formulations) should be aggregated - as is done in the “Overlap” method above (<a href="#eq-overlap">Equation&nbsp;2</a>).</li>
+<li>Demography models provide mechanistic representation of competition but impose higher computational costs and require additional data and parameterizations (Fisher et al., 2018; Fisher &amp; Koven, 2020).</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>CARB (2022). Draft 2022 Scoping Plan for Achieving Carbon Neutrality. https://ww2.arb.ca.gov/sites/default/files/2022-09/2022-draft-sp-appendix-b-draft-ea-recirc.pdf</p>
+<p>Fisher and Koven, 2020. Perspectives on the future of land surface models and the challenges of representing complex terrestrial systems. JAMES 12, e2018MS001453. https://doi.org/10.1029/2018MS001453</p>
+<p>Fisher et al., 2018. Vegetation demographics in Earth system models: a review of progress and priorities. Global Change Biol. 24, 35–54. https://doi.org/10.1111/gcb.13910</p>
+<p>Li, R., Arora, V.K., 2011. Effect of mosaic representation of vegetation in land surface schemes on simulated energy and carbon balances. https://doi.org/10.5194/bgd-8-5849-2011</p>
+<!--
+
+---
+
+# <span style="color:grey">Below is Draft Material</span>
+
+--- 
+
+
+## <span style="color:grey">Nothing to see here</span>
+
+---
+
+## These aren't as interesting.
+
+Except that the lines are wiggly
+
+### Time Series (All Sites)
+
+
+::: {.cell hash='mixed_system_prototype_cache/html/unnamed-chunk-1_6e3bf6c021525a834f039591b2b6231e'}
+::: {.cell-output-display}
+![](mixed_system_prototype_files/figure-html/unnamed-chunk-1-1.png){width=672}
+:::
+
+::: {.cell-output-display}
+![](mixed_system_prototype_files/figure-html/unnamed-chunk-1-2.png){width=672}
+:::
+:::
+
+
+### Time Series (Representative Sites)
+
+Here we focus on representative sites for each mixture.
+
+We selected 3 sites that represent low, medium, and high productivity (AGB) defined as the 15th, 50th, and 85th percentiles of AGB.
+
+
+::: {.cell hash='mixed_system_prototype_cache/html/unnamed-chunk-2_b3557e47fc0b890c1eb40e49a7431024'}
+::: {.cell-output-display}
+![](mixed_system_prototype_files/figure-html/unnamed-chunk-2-1.png){width=672}
+:::
+
+::: {.cell-output-display}
+![](mixed_system_prototype_files/figure-html/unnamed-chunk-2-2.png){width=672}
+:::
+:::
+
+
+-->
+</section>
+<section id="appendix" class="level2">
+<h2 class="anchored" data-anchor-id="appendix">Appendix</h2>
+<section id="healthy-soils-practices-and-model-representation" class="level3">
+<h3 class="anchored" data-anchor-id="healthy-soils-practices-and-model-representation">Healthy Soils Practices and Model Representation</h3>
+<div id="tbl-hsp" class="anchored">
+<table class="table">
+<caption>Table&nbsp;3: Healthy Soils Program practices, model representation, and priority for implementation in SIPNET.</caption>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Agronomic Practice</th>
+<th style="text-align: left;">Model Representation</th>
+<th style="text-align: left;">Expected GHG Impact on State GHG Inventory</th>
+<th style="text-align: left;">Expected Adoption (CARB 2022 Scoping Plan)</th>
+<th style="text-align: left;">Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Cover Crops</td>
+<td style="text-align: left;">Planting/harvest like commodity; PFT/mixture params.</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Non-Crop Carbon Amendments (manure/compost)</td>
+<td style="text-align: left;">Add surface C &amp; organic N (low C:N litter analog).</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N Fertilization</td>
+<td style="text-align: left;">Increase soil inorganic N pools.</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Transition to Certified Organic</td>
+<td style="text-align: left;">Composite of shifts (fertility, amendments, tillage).</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">No-till / Reduced till</td>
+<td style="text-align: left;">Lower decomposition pulses (freq &amp; magnitude).</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Polycultures / Mixtures</td>
+<td style="text-align: left;">Independent PFT runs; combine by fractional contribution.</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Medium</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">(Water management placeholder)</td>
+<td style="text-align: left;">Increase soil water content.</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Annual → Perennial</td>
+<td style="text-align: left;">Change PFT; partial biomass retained.</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Low</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Agroforestry / Woody Buffers</td>
+<td style="text-align: left;">Independent woody runs; spatial aggregation.</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Low</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../docs/workflow_documentation.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Technical Documentation</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":true});</script>
+
+
+
+</body></html>
