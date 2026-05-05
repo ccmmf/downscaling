@@ -67,8 +67,6 @@ website:
       - icon: github
         href: https://github.com/ccmmf/downscaling
 
-filters:
-  - lightbox
 lightbox: auto
 
 format:

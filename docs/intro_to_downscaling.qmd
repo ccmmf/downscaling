@@ -211,7 +211,7 @@ Confirm and inspect the output:
 ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv
 ```
 
-```{r}
+```{r inspect-ensemble-output}
 model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
 ensemble_output <- readr::read_csv(file.path(model_outdir, "ensemble_output.csv"), 
   show_col_types = FALSE)
@@ -278,7 +278,7 @@ Focus on `density_per_ha`, `scenario`, `pft`, `ensemble`, `county`, and `model_o
 
 Use `density_per_ha` for the first plot because it is the direct field-level downscaling result.
 
-```{r}
+```{r plot-downscaled-density}
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -298,7 +298,7 @@ ggplot(preds, aes(x = density_per_ha)) +
 
 Join predictions to covariates to show how predicted soil carbon varies with a predictor such as organic carbon density (`ocd`) or temperature (`temp`).
 
-```{r}
+```{r plot-density-by-covariates}
 covariates <- read_csv("~/ccmmf_demo/data/site_covariates.csv", show_col_types = FALSE)
 
 plot_data <- preds |>
