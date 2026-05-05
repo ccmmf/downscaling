@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.313">
+<meta name="generator" content="quarto-1.6.40">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-04-10">
+<meta name="dcterms.date" content="2026-05-05">
 
-<title>MAGiC Downscaling - Soil Carbon Atlas</title>
+<title>Soil Carbon Atlas – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,7 +19,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -39,10 +39,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e4c8fad3e406d8bb7577731c69eecfb3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -52,7 +52,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -61,8 +67,10 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -73,11 +81,16 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Soil Carbon Atlas</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_soil_carbon.html">Soil Carbon</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav>
@@ -85,109 +98,130 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">MAGiC Downscaling</a> 
         <div class="sidebar-tools-main">
-    <a href="" title="Status: Draft" class="sidebar-tool px-1"><i class="bi bi-exclamation-octagon"></i></a>
-    <a href="https://github.com/ccmmf/downscaling" title="" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">Home</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Map Atlas</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Map Atlas</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">Overview &amp; Key Findings</a>
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link active">Soil Carbon</a>
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Soil Carbon</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">GHG Emissions (N₂O &amp; CH₄)</a>
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">Aboveground Biomass</a>
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aboveground Biomass</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">Model Drivers</a>
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Reports</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reports</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">Downscaling Results</a>
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">Design Points Analysis</a>
+  <a href="../reports/design_points_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Points Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">Downscaling Model Evaluation</a>
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Docs</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">Technical Documentation</a>
+  <a href="../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro to Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">Mixed System Prototype</a>
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
   </div>
 </li>
       </ul>
@@ -195,6 +229,7 @@ ul.task-list li input[type="checkbox"] {
     </ul>
     </div>
 </nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -228,9 +263,9 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_soil_carbon.html">Soil Carbon</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Soil Carbon Atlas</h1>
+<h1 class="title">Soil Carbon Atlas</h1>
 <p class="subtitle lead">Total Soil Carbon Stocks and Density Across Management Scenarios</p>
 </div>
 
@@ -248,7 +283,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 10, 2026</p>
+      <p class="date">May 5, 2026</p>
     </div>
   </div>
   
@@ -256,15 +291,17 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
+
 <p>Soil carbon is the primary metric for climate change mitigation in agriculture. Higher soil carbon stocks indicate more atmospheric CO<sub>2</sub> sequestered into persistent soil organic matter pools. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
-<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Validation Status
 </div>
 </div>
@@ -280,16 +317,16 @@ Validation Status
 <p>The most powerful comparison view. The first panel shows <strong>absolute baseline</strong> soil carbon stocks. Panels 2–6 show each scenario’s <strong>difference from baseline</strong> (positive values indicate increases, negative values indicate decreases).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="lightbox" title="Baseline absolute + scenario differences for soil carbon" data-gallery="mixed"><img src="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline soil carbon alongside scenario differences for each county"></a></p>
-<p></p><figcaption class="figure-caption">Baseline absolute + scenario differences for soil carbon</figcaption><p></p>
+<p><a href="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="lightbox" data-gallery="mixed" title="Baseline absolute + scenario differences for soil carbon"><img src="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline soil carbon alongside scenario differences for each county"></a></p>
+<figcaption>Baseline absolute + scenario differences for soil carbon</figcaption>
 </figure>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Interpretation
 </div>
 </div>
@@ -303,21 +340,21 @@ Interpretation
 <p>All six scenarios on a consistent color scale for direct visual comparison.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="lightbox" title="All scenarios – county total soil carbon" data-gallery="county-facet"><img src="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing county-level total soil carbon for all six management scenarios on a consistent scale"></a></p>
-<p></p><figcaption class="figure-caption">All scenarios – county total soil carbon</figcaption><p></p>
+<p><a href="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="lightbox" data-gallery="county-facet" title="All scenarios – county total soil carbon"><img src="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing county-level total soil carbon for all six management scenarios on a consistent scale"></a></p>
+<figcaption>All scenarios – county total soil carbon</figcaption>
 </figure>
 </div>
 </section>
 <section id="individual-scenario-maps" class="level3 tabset">
 <h3 class="tabset anchored" data-anchor-id="individual-scenario-maps">Individual Scenario Maps</h3>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false">Stacked</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Baseline" data-gallery="county-stock"><img src="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Baseline</figcaption><p></p>
+<p><a href="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Baseline"><img src="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Baseline</figcaption>
 </figure>
 </div>
 <p>Baseline agricultural practices. This is the reference against which all management scenarios are compared.</p>
@@ -325,8 +362,8 @@ Interpretation
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Compost" data-gallery="county-stock"><img src="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Compost scenario county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Compost</figcaption><p></p>
+<p><a href="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Compost"><img src="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Compost scenario county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Compost</figcaption>
 </figure>
 </div>
 <p>Compost application directly adds organic carbon to soil. Expected to show the strongest per-practice effect on soil carbon because it physically increases C inputs beyond what crops alone provide.</p>
@@ -334,8 +371,8 @@ Interpretation
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Reduced Till" data-gallery="county-stock"><img src="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Reduced Till</figcaption><p></p>
+<p><a href="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Reduced Till"><img src="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Reduced Till</figcaption>
 </figure>
 </div>
 <p>Reduced tillage preserves soil aggregates, slowing decomposition of protected organic matter. The effect is through reduced C loss rather than increased C inputs.</p>
@@ -343,8 +380,8 @@ Interpretation
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Zero Till" data-gallery="county-stock"><img src="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Zero Till</figcaption><p></p>
+<p><a href="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Zero Till"><img src="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Zero Till</figcaption>
 </figure>
 </div>
 <p>No mechanical soil disturbance. Surface residue builds a mulch layer over time. Soil carbon effects in the literature are debated – some studies show vertical redistribution rather than net gain.</p>
@@ -352,8 +389,8 @@ Interpretation
 <div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Drip Irrigation" data-gallery="county-stock"><img src="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Drip Irrigation</figcaption><p></p>
+<p><a href="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Drip Irrigation"><img src="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Drip Irrigation</figcaption>
 </figure>
 </div>
 <p>Conversion from flood/sprinkler to drip irrigation. Soil carbon gain likely mediated through altered moisture regimes affecting decomposition rates and root growth.</p>
@@ -361,8 +398,8 @@ Interpretation
 <div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" title="County total soil carbon – Stacked" data-gallery="county-stock"><img src="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked scenario county total soil carbon map"></a></p>
-<p></p><figcaption class="figure-caption">County total soil carbon – Stacked</figcaption><p></p>
+<p><a href="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Stacked"><img src="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked scenario county total soil carbon map"></a></p>
+<figcaption>County total soil carbon – Stacked</figcaption>
 </figure>
 </div>
 <p>All practices combined. Represents maximum adoption.</p>
@@ -380,16 +417,16 @@ Interpretation
 <h3 class="anchored" data-anchor-id="all-scenarios-compared">All Scenarios Compared</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="All scenario differences from baseline – county total soil carbon" data-gallery="county-diff-facet"><img src="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted difference maps showing soil carbon changes from baseline for five management scenarios"></a></p>
-<p></p><figcaption class="figure-caption">All scenario differences from baseline – county total soil carbon</figcaption><p></p>
+<p><a href="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff-facet" title="All scenario differences from baseline – county total soil carbon"><img src="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted difference maps showing soil carbon changes from baseline for five management scenarios"></a></p>
+<figcaption>All scenario differences from baseline – county total soil carbon</figcaption>
 </figure>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Interpretation
 </div>
 </div>
@@ -400,14 +437,14 @@ Interpretation
 </section>
 <section id="individual-difference-maps" class="level3 tabset">
 <h3 class="tabset anchored" data-anchor-id="individual-difference-maps">Individual Difference Maps</h3>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Stacked</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Compost vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline soil carbon difference map"></a></p>
-<p></p><figcaption class="figure-caption">Soil carbon difference – Compost vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline soil carbon difference map"></a></p>
+<figcaption>Soil carbon difference – Compost vs Baseline</figcaption>
 </figure>
 </div>
 <p>Compost increases soil carbon substantially across the Central Valley. The effect is driven by direct organic matter addition. Statewide total increases from 112.3 to 125.9 Tg C (+12.2%). This magnitude is broadly consistent with field studies of compost application in California: Ryals and Silver (2013, Ecological Applications) reported SOC increases of approximately 0.5–1.0 Mg C ha⁻¹ in the top 10 cm over 3 years following a single compost application to California grasslands. Our modeled gains reflect repeated annual application over 8 years to croplands, so a larger cumulative effect is expected.</p>
@@ -415,8 +452,8 @@ Interpretation
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Reduced Till vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline soil carbon difference map"></a></p>
-<p></p><figcaption class="figure-caption">Soil carbon difference – Reduced Till vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline soil carbon difference map"></a></p>
+<figcaption>Soil carbon difference – Reduced Till vs Baseline</figcaption>
 </figure>
 </div>
 <p>Small positive gain in soil carbon (+0.2% statewide, +0.14 Mg C ha⁻¹). Reduced tillage preserves soil aggregates and slows decomposition of physically protected organic matter. The modest magnitude over 8 years is consistent with the Six et al.&nbsp;(2004, Oecologia) meta-analysis, which found that no-till SOC benefits are small in the first decade, particularly in dry climates, and become more pronounced after 10+ years as soils approach a new equilibrium.</p>
@@ -424,8 +461,8 @@ Interpretation
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Zero Till vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline soil carbon difference map"></a></p>
-<p></p><figcaption class="figure-caption">Soil carbon difference – Zero Till vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline soil carbon difference map"></a></p>
+<figcaption>Soil carbon difference – Zero Till vs Baseline</figcaption>
 </figure>
 </div>
 <p>Small positive gain in soil carbon (+0.4% statewide, +0.25 Mg C ha⁻¹). Zero till eliminates mechanical soil disturbance entirely, preserving aggregate structure and surface residue. The gain is slightly larger than reduced till, consistent with the greater degree of soil disturbance reduction. The magnitude is at the lower end of literature values for the first decade of adoption (Six et al.&nbsp;2004, Oecologia), which is expected given that SOC accumulation under no-till is a slow process that accelerates after initial soil structure recovery.</p>
@@ -433,8 +470,8 @@ Interpretation
 <div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Drip Irrigation vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline soil carbon difference map"></a></p>
-<p></p><figcaption class="figure-caption">Soil carbon difference – Drip Irrigation vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Drip Irrigation vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline soil carbon difference map"></a></p>
+<figcaption>Soil carbon difference – Drip Irrigation vs Baseline</figcaption>
 </figure>
 </div>
 <p>Moderate gains (+3.3% statewide). Conversion from flood/sprinkler to drip irrigation alters soil moisture dynamics, potentially reducing decomposition rates in the upper soil profile by maintaining lower and more consistent soil moisture.</p>
@@ -442,8 +479,8 @@ Interpretation
 <div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Soil carbon difference – Stacked vs Baseline" data-gallery="county-diff"><img src="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline soil carbon difference map"></a></p>
-<p></p><figcaption class="figure-caption">Soil carbon difference – Stacked vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline soil carbon difference map"></a></p>
+<figcaption>Soil carbon difference – Stacked vs Baseline</figcaption>
 </figure>
 </div>
 <p>Strongest combined gain (+16.6%), exceeding compost alone, with consistent increases across all counties. The stacked scenario combines compost’s direct C input with tillage reduction and drip irrigation’s moisture regulation. The super-additive effect (+16.6% vs.&nbsp;compost’s +12.2%) suggests practice interactions where reduced tillage and altered moisture regimes enhance the retention of compost-derived organic matter.</p>
@@ -460,21 +497,21 @@ Interpretation
 <h3 class="anchored" data-anchor-id="all-scenarios-side-by-side-1">All Scenarios Side-by-Side</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="lightbox" title="All scenarios – field-level soil carbon density" data-gallery="field-facet"><img src="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing field-level soil carbon density for all six scenarios"></a></p>
-<p></p><figcaption class="figure-caption">All scenarios – field-level soil carbon density</figcaption><p></p>
+<p><a href="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="lightbox" data-gallery="field-facet" title="All scenarios – field-level soil carbon density"><img src="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing field-level soil carbon density for all six scenarios"></a></p>
+<figcaption>All scenarios – field-level soil carbon density</figcaption>
 </figure>
 </div>
 </section>
 <section id="individual-scenario-maps-1" class="level3 tabset">
 <h3 class="tabset anchored" data-anchor-id="individual-scenario-maps-1">Individual Scenario Maps</h3>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-6" role="tab" aria-controls="tabset-3-6" aria-selected="false">Stacked</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Baseline" data-gallery="field-density"><img src="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Baseline</figcaption><p></p>
+<p><a href="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Baseline"><img src="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Baseline</figcaption>
 </figure>
 </div>
 <p>Spatial variation reflects underlying environmental gradients: soil clay content, organic carbon density, temperature, and moisture. Sacramento Valley (north) tends to show higher per-hectare SOC than San Joaquin Valley (south), consistent with cooler temperatures slowing decomposition.</p>
@@ -482,40 +519,40 @@ Interpretation
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Compost" data-gallery="field-density"><img src="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Compost</figcaption><p></p>
+<p><a href="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Compost"><img src="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Compost</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Reduced Till" data-gallery="field-density"><img src="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Reduced Till</figcaption><p></p>
+<p><a href="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Reduced Till"><img src="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Reduced Till</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Zero Till" data-gallery="field-density"><img src="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Zero Till</figcaption><p></p>
+<p><a href="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Zero Till"><img src="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Zero Till</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Drip Irrigation" data-gallery="field-density"><img src="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Drip Irrigation</figcaption><p></p>
+<p><a href="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Drip Irrigation"><img src="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Drip Irrigation</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-3-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-6-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" title="Field soil carbon density – Stacked" data-gallery="field-density"><img src="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level soil carbon density map"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon density – Stacked</figcaption><p></p>
+<p><a href="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Stacked"><img src="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level soil carbon density map"></a></p>
+<figcaption>Field soil carbon density – Stacked</figcaption>
 </figure>
 </div>
 </div>
@@ -531,16 +568,16 @@ Interpretation
 <h3 class="anchored" data-anchor-id="all-scenarios-compared-1">All Scenarios Compared</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="All scenario differences – field soil carbon density" data-gallery="field-diff-facet"><img src="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level difference maps for soil carbon density across management scenarios"></a></p>
-<p></p><figcaption class="figure-caption">All scenario differences – field soil carbon density</figcaption><p></p>
+<p><a href="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff-facet" title="All scenario differences – field soil carbon density"><img src="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level difference maps for soil carbon density across management scenarios"></a></p>
+<figcaption>All scenario differences – field soil carbon density</figcaption>
 </figure>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-caption-container flex-fill">
+<div class="callout-title-container flex-fill">
 Interpretation
 </div>
 </div>
@@ -551,14 +588,14 @@ Interpretation
 </section>
 <section id="individual-difference-maps-1" class="level3 tabset">
 <h3 class="tabset anchored" data-anchor-id="individual-difference-maps-1">Individual Difference Maps</h3>
-<div class="panel-tabset">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-5" role="tab" aria-controls="tabset-4-5" aria-selected="false">Stacked</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Compost vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for compost vs baseline"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon difference – Compost vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Compost vs Baseline"><img src="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for compost vs baseline"></a></p>
+<figcaption>Field soil carbon difference – Compost vs Baseline</figcaption>
 </figure>
 </div>
 <p>Near-uniform increases across all fields. The compost effect on soil carbon is driven primarily by the practice itself (direct organic matter input) rather than by site-specific soil or climate conditions.</p>
@@ -566,32 +603,32 @@ Interpretation
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Reduced Till vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for reduced till vs baseline"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon difference – Reduced Till vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Reduced Till vs Baseline"><img src="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for reduced till vs baseline"></a></p>
+<figcaption>Field soil carbon difference – Reduced Till vs Baseline</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Zero Till vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for zero till vs baseline"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon difference – Zero Till vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Zero Till vs Baseline"><img src="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for zero till vs baseline"></a></p>
+<figcaption>Field soil carbon difference – Zero Till vs Baseline</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Drip Irrigation vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for drip irrigation vs baseline"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon difference – Drip Irrigation vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Drip Irrigation vs Baseline"><img src="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for drip irrigation vs baseline"></a></p>
+<figcaption>Field soil carbon difference – Drip Irrigation vs Baseline</figcaption>
 </figure>
 </div>
 </div>
 <div id="tabset-4-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-5-tab">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" title="Field soil carbon difference – Stacked vs Baseline" data-gallery="field-diff"><img src="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for stacked vs baseline"></a></p>
-<p></p><figcaption class="figure-caption">Field soil carbon difference – Stacked vs Baseline</figcaption><p></p>
+<p><a href="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Stacked vs Baseline"><img src="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for stacked vs baseline"></a></p>
+<figcaption>Field soil carbon difference – Stacked vs Baseline</figcaption>
 </figure>
 </div>
 <p>Largest per-hectare gains. The uniform spatial pattern indicates the combined practices work consistently across California’s diverse agricultural environments.</p>
@@ -631,12 +668,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
     }
-  });
-  clipboard.on('success', function(e) {
+    return false;
+  }
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -668,11 +708,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -682,8 +759,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -695,9 +781,244 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -739,18 +1060,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/atlas_overview.html" class="pagination-link">
+      <a href="../reports/atlas_overview.html" class="pagination-link" aria-label="Overview &amp; Key Findings">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview &amp; Key Findings</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link">
+      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link" aria-label="GHG Emissions (N₂O &amp; CH₄)">
         <span class="nav-page-text">GHG Emissions (N₂O &amp; CH₄)</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"loop":true,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","closeEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
 
 
 

@@ -26,7 +26,7 @@ Configuration: see `000-config.R` for paths, variables, and parallel settings.
 # Load modules (geo cluster example)
 module load R/4.4.0 gdal proj geos sqlite udunits quarto
 
-# Point to the shared MAGiC directory (or set in .Renviron)
+# Point to the shared CCMMF directory (or set in .Renviron)
 export CCMMF_DIR=/projectnb/dietzelab/ccmmf      # or $HOME/ccmmf-dev
 
 git clone https://github.com/ccmmf/downscaling.git
