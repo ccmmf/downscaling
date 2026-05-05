@@ -16,6 +16,7 @@ project:
     - reports/downscaling_results.qmd
     - reports/design_points_analysis.qmd
     - reports/variable_importance.qmd
+    - docs/intro_to_downscaling.qmd
     - docs/workflow_documentation.md
     - docs/references.md
     - docs/mixed_system_prototype.qmd
@@ -52,6 +53,8 @@ website:
             text: Downscaling Model Evaluation
       - section: Docs
         contents:
+          - href: docs/intro_to_downscaling.qmd
+            text: Intro to Downscaling
           - href: docs/workflow_documentation.md
             text: Technical Documentation
           - href: docs/mixed_system_prototype.qmd
