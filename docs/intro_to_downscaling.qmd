@@ -14,104 +14,138 @@ execute:
   echo: true
   warning: false
   message: false
-  eval: false
+  eval: true
 ---
 
 # Overview
 
-This walks through the MAGiC downscaling pipeline end to end. SIPNET ensemble outputs come in at one end; field-level and county-level carbon predictions come out the other.
+This document gives a brief overview of the MAGiC downscaling pipeline. 
+The downscaling workflow follows the ensemble workflow: it starts from SIPNET NetCDF outputs from a subset of representative design points, uses machine learning to downscale to field-level carbon predictions, and then aggregates to county-level statistics.
 
-For this intro we focus on soil carbon (`TotSoilCarb`) for one ensemble member of the baseline scenario in 2024. Aboveground biomass and the GHG fluxes (N2O, CH4) flow through the same pipeline with different reporting units, and we'll cover those in a follow-up session.
+```{mermaid}
+flowchart LR
+    A["PEcAn/SIPNET NetCDF outputs"] --> B["Extract to CSV<br/>script 030"]
+    B --> C["Downscale to fields<br/>script 040"]
+    C --> D["Aggregate to county<br/>script 041"]
+```
 
-The workflow has the following components, run in this order:
+For this intro we focus on soil carbon (`TotSoilCarb`) for one ensemble member of the baseline scenario in 2024. Other model outputs, including but not limited to aboveground biomass and GHG fluxes (N2O, CH4), can be downscaled and aggregated with the same pipeline.
 
-* System setup -- the conda environment
-* Input data -- two small archives from S3 (model output slice and geometry layers)
-* Run the pipeline -- five short scripts (030 -> 043), one per step
-* Inspect the outputs
+Pre-requisites for this demo include:
+* System setup
+    - AWS CLI 
+    - A Conda environment
+    - The github.com/ccmmf/downscaling repository cloned locally
+    - A Linux computing environment
+* Input data -- two archives downloaded from S3 storage:
+    - Output from SIPNET runs at design points 
+    - CADWR Land Use Maps
 
-## What gets produced
+This tutorial will cover the following components:
 
+1. Workflow Overview: how SIPNET outputs become field-level predictions and county-level aggregates
+2. Extract SIPNET output: script 030 converts NetCDF files to `ensemble_output.csv`
+3. Downscale to fields: script 040 fits Random Forest models and predicts to fields
+4. Inspect outputs: look at tables and quick plots to understand the downscaled predictions
+5. Wrap-up: recap and aggregation preview
+
+**Demo Mode** This demo runs a simplified version of the pipeline to focus on the core downscaling steps. The full pipeline includes more variables, scenarios, and ensemble members, which add complexity but follow the same overall structure.
+
+The `--mode demo` flags in the commands below constrain the pipeline to a single slice of the data:
+* One variable (TotSoilCarb) is downscaled
+* One scenario (baseline), so it does not include scenario-vs-baseline comparisons.
+* One ensemble member
+
+Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.
+
+Outputs:
 * `ensemble_output.csv` -- monthly SIPNET output in long format
 * `downscaled_preds.csv` -- per-field carbon predictions
-* `county_aggregated_preds.csv` -- per-county totals
-* `figures/` -- variable importance, ALE / ICE plots, county and field maps, time-series deltas
-
-(Demo mode runs only `TotSoilCarb` for the `baseline` scenario, so scenario-vs-baseline diff maps and CO2e maps are skipped. The full pipeline produces those when you run the four-variable, multi-scenario archive.)
-
-## Caveats
-
-Instructions assume a Linux cluster with conda and `aws` CLI v2 available. Substitute equivalents on other systems as needed.
 
 # System setup
 
-The pipeline runs inside a conda environment that ships R, PEcAn, and every CRAN + github package the downscaling scripts need.
+The pipeline runs inside a conda environment that includes the software required by the downscaling scripts.
 
-## S3 credentials
+The demo data and the `pecan-all` env tarball are downloaded from an S3 bucket hosted at NCSA.
 
-The demo data and the `pecan-all` env tarball live in an S3 bucket hosted by NCSA at `s3.garage.ccmmf.ncsa.cloud`. Drop your credentials into a named profile (`ccmmf-garage`) so it doesn't collide with any AWS profile you already use:
+## Check AWS access
 
-```bash
-mkdir -p ~/.aws
-
-cat << 'EOF' >> ~/.aws/credentials
-[ccmmf-garage]
-aws_access_key_id = [your key ID]
-aws_secret_access_key = [your secret key]
-EOF
-
-cat << 'EOF' >> ~/.aws/config
-[profile ccmmf-garage]
-region = garage
-endpoint_url = https://s3.garage.ccmmf.ncsa.cloud
-EOF
-
-chmod 600 ~/.aws/credentials ~/.aws/config
-```
-
-Activate the profile for the rest of this session so every `aws s3` call uses it without `--profile` flags:
+First, confirm that the AWS CLI is available:
 
 ```bash
-export AWS_PROFILE=ccmmf-garage
+aws --version
 ```
 
-(Re-run the `export` if you open a new terminal -- it only lives for the current shell.)
+If that command is not found, load the AWS CLI as a module on your HPC system or install it from the [AWS CLI installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-Quick sanity check:
+Next, confirm that you can read the CCMMF S3 bucket:
 
 ```bash
 aws s3 ls s3://carb/data_raw/
 ```
 
-## Conda environment
+If the bucket listing fails because of missing credentials, configure the `ccmmf-garage` profile.
 
-Make sure `aws` is on PATH. Module names vary by cluster -- on NCSA `module spider aws/2.5-6`, on BU SCC `module load awscli/2.13.5`. Check `module spider aws` on a new cluster.
+Add this section to `~/.aws/credentials`:
+
+```bash
+[ccmmf-garage]
+aws_access_key_id = [your key ID]
+aws_secret_access_key = [your secret key]
+```
+
+Add this section to `~/.aws/config`:
+
+```bash
+[profile ccmmf-garage]
+region = garage
+endpoint_url = https://s3.garage.ccmmf.ncsa.cloud
+```
+
+Make sure the credential files are readable only by you:
+
+```bash
+chmod 600 ~/.aws/credentials ~/.aws/config
+```
+
+Activate the profile for the current shell and check access again:
+
+```bash
+export AWS_PROFILE=ccmmf-garage
+aws s3 ls s3://carb/data_raw/
+```
+
+## Setup Conda environment
+
+We will use a conda environment that provides R, PEcAn, and all of the R packages the pipeline scripts depend on. The environment is available as a tarball on S3. 
+
+In this example, ~/.conda/envs/pecan-all is the target location, but you may want to put this somewhere other than your home directory.
+
+Note that this may take 30 minutes or more to download and install.
 
 ```bash
 aws s3 cp s3://carb/deploy/setup-pecan-env.sh ./
 bash setup-pecan-env.sh 1.10 ~/.conda/envs/pecan-all
 ```
 
-(Note: a fresh install takes 20-40 minutes. An existing env updates in a few minutes.)
-
-Activate it in any new shell:
+To activate the pecan-all environment in a new shell:
 
 ```bash
 conda activate ~/.conda/envs/pecan-all
 ```
 
-## Clone the downscaling repo
+## Clone the downscaling repository
 
-The pipeline scripts live in the repo. Grab them now -- the rest of the steps below assume you're inside the cloned directory.
+The pipeline scripts live in the downscaling repo, which is located at https://github.com/ccmmf/downscaling. Clone the repository to your working directory -- the rest of the steps below assume you're inside the cloned directory.
 
 ```bash
 git clone -b develop https://github.com/ccmmf/downscaling.git
 cd downscaling
 ```
 
-# Input data
+## Input data
 
-Two archives from S3. The first is a slim slice of phase-3 SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is the California field and county geometry layers downscaling reads.
+We install two data archives from S3. The first is the demo subset of SIPNET outputs (baseline scenario, ensemble 1, year 2024). The second is a vector file of California crop fields and county geometry layers derived from the CADWR Land Use Dataset [Cite].
 
 ```bash
 mkdir -p ~/ccmmf_demo/modelout ~/ccmmf_demo/data
@@ -123,7 +157,7 @@ aws s3 cp s3://carb/data_raw/ccmmf_downscaling_data_layers.tgz - | \
   tar xzf - -C ~/ccmmf_demo/data/
 ```
 
-(Note: for the full phase-3 data, swap in `ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz` -- about 95 GB, 30-60 minutes to fetch.)
+Note: to run a full production run, you can download `ccmmf_phase_3_scenarios_v2_n2o_ch4.tgz`. This is about 95 GB and may take 30 minutes or longer to download.
 
 Verify the layout:
 
@@ -134,58 +168,174 @@ ls ~/ccmmf_demo/data/
 
 In `modelout/...` you should see `output_baseline/` and `site_info.csv`. In `data/` you should see `ca_fields.gpkg`, `ca_field_attributes.csv`, `site_covariates.csv`, and `ca_counties.gpkg`.
 
-# Point the pipeline at the data
+These are the PEcAn model output files that script 030 will extract:
+
+```bash
+find ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out \
+  -name "2024.nc" | head
+```
+
+What does one of these files contain?
+
+```bash
+ncdump -h ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out/ENS-00001-2eab840584d9a6ea/2024.nc
+```
+
+Show the covariate table that script 040 will use:
+
+```bash
+head -n 5 ~/ccmmf_demo/data/site_covariates.csv | column -s, -t
+```
+
+Set the `CCMMF_DIR` environment variable so that the pipeline knows where to find the data:
 
 ```bash
 export CCMMF_DIR=~/ccmmf_demo
 ```
 
-The pipeline reads `CCMMF_DIR/modelout/...` and `CCMMF_DIR/data/...`, so this single env var wires everything.
+This tells the pipeline where to find `$CCMMF_DIR/modelout/...` and `$CCMMF_DIR/data/...`, as well as where to write pipeline outputs.
 
-# Extract SIPNET output (script 030)
+# Extract SIPNET output
 
-030 reads each ensemble's netCDF output, monthly-aggregates, and writes one long CSV (`ensemble_output.csv`).
+The `030_extract_sipnet_output.R` script reads the PEcAn standard netCDF model output, aggregates to monthly values, and writes these values to a long CSV, `ensemble_output.csv`.
+
+Let's run it in demo mode:
 
 ```bash
 Rscript scripts/030_extract_sipnet_output.R --mode demo
 ```
 
-`--mode demo` runs one scenario (baseline), one variable (TotSoilCarb), one ensemble member, one year (2024). Finishes in seconds.
+Confirm and inspect the output:
 
-# Multi-PFT aggregation (script 031, skipped here)
+```bash
+ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv
+```
 
-031 only matters when multiple PFTs share a site. The phase-3 runs are single-PFT, so 031 early-exits.
+```{r inspect-ensemble-output}
+model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
+ensemble_output <- readr::read_csv(file.path(model_outdir, "ensemble_output.csv"), 
+  show_col_types = FALSE)
+dplyr::glimpse(ensemble_output)
+ensemble_output |>
+  dplyr::summarise(
+    rows = dplyr::n(),
+    sites = dplyr::n_distinct(site_id),
+    ensembles = dplyr::n_distinct(parameter),
+    variables = paste(unique(variable), collapse = ", "),
+    start = min(datetime),
+    end = max(datetime)
+  )
+```
 
-# Downscale to fields (script 040)
+# Downscaling from Model Outputs to fields
 
-For each (scenario, PFT, carbon pool), 040 fits a Random Forest per ensemble member and predicts to every LandIQ field. Fitting one RF per ensemble member carries the ensemble spread through to the field-level predictions.
+Now that we have extracted the model outputs to a tabular format, we can use these outputs to train machine learning models that predict field-level carbon stocks and fluxes.
+
+This happens in `scripts/040_downscale.R`. 
+
+For each run, `scripts/040_downscale.R`:
+
+1. Loads `ensemble_output.csv`, site covariates, and field attributes.
+2. Iterates over each `(scenario, PFT, carbon pool)` combination.
+3. Fits one Random Forest model per ensemble member for that combination.
+4. Predicts to fields for that PFT.
+5. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs).
+
+Fitting one RF model per ensemble member preserves and propagates uncertainty structure throughout the full modeling workflow.
 
 ```bash
 Rscript scripts/040_downscale.R --mode demo
 ```
 
-In demo mode there is one (scenario, PFT, pool) combo and one ensemble member. Predicts to roughly 10,000 target fields. A couple of minutes.
+In demo mode there is one (scenario, PFT, pool) combo and one ensemble member and it predicts to roughly 10,000 target fields within a couple of minutes.
 
-Outputs land at `$CCMMF_DIR/modelout/.../downscaled_preds.csv` (and `.parquet`).
+Outputs are written to `$CCMMF_DIR/modelout/.../downscaled_preds.csv` (and `.parquet`).
 
-# Roll up to county (script 041)
+# Inspect downscaled outputs
 
 ```bash
-Rscript scripts/041_aggregate_to_county.R --mode demo
+ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/downscaled_preds.csv
 ```
 
-Per-county totals from the field-level predictions.
+```r
+model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
+preds <- readr::read_csv(file.path(model_outdir, "downscaled_preds.csv"), show_col_types = FALSE)
+dplyr::glimpse(preds)
+preds |>
+  dplyr::summarise(
+    rows = dplyr::n(),
+    fields = dplyr::n_distinct(site_id),
+    counties = dplyr::n_distinct(county),
+    min_density = min(density_per_ha, na.rm = TRUE),
+    mean_density = mean(density_per_ha, na.rm = TRUE),
+    max_density = max(density_per_ha, na.rm = TRUE)
+  )
+```
 
-Outputs:
+Focus on `density_per_ha`, `scenario`, `pft`, `ensemble`, `county`, and `model_output`. The `area_ha` column is useful later for converting density to total field carbon, but it is not the main explanatory variable for this first demo.
 
-* `county_aggregated_preds.csv`
-* `state_summaries.csv`
-* `aggregation_metadata.json` -- records what was rolled up
+# Make quick plots
 
-# Per-ensemble metrics and variable importance (script 042)
+Use `density_per_ha` for the first plot because it is the direct field-level downscaling result.
+
+```{r plot-downscaled-density}
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
+preds <- read_csv(file.path(model_outdir, "downscaled_preds.csv"), show_col_types = FALSE)
+
+ggplot(preds, aes(x = density_per_ha)) +
+  geom_histogram(bins = 40, fill = "steelblue", color = "white") +
+  labs(
+    title = "Downscaled Total Soil Carbon",
+    x = "Density (Mg C / ha)",
+    y = "Number of fields"
+  ) +
+  theme_minimal()
+```
+
+Join predictions to covariates to show how predicted soil carbon varies with a predictor such as organic carbon density (`ocd`) or temperature (`temp`).
+
+```{r plot-density-by-covariates}
+covariates <- read_csv("~/ccmmf_demo/data/site_covariates.csv", show_col_types = FALSE)
+
+plot_data <- preds |>
+  left_join(
+    covariates |> select(site_id, ocd, temp, vapr, clay, precip, srad, twi),
+    by = "site_id"
+  ) |>
+  filter(!is.na(ocd), !is.na(density_per_ha))
+
+plot_sample <- plot_data |>
+  slice_sample(n = min(nrow(plot_data), 5000))
+
+ggplot(plot_sample, aes(x = ocd, y = density_per_ha)) +
+  geom_point(alpha = 0.25, size = 0.7) +
+  geom_smooth(method = "loess", formula = y ~ x, se = FALSE, color = "black") +
+  labs(
+    title = "Predicted Soil Carbon vs. Soil Organic Carbon Density",
+    x = "SoilGrids organic carbon density covariate",
+    y = "Predicted density (Mg C / ha)"
+  ) +
+  theme_minimal()
+```
+
+# Aggregate to county
+
+This section is still under construction, will be presented in a follow-up demo.
+
+The `041_aggregate_to_county.R` script computes per-county totals from field-level predictions. This is a downstream aggregation step and is intentionally skipped in the first live demo.
 
 ```bash
-Rscript scripts/042_downscale_analysis.R --mode demo
+# Rscript scripts/041_aggregate_to_county.R --mode demo
+```
+
+# Per-ensemble metrics and variable importance (script 042, follow-up)
+
+```bash
+# Rscript scripts/042_downscale_analysis.R --mode demo
 ```
 
 Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.
@@ -195,10 +345,10 @@ Outputs in `figures/`:
 * `variable_importance_summary.png`
 * per-spec ALE / ICE SVG files
 
-# County maps and scenario deltas (script 043)
+# County maps and scenario deltas (script 043, follow-up)
 
 ```bash
-Rscript scripts/043_county_level_plots.R --mode demo
+# Rscript scripts/043_county_level_plots.R --mode demo
 ```
 
 State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.

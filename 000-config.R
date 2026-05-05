@@ -2,7 +2,7 @@
 
 parser <- argparse::ArgumentParser()
 
-## Run mode: production (full), dev (subsetted), demo (single slice) ##
+## Run mode: production (full), dev (subset), demo (single slice) ##
 parser$add_argument("--mode",
   type = "character", default = "production",
   choices = c("production", "dev", "demo"),
@@ -14,6 +14,7 @@ PRODUCTION <- MODE == "production"
 DEMO       <- MODE == "demo"
 
 # Interactive sessions always run in production mode.
+# TODO: interactive mode should default to "dev"
 if (rlang::is_interactive()) {
   PRODUCTION <- TRUE
   DEMO       <- FALSE
