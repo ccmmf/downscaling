@@ -63,6 +63,9 @@ Demo mode does not include scenario-vs-baseline comparisons or ensemble based un
 
 Outputs:
 
+Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.
+
+Outputs:
 * `ensemble_output.csv` -- monthly SIPNET output in long format
 * `downscaled_preds.csv` -- per-field carbon predictions
 
