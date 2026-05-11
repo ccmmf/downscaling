@@ -63,8 +63,6 @@ Demo mode does not include scenario-vs-baseline comparisons or ensemble based un
 
 Outputs:
 
-
-
 Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.
 
 Outputs:
