@@ -299,6 +299,7 @@ Use `density_per_ha` for the first plot because it is the direct field-level dow
 
 ```{r plot-downscaled-density}
 #| eval: !expr has_downscaled_preds
+#| eval: !expr has_downscaled_preds
 library(dplyr)
 library(ggplot2)
 library(readr)
