@@ -23,6 +23,7 @@ This document gives a brief overview of the MAGiC downscaling pipeline.
 The downscaling workflow follows the ensemble workflow: it starts from SIPNET NetCDF outputs from a subset of representative design points, uses machine learning to downscale to field-level carbon predictions, and then aggregates to county-level statistics.
 
 ```{mermaid}
+%%| echo: false
 flowchart LR
     A["PEcAn/SIPNET NetCDF outputs"] --> B["Extract to CSV<br/>script 030"]
     B --> C["Downscale to fields<br/>script 040"]
@@ -32,13 +33,14 @@ flowchart LR
 For this intro we focus on soil carbon (`TotSoilCarb`) for one ensemble member of the baseline scenario in 2024. Other model outputs, including but not limited to aboveground biomass and GHG fluxes (N2O, CH4), can be downscaled and aggregated with the same pipeline.
 
 Pre-requisites for this demo include:
+
 * System setup
-    - AWS CLI 
+    - AWS CLI
     - A Conda environment
     - The github.com/ccmmf/downscaling repository cloned locally
     - A Linux computing environment
 * Input data -- two archives downloaded from S3 storage:
-    - Output from SIPNET runs at design points 
+    - Output from SIPNET runs at design points
     - CADWR Land Use Maps
 
 This tutorial will cover the following components:
@@ -52,9 +54,14 @@ This tutorial will cover the following components:
 **Demo Mode** This demo runs a simplified version of the pipeline to focus on the core downscaling steps. The full pipeline includes more variables, scenarios, and ensemble members, which add complexity but follow the same overall structure.
 
 The `--mode demo` flags in the commands below constrain the pipeline to a single slice of the data:
+
 * One variable (TotSoilCarb) is downscaled
 * One scenario (baseline), so it does not include scenario-vs-baseline comparisons.
 * One ensemble member
+
+Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.
+
+Outputs:
 
 Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.
 
@@ -178,7 +185,8 @@ find ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/ou
 What does one of these files contain?
 
 ```bash
-ncdump -h ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out/ENS-00001-2eab840584d9a6ea/2024.nc
+ncdump -h $(find ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/output_baseline/out \
+  -name "2024.nc" | head -n1)
 ```
 
 Show the covariate table that script 040 will use:
@@ -211,9 +219,19 @@ Confirm and inspect the output:
 ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv
 ```
 
+```{r setup}
+#| include: false
+demo_root <- path.expand(Sys.getenv("CCMMF_DIR", unset = "~/ccmmf_demo"))
+model_outdir <- file.path(demo_root, "modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4")
+data_dir <- file.path(demo_root, "data")
+has_ensemble_output <- file.exists(file.path(model_outdir, "ensemble_output.csv"))
+has_downscaled_preds <- file.exists(file.path(model_outdir, "downscaled_preds.csv"))
+has_covariates <- file.exists(file.path(data_dir, "site_covariates.csv"))
+```
+
 ```{r inspect-ensemble-output}
-model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
-ensemble_output <- readr::read_csv(file.path(model_outdir, "ensemble_output.csv"), 
+#| eval: !expr has_ensemble_output
+ensemble_output <- readr::read_csv(file.path(model_outdir, "ensemble_output.csv"),
   show_col_types = FALSE)
 dplyr::glimpse(ensemble_output)
 ensemble_output |>
@@ -279,11 +297,11 @@ Focus on `density_per_ha`, `scenario`, `pft`, `ensemble`, `county`, and `model_o
 Use `density_per_ha` for the first plot because it is the direct field-level downscaling result.
 
 ```{r plot-downscaled-density}
+#| eval: !expr has_downscaled_preds
 library(dplyr)
 library(ggplot2)
 library(readr)
 
-model_outdir <- "~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
 preds <- read_csv(file.path(model_outdir, "downscaled_preds.csv"), show_col_types = FALSE)
 
 ggplot(preds, aes(x = density_per_ha)) +
@@ -299,7 +317,8 @@ ggplot(preds, aes(x = density_per_ha)) +
 Join predictions to covariates to show how predicted soil carbon varies with a predictor such as organic carbon density (`ocd`) or temperature (`temp`).
 
 ```{r plot-density-by-covariates}
-covariates <- read_csv("~/ccmmf_demo/data/site_covariates.csv", show_col_types = FALSE)
+#| eval: !expr has_downscaled_preds && has_covariates
+covariates <- read_csv(file.path(data_dir, "site_covariates.csv"), show_col_types = FALSE)
 
 plot_data <- preds |>
   left_join(
