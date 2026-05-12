@@ -384,6 +384,10 @@ ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/state_summaries.
 
 Inspect the county output:
 
+```bash
+head -n 5 ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/county_aggregated_preds.csv | column -s, -t
+```
+
 ```{r inspect-county-aggregation}
 #| eval: !expr has_county_preds
 county_preds <- readr::read_csv(
