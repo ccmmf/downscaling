@@ -262,7 +262,9 @@ For each run, `scripts/040_downscale.R`:
 2. Iterates over each `(scenario, PFT, carbon pool)` combination.
 3. Fits one Random Forest model per ensemble member for that combination.
 4. Predicts to fields for that PFT.
-5. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs).
+4. Predicts field level density for that PFT, output column `density_per_ha` (Mg C / ha for stocks, kg/ha/yr for fluxes).
+5. Multiplies density by each field's area to derive total stock per field: `total_per_field = density_per_ha * area_ha`.
+6. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs), with columns: `site_id`, `scenario`, `pft`, `ensemble`, `density_per_ha`, `total_per_field`, `area_ha`, `county`, `model_output`.
 
 Fitting one RF model per ensemble member preserves and propagates uncertainty structure throughout the full modeling workflow.
 
@@ -352,21 +354,9 @@ The downscaling pipeline that has produced field-level predictions. For reportin
 
 Here we demonstrate how to summarize county level totals.
 
-Aggregation is performed by the `scripts/041_aggregate_to_county.R` script. That script reads in the `downscaled_preds.csv` file produced in the previous step and a set of geospatial polygons, in this case, California counties. It then groups field predictions by scenario, model output, PFT, county, and ensemble member, and then computes county level statistics.
+Aggregation is performed by the `scripts/041_aggregate_to_county.R` script. That script reads `downscaled_preds.csv` from the previous step, which already carries each field's `county` and `area_ha` attributes (attached upstream in 040 from `ca_fields.gpkg`). It then groups field predictions by scenario, model output, PFT, county, and ensemble member, and then computes county level statistics.
+041's job is the aggregation step: group field predictions by county and sum across fields:
 
-The downscaling analysis calculated density of soil organic carbon in units of Mg C / ha. To get total carbon per field, we multiply this density by the field area to estimate the total carbon stock in each field:
-
-```text
-total_per_field = density_per_ha * area_ha
-```
-
-Then join these field totals to county polygons, and sum across fields within each county:
-
-```text
-total_per_county = sum(total_per_field)
-```
-
-The same calculation works for both stocks and fluxes, but for fluxes the units are kg/ha/yr for density and kg/yr for totals.
 
 To run the aggregation step in demo mode:
 
