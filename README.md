@@ -42,10 +42,13 @@ See full details about how to set up and run the workflows in the [Technical Doc
 
 ```bash
 # Data prep and clustering
+Rscript scripts/009_prepare_cadwr_crops.R
 Rscript scripts/010_prepare_covariates.R
 Rscript scripts/011_prepare_anchor_sites.R
-Rscript scripts/020_cluster_and_select_design_points.R
-Rscript scripts/021_clustering_diagnostics.R
+Rscript scripts/012_add_management_covariates.R
+Rscript scripts/020_cluster_sites.R
+Rscript scripts/021_subsample_design_points.R
+Rscript scripts/022_validate_design_points.R
 
 # Extract SIPNET outputs and create mixed-PFT scenarios
 Rscript scripts/030_extract_sipnet_output.R
