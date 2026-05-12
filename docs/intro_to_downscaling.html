@@ -8,7 +8,7 @@
 
 <meta name="author" content="David LeBauer">
 <meta name="author" content="Akash BV">
-<meta name="dcterms.date" content="2026-05-05">
+<meta name="dcterms.date" content="2026-05-12">
 
 <title>Intro to MAGiC Downscaling – MAGiC Downscaling</title>
 <style>
@@ -277,7 +277,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#system-setup" id="toc-system-setup" class="nav-link" data-scroll-target="#system-setup">System setup</a>
   <ul class="collapse">
-  <li><a href="#check-aws-access" id="toc-check-aws-access" class="nav-link" data-scroll-target="#check-aws-access">Check AWS access</a></li>
   <li><a href="#setup-conda-environment" id="toc-setup-conda-environment" class="nav-link" data-scroll-target="#setup-conda-environment">Setup Conda environment</a></li>
   <li><a href="#clone-the-downscaling-repository" id="toc-clone-the-downscaling-repository" class="nav-link" data-scroll-target="#clone-the-downscaling-repository">Clone the downscaling repository</a></li>
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
@@ -287,9 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#inspect-downscaled-outputs" id="toc-inspect-downscaled-outputs" class="nav-link" data-scroll-target="#inspect-downscaled-outputs">Inspect downscaled outputs</a></li>
   <li><a href="#make-quick-plots" id="toc-make-quick-plots" class="nav-link" data-scroll-target="#make-quick-plots">Make quick plots</a></li>
   <li><a href="#aggregate-to-county" id="toc-aggregate-to-county" class="nav-link" data-scroll-target="#aggregate-to-county">Aggregate to county</a></li>
-  <li><a href="#per-ensemble-metrics-and-variable-importance-script-042-follow-up" id="toc-per-ensemble-metrics-and-variable-importance-script-042-follow-up" class="nav-link" data-scroll-target="#per-ensemble-metrics-and-variable-importance-script-042-follow-up">Per-ensemble metrics and variable importance (script 042, follow-up)</a></li>
-  <li><a href="#county-maps-and-scenario-deltas-script-043-follow-up" id="toc-county-maps-and-scenario-deltas-script-043-follow-up" class="nav-link" data-scroll-target="#county-maps-and-scenario-deltas-script-043-follow-up">County maps and scenario deltas (script 043, follow-up)</a></li>
-  <li><a href="#where-to-go-next" id="toc-where-to-go-next" class="nav-link" data-scroll-target="#where-to-go-next">Where to go next</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next steps</a></li>
   </ul>
 </nav>
     </div>
@@ -316,7 +313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 5, 2026</p>
+      <p class="date">May 12, 2026</p>
     </div>
   </div>
   
@@ -379,19 +376,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.</p>
 <p>Outputs:</p>
-<ul>
-<li><code>ensemble_output.csv</code> – monthly SIPNET output in long format</li>
-<li><code>downscaled_preds.csv</code> – per-field carbon predictions</li>
-</ul>
+<p>Demo mode does not include scenario-vs-baseline comparisons or ensemble based uncertainty analysis.</p>
+<p>Outputs: * <code>ensemble_output.csv</code> – monthly SIPNET output in long format * <code>downscaled_preds.csv</code> – per-field carbon predictions</p>
 </section>
 <section id="system-setup" class="level1">
 <h1>System setup</h1>
 <p>The pipeline runs inside a conda environment that includes the software required by the downscaling scripts.</p>
 <p>The demo data and the <code>pecan-all</code> env tarball are downloaded from an S3 bucket hosted at NCSA.</p>
-<section id="check-aws-access" class="level2">
-<h2 class="anchored" data-anchor-id="check-aws-access">Check AWS access</h2>
-<p>First, confirm that the AWS CLI is available:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you have already set up your Conda environment, run the following. Otherwise, proceed with the setup steps below.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Check AWS access</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">First,</span> confirm that the AWS CLI is available:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">```</span><span class="fu">bash</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>If that command is not found, load the AWS CLI as a module on your HPC system or install it from the <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI installation instructions</a>.</p>
 <p>Next, confirm that you can read the CCMMF S3 bucket:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -409,7 +408,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Activate the profile for the current shell and check access again:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>ccmmf-garage</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
 <section id="setup-conda-environment" class="level2">
 <h2 class="anchored" data-anchor-id="setup-conda-environment">Setup Conda environment</h2>
 <p>We will use a conda environment that provides R, PEcAn, and all of the R packages the pipeline scripts depend on. The environment is available as a tarball on S3.</p>
@@ -460,7 +458,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Let’s run it in demo mode:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/030_extract_sipnet_output.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Confirm and inspect the output:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 5 ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv <span class="kw">|</span> <span class="ex">column</span> <span class="at">-s,</span> <span class="at">-t</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ensemble_output <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="fu">file.path</span>(model_outdir, <span class="st">"ensemble_output.csv"</span>),</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
@@ -505,8 +504,9 @@ $ prediction    &lt;dbl&gt; 4.299215, 4.298731, 4.298046, 4.296897, 4.293167, 4.
 <li>Loads <code>ensemble_output.csv</code>, site covariates, and field attributes.</li>
 <li>Iterates over each <code>(scenario, PFT, carbon pool)</code> combination.</li>
 <li>Fits one Random Forest model per ensemble member for that combination.</li>
-<li>Predicts to fields for that PFT.</li>
-<li>Writes outputs including <code>downscaled_preds.csv</code> (and <code>.parquet</code> for large outputs).</li>
+<li>Predicts field level density for that PFT, output column <code>density_per_ha</code> (Mg C / ha for stocks, kg/ha/yr for fluxes).</li>
+<li>Multiplies density by each field’s area to derive total stock per field: <code>total_per_field = density_per_ha * area_ha</code>.</li>
+<li>Writes outputs including <code>downscaled_preds.csv</code> (and <code>.parquet</code> for large outputs), with columns: <code>site_id</code>, <code>scenario</code>, <code>pft</code>, <code>ensemble</code>, <code>density_per_ha</code>, <code>total_per_field</code>, <code>area_ha</code>, <code>county</code>, <code>model_output</code>.</li>
 </ol>
 <p>Fitting one RF model per ensemble member preserves and propagates uncertainty structure throughout the full modeling workflow.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/040_downscale.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -590,32 +590,108 @@ $ prediction    &lt;dbl&gt; 4.299215, 4.298731, 4.298046, 4.296897, 4.293167, 4.
 </section>
 <section id="aggregate-to-county" class="level1">
 <h1>Aggregate to county</h1>
-<p>This section is still under construction, will be presented in a follow-up demo.</p>
-<p>The <code>041_aggregate_to_county.R</code> script computes per-county totals from field-level predictions. This is a downstream aggregation step and is intentionally skipped in the first live demo.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/041_aggregate_to_county.R --mode demo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="per-ensemble-metrics-and-variable-importance-script-042-follow-up" class="level1">
-<h1>Per-ensemble metrics and variable importance (script 042, follow-up)</h1>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/042_downscale_analysis.R --mode demo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.</p>
-<p>Outputs in <code>figures/</code>:</p>
+<p>In previous steps, the downscaling pipeline produced field-level estimates of soil carbon density and total soil carbon. For reporting, mapping, and scenario comparison, we aggregate these to regional statistics.</p>
+<p>Here we demonstrate how to summarize county level total soil carbon stocks.</p>
+<p>Aggregation is performed by the <code>scripts/041_aggregate_to_county.R</code> script. That script reads <code>downscaled_preds.csv</code> that was generated in the previous step. This file contains the total stocks or fluxes (total soil carbon in this example) and the county name for each field.</p>
+<p>It then groups field predictions by scenario, model output, county, and ensemble member, and then computes county level statistics.</p>
+<p>To run the aggregation step in demo mode:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> scripts/041_aggregate_to_county.R <span class="at">--mode</span> demo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In demo mode, this step uses a small sample of fields per county. That keeps the demonstration fast, but the resulting county totals aren’t intended as the realistic estimates that are produced by a production run.</p>
+<p>Output from the aggregation steps include:</p>
 <ul>
-<li><code>variable_importance_summary.png</code></li>
-<li>per-spec ALE / ICE SVG files</li>
+<li><code>county_aggregated_preds.csv</code> – county summaries by scenario, output variable, PFT, and county</li>
+<li><code>state_summaries.csv</code> – statewide totals summarized across counties</li>
+<li><code>aggregation_metadata.json</code> – a small description of the aggregation run and output columns</li>
+<li><code>county_aggregated_deltas.csv</code> – county scenario deltas, when <code>downscaled_deltas.csv</code> exists</li>
 </ul>
-</section>
-<section id="county-maps-and-scenario-deltas-script-043-follow-up" class="level1">
-<h1>County maps and scenario deltas (script 043, follow-up)</h1>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rscript scripts/043_county_level_plots.R --mode demo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.</p>
-</section>
-<section id="where-to-go-next" class="level1">
-<h1>Where to go next</h1>
+<p>Because this first demo only includes the baseline scenario, there are no scenario-vs-baseline deltas to aggregate as there are in the development and production runs.</p>
+<p>Confirm that the main aggregation outputs were created:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/county_aggregated_preds.csv</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/state_summaries.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Inspect the county output:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 5 ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/county_aggregated_preds.csv <span class="kw">|</span> <span class="ex">column</span> <span class="at">-s,</span> <span class="at">-t</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>county_preds <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(model_outdir, <span class="st">"county_aggregated_preds.csv"</span>),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(county_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 35
+Columns: 11
+$ scenario              &lt;chr&gt; "baseline", "baseline", "baseline", "baseline", …
+$ model_output          &lt;chr&gt; "TotSoilCarb", "TotSoilCarb", "TotSoilCarb", "To…
+$ pft                   &lt;chr&gt; "annual crop", "annual crop", "annual crop", "an…
+$ county                &lt;chr&gt; "Butte", "Calaveras", "Colusa", "Contra Costa", …
+$ n                     &lt;dbl&gt; 2, 2, 2, 2, 5, 1, 2, 8, 4, 1, 2, 7, 1, 8, 2, 2, …
+$ mean_total_per_county &lt;dbl&gt; 2410.0, 432.0, 5390.0, 1150.0, 445.0, 1800.0, 26…
+$ sd_total_per_county   &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+$ mean_density_per_ha   &lt;dbl&gt; 74.4, 95.0, 65.0, 116.0, 51.3, 63.2, 129.0, 47.7…
+$ sd_density_per_ha     &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+$ mean_total_ha         &lt;dbl&gt; 32.356564, 4.551630, 82.943513, 9.907703, 8.6790…
+$ sd_total_ha           &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>county_preds <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">counties =</span> dplyr<span class="sc">::</span><span class="fu">n_distinct</span>(county),</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scenarios =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(scenario), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">variables =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(model_output), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">pfts =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(pft), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_total =</span> <span class="fu">min</span>(mean_total_per_county, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_total =</span> <span class="fu">mean</span>(mean_total_per_county, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_total =</span> <span class="fu">max</span>(mean_total_per_county, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+   rows counties scenarios variables   pfts       min_total mean_total max_total
+  &lt;int&gt;    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+1    35       35 baseline  TotSoilCarb annual cr…      66.4      2888.     12800</code></pre>
+</div>
+</div>
+<p>Key columns in <code>county_preds</code> are:</p>
 <ul>
-<li><strong>Production mode</strong>: drop <code>--mode demo</code> (production is the default) and run on the full archive. Plan for several hours.</li>
+<li><code>mean_total_per_county</code> – mean county total across ensemble members</li>
+<li><code>sd_total_per_county</code> – across-ensemble standard deviation of county totals</li>
+<li><code>mean_density_per_ha</code> – area-weighted county density</li>
+<li><code>mean_total_ha</code> – summed field area represented in the aggregation</li>
+<li><code>n</code> – number of field predictions used in that county group</li>
+</ul>
+<p>In this demo there is only one ensemble member, so there is no standard deviation.</p>
+<p>Plot the largest county totals in the demo output:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>top_counties <span class="ot">&lt;-</span> county_preds <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(model_output <span class="sc">==</span> <span class="st">"TotSoilCarb"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(mean_total_per_county, <span class="at">n =</span> <span class="dv">15</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">county =</span> stats<span class="sc">::</span><span class="fu">reorder</span>(county, mean_total_per_county))</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(top_counties, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> mean_total_per_county, <span class="at">y =</span> county)) <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Largest County Soil Carbon Totals in the Demo Aggregation"</span>,</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Mean county total (Mg C)"</span>,</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><a href="intro_to_downscaling_files/figure-html/plot-county-totals-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="intro_to_downscaling_files/figure-html/plot-county-totals-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>At this point, the pipeline has moved from model outputs at representative design points, to field-level predictions, to county and state summaries. The remaining follow-up scripts use these tables to make diagnostic plots and maps.</p>
+</section>
+<section id="next-steps" class="level1">
+<h1>Next steps</h1>
+<ul>
 <li><strong>Other variables</strong>: AGB, N2O flux, CH4 flux. Same pipeline, different reporting units – Mg/ha for stocks, kg/ha/yr for fluxes.</li>
-<li><strong>Atlas reports</strong>: <code>reports/atlas_*.qmd</code> render long-form HTML reports off these outputs.</li>
-<li><strong>New scenario</strong>: extend <code>management_scenarios</code> in <code>000-config.R</code> and re-run.</li>
+<li><strong>Development mode</strong>: use <code>--mode dev</code> and run with ensembles and at a larger range of sites and variables, but still in a computationally efficient manner.
+<ul>
+<li>Look at outputs for N2O and CH4 fluxes, and CO2e to compare across different components of crop GHG balance.</li>
+</ul></li>
 </ul>
 
 
