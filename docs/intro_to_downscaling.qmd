@@ -264,7 +264,6 @@ For each run, `scripts/040_downscale.R`:
 1. Loads `ensemble_output.csv`, site covariates, and field attributes.
 2. Iterates over each `(scenario, PFT, carbon pool)` combination.
 3. Fits one Random Forest model per ensemble member for that combination.
-4. Predicts to fields for that PFT.
 4. Predicts field level density for that PFT, output column `density_per_ha` (Mg C / ha for stocks, kg/ha/yr for fluxes).
 5. Multiplies density by each field's area to derive total stock per field: `total_per_field = density_per_ha * area_ha`.
 6. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs), with columns: `site_id`, `scenario`, `pft`, `ensemble`, `density_per_ha`, `total_per_field`, `area_ha`, `county`, `model_output`.
