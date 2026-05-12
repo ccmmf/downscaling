@@ -20,7 +20,7 @@ PEcAn.logger::logger.info("*** Starting multi-PFT aggregation ***")
 
 # ---- Load ensemble output ----------------------------------------------------
 ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
-ensemble_data <- readr::read_csv(ensemble_output_csv) |>
+ensemble_data_all <- readr::read_csv(ensemble_output_csv) |>
   # rename EFI std names for clarity
   # efi name   | new name
   # parameter  | ensemble_id
@@ -28,8 +28,26 @@ ensemble_data <- readr::read_csv(ensemble_output_csv) |>
   dplyr::rename(
     ensemble_id = parameter,
     value = prediction
-  ) |>
-  dplyr::filter(variable %in% c("AGB", "TotSoilCarb"))
+  )
+
+std_vars <- PEcAn.utils::standard_vars
+pool_var_names <- std_vars |>
+  dplyr::filter(stringr::str_detect(tolower(Category), "pool")) |>
+  dplyr::pull(Variable.Name)
+
+# pools go through multi-PFT mixing; fluxes pass through unchanged
+pool_vars_present <- intersect(unique(ensemble_data_all$variable), pool_var_names)
+flux_vars_present <- setdiff(unique(ensemble_data_all$variable), pool_var_names)
+
+if (length(flux_vars_present) > 0) {
+  PEcAn.logger::logger.info(
+    "Flux variables (", paste(flux_vars_present, collapse = ", "),
+    ") will bypass multi-PFT mixing and pass through unchanged."
+  )
+}
+
+ensemble_data <- ensemble_data_all |>
+  dplyr::filter(variable %in% pool_vars_present)
 
 # ---- Load or build cover fractions for each year -----------------------------
 
@@ -229,4 +247,16 @@ mixed_output_csv <- file.path(model_outdir, "ensemble_output_with_mixed.csv")
 readr::write_csv(ensemble_with_mixed, mixed_output_csv)
 PEcAn.logger::logger.info("Wrote EFI-compliant ensemble with mixed PFT: ", mixed_output_csv)
 
+# flux rates are per-PFT values; mixing gas emissions across overlapping PFTs
+# is not physically meaningful in the same way as stock mixing
+if (length(flux_vars_present) > 0) {
+  flux_data <- ensemble_data_all |>
+    dplyr::filter(variable %in% flux_vars_present) |>
+    dplyr::rename(parameter = ensemble_id, prediction = value)
+
+  ensemble_with_mixed <- dplyr::bind_rows(ensemble_with_mixed, flux_data)
+  # re-write the CSV so it includes the flux rows
+  readr::write_csv(ensemble_with_mixed, mixed_output_csv)
+  PEcAn.logger::logger.info("Updated EFI-compliant ensemble with flux data: ", mixed_output_csv)
+}
 PEcAn.logger::logger.info("*** Finished two-PFT aggregation ***")

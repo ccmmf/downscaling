@@ -12,8 +12,8 @@ downscale_preds <- vroom::vroom(
     site_id = readr::col_character(),
     pft = readr::col_character(),
     ensemble = readr::col_double(),
-    c_density_Mg_ha = readr::col_double(),
-    total_c_Mg = readr::col_double(),
+    density_per_ha = readr::col_double(),
+    total_per_field = readr::col_double(),
     area_ha = readr::col_double(),
     county = readr::col_character(),
     model_output = readr::col_character()
@@ -35,7 +35,7 @@ PEcAn.logger::logger.info("Number of numeric predictors:", length(covariate_name
 
 preds_join <- downscale_preds |>
   dplyr::left_join(covariates, by = "site_id") |>
-  tidyr::drop_na(c_density_Mg_ha)
+  tidyr::drop_na(density_per_ha)
 
 # Optional: load training site metadata
 train_sites_csv <- file.path(model_outdir, "training_sites.csv")
