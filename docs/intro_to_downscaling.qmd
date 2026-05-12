@@ -350,13 +350,13 @@ ggplot(plot_sample, aes(x = ocd, y = density_per_ha)) +
 
 # Aggregate to county
 
-The downscaling pipeline that has produced field-level predictions. For reporting, mapping, and scenario comparison, we aggregate these to regional statistics. 
+In previous steps, the downscaling pipeline produced field-level estimates of soil carbon density and total soil carbon. For reporting, mapping, and scenario comparison, we aggregate these to regional statistics. 
 
-Here we demonstrate how to summarize county level totals.
+Here we demonstrate how to summarize county level total soil carbon stocks.
 
-Aggregation is performed by the `scripts/041_aggregate_to_county.R` script. That script reads `downscaled_preds.csv` from the previous step, which already carries each field's `county` and `area_ha` attributes (attached upstream in 040 from `ca_fields.gpkg`). It then groups field predictions by scenario, model output, PFT, county, and ensemble member, and then computes county level statistics.
-041's job is the aggregation step: group field predictions by county and sum across fields:
+Aggregation is performed by the `scripts/041_aggregate_to_county.R` script. That script reads `downscaled_preds.csv` that was generated in the previous step. This file contains the total stocks or fluxes (total soil carbon in this example) and the county name for each field. 
 
+It then groups field predictions by scenario, model output, county, and ensemble member, and then computes county level statistics.
 
 To run the aggregation step in demo mode:
 
@@ -364,7 +364,7 @@ To run the aggregation step in demo mode:
 Rscript scripts/041_aggregate_to_county.R --mode demo
 ```
 
-In demo mode, this step uses a small sample of fields per county. That keeps the lesson fast, but the resulting county totals are for checking the workflow only. Use a development or production run for county inventory values.
+In demo mode, this step uses a small sample of fields per county. That keeps the demonstration fast, but the resulting county totals aren't intended as the realistic estimates that are produced by a production run.
 
 Output from the aggregation steps include:
 
@@ -373,7 +373,7 @@ Output from the aggregation steps include:
 * `aggregation_metadata.json` -- a small description of the aggregation run and output columns
 * `county_aggregated_deltas.csv` -- county scenario deltas, when `downscaled_deltas.csv` exists
 
-Because this first demo only includes the baseline scenario, there are no scenario-vs-baseline deltas to aggregate.
+Because this first demo only includes the baseline scenario, there are no scenario-vs-baseline deltas to aggregate as there are in the development and production runs.
 
 Confirm that the main aggregation outputs were created:
 
@@ -410,7 +410,7 @@ county_preds |>
   )
 ```
 
-The most important columns are:
+Key columns in `county_preds` are:
 
 * `mean_total_per_county` -- mean county total across ensemble members
 * `sd_total_per_county` -- across-ensemble standard deviation of county totals
@@ -418,7 +418,7 @@ The most important columns are:
 * `mean_total_ha` -- summed field area represented in the aggregation
 * `n` -- number of field predictions used in that county group
 
-In this demo there is only one ensemble member, so there is no standard deviation. 
+In this demo there is only one ensemble member, so there is no standard deviation.
 
 Plot the largest county totals in the demo output:
 
