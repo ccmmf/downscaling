@@ -72,10 +72,10 @@ The pipeline runs inside a conda environment that includes the software required
 
 The demo data and the `pecan-all` env tarball are downloaded from an S3 bucket hosted at NCSA.
 
+If you have already set up your Conda environment, run the following. Otherwise, proceed with the setup steps below.
+
 ```bash
 conda activate ~/.conda/envs/pecan-all
-```
-
 ## Check AWS access
 
 First, confirm that the AWS CLI is available:
