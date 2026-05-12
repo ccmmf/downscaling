@@ -75,6 +75,10 @@ The pipeline runs inside a conda environment that includes the software required
 
 The demo data and the `pecan-all` env tarball are downloaded from an S3 bucket hosted at NCSA.
 
+If you have already set up your Conda environment, run the following. Otherwise, proceed with the setup steps below.
+
+```bash
+conda activate ~/.conda/envs/pecan-all
 ## Check AWS access
 
 First, confirm that the AWS CLI is available:
@@ -217,6 +221,7 @@ Confirm and inspect the output:
 
 ```bash
 ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv
+head -n 5 ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/ensemble_output.csv | column -s, -t
 ```
 
 ```{r setup}
@@ -227,6 +232,9 @@ data_dir <- file.path(demo_root, "data")
 has_ensemble_output <- file.exists(file.path(model_outdir, "ensemble_output.csv"))
 has_downscaled_preds <- file.exists(file.path(model_outdir, "downscaled_preds.csv"))
 has_covariates <- file.exists(file.path(data_dir, "site_covariates.csv"))
+has_county_preds <- file.exists(file.path(model_outdir, "county_aggregated_preds.csv"))
+has_state_summaries <- file.exists(file.path(model_outdir, "state_summaries.csv"))
+has_agg_metadata <- file.exists(file.path(model_outdir, "aggregation_metadata.json"))
 ```
 
 ```{r inspect-ensemble-output}
@@ -257,7 +265,9 @@ For each run, `scripts/040_downscale.R`:
 2. Iterates over each `(scenario, PFT, carbon pool)` combination.
 3. Fits one Random Forest model per ensemble member for that combination.
 4. Predicts to fields for that PFT.
-5. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs).
+4. Predicts field level density for that PFT, output column `density_per_ha` (Mg C / ha for stocks, kg/ha/yr for fluxes).
+5. Multiplies density by each field's area to derive total stock per field: `total_per_field = density_per_ha * area_ha`.
+6. Writes outputs including `downscaled_preds.csv` (and `.parquet` for large outputs), with columns: `site_id`, `scenario`, `pft`, `ensemble`, `density_per_ha`, `total_per_field`, `area_ha`, `county`, `model_output`.
 
 Fitting one RF model per ensemble member preserves and propagates uncertainty structure throughout the full modeling workflow.
 
@@ -343,38 +353,99 @@ ggplot(plot_sample, aes(x = ocd, y = density_per_ha)) +
 
 # Aggregate to county
 
-This section is still under construction, will be presented in a follow-up demo.
+In previous steps, the downscaling pipeline produced field-level estimates of soil carbon density and total soil carbon. For reporting, mapping, and scenario comparison, we aggregate these to regional statistics. 
 
-The `041_aggregate_to_county.R` script computes per-county totals from field-level predictions. This is a downstream aggregation step and is intentionally skipped in the first live demo.
+Here we demonstrate how to summarize county level total soil carbon stocks.
 
-```bash
-# Rscript scripts/041_aggregate_to_county.R --mode demo
-```
+Aggregation is performed by the `scripts/041_aggregate_to_county.R` script. That script reads `downscaled_preds.csv` that was generated in the previous step. This file contains the total stocks or fluxes (total soil carbon in this example) and the county name for each field. 
 
-# Per-ensemble metrics and variable importance (script 042, follow-up)
+It then groups field predictions by scenario, model output, county, and ensemble member, and then computes county level statistics.
 
-```bash
-# Rscript scripts/042_downscale_analysis.R --mode demo
-```
-
-Computes per-ensemble downscaling metrics (R^2, RMSE), plus accumulated local effect (ALE) and partial dependence (PDP) plots for the top covariates.
-
-Outputs in `figures/`:
-
-* `variable_importance_summary.png`
-* per-spec ALE / ICE SVG files
-
-# County maps and scenario deltas (script 043, follow-up)
+To run the aggregation step in demo mode:
 
 ```bash
-# Rscript scripts/043_county_level_plots.R --mode demo
+Rscript scripts/041_aggregate_to_county.R --mode demo
 ```
 
-State-level maps plus per-county delta layers. The delta layers show how soil carbon changed between the start and end of the simulation period.
+In demo mode, this step uses a small sample of fields per county. That keeps the demonstration fast, but the resulting county totals aren't intended as the realistic estimates that are produced by a production run.
 
-# Where to go next
+Output from the aggregation steps include:
 
-* **Production mode**: drop `--mode demo` (production is the default) and run on the full archive. Plan for several hours.
+* `county_aggregated_preds.csv` -- county summaries by scenario, output variable, PFT, and county
+* `state_summaries.csv` -- statewide totals summarized across counties
+* `aggregation_metadata.json` -- a small description of the aggregation run and output columns
+* `county_aggregated_deltas.csv` -- county scenario deltas, when `downscaled_deltas.csv` exists
+
+Because this first demo only includes the baseline scenario, there are no scenario-vs-baseline deltas to aggregate as there are in the development and production runs.
+
+Confirm that the main aggregation outputs were created:
+
+```bash
+ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/county_aggregated_preds.csv
+ls -lh ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/state_summaries.csv
+```
+
+Inspect the county output:
+
+```bash
+head -n 5 ~/ccmmf_demo/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4/county_aggregated_preds.csv | column -s, -t
+```
+
+```{r inspect-county-aggregation}
+#| eval: !expr has_county_preds
+county_preds <- readr::read_csv(
+  file.path(model_outdir, "county_aggregated_preds.csv"),
+  show_col_types = FALSE
+)
+
+dplyr::glimpse(county_preds)
+
+county_preds |>
+  dplyr::summarise(
+    rows = dplyr::n(),
+    counties = dplyr::n_distinct(county),
+    scenarios = paste(unique(scenario), collapse = ", "),
+    variables = paste(unique(model_output), collapse = ", "),
+    pfts = paste(unique(pft), collapse = ", "),
+    min_total = min(mean_total_per_county, na.rm = TRUE),
+    mean_total = mean(mean_total_per_county, na.rm = TRUE),
+    max_total = max(mean_total_per_county, na.rm = TRUE)
+  )
+```
+
+Key columns in `county_preds` are:
+
+* `mean_total_per_county` -- mean county total across ensemble members
+* `sd_total_per_county` -- across-ensemble standard deviation of county totals
+* `mean_density_per_ha` -- area-weighted county density
+* `mean_total_ha` -- summed field area represented in the aggregation
+* `n` -- number of field predictions used in that county group
+
+In this demo there is only one ensemble member, so there is no standard deviation.
+
+Plot the largest county totals in the demo output:
+
+```{r plot-county-totals}
+#| eval: !expr has_county_preds
+top_counties <- county_preds |>
+  dplyr::filter(model_output == "TotSoilCarb") |>
+  dplyr::slice_max(mean_total_per_county, n = 15) |>
+  dplyr::mutate(county = stats::reorder(county, mean_total_per_county))
+
+ggplot2::ggplot(top_counties, ggplot2::aes(x = mean_total_per_county, y = county)) +
+  ggplot2::geom_col(fill = "steelblue") +
+  ggplot2::labs(
+    title = "Largest County Soil Carbon Totals in the Demo Aggregation",
+    x = "Mean county total (Mg C)",
+    y = NULL
+  ) +
+  ggplot2::theme_minimal()
+```
+
+At this point, the pipeline has moved from model outputs at representative design points, to field-level predictions, to county and state summaries. The remaining follow-up scripts use these tables to make diagnostic plots and maps.
+
+# Next steps
+
 * **Other variables**: AGB, N2O flux, CH4 flux. Same pipeline, different reporting units -- Mg/ha for stocks, kg/ha/yr for fluxes.
-* **Atlas reports**: `reports/atlas_*.qmd` render long-form HTML reports off these outputs.
-* **New scenario**: extend `management_scenarios` in `000-config.R` and re-run.
+* **Development mode**: use `--mode dev` and run with ensembles and at a larger range of sites and variables, but still in a computationally efficient manner.
+  * Look at outputs for N2O and CH4 fluxes, and CO2e to compare across different components of crop GHG balance.
