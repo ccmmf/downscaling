@@ -43,7 +43,7 @@ ggsave_optimized <- function(
   # Choose device where applicable
   dev <- NULL
   if (ext %in% c("pdf", "svg", "eps")) {
-    if (isTRUE(use_cairo) && isTRUE(grDevices::capabilities()["cairo"])) {
+    if (isTRUE(use_cairo) && isTRUE(capabilities()["cairo"])) {
       if (ext == "pdf") dev <- grDevices::cairo_pdf
       if (ext == "svg") {
         if (requireNamespace("svglite", quietly = TRUE)) {
