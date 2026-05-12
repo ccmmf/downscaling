@@ -98,17 +98,19 @@ When enabled, the workflow processes multiple management scenarios in a single r
 ### 1. Data Preparation
 
 ```sh
-Rscript scripts/009_update_landiq.R
+Rscript scripts/009_prepare_cadwr_crops.R
 Rscript scripts/010_prepare_covariates.R
 Rscript scripts/011_prepare_anchor_sites.R
+Rscript scripts/012_add_management_covariates.R
 ```
 
 These scripts prepare data for clustering and downscaling:
 
-- Converts LandIQ-derived shapefiles to a geopackage with geospatial information and a CSV with other attributes
-- Extracts environmental covariates (clay, organic carbon, topographic wetness, temperature, precipitation, solar radiation, vapor pressure)
+- Standardizes the harmonized LandIQ parquet to per-parcel polygons, attributes, and cropping-history features
+- Extracts environmental covariates (clay, organic carbon, topographic wetness, temperature, precipitation, solar radiation, vapor pressure deficit)
 - Groups fields into Cal-Adapt climate regions
 - Assigns anchor sites to fields
+- Appends per-parcel management features: tillage rank and frequency, phenology mean and SD DOY, and irrigation method (canopy/flood)
 
 **Inputs:**
 
@@ -142,23 +144,25 @@ These scripts prepare data for clustering and downscaling:
 ### 2. Design Point Selection
 
 ```sh
-Rscript scripts/020_cluster_and_select_design_points.R
-Rscript scripts/021_clustering_diagnostics.R
+Rscript scripts/020_cluster_sites.R
+Rscript scripts/021_subsample_design_points.R
+Rscript scripts/022_validate_design_points.R
 ```
 
-Uses k-means clustering to select representative fields plus anchor sites:
+Two-stage selection: cluster all parcels into a 10k pool, then trim to a 1k design via farthest-point sampling.
 
-- Subsample LandIQ fields and include anchor sites for clustering
-- Select cluster number based on the Elbow Method
-- Cluster fields using k-means based on environmental covariates
-- Select design points from clusters for SIPNET simulation
+- Cluster all parcels per PFT using k-means++ on scaled features (climate, soil, topo, EOF cropping history, phenology, management). Pick one representative per cluster as the pool. Anchor sites are force-included.
+- Apply greedy farthest-point sampling on the pool to pick the most diverse 1,000 design points for SIPNET runs.
+- Validate the design against the population (PFT allocation, MSSD coverage, cluster balance, anchor recovery, monitoring and climate region coverage) and produce diagnostic figures.
 
 **Inputs:**
 - `data/site_covariates.csv`
-- `data/anchor_sites_ids.csv`
+- `data/anchor_sites.csv`
 
-**Output:** 
-- `data/design_points.csv`
+**Outputs:**
+- `data/clustered_sites.csv` (10k pool, frozen artifact)
+- `data/design_points.csv` (1k design)
+- `reports/design_point_validation.md` and `figures/*` for QA
 
 ### 3. SIPNET Model Runs
 
