@@ -156,9 +156,10 @@ PEcAn.logger::logger.info("Assembling site features...")
 
 site_features <- sites_ag |>
   dplyr::left_join(pft_onehot, by = "site_id") |>
+  # every ag site joins a real eof score, n>=3 year filter never drops a
+  # parcel on v4.1 (all have 6 or 7 years of season 2 crops), so no imputation
   dplyr::left_join(eof_scores, by = "site_id") |>
-  dplyr::left_join(crop_by_year, by = "site_id") |>
-  dplyr::mutate(dplyr::across(dplyr::starts_with("eof_"), ~ tidyr::replace_na(.x, 0)))
+  dplyr::left_join(crop_by_year, by = "site_id")
 
 features_csv <- file.path(data_dir, "cadwr_crops_features.csv")
 readr::write_csv(site_features, features_csv)
