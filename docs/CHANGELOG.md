@@ -13,6 +13,11 @@ sections to include in release notes:
 
 ### Added
 
+- Statewide design point selection across all crop types, scaled to a 10k candidate pool and thinned to a 1000 site subsample
+- Support for the harmonized LandIQ v4.1 crop dataset as the source of crop type, PFT, and field coordinates
+- EOF temporal features summarizing each field's multi year cropping history
+- Tillage, irrigation, and phenology added to the site selection covariates
+- Validation report and diagnostic figures for the selected design points
 - Management scenario support for comparing agricultural practices
   - Configuration flag `USE_PHASE_3_SCENARIOS` in `000-config.R`
   - Six scenarios: baseline, compost, reduced_till, zero_till, reduced_irrig_drip, stacked
@@ -33,6 +38,7 @@ sections to include in release notes:
 
 ### Fixed
 
+- ERA5 unit conversions for precipitation, shortwave radiation, and VPD
 - Empty vector handling in mixed-scenario logic (`040_downscale.R`)
 
 ### Changed
