@@ -105,7 +105,7 @@ calif_fields_pts <- calif_fields |>
     by = "site_id"
   ) |>
   sf::st_centroid() |>
-  dplyr::select(site_id, crop, pft, dplyr::any_of("area_ha"), geom)
+  dplyr::select(site_id, crop, pft, dplyr::any_of("area_ha"))
 
 # field counts per PFT, for proportional design point allocation in 020
 PEcAn.logger::logger.info("California cropland summary by PFT:")
