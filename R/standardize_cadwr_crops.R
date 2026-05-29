@@ -38,7 +38,9 @@ standardize_cadwr_crops <- function(input_parquet,
   )
 
   # -- compute centroids (centx/centy are EPSG:3310) --
-  # one centroid per parcel, transformed to WGS84 for lat/lon output
+  # one centroid per parcel, transformed to WGS84 for lat/lon output.
+  # data.table on purpose here, per parcel first() over ~600k rows is the
+  # one heavy aggregation in this function, the rest stays dplyr/sf
   centroid_dt <- crops_raw[
     !is.na(centx) & !is.na(centy),
     .(centx = data.table::first(centx), centy = data.table::first(centy)),
@@ -155,8 +157,10 @@ standardize_cadwr_crops <- function(input_parquet,
     dplyr::left_join(parcel_area, by = "site_id")
 
   # join summary attributes to parcel polygons
+  # sf geometry is sticky, selecting site_id keeps the geom column
+  # regardless of its name (geom / geometry / etc.)
   sites_sf <- parcels |>
-    dplyr::select(site_id, geom) |>
+    dplyr::select(site_id) |>
     dplyr::inner_join(site_summary, by = "site_id")
 
   PEcAn.logger::logger.info(
