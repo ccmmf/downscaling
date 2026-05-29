@@ -1,6 +1,6 @@
 library(ggplot2)
 source("000-config.R")
-PEcAn.logger::logger.info("***Preparing anchor sites for California LandIQ fields***")
+PEcAn.logger::logger.info("***Preparing anchor sites for California CADWR fields***")
 
 ## Anchor Sites
 anchor_sites <- readr::read_csv("data_raw/anchor_site_locations.csv")
@@ -28,94 +28,6 @@ p <- anchor_sites_pts |>
   theme_minimal()
 ggsave_optimized("figures/anchor_sites.webp", plot = p, dpi = 96, bg = "white")
 
-#' Match anchor sites to LandIQ fields 
-#' 
-#' Match anchor sites to LandIQ fields using `sf::st_within` to join. 
-#' For anchor sites that do not fall within a LandIQ field, 
-#' find and assign nearest field using `sf::st_nearest_feature` and
-#' warn about any sites > 250m from LandIQ field.
-#'
-#' @param anchor_sites_pts sf POINT layer of anchor sites
-#' @param ca_fields sf POLYGON layer of all LandIQ fields
-#' @param ca_fields_with_covariates sf POLYGON layer of LandIQ fields with covariates
-#' @param max_dist numeric maximum allowable distance (in meters) for nearest match
-#' @return sf POINT layer with `site_id` assigned
-match_anchor_sites <- function(
-  anchor_sites_pts, 
-  ca_fields, 
-  ca_fields_with_covariates, 
-  max_dist = units::set_units(250, "m")) {
-  # within-based join
-  assigned <- anchor_sites_pts |>
-    sf::st_join(ca_fields_with_covariates, join = sf::st_within)
-  
-  # identify those still missing
-  unmatched <- assigned |>
-    dplyr::filter(is.na(site_id))
-  matched <- assigned |>
-    dplyr::filter(!is.na(site_id))
-  
-  if (nrow(unmatched) > 0) {
-    PEcAn.logger::logger.info(
-      "Found ", nrow(unmatched), " unmatched anchor sites.",
-      "Attempting to match with nearest fields."
-    )
-    # nearest-field fallback
-    idx <- sf::st_nearest_feature(unmatched, ca_fields)
-    nearest_fields <- ca_fields |> dplyr::slice(idx)
-    
-    # extract centroid coordinates for nearest fields
-    nearest_coords <- nearest_fields |>
-      sf::st_transform(4326) |>
-      sf::st_centroid() |>
-      sf::st_coordinates()
-    
-    unmatched_dist <- unmatched |>
-      dplyr::mutate(
-        site_id = nearest_fields$site_id,
-        lon = nearest_coords[, 1],
-        lat = nearest_coords[, 2],
-        distance_m = sf::st_distance(geometry, nearest_fields, by_element = TRUE)
-      )
-    
-    PEcAn.logger::logger.info(
-      nrow(unmatched_dist), 
-      "anchor sites assigned to nearest fields."
-    )
-        
-    # warn about distant matches
-    far_sites <- unmatched_dist |> 
-      dplyr::filter(distance_m > max_dist)
-
-    # Report on sites that are > max_dist from their assigned field
-    if (nrow(far_sites) == 0) {
-      PEcAn.logger::logger.info(
-        "All anchor sites assigned to fields within ", 
-        max_dist, "m."
-      )
-    } else if (nrow(far_sites) > 0) {
-      PEcAn.logger::logger.warn(
-        "The following ", nrow(far_sites),
-        " anchor sites assigned to fields more than ",
-        max_dist, "m away."
-      )
-      far_sites |>
-        dplyr::select(site_name, distance_m) |>
-        sf::st_drop_geometry() |>
-        dplyr::mutate(distance_m = signif(distance_m, 2)) |>
-        knitr::kable()
-    }
-    
-    # combine matched and unmatched
-    assigned <- dplyr::bind_rows(
-      matched,
-      unmatched_dist |> 
-        dplyr::select(-distance_m)
-    )
-  }
-  return(assigned)
-}
-
 # First subset ca_fields to only include those with covariates
 cadwr_fields_gpkg <- file.path(data_dir, "cadwr_crops_sites.gpkg")
 if (!file.exists(cadwr_fields_gpkg)) {
@@ -138,7 +50,6 @@ ca_fields_with_covariates <- ca_fields |>
 # match anchor sites to fields
 anchor_sites_with_ids <- match_anchor_sites(
   anchor_sites_pts,
-  ca_fields,
   ca_fields_with_covariates,
   max_dist = units::set_units(250, "m")
 )
