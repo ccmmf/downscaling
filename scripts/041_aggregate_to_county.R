@@ -132,21 +132,25 @@ county_summaries <- ens_county_preds |>
     sd_total_ha = sd(total_ha),
     .groups = "drop"
   ) |>
-  (
-    function(df) {
-      if (any(df$n == 1, na.rm = TRUE)) {
-        PEcAn.logger::logger.severe(
-          "At least one (model_output, pft, county) group has n == 1; variability across ensembles cannot be assessed."
-        )
+  (\(df) {
+    if (any(df$n == 1, na.rm = TRUE)) {
+      msg <- "Some (model_output, pft, county) groups have n == 1; variability across ensembles can't be assessed."
+      if (DEMO) {
+        PEcAn.logger::logger.warn(msg, " Expected in demo mode (single ensemble member).")
+      } else {
+        PEcAn.logger::logger.severe(msg)
       }
-      if (any(df$sd_total_per_county == 0, na.rm = TRUE)) {
-        PEcAn.logger::logger.severe(
-          "At least one (model_output, pft, county) group has zero variability across ensembles (sd_total_per_county == 0)."
-        )
-      }
-      df
     }
-  ) |>
+    zero_var <- df |> dplyr::filter(sd_total_per_county == 0)
+    if (nrow(zero_var) > 0) {
+      PEcAn.logger::logger.warn(
+        nrow(zero_var), " (model_output, pft, county) groups have zero variability ",
+        "across ensembles. Affected variables: ",
+        paste(unique(zero_var$model_output), collapse = ", ")
+      )
+    }
+    df
+  })() |>
   dplyr::mutate(
     dplyr::across(
       .cols = c(mean_total_per_county, sd_total_per_county, mean_density_per_ha, sd_density_per_ha),
