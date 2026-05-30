@@ -6,20 +6,42 @@ Once a new release is made this file will be updated to create a new `Unreleased
 
 For more information about this file see also [Keep a Changelog](http://keepachangelog.com/) .
 
-<!-- 
+
 sections to include in release notes:
 
 ## [Unreleased]
 
 ### Added
 
+- Management scenario support for comparing agricultural practices
+  - Configuration flag `USE_PHASE_3_SCENARIOS` in `000-config.R`
+  - Six scenarios: baseline, compost, reduced_till, zero_till, reduced_irrig_drip, stacked
+  - Scenario-aware extraction from pre-aggregated `.Rdata` files
+  - `scenario` column added to all output CSVs
+  - `scenarios` array in metadata JSON
+- Early exit in `031_aggregate_sipnet_output.R` for single-PFT runs
+- Parquet output for large files (>100k rows) via `write_output()` helper
+
+- County and state level aggregation with management scenario support
+  - `county_aggregated_preds.csv` replaces `county_summaries.csv`
+  - `county_aggregated_deltas.csv` for delta aggregation by scenario
+  - `state_summaries.csv` for California state-level totals
+  - `aggregation_metadata.json` with column descriptions
+- Field-level density maps replacing county density choropleth maps (per CARB request)
+- Backward compatibility for multi-PFT workflows without scenario column
+- Support for N2O and CH4 flux variables throughout the downscaling pipeline (#11)
+
 ### Fixed
+
+- Empty vector handling in mixed-scenario logic (`040_downscale.R`)
 
 ### Changed
 
+- County-level plots now include scenario in filenames (`043_county_level_plots.R`)
+
 ### Removed
 
--->
+- County-level density choropleth maps (per CARB request; replaced with field-level point maps)
 
 ## 0.2.0-2a
 

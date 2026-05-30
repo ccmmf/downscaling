@@ -43,7 +43,7 @@ ggsave_optimized <- function(
   # Choose device where applicable
   dev <- NULL
   if (ext %in% c("pdf", "svg", "eps")) {
-    if (isTRUE(use_cairo) && isTRUE(grDevices::capabilities()["cairo"])) {
+    if (isTRUE(use_cairo) && isTRUE(capabilities()["cairo"])) {
       if (ext == "pdf") dev <- grDevices::cairo_pdf
       if (ext == "svg") {
         if (requireNamespace("svglite", quietly = TRUE)) {
@@ -82,7 +82,7 @@ ggsave_optimized <- function(
       if (isTRUE(png_quantize)) {
         img <- magick::image_read(filename)
         img <- magick::image_quantize(img, max = png_max)
-        magick::image_write(img, path = filename, format = "png", compression_level = 9)
+        magick::image_write(img, path = filename, format = "png")
       }
     }
     return(invisible(filename))

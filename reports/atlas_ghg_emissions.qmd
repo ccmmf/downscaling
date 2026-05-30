@@ -1,0 +1,308 @@
+---
+title: "GHG Emissions Atlas"
+subtitle: "Nitrous Oxide and Methane Fluxes -- Trade-off Analysis"
+author: "Akash B V"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+lightbox: true
+---
+
+Greenhouse gas trade-offs determine the **net climate benefit** of conservation practices. A practice that increases soil carbon (good) but also increases N~2~O or CH~4~ emissions may have a reduced or even negative net benefit when expressed in CO~2~ equivalents. See the [Scenario Definition Table](atlas_overview.qmd#tbl-scenario-def) for practice parameters and simulation details.
+
+::: {.callout-warning}
+## Validation Status
+
+These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.
+:::
+
+::: {.callout-warning}
+## Critical Interpretation Note
+
+For GHG flux maps, the interpretation of differences is reversed from soil carbon: increases in emissions represent a **climate cost**, while decreases represent a **climate benefit**.
+:::
+
+---
+
+## Nitrous Oxide (N~2~O) Emissions
+
+N~2~O is a potent greenhouse gas (~298x CO~2~ over 100 years, GWP~100~ AR4; IPCC 2007). It is produced by soil microbes during nitrification and denitrification processes. Tillage, nitrogen inputs (e.g. compost), and water management all influence N~2~O production.
+
+### Combined View: Baseline + Scenario Differences
+
+![Baseline absolute + scenario differences for N~2~O flux](../figures/mixed_county_annual_crop_N2O_flux_baseline_plus_diffs.webp){.lightbox group="n2o-mixed" fig-alt="Combined view showing baseline N2O emissions alongside scenario differences"}
+
+::: {.callout-note}
+## Interpretation
+
+Compost and stacked scenarios show the largest N~2~O reductions (-39.5% and -27.3% statewide, respectively). Drip irrigation (+12.0%) increases N~2~O emissions. Reduced till (+0.1%) and zero till (+0.5%) show essentially no change in N~2~O, consistent with van Kessel et al. (2013) who found no-till N~2~O effects are near zero in dry climates during the first decade.
+:::
+
+### County-Level N~2~O: All Scenarios
+
+::: {.panel-tabset}
+
+#### All Scenarios (Absolute)
+
+![Faceted county N~2~O -- all scenarios](../figures/facet_county_annual_crop_N2O_flux_stock_comparison.webp){.lightbox group="n2o-county" fig-alt="Faceted county-level N2O flux maps for all scenarios"}
+
+#### All Differences from Baseline
+
+![Faceted county N~2~O differences](../figures/facet_diff_county_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-county-diff" fig-alt="Faceted county-level N2O difference maps"}
+
+:::
+
+### Individual N~2~O Difference Maps {.tabset}
+
+::: {.panel-tabset}
+
+#### Compost
+
+![N~2~O difference -- Compost vs Baseline](../figures/diff_county_compost_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-diff" fig-alt="Compost minus baseline N2O flux difference map"}
+
+Compost *reduces* N~2~O by 39.5% statewide. This reduction is consistent with the mechanism of microbial N immobilization: mature compost with a high C:N ratio promotes assimilation of mineral N into microbial biomass, reducing the substrate available for nitrification and denitrification (Valkama et al. 2024, European Journal of Soil Science). Field studies in California almond orchards have shown compost + fertigation reducing N~2~O by ~50% (Khalsa et al. 2022). Our -39.5% is within this range, reflecting our assumption that compost replaces synthetic N inputs.
+
+#### Reduced Till
+
+![N~2~O difference -- Reduced Till vs Baseline](../figures/diff_county_reduced_till_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-diff" fig-alt="Reduced till minus baseline N2O flux difference map"}
+
+Essentially no change (+0.1%). The near-zero N~2~O response to tillage reduction is consistent with the van Kessel et al. (2013) meta-analysis, which found that N~2~O effects of no-till are highly variable and near zero in dry climates during the first decade of adoption.
+
+#### Zero Till
+
+![N~2~O difference -- Zero Till vs Baseline](../figures/diff_county_zero_till_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-diff" fig-alt="Zero till minus baseline N2O flux difference map"}
+
+Essentially no change (+0.5%). Similar to reduced till, the N~2~O response to zero tillage is negligible over 8 years in California's semi-arid climate.
+
+#### Drip Irrigation
+
+![N~2~O difference -- Drip Irrigation vs Baseline](../figures/diff_county_reduced_irrig_drip_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-diff" fig-alt="Drip irrigation minus baseline N2O flux difference map"}
+
+Increase (+12.0%). The modeled N~2~O increase under drip irrigation reflects SIPNET's representation of intermediate soil moisture conditions that can favor nitrification pathways. This result should be interpreted with caution, as field studies report mixed findings depending on fertilizer type, application frequency, and soil conditions (Kuang et al. 2021, Global Change Biology). Some California field studies have shown drip + fertigation reducing N~2~O in tomato systems (Kennedy et al. 2013), while others show increases when fertigation concentrates N in the root zone.
+
+#### Stacked
+
+![N~2~O difference -- Stacked vs Baseline](../figures/diff_county_stacked_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-diff" fig-alt="Stacked minus baseline N2O flux difference map"}
+
+Large reduction (-27.3%). The stacked scenario combines compost's N immobilization effect with drip irrigation's moisture regulation, producing a net N~2~O reduction dominated by the compost mechanism. The smaller magnitude compared to compost alone (-39.5%) reflects the partially offsetting N~2~O increase from drip irrigation (+12.0%).
+
+:::
+
+### Field-Level N~2~O
+
+::: {.panel-tabset}
+
+#### All Scenarios (Density)
+
+![Faceted field N~2~O density -- all scenarios](../figures/facet_field_annual_crop_N2O_flux_density_comparison.webp){.lightbox group="n2o-field" fig-alt="Faceted field-level N2O flux density maps"}
+
+#### All Differences from Baseline
+
+![Faceted field N~2~O differences](../figures/facet_diff_field_annual_crop_N2O_flux_vs_baseline.webp){.lightbox group="n2o-field-diff" fig-alt="Faceted field-level N2O difference maps"}
+
+:::
+
+---
+
+## Methane (CH~4~) Emissions
+
+CH~4~ is a potent greenhouse gas (~25x CO~2~ over 100 years, GWP~100~ AR4; IPCC 2007; ~72x over 20 years). Agricultural soils can be sources or sinks of methane depending on soil moisture, oxygen availability, and organic carbon substrate. Methanogenesis (CH~4~ production) occurs under anaerobic conditions; methanotrophy (CH~4~ consumption) occurs in well-aerated soils.
+
+### Combined View: Baseline + Scenario Differences
+
+![Baseline absolute + scenario differences for CH~4~ flux](../figures/mixed_county_annual_crop_CH4_flux_baseline_plus_diffs.webp){.lightbox group="ch4-mixed" fig-alt="Combined view showing baseline CH4 emissions alongside scenario differences"}
+
+::: {.callout-warning}
+## CH~4~ Baseline Is Effectively Zero for Non-Flooded Annual Crops
+
+Methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur in non-flooded annual croplands. Raw SIPNET CH~4~ flux is approximately 1.8 x 10⁻¹⁴ kg m⁻² -- effectively machine-precision zero. The statewide CH~4~ baseline is 0.014 Gg CH~4~ yr⁻¹ (0.007 kg CH~4~ ha⁻¹ yr⁻¹) in downscaled predictions, where the non-zero values reflect Random Forest spatial noise fitting to essentially zero training data (OOB R² = -0.15). All scenario differences are therefore artifacts, not real signals. **Percentage changes from a near-zero baseline are misleading and should not be interpreted.** Meaningful CH~4~ fluxes are expected when rice paddies are included in future model runs.
+:::
+
+### County-Level CH~4~: All Scenarios
+
+::: {.panel-tabset}
+
+#### All Scenarios (Absolute)
+
+![Faceted county CH~4~ -- all scenarios](../figures/facet_county_annual_crop_CH4_flux_stock_comparison.webp){.lightbox group="ch4-county" fig-alt="Faceted county-level CH4 flux maps for all scenarios"}
+
+#### All Differences from Baseline
+
+![Faceted county CH~4~ differences](../figures/facet_diff_county_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-county-diff" fig-alt="Faceted county-level CH4 difference maps"}
+
+:::
+
+### Individual CH~4~ Difference Maps {.tabset}
+
+::: {.panel-tabset}
+
+#### Compost
+
+![CH~4~ difference -- Compost vs Baseline](../figures/diff_county_compost_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-diff" fig-alt="Compost minus baseline CH4 flux difference map"}
+
+CH~4~ emissions are effectively zero for both baseline and compost (0.014 vs. 0.015 Gg CH~4~ yr⁻¹). Any apparent differences are RF noise, not a real signal (see callout above).
+
+#### Reduced Till
+
+![CH~4~ difference -- Reduced Till vs Baseline](../figures/diff_county_reduced_till_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-diff" fig-alt="Reduced till minus baseline CH4 flux difference map"}
+
+Negligible change from an already near-zero baseline.
+
+#### Zero Till
+
+![CH~4~ difference -- Zero Till vs Baseline](../figures/diff_county_zero_till_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-diff" fig-alt="Zero till minus baseline CH4 flux difference map"}
+
+Small increase from a near-zero baseline. Not meaningfully different from zero.
+
+#### Drip Irrigation
+
+![CH~4~ difference -- Drip Irrigation vs Baseline](../figures/diff_county_reduced_irrig_drip_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-diff" fig-alt="Drip irrigation minus baseline CH4 flux difference map"}
+
+Effectively zero, same as baseline. All non-flooded annual crop CH~4~ values are noise.
+
+#### Stacked
+
+![CH~4~ difference -- Stacked vs Baseline](../figures/diff_county_stacked_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-diff" fig-alt="Stacked minus baseline CH4 flux difference map"}
+
+Effectively zero, same as all other scenarios. All non-flooded annual crop CH~4~ values are noise from the RF model fitting to near-zero training data.
+
+:::
+
+### Field-Level CH~4~
+
+::: {.panel-tabset}
+
+#### All Scenarios (Density)
+
+![Faceted field CH~4~ density -- all scenarios](../figures/facet_field_annual_crop_CH4_flux_density_comparison.webp){.lightbox group="ch4-field" fig-alt="Faceted field-level CH4 flux density maps"}
+
+#### All Differences from Baseline
+
+![Faceted field CH~4~ differences](../figures/facet_diff_field_annual_crop_CH4_flux_vs_baseline.webp){.lightbox group="ch4-field-diff" fig-alt="Faceted field-level CH4 difference maps"}
+
+:::
+
+---
+
+## GHG Trade-off Summary
+
+::: {.callout-important}
+## Net Climate Benefit Requires CO~2~-Equivalent Accounting
+
+A practice's net climate benefit depends on the **magnitude** of soil carbon gains versus GHG emission changes, expressed in common units (CO~2~e). The [CO~2~e Summary Table](atlas_overview.qmd#tbl-co2e) on the overview page quantifies these trade-offs using GWP~100~ AR4 values (CH~4~ = 25, N~2~O = 298; IPCC 2007, WG1 Table 2.14).
+
+Key findings in CO~2~e terms (Gg CO~2~e yr⁻¹ vs baseline):
+
+- **Stacked**: Largest net benefit (-9,613). SOC sequestration (-8,563) and N~2~O reduction (-1,050) both contribute strongly.
+- **Compost**: Second-largest net benefit (-7,777). SOC sequestration (-6,256) and N~2~O reduction (-1,521) dominate.
+- **Drip irrigation**: Moderate net benefit (-1,215). SOC gain (-1,675) offsets N~2~O increase (+460).
+- **Zero till**: Small net benefit (-191). SOC gain (-211) slightly offset by negligible N~2~O increase (+21).
+- **Reduced till**: Small net benefit (-115). SOC gain (-119) with negligible N~2~O change (+3).
+
+All five management scenarios show net climate benefits relative to baseline. The tillage scenarios produce the smallest benefits, consistent with the modest SOC gains over 8 years. These CO~2~e estimates represent the maximum technical potential assuming simultaneous adoption across all 1.86 million hectares. SOC accumulation rates typically decline as soils approach a new equilibrium, so extrapolation beyond the 8-year simulation period would overestimate long-term mitigation. CH~4~ contributes approximately 0% of the net CO~2~e in every scenario; meaningful CH~4~ contributions are expected when rice paddies are included in future model runs.
+
+These trade-offs underscore the importance of reporting both soil carbon and non-CO~2~ greenhouse gases when evaluating management practices.
+:::
+
+
+## County-Level CO~2~e Maps
+
+The maps below translate the GHG trade-offs into geographic patterns using GWP~100~ AR4 values. Green counties show net climate benefit (negative CO~2~e); purple counties show net climate cost (positive CO~2~e). Color scales are symmetric around zero and consistent across scenarios within each component.
+
+### SOC CO~2~e
+
+::: {.panel-tabset}
+
+#### All Scenarios
+
+![Faceted SOC CO~2~e by scenario](../figures/facet_co2e_county_co2e_soc.webp){.lightbox group="co2e-soc" fig-alt="Faceted county-level SOC CO2e maps for all scenarios vs baseline"}
+
+#### Compost
+
+![SOC CO~2~e: Compost vs Baseline](../figures/co2e_county_compost_co2e_soc.webp){.lightbox group="co2e-soc-ind" fig-alt="County-level SOC CO2e map for compost vs baseline"}
+
+#### Reduced Till
+
+![SOC CO~2~e: Reduced Till vs Baseline](../figures/co2e_county_reduced_till_co2e_soc.webp){.lightbox group="co2e-soc-ind" fig-alt="County-level SOC CO2e map for reduced till vs baseline"}
+
+#### Zero Till
+
+![SOC CO~2~e: Zero Till vs Baseline](../figures/co2e_county_zero_till_co2e_soc.webp){.lightbox group="co2e-soc-ind" fig-alt="County-level SOC CO2e map for zero till vs baseline"}
+
+#### Drip Irrigation
+
+![SOC CO~2~e: Drip Irrigation vs Baseline](../figures/co2e_county_reduced_irrig_drip_co2e_soc.webp){.lightbox group="co2e-soc-ind" fig-alt="County-level SOC CO2e map for drip irrigation vs baseline"}
+
+#### Stacked
+
+![SOC CO~2~e: Stacked vs Baseline](../figures/co2e_county_stacked_co2e_soc.webp){.lightbox group="co2e-soc-ind" fig-alt="County-level SOC CO2e map for stacked vs baseline"}
+
+:::
+
+### N~2~O CO~2~e
+
+::: {.panel-tabset}
+
+#### All Scenarios
+
+![Faceted N~2~O CO~2~e by scenario](../figures/facet_co2e_county_co2e_n2o.webp){.lightbox group="co2e-n2o" fig-alt="Faceted county-level N2O CO2e maps for all scenarios vs baseline"}
+
+#### Compost
+
+![N~2~O CO~2~e: Compost vs Baseline](../figures/co2e_county_compost_co2e_n2o.webp){.lightbox group="co2e-n2o-ind" fig-alt="County-level N2O CO2e map for compost vs baseline"}
+
+#### Reduced Till
+
+![N~2~O CO~2~e: Reduced Till vs Baseline](../figures/co2e_county_reduced_till_co2e_n2o.webp){.lightbox group="co2e-n2o-ind" fig-alt="County-level N2O CO2e map for reduced till vs baseline"}
+
+#### Zero Till
+
+![N~2~O CO~2~e: Zero Till vs Baseline](../figures/co2e_county_zero_till_co2e_n2o.webp){.lightbox group="co2e-n2o-ind" fig-alt="County-level N2O CO2e map for zero till vs baseline"}
+
+#### Drip Irrigation
+
+![N~2~O CO~2~e: Drip Irrigation vs Baseline](../figures/co2e_county_reduced_irrig_drip_co2e_n2o.webp){.lightbox group="co2e-n2o-ind" fig-alt="County-level N2O CO2e map for drip irrigation vs baseline"}
+
+#### Stacked
+
+![N~2~O CO~2~e: Stacked vs Baseline](../figures/co2e_county_stacked_co2e_n2o.webp){.lightbox group="co2e-n2o-ind" fig-alt="County-level N2O CO2e map for stacked vs baseline"}
+
+:::
+
+### Net CO~2~e
+
+::: {.panel-tabset}
+
+#### All Scenarios
+
+![Faceted Net CO~2~e by scenario](../figures/facet_co2e_county_co2e_net.webp){.lightbox group="co2e-net" fig-alt="Faceted county-level net CO2e maps for all scenarios vs baseline"}
+
+#### Compost
+
+![Net CO~2~e: Compost vs Baseline](../figures/co2e_county_compost_co2e_net.webp){.lightbox group="co2e-net-ind" fig-alt="County-level net CO2e map for compost vs baseline"}
+
+#### Reduced Till
+
+![Net CO~2~e: Reduced Till vs Baseline](../figures/co2e_county_reduced_till_co2e_net.webp){.lightbox group="co2e-net-ind" fig-alt="County-level net CO2e map for reduced till vs baseline"}
+
+#### Zero Till
+
+![Net CO~2~e: Zero Till vs Baseline](../figures/co2e_county_zero_till_co2e_net.webp){.lightbox group="co2e-net-ind" fig-alt="County-level net CO2e map for zero till vs baseline"}
+
+#### Drip Irrigation
+
+![Net CO~2~e: Drip Irrigation vs Baseline](../figures/co2e_county_reduced_irrig_drip_co2e_net.webp){.lightbox group="co2e-net-ind" fig-alt="County-level net CO2e map for drip irrigation vs baseline"}
+
+#### Stacked
+
+![Net CO~2~e: Stacked vs Baseline](../figures/co2e_county_stacked_co2e_net.webp){.lightbox group="co2e-net-ind" fig-alt="County-level net CO2e map for stacked vs baseline"}
+
+:::
+
+---
+
+## Note on GWP Version Sensitivity
+
+All CO~2~e calculations in this atlas use GWP~100~ values from the IPCC Fourth Assessment Report (AR4, 2007): CH~4~ = 25, N~2~O = 298. More recent assessments report somewhat different values: AR5 (2013) uses CH~4~ = 28, N~2~O = 265; AR6 (2021) uses CH~4~ = 27.0, N~2~O = 273. Switching to AR5 or AR6 values would moderately reduce the estimated CO~2~e benefit from N~2~O reductions (by ~11%) and slightly increase the CH~4~ contribution (by ~12%). The qualitative conclusions -- compost and stacked as the strongest net benefits, CH~4~ as negligible for non-flooded crops -- hold across all three GWP versions.
