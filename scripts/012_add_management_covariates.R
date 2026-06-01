@@ -83,55 +83,81 @@ tillage_mgmt <- open_product("tillage") |>
 
 ##phenology
 # DOY mean and SD. SD captures interannual stress and management signal that
-# the mean washes out
+# the mean washes out. duckdb does the mean / sd directly. the source isn't
+# huge (~4M rows) but the R side yday and grouped sd were the slow part
 PEcAn.logger::logger.info("phenology: fetch + aggregate")
-phen_mgmt <- open_product("phenology") |>
-  dplyr::filter(year %in% years_covered) |>
-  dplyr::select(site_id, year, leafonday, leafoffday) |>
-  dplyr::collect() |>
-  dplyr::mutate(site_id = as.character(site_id)) |>
-  dplyr::filter(site_id %in% ids) |>
-  dplyr::transmute(
-    site_id,
-    on = lubridate::yday(leafonday),
-    off = lubridate::yday(leafoffday)
-  ) |>
-  dplyr::summarise(
-    leafon_doy = mean(on, na.rm = TRUE),
-    leafoff_doy = mean(off, na.rm = TRUE),
-    leafon_doy_sd = dplyr::if_else(dplyr::n() > 1, stats::sd(on, na.rm = TRUE), 0),
-    leafoff_doy_sd = dplyr::if_else(dplyr::n() > 1, stats::sd(off, na.rm = TRUE), 0),
-    .by = site_id
+phen_dbdir <- file.path(Sys.getenv("TMPDIR", "/tmp"), paste0("phen_", Sys.getpid(), ".duckdb"))
+phen_conn <- DBI::dbConnect(duckdb::duckdb(dbdir = phen_dbdir))
+on.exit({
+  DBI::dbDisconnect(phen_conn, shutdown = TRUE)
+  unlink(phen_dbdir)
+}, add = TRUE)
+DBI::dbWriteTable(phen_conn, "wanted_ids",
+                  data.frame(site_id_int = as.integer(ids)),
+                  temporary = TRUE)
+phen_dir <- file.path(management_dir, "phenology")
+phen_mgmt <- DBI::dbGetQuery(phen_conn, sprintf("
+  WITH src AS (
+    SELECT CAST(site_id AS BIGINT) AS site_id_int,
+           DAYOFYEAR(CAST(leafonday  AS DATE)) AS doy_on,
+           DAYOFYEAR(CAST(leafoffday AS DATE)) AS doy_off
+    FROM read_parquet('%s/*.parq*')
+    WHERE year IN (%s)
+  ),
+  filtered AS (
+    SELECT s.* FROM src s JOIN wanted_ids w USING (site_id_int)
   )
+  SELECT
+    CAST(site_id_int AS VARCHAR) AS site_id,
+    AVG(doy_on)  AS leafon_doy,
+    AVG(doy_off) AS leafoff_doy,
+    CASE WHEN COUNT(*) > 1 THEN STDDEV_SAMP(doy_on)  ELSE 0 END AS leafon_doy_sd,
+    CASE WHEN COUNT(*) > 1 THEN STDDEV_SAMP(doy_off) ELSE 0 END AS leafoff_doy_sd
+  FROM filtered GROUP BY site_id_int
+", phen_dir, paste(years_covered, collapse = ", ")))
 
 ##irrigation
-# v1.0 method vocab is {canopy, flood}. canopy = above-canopy application
-# (sprinkler + drip + microsprinkler collapsed). flood = surface application.
-# sampling one ensemble member because method is ensemble invariant per
-# parcel in this product. drip vs sprinkler is NOT recoverable from
-# this monitoring product (harmonized LandIQ IRR_TYP_PA is also only
-# {i, n}, so the distinction is lost upstream).
+# dominant irrigation method per parcel. canopy = above ground (sprinkler,
+# drip, microsprinkler all lumped, the product doesn't split them and
+# landiq's IRR_TYP_PA is also just i / n upstream). flood = surface. the
+# source is ~600M rows across 20 ensembles, too big to pull into R, so the
+# per parcel mode happens in duckdb and only the ~600k rows come back.
 PEcAn.logger::logger.info("irrigation: fetch + aggregate")
-# filter ens_id + date inside arrow (drops 20 ensembles, pre 2016 rows).
-# parcel_id %in% ids stays in R; by then the dataset is ~450 MB
-irr_mgmt <- open_product("irrigation") |>
-  dplyr::filter(
-    ens_id == "irr_ens_001",
-    date >= as.Date("2016-01-01")
-  ) |>
-  dplyr::select(parcel_id, method) |>
-  dplyr::collect() |>
-  dplyr::mutate(site_id = as.character(parcel_id)) |>
-  dplyr::filter(site_id %in% ids) |>
-  dplyr::summarise(
-    dominant = names(sort(table(method), decreasing = TRUE))[1],
-    .by = site_id
-  ) |>
-  dplyr::mutate(
-    irr_canopy = as.integer(dominant == "canopy"),
-    irr_flood = as.integer(dominant == "flood")
-  ) |>
-  dplyr::select(site_id, irr_canopy, irr_flood)
+irr_dbdir <- file.path(Sys.getenv("TMPDIR", "/tmp"), paste0("irr_", Sys.getpid(), ".duckdb"))
+irr_conn <- DBI::dbConnect(duckdb::duckdb(dbdir = irr_dbdir))
+on.exit({
+  DBI::dbDisconnect(irr_conn, shutdown = TRUE)
+  unlink(irr_dbdir)
+}, add = TRUE)
+DBI::dbWriteTable(irr_conn, "wanted_ids",
+                  data.frame(site_id_int = as.integer(ids)),
+                  temporary = TRUE)
+irr_dir <- file.path(management_dir, "irrigation")
+irr_mgmt <- DBI::dbGetQuery(irr_conn, sprintf("
+  WITH src AS (
+    SELECT CAST(parcel_id AS BIGINT) AS site_id_int, method
+    FROM read_parquet('%s/*.parquet')
+    WHERE date >= DATE '2016-01-01'
+  ),
+  filtered AS (
+    SELECT s.site_id_int, s.method
+    FROM src s JOIN wanted_ids w USING (site_id_int)
+  ),
+  counts AS (
+    SELECT site_id_int, method, COUNT(*) AS n
+    FROM filtered GROUP BY site_id_int, method
+  ),
+  ranked AS (
+    SELECT site_id_int, method,
+      ROW_NUMBER() OVER (PARTITION BY site_id_int ORDER BY n DESC, method) AS rk
+    FROM counts
+  )
+  SELECT
+    CAST(site_id_int AS VARCHAR) AS site_id,
+    CAST(method = 'canopy' AS INTEGER) AS irr_canopy,
+    CAST(method = 'flood'  AS INTEGER) AS irr_flood
+  FROM ranked WHERE rk = 1
+", irr_dir))
 
 ##join + impute
 # tillage absent -> 0 for both (no event detected = no tillage).
