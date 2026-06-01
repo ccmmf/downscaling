@@ -1,0 +1,122 @@
+---
+title: "Downscaling Map Atlas"
+subtitle: "Statewide Carbon and GHG Projections Under Agricultural Management Scenarios"
+author: "Akash B V"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+lightbox: true
+---
+
+```{r setup, include=FALSE}
+options(ccmmf.quiet_banner = TRUE)
+```
+
+## Summary of Key Findings
+
+This atlas presents statewide projections of soil carbon storage and greenhouse gas emissions under six agricultural management scenarios for California's annual croplands (~132,000 fields across 57 counties). Results are produced by the SIPNET ecosystem model at representative anchor sites and downscaled via Random Forest to all cropland fields.
+
+::: {.callout-warning}
+## Validation Status
+
+These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.
+:::
+
+### Scenario Comparison
+
+| Scenario | Soil Carbon | N~2~O Emissions | CH~4~ Emissions^a^ |
+|----------|:-----------:|:---------------:|:-------------------:|
+| **Compost** | +12.2% | -39.5% | n/a |
+| **Reduced Till** | +0.2% | +0.1% | n/a |
+| **Zero Till** | +0.4% | +0.5% | n/a |
+| **Drip Irrigation** | +3.3% | +12.0% | n/a |
+| **Stacked (all)** | +16.6% | -27.3% | n/a |
+
+: Percent change from baseline across all California annual croplands (ensemble mean, n = 20). ^a^ CH~4~ fluxes are effectively zero for non-flooded annual crops. Methanogenesis requires continuous flooding (e.g., rice paddies), which is not included in this analysis. Percentage changes from a near-zero baseline are misleading and are omitted.
+
+### Statewide Absolute Magnitudes
+
+| Variable | Baseline | Compost | Reduced Till | Zero Till | Drip Irrigation | Stacked |
+|----------|:--------:|:-------:|:------------:|:---------:|:---------------:|:-------:|
+| **SOC (Tg C)** | 112.3 | 125.9 | 112.5 | 112.7 | 115.9 | 130.9 |
+| **N~2~O (Gg N~2~O yr⁻¹)** | 12.91 | 7.81 | 12.92 | 12.98 | 14.46 | 9.39 |
+| **CH~4~ (Gg CH~4~ yr⁻¹)** | 0.014 | 0.015 | 0.013 | 0.013 | 0.014 | 0.017 |
+
+: Statewide totals across 1.86 million hectares of annual cropland (57 counties, ~132,000 fields). SOC is end-of-simulation stock (2024) at 30 cm depth. N~2~O and CH~4~ are annual emission rates in gas mass units. Values are ensemble means (n = 20).
+
+### CO~2~-Equivalent Summary {#tbl-co2e}
+
+| Scenario | SOC (Gg CO~2~e yr⁻¹) | N~2~O (Gg CO~2~e yr⁻¹) | CH~4~ (Gg CO~2~e yr⁻¹) | **Net (Gg CO~2~e yr⁻¹)** |
+|----------|:-----:|:-----:|:-----:|:-----:|
+| **Compost** | -6,256 | -1,521 | ~0 | **-7,777** |
+| **Reduced Till** | -119 | +3 | ~0 | **-115** |
+| **Zero Till** | -211 | +21 | ~0 | **-191** |
+| **Drip Irrigation** | -1,675 | +460 | ~0 | **-1,215** |
+| **Stacked (all)** | -8,563 | -1,050 | ~0 | **-9,613** |
+
+: Net CO~2~-equivalent impact of each practice relative to baseline, using GWP~100~ AR4 values (CH~4~ = 25, N~2~O = 298; IPCC 2007, WG1 Table 2.14). Negative values indicate a net climate benefit (reduced atmospheric forcing). SOC change annualized over the 8-year simulation period (2016--2024) and converted to CO~2~ mass (C $\times$ 44/12). N~2~O and CH~4~ are annual flux deltas from baseline. CH~4~ contributions are ~0 Gg CO~2~e yr⁻¹ in all scenarios -- negligible for non-flooded annual crops. Note: CO~2~e values represent maximum technical potential assuming full adoption across all modeled cropland; realized outcomes will depend on adoption rates and SOC saturation dynamics.
+
+### Key Takeaways
+
+::: {.callout-note}
+## Key Takeaways
+
+1. **Compost and stacked practices deliver the largest net climate benefits** (-7,777 and -9,613 Gg CO~2~e yr⁻¹ respectively). Both increase soil carbon and reduce N~2~O simultaneously.
+2. **Drip irrigation provides a moderate net benefit** (-1,215 Gg CO~2~e yr⁻¹). SOC gains outweigh N~2~O increases.
+3. **Tillage reduction shows small but positive SOC gains.** Zero till (+0.4% SOC, -191 Gg CO~2~e yr⁻¹) and reduced till (+0.2% SOC, -115 Gg CO~2~e yr⁻¹) both show modest net climate benefits. These small gains are consistent with the 8-year simulation period; meta-analyses indicate no-till SOC benefits become significant after >10 years of adoption (Six et al. 2004, Oecologia).
+4. **CH~4~ is negligible** for non-flooded annual croplands (~0 Gg CO~2~e yr⁻¹ in every scenario). CH~4~ will become meaningful when rice paddies are included in future model runs.
+5. **N~2~O is a critical trade-off variable.** Drip irrigation increases N~2~O (+12.0%) despite SOC benefits, reinforcing the need for multi-variable reporting. Compost reduces N~2~O (-39.5%), amplifying its SOC co-benefit.
+:::
+
+## How to Use This Atlas
+
+Navigate using the sidebar or the links below. Each page is organized with **tabsets** for switching between scenarios and **click-to-zoom** on all figures.
+
+| Page | What It Shows |
+|------|---------------|
+| [Soil Carbon Atlas](atlas_soil_carbon.qmd) | County-total and field-density maps for Total Soil Carbon across all scenarios, with difference maps |
+| [GHG Emissions Atlas](atlas_ghg_emissions.qmd) | N~2~O and CH~4~ emission maps -- the critical trade-off analysis |
+| [Biomass Atlas](atlas_biomass.qmd) | Aboveground biomass maps (end-of-year annual crop standing biomass) |
+| [Model Drivers](atlas_model_drivers.qmd) | What environmental factors drive the spatial patterns? ALE/ICE diagnostics |
+
+## Methods Overview
+
+```
+SIPNET (anchor sites)  -->  Random Forest  -->  Field predictions  -->  County aggregation  -->  Maps
+     100 sites               8 predictors      ~132,000 fields        57 counties
+     per scenario           (soil, climate,
+                             topography, area)
+```
+
+**Scenarios** are based on NRCS conservation practice standards:
+
+- **Baseline** -- Current farming practices (reference)
+- **Compost** -- Organic amendment application (NRCS CPS 808)
+- **Reduced Till** -- Reduced tillage intensity (NRCS CPS 345)
+- **Zero Till** -- No-till farming (NRCS CPS 329)
+- **Drip Irrigation** -- Conversion from flood/sprinkler to drip (water conservation + GHG reduction)
+- **Stacked** -- All practices applied simultaneously
+
+### Scenario Definition
+
+| Scenario | NRCS CPS | Description | Key Parameter Changes |
+|----------|----------|-------------|------------------------|
+| Baseline | -- | Current conventional practices | Conventional tillage (STIR ~70), synthetic N (200 kg N ha⁻¹), sprinkler irrigation (540 mm season⁻¹) |
+| Compost | CPS 808 (CA-NRCS ICPS; national CPS 336) | Organic amendment application | 4.7 dry tons ac⁻¹ compost (C:N = 16), replaces synthetic N |
+| Reduced Till | CPS 345 | Reduced soil disturbance | STIR ~20, >30% surface residue maintained |
+| Zero Till | CPS 329 | No mechanical disturbance | STIR ≤ 20, 100% residue retained |
+| Drip Irrigation | CPS 441/449 | Microirrigation system + water management | Sub-canopy drip, 320 mm season⁻¹ (40% reduction from baseline) |
+| Stacked | 808 + 345 + 449 | Combined practices | Compost + reduced till + drip irrigation |
+
+: Scenario parameters based on NRCS conservation practice standards. Simulation period: 2016--2024. Soil depth: 30 cm. {#tbl-scenario-def}
+
+**Simulation period:** 2016--2024. Soil carbon values are end-of-simulation cumulative stocks at 30 cm depth. GHG fluxes (N~2~O, CH~4~) are annual emission rates.
+
+**Model outputs:**
+
+- **TotSoilCarb** -- Total soil organic carbon to 30 cm depth (Mg C ha⁻¹ field density; Gg C county totals)
+- **AGB** -- Aboveground biomass (Mg C ha⁻¹ field density; Gg C county totals)
+- **N~2~O flux** -- Nitrous oxide emissions (kg N~2~O ha⁻¹ yr⁻¹ field density; Gg N~2~O yr⁻¹ county totals)
+- **CH~4~ flux** -- Methane emissions (kg CH~4~ ha⁻¹ yr⁻¹ field density; Gg CH~4~ yr⁻¹ county totals)
