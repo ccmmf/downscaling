@@ -1,6 +1,24 @@
 ## county-level and field-level plots.
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--management_scenarios", type = "character",
+    default = "baseline,compost,reduced_till,zero_till,reduced_irrig_drip,stacked",
+    help = "Comma-separated management scenarios [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+
+run_dir              <- args$run_dir
+data_dir             <- file.path(run_dir, "data")
+model_outdir         <- file.path(run_dir, "output_downscale")
+management_scenarios <- strsplit(args$management_scenarios, ",")[[1]]
+
+source(file.path(here::here(), "R", "ggsave_optimized.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("county and field level plots")
 
 # plotting helpers.

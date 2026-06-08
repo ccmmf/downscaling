@@ -2,7 +2,27 @@
 # writes data/site_covariates.csv for downstream clustering in 020.
 # CRS: EPSG:3310 for spatial joins, 4326 for lat/lon output.
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--n_cores", type = "integer", default = NULL,
+    help = "Number of parallel workers (default: availableCores()-1)")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
+
+run_dir       <- args$run_dir
+data_dir      <- file.path(run_dir, "data")
+raw_data_dir  <- file.path(run_dir, "data_raw")
+prepare_dir   <- file.path(run_dir, "output_prepare")
+ca_albers_crs <- "EPSG:3310"
+
+no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Starting Environmental Covariate Preparation ***")
 
 CRS_ALBERS <- 3310L

@@ -6,10 +6,23 @@
 #   - state_summaries.csv: State-level totals by scenario
 #   - aggregation_metadata.json: Metadata for aggregated outputs
 
-PEcAn.logger::logger.info("***Starting Aggregation to County and State Level***")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
 
-# Load configuration and paths
-source("000-config.R")
+run_dir      <- args$run_dir
+model_outdir <- file.path(run_dir, "output_downscale")
+PRODUCTION   <- args$mode == "production"
+DEMO         <- args$mode == "demo"
+
+options(tibble.width = Inf, readr.show_col_types = FALSE)
+PEcAn.logger::logger.info("***Starting Aggregation to County and State Level***")
 
 # ---- Helper function for writing outputs ----
 write_output <- function(data, path_base, description = "data") {

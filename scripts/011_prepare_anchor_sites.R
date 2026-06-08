@@ -1,9 +1,26 @@
 library(ggplot2)
-source("000-config.R")
-PEcAn.logger::logger.info("***Preparing anchor sites for California CADWR fields***")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+
+run_dir       <- args$run_dir
+data_dir      <- file.path(run_dir, "data")
+raw_data_dir  <- file.path(run_dir, "data_raw")
+prepare_dir   <- file.path(run_dir, "output_prepare")
+ca_albers_crs <- "EPSG:3310"
+
+source(file.path(here::here(), "R", "ggsave_optimized.R"))
+source(file.path(here::here(), "R", "match_anchor_sites.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
+PEcAn.logger::logger.info("***Preparing anchor sites for California LandIQ fields***")
 
 ## Anchor Sites
-anchor_sites <- readr::read_csv("data_raw/anchor_site_locations.csv")
+anchor_sites <- readr::read_csv(file.path(raw_data_dir, "anchor_site_locations.csv"))
 anchor_sites_pts <- anchor_sites |>
   sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
   sf::st_transform(crs = ca_albers_crs)
@@ -83,4 +100,4 @@ anchor_sites_with_ids |>
   sf::st_drop_geometry() |>
   dplyr::select(site_id, lat, lon, external_site_id, site_name, crops, pft) |>
   dplyr::mutate(across(c(lat, lon), ~ round(.x, 5))) |>
-  readr::write_csv("data/anchor_sites.csv")
+  readr::write_csv(file.path(prepare_dir, "anchor_sites.csv"))

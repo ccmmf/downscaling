@@ -1,0 +1,19 @@
+# magic-downscaling user configuration
+#
+# Pass this file to the CLI with: magic-downscaling --config example_user_config.yaml <command>
+
+global:
+  # Path to the run directory. Same value used for magic-ensemble.
+  # Relative paths are resolved from the directory where you invoke the CLI.
+  run_dir: "/path/to/run_dir"
+
+downscaling:
+  # Run mode: production, dev, or demo
+  #   production  Full dataset (pool=10000, n=1000, all 4 outputs, all 6 scenarios)
+  #   dev         Reduced dataset for development (pool=500, n=100, TotSoilCarb only)
+  #   demo        Same as dev, baseline scenario only
+  mode: production
+
+  # Number of parallel workers for applicable steps.
+  # Defaults to availableCores() - 1 if not set.
+  # n_cores: 4

@@ -14,7 +14,21 @@
 ##   woody_cover  -> f_{woody}
 ##   annual_cover -> f_{annual}
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+
+run_dir     <- args$run_dir
+extract_dir <- file.path(run_dir, "output_extract")
+model_outdir <- extract_dir
+
+source(file.path(here::here(), "R", "combine_mixed_crops.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 
 # Skip: multi-PFT aggregation is not applicable for single-PFT management
 # scenarios. We hard-exit so the master orchestrator sees exit code 0 and

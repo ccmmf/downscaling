@@ -1,0 +1,165 @@
+# Downscaling workflow manifest: fixed paths, step I/O, and domain parameters.
+# CLI loads this automatically; do not pass via --config.
+#
+# Paths: All entries under 'paths' are inside the run directory.
+# Keys are referenced by name in steps (inputs/outputs). At runtime the CLI
+# resolves each path as run_dir + "/" + value.
+#
+# Steps: Each command has a list of step objects. Each step has:
+#   name:        Short identifier for this step
+#   script:      Script path (relative to downscaling repo root)
+#   r_libraries: R packages to check before running this script
+#   inputs:      List of path keys this script reads
+#   outputs:     List of path keys this script creates or writes
+
+steps:
+  prepare:
+    - name: prepare_covariates
+      script: "scripts/010_prepare_covariates.R"
+      r_libraries: [terra, sf, tidyverse, future, furrr, caladaptr]
+      inputs:  [raw_data_dir]
+      outputs: [covariates_csv]
+
+    - name: prepare_anchor_sites
+      script: "scripts/011_prepare_anchor_sites.R"
+      r_libraries: [sf, tidyverse, caladaptr]
+      inputs:  [raw_data_dir]
+      outputs: [anchor_sites_csv]
+
+    - name: cluster_sites
+      script: "scripts/020_cluster_sites.R"
+      r_libraries: [tidyverse, sf, furrr, purrr]
+      inputs:  [covariates_csv, anchor_sites_csv]
+      outputs: [clustered_sites_csv]
+
+    - name: subsample_design_points
+      script: "scripts/021_subsample_design_points.R"
+      r_libraries: [tidyverse, sf]
+      inputs:  [clustered_sites_csv, covariates_csv, anchor_sites_csv]
+      outputs: [design_points_csv]
+
+    - name: validate_design_points
+      script: "scripts/022_validate_design_points.R"
+      r_libraries: [tidyverse, ggplot2, sf]
+      inputs:  [design_points_csv, covariates_csv, anchor_sites_csv]
+      outputs: [prepare_dir]
+
+  extract:
+    - name: extract_sipnet_output
+      script: "scripts/030_extract_sipnet_output.R"
+      r_libraries: [PEcAn.utils, PEcAn.settings, furrr, tidyverse]
+      inputs:  [model_outdir]
+      outputs: [ensemble_output_csv]
+
+    - name: aggregate_sipnet_output
+      script: "scripts/031_aggregate_sipnet_output.R"
+      r_libraries: [tidyverse]
+      inputs:  [ensemble_output_csv]
+      outputs: [aggregated_output_csv]
+
+  downscale:
+    - name: downscale
+      script: "scripts/040_downscale.R"
+      r_libraries: [PEcAnAssimSequential, tidyverse, sf, ranger]
+      inputs:  [aggregated_output_csv, ca_fields_gpkg, covariates_csv]
+      outputs: [downscaled_csv]
+
+    - name: aggregate_to_county
+      script: "scripts/041_aggregate_to_county.R"
+      r_libraries: [tidyverse]
+      inputs:  [downscaled_csv, ca_fields_gpkg]
+      outputs: [county_totals_csv]
+
+  analyze:
+    - name: downscale_analysis
+      script: "scripts/042_downscale_analysis.R"
+      r_libraries: [tidyverse, ggplot2]
+      inputs:  [downscaled_csv, county_totals_csv]
+      outputs: [analyze_dir]
+
+    - name: county_level_plots
+      script: "scripts/043_county_level_plots.R"
+      r_libraries: [tidyverse, ggplot2, sf]
+      inputs:  [county_totals_csv]
+      outputs: [analyze_dir]
+
+# Path definitions: all relative to run_dir.
+# Keys are referenced by name in steps (inputs/outputs).
+# CLI resolves each as run_dir + "/" + value at runtime.
+paths:
+  # --- Read-only inputs (staged before magic-downscaling runs) ---
+  raw_data_dir:    "data_raw"
+  data_dir:        "data"
+  ca_fields_gpkg:  "data/ca_fields.gpkg"
+  model_outdir:    "output"
+
+  # --- cache ---
+  cache_dir:       "cache"
+
+  # --- output_prepare/ outputs (scripts 010-021) ---
+  prepare_dir:          "output_prepare"
+  covariates_csv:       "output_prepare/site_covariates.csv"
+  anchor_sites_csv:     "output_prepare/anchor_sites.csv"
+  clustered_sites_csv:  "output_prepare/clustered_sites.csv"
+  design_points_csv:    "output_prepare/design_points.csv"
+
+  # --- output_extract/ outputs (scripts 030-031) ---
+  extract_dir:           "output_extract"
+  ensemble_output_csv:   "output_extract/ensemble_output.csv"
+  aggregated_output_csv: "output_extract/aggregated_sipnet_output.csv"
+
+  # --- output_downscale/ outputs (scripts 040-041) ---
+  downscale_dir:     "output_downscale"
+  downscaled_csv:    "output_downscale/downscaled_output.csv"
+  county_totals_csv: "output_downscale/county_totals.csv"
+
+  # --- output_analyze/ outputs (scripts 042-043) ---
+  analyze_dir:   "output_analyze"
+
+# Fixed domain values. Not user-overridable.
+fixed_values:
+  seed: 42
+  ca_albers_crs: "EPSG:3310"
+  outputs_to_extract:
+    - TotSoilCarb
+    - AGB
+    - N2O_flux
+    - CH4_flux
+  management_scenarios:
+    - baseline
+    - compost
+    - reduced_till
+    - zero_till
+    - reduced_irrig_drip
+    - stacked
+
+# Mode-specific parameter overrides.
+# Where a key is absent, fixed_values is the fallback.
+mode_params:
+  production:
+    pool_size: 10000
+    n_design: 1000
+    pool_floors:
+      "annual crop": 700
+      "woody perennial crop": 300
+    subsample_threshold: 20000
+  dev:
+    pool_size: 500
+    n_design: 100
+    pool_floors:
+      "annual crop": 35
+      "woody perennial crop": 15
+    subsample_threshold: 5000
+    outputs_to_extract:
+      - TotSoilCarb
+  demo:
+    pool_size: 500
+    n_design: 100
+    pool_floors:
+      "annual crop": 35
+      "woody perennial crop": 15
+    subsample_threshold: 5000
+    outputs_to_extract:
+      - TotSoilCarb
+    management_scenarios:
+      - baseline

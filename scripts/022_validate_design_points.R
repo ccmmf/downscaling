@@ -1,5 +1,21 @@
 library(ggplot2)
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
+
+run_dir     <- args$run_dir
+data_dir    <- file.path(run_dir, "data")
+cache_dir   <- file.path(run_dir, "cache")
+prepare_dir <- file.path(run_dir, "output_prepare")
+
+source(file.path(here::here(), "R", "ggsave_optimized.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Design Point Validation ***")
 
 # tabular KPIs + diagnostic figures. produces:
@@ -18,19 +34,19 @@ if (!dir.exists(reports_dir)) dir.create(reports_dir, recursive = TRUE)
 
 ##inputs
 design_points <- readr::read_csv(
-  here::here("data", "design_points.csv"),
+  file.path(prepare_dir, "design_points.csv"),
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 site_covariates <- readr::read_csv(
-  file.path(data_dir, "site_covariates.csv"),
+  file.path(prepare_dir, "site_covariates.csv"),
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 anchor_sites <- readr::read_csv(
-  here::here("data", "anchor_sites.csv"),
+  file.path(prepare_dir, "anchor_sites.csv"),
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))

@@ -1,5 +1,20 @@
 ## Downscale analysis using predictions and covariates
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+
+run_dir      <- args$run_dir
+data_dir     <- file.path(run_dir, "data")
+prepare_dir  <- file.path(run_dir, "output_prepare")
+model_outdir <- file.path(run_dir, "output_downscale")
+cache_dir    <- file.path(run_dir, "cache")
+
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 
 # Variable Importance (VI)
 
@@ -23,7 +38,7 @@ downscale_preds <- vroom::vroom(
 meta <- jsonlite::read_json(meta_json, simplifyVector = TRUE)
 ensemble_ids <- if (!is.null(meta$ensembles)) meta$ensembles else sort(unique(downscale_preds$ensemble))
 
-covariates_csv <- file.path(data_dir, "site_covariates.csv")
+covariates_csv <- file.path(prepare_dir, "site_covariates.csv")
 
 covariates <- readr::read_csv(covariates_csv) |>
   dplyr::select(site_id, where(is.numeric), -climregion_id)

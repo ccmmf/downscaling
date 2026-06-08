@@ -1,0 +1,261 @@
+#!/usr/bin/env bash
+# magic-downscaling: CLI for the CCMMF downscaling workflow.
+#
+# Reads a user YAML config and the workflow manifest, resolves all
+# configuration, and invokes numbered R scripts with explicit flags.
+# No environment variables are used to pass config to scripts.
+#
+# Requires: yq (mikefarah/yq v4+), Rscript
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+MANIFEST="${REPO_ROOT}/downscaling_manifest.yaml"
+INVOCATION_CWD="$(pwd)"
+
+# --- Usage ---
+usage() {
+  cat <<'EOF'
+Usage: magic-downscaling [--config <path>] [--verbose] <command>
+
+Commands:
+  prepare    Extract covariates, anchor sites, cluster design points
+             Run before magic-ensemble.
+  extract    Read SIPNET outputs, reshape to EFI format, aggregate scenarios.
+             Run after magic-ensemble run-ensembles.
+  downscale  Random Forest downscaling to all LandIQ fields; aggregate to county.
+  analyze    Diagnostic summaries, uncertainty quantification, plots.
+
+Options:
+  --config <path>   Path to user YAML config file (required for all commands)
+  --verbose         Echo each Rscript invocation before running
+  -h, --help        Print this help and exit
+
+User config keys:
+  run_dir    Working directory for this run (required). Relative to invocation
+             CWD or absolute. Same value as used for magic-ensemble.
+  mode       Run mode: production (default), dev, or demo
+  n_cores    Parallel workers for applicable steps (default: availableCores()-1)
+EOF
+}
+
+# --- Dependency check ---
+require_yq() {
+  if ! command -v yq &>/dev/null; then
+    echo "magic-downscaling: yq (mikefarah/yq v4+) is required but not found on PATH." >&2
+    exit 1
+  fi
+  if ! yq eval 'null' /dev/null &>/dev/null; then
+    echo "magic-downscaling: mikefarah/yq (v4+) is required. The installed yq may be a different variant." >&2
+    exit 1
+  fi
+}
+
+# --- Argument parsing ---
+COMMAND=""
+CONFIG_FILE=""
+VERBOSE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --config)
+      [[ $# -lt 2 ]] && { echo "magic-downscaling: --config requires a PATH." >&2; usage >&2; exit 1; }
+      CONFIG_FILE="$2"; shift 2 ;;
+    --verbose) VERBOSE=1; shift ;;
+    prepare|extract|downscale|analyze) COMMAND="$1"; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "magic-downscaling: Unknown option: $1" >&2; usage >&2; exit 1 ;;
+  esac
+done
+
+if [[ -z "$COMMAND" ]]; then
+  echo "magic-downscaling: a command is required." >&2; usage >&2; exit 1
+fi
+if [[ -z "$CONFIG_FILE" ]]; then
+  echo "magic-downscaling: --config <path> is required." >&2; usage >&2; exit 1
+fi
+if [[ ! -f "$CONFIG_FILE" ]]; then
+  echo "magic-downscaling: Config file not found: $CONFIG_FILE" >&2; exit 1
+fi
+if [[ ! -f "$MANIFEST" ]]; then
+  echo "magic-downscaling: Manifest not found: $MANIFEST" >&2; exit 1
+fi
+
+require_yq
+
+# --- Config helpers ---
+
+# Read a scalar from user config; fall back to default if absent or null.
+get_val() {
+  local key="$1" default="$2"
+  local v
+  v=$(yq eval ".${key}" "$CONFIG_FILE" 2>/dev/null)
+  if [[ -n "$v" && "$v" != "null" ]]; then echo "$v"; else echo "$default"; fi
+}
+
+# Resolve a list from mode_params with fallback to fixed_values; output as comma-separated string.
+get_list() {
+  local key="$1"
+  yq eval "(.mode_params.${mode}.${key} // .fixed_values.${key}) | join(\",\")" "$MANIFEST" 2>/dev/null
+}
+
+# Read a scalar from mode_params (all modes define all scalar keys).
+get_mode_scalar() {
+  local key="$1"
+  yq eval ".mode_params.${mode}.${key}" "$MANIFEST" 2>/dev/null
+}
+
+# --- Load user config ---
+run_dir=$(get_val "global.run_dir" "")
+mode=$(get_val "downscaling.mode" "production")
+n_cores=$(get_val "downscaling.n_cores" "")
+
+if [[ -z "$run_dir" || "$run_dir" == "null" ]]; then
+  echo "magic-downscaling: run_dir is required in config: $CONFIG_FILE" >&2; exit 1
+fi
+case "$mode" in
+  production|dev|demo) ;;
+  *) echo "magic-downscaling: mode must be one of: production, dev, demo" >&2; exit 1 ;;
+esac
+
+# Resolve run_dir to absolute
+if [[ "$run_dir" != /* ]]; then
+  run_dir="${INVOCATION_CWD}/${run_dir}"
+fi
+run_dir="${run_dir%/}"
+
+# --- Resolve mode-specific parameters from manifest ---
+pool_size=$(get_mode_scalar "pool_size")
+n_design=$(get_mode_scalar "n_design")
+subsample_threshold=$(get_mode_scalar "subsample_threshold")
+
+# pool_floors as "key=value,key=value" string for R parsing
+pool_floors=$(yq eval \
+  ".mode_params.${mode}.pool_floors | to_entries | map(.key + \"=\" + (.value | tostring)) | join(\",\")" \
+  "$MANIFEST" 2>/dev/null)
+
+# Comma-separated list values; mode overrides fall back to fixed_values
+outputs_to_extract=$(get_list "outputs_to_extract")
+management_scenarios=$(get_list "management_scenarios")
+
+# --- Settings banner ---
+echo "magic-downscaling: command              : $COMMAND"
+echo "magic-downscaling: run_dir              : $run_dir"
+echo "magic-downscaling: mode                 : $mode"
+echo "magic-downscaling: outputs_to_extract   : $outputs_to_extract"
+echo "magic-downscaling: management_scenarios : $management_scenarios"
+if [[ -n "$n_cores" && "$n_cores" != "null" ]]; then
+  echo "magic-downscaling: n_cores              : $n_cores"
+fi
+
+# --- Script runner ---
+run_script() {
+  local script="$1"; shift
+  local script_path="${REPO_ROOT}/${script}"
+  if [[ ! -f "$script_path" ]]; then
+    echo "magic-downscaling: Script not found: $script_path" >&2; exit 1
+  fi
+  if [[ $VERBOSE -eq 1 ]]; then
+    echo "(cd \"${REPO_ROOT}\" && Rscript \"${script_path}\" $*)" >&2
+  fi
+  (cd "$REPO_ROOT" && Rscript "$script_path" "$@")
+}
+
+# --- Command handlers ---
+
+run_prepare() {
+  mkdir -p "${run_dir}/output_prepare"
+
+  echo "magic-downscaling: prepare step 1 of 5: scripts/010_prepare_covariates.R"
+  run_script "scripts/010_prepare_covariates.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    ${n_cores:+--n_cores "$n_cores"}
+  echo "magic-downscaling: prepare step 1 completed"
+
+  echo "magic-downscaling: prepare step 2 of 5: scripts/011_prepare_anchor_sites.R"
+  run_script "scripts/011_prepare_anchor_sites.R" \
+    --run_dir "$run_dir" --mode "$mode"
+  echo "magic-downscaling: prepare step 2 completed"
+
+  echo "magic-downscaling: prepare step 3 of 5: scripts/020_cluster_sites.R"
+  run_script "scripts/020_cluster_sites.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    --pool_size "$pool_size" \
+    --pool_floors "$pool_floors" \
+    --subsample_threshold "$subsample_threshold"
+  echo "magic-downscaling: prepare step 3 completed"
+
+  echo "magic-downscaling: prepare step 4 of 5: scripts/021_subsample_design_points.R"
+  run_script "scripts/021_subsample_design_points.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    --n_design "$n_design"
+  echo "magic-downscaling: prepare step 4 completed"
+
+  echo "magic-downscaling: prepare step 5 of 5: scripts/022_validate_design_points.R"
+  run_script "scripts/022_validate_design_points.R" \
+    --run_dir "$run_dir" --mode "$mode"
+  echo "magic-downscaling: prepare step 5 completed"
+
+  echo "magic-downscaling: prepare finished"
+}
+
+run_extract() {
+  mkdir -p "${run_dir}/output_extract"
+
+  echo "magic-downscaling: extract step 1 of 2: scripts/030_extract_sipnet_output.R"
+  run_script "scripts/030_extract_sipnet_output.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    --outputs_to_extract "$outputs_to_extract" \
+    --management_scenarios "$management_scenarios"
+  echo "magic-downscaling: extract step 1 completed"
+
+  echo "magic-downscaling: extract step 2 of 2: scripts/031_aggregate_sipnet_output.R"
+  run_script "scripts/031_aggregate_sipnet_output.R" \
+    --run_dir "$run_dir" --mode "$mode"
+  echo "magic-downscaling: extract step 2 completed"
+
+  echo "magic-downscaling: extract finished"
+}
+
+run_downscale() {
+  mkdir -p "${run_dir}/output_downscale"
+
+  echo "magic-downscaling: downscale step 1 of 2: scripts/040_downscale.R"
+  run_script "scripts/040_downscale.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    --outputs_to_extract "$outputs_to_extract"
+  echo "magic-downscaling: downscale step 1 completed"
+
+  echo "magic-downscaling: downscale step 2 of 2: scripts/041_aggregate_to_county.R"
+  run_script "scripts/041_aggregate_to_county.R" \
+    --run_dir "$run_dir" --mode "$mode"
+  echo "magic-downscaling: downscale step 2 completed"
+
+  echo "magic-downscaling: downscale finished"
+}
+
+run_analyze() {
+  mkdir -p "${run_dir}/output_analyze"
+
+  echo "magic-downscaling: analyze step 1 of 2: scripts/042_downscale_analysis.R"
+  run_script "scripts/042_downscale_analysis.R" \
+    --run_dir "$run_dir" --mode "$mode"
+  echo "magic-downscaling: analyze step 1 completed"
+
+  echo "magic-downscaling: analyze step 2 of 2: scripts/043_county_level_plots.R"
+  run_script "scripts/043_county_level_plots.R" \
+    --run_dir "$run_dir" --mode "$mode" \
+    --management_scenarios "$management_scenarios"
+  echo "magic-downscaling: analyze step 2 completed"
+
+  echo "magic-downscaling: analyze finished"
+}
+
+# --- Main dispatch ---
+case "$COMMAND" in
+  prepare)   run_prepare ;;
+  extract)   run_extract ;;
+  downscale) run_downscale ;;
+  analyze)   run_analyze ;;
+esac

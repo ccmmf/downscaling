@@ -10,11 +10,38 @@
 #   PEcAn.logger::logger.setQuitOnSevere(TRUE)
 
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--outputs_to_extract", type = "character",
+    default = "TotSoilCarb,AGB,N2O_flux,CH4_flux",
+    help = "Comma-separated variables to downscale [default: %default]")
+)))
+if (is.null(args$run_dir)) stop("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
+
+run_dir            <- args$run_dir
+data_dir           <- file.path(run_dir, "data")
+prepare_dir        <- file.path(run_dir, "output_prepare")
+pecan_outdir       <- file.path(run_dir, "output")
+extract_dir        <- file.path(run_dir, "output_extract")
+model_outdir       <- file.path(run_dir, "output_downscale")
+cache_dir          <- file.path(run_dir, "cache")
+PRODUCTION         <- args$mode == "production"
+outputs_to_extract <- strsplit(args$outputs_to_extract, ",")[[1]]
+
+source(file.path(here::here(), "R", "helper.R"))
+no_cores <- max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+set.seed(42)
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 
 # Load ensemble output
-ensemble_csv <- file.path(model_outdir, "ensemble_output.csv")
+ensemble_csv <- file.path(extract_dir, "ensemble_output.csv")
 timer_read_ensemble <- step_timer()
 ensemble_data <- readr::read_csv(ensemble_csv) |>
   dplyr::rename(
@@ -93,7 +120,7 @@ if (length(pfts) == 0) {
 }
 
 # Load site covariates
-covariates_csv <- file.path(data_dir, "site_covariates.csv")
+covariates_csv <- file.path(prepare_dir, "site_covariates.csv")
 timer_read_cov <- step_timer()
 covariates <- readr::read_csv(covariates_csv) |>
   dplyr::select(
