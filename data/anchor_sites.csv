@@ -5,7 +5,7 @@ site_id,lat,lon,external_site_id,site_name,crops,pft
 169473,36.23738,-119.92755,US-PSH,San Joaquin Valley Pistachio High Salinity,Pistachio,woody perennial crop
 557284,36.82778,-120.13963,US-PSL,San Joaquin Valley Pistachio Low Salinity,Pistachio,woody perennial crop
 328163,38.09936,-121.50154,US-Bi1,Bouldin Island Alfalfa,Alfalfa,herbaceous crop
-565118,38.10958,-121.53613,US-Bi2,Bouldin Island Corn,Corn,herbaceous crop
+565118,38.10958,-121.53613,US-Bi2,Bouldin Island Corn/Sorghum,"Corn, Sorghum",herbaceous crop
 522375,32.81281,-115.44207,US-Dea,UC Desert REC Alfalfa,Alfalfa,herbaceous crop
 205678,38.13153,-121.55174,US-DS1,Staten Corn 1,Corn,herbaceous crop
 592578,38.13799,-121.51401,US-DS2,Staten Corn 2,Corn,herbaceous crop
@@ -20,7 +20,9 @@ site_id,lat,lon,external_site_id,site_name,crops,pft
 296871,38.54294,-121.87237,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
 16073,38.50244,-121.97646,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
 415399,33.96684,-117.34049,ucr-citrus,UC Riverside Citrus Research,Citrus variety collection,woody perennial crop
+589918,36.62289,-121.54925,salinas_socs,USDA-ARS Salinas Organic Cropping Systems,"Romaine lettuce, broccoli",herbaceous crop
+514070,37.62903,-121.08781,modesto_almond_usda,USDA-ARS Modesto almond fertigation trial,Almond,woody perennial crop
 535358,39.68222,-122.0026,US-RGO,Glenn County Organic Rice,Organic rice,herbaceous crop
 589581,38.09222,-121.64036,US-Tw2,Twitchell Corn,Corn,herbaceous crop
-590073,38.10809,-121.65527,US-Twt,Twitchell Island,NA,non crop
+590073,38.10809,-121.65527,US-Twt,Twitchell Island Rice,Rice,herbaceous crop
 452888,36.34204,-120.1055,west-side,West Side Research Center,Row crops including cotton,herbaceous crop
