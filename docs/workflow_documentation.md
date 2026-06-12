@@ -18,9 +18,19 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 
 ## Terminology
 
-- **Design Points**: Fields chosen via stratified random sampling using k-means clustering on environmental data layers across California crop fields.
-- **Crop Fields**: All croplands in the LandIQ dataset.
-- **Anchor Sites:** Sites used as ground truth for calibration and validation, including UC research stations and Ameriflux sites.
+- **Anchor Sites**: Sites with long observation records used as ground truth for calibration and validation. UC research stations and Ameriflux towers. Always force included in the design so they end up in SIPNET.
+- **Clustered Sites**: The 10,000 row pool that `020_cluster_sites.R` writes. One representative per cluster (the field closest to the cluster center in scaled feature space). Frozen artifact, decoupled from the SIPNET compute budget.
+- **Crop Fields**: All cropland parcels in the harmonized LandIQ v4.1 dataset (~550,000 rows after NAs in the cluster features are dropped).
+- **Design Points**: The 1,000 row SIPNET runnable subset that `021_subsample_design_points.R` slices out of the 10k pool via farthest point sampling. `n_design` in `000-config.R` controls the size.
+- **DOY**: Day of year (1 to 365).
+- **EOF**: Empirical Orthogonal Function. PCA on the field by crop class by year one hot matrix from LandIQ v4.1. Compresses about 8 years of crop rotation history into 10 continuous features (`eof_1` through `eof_10`).
+- **FPS**: Farthest Point Sampling, also called greedy maximin. Produces a nested ordering so any prefix is a valid space filling subset. Used in 021 to slice the 10k pool down to the 1k design (Pronzato and Müller 2012).
+- **FSCS**: Feature Space Coverage Sampling. The general approach 020 uses: cluster the predictors, take one representative per cluster, fit the downstream model on those representatives (Wadoux, Brus and Heuvelink 2019).
+- **k-means++**: k-means initialization that scatters the initial centers across the feature space, weighted by squared distance from already chosen centers. Used as the `initializer` argument in `ClusterR::KMeans_rcpp` (Arthur and Vassilvitskii 2007).
+- **KS**: Kolmogorov-Smirnov statistic. Per feature comparison of the population CDF against the design CDF in the validation report.
+- **MSSD**: Mean Squared Shortest Distance. For each population field, the squared distance to its nearest design point in scaled feature space. Lower means the design covers the population better (Brus 2019).
+- **NDTI**: Normalized Difference Tillage Index. Satellite proxy for tillage events. Confounded by soil moisture and residual green cover (Zheng et al. 2012).
+- **PFT**: Plant Functional Type. MAGiC uses two: `annual crop` and `woody perennial crop`. Both 020's clustering and 040's downscaling Random Forest are stratified by PFT.
 
 ## This Repository Contains Two Workflows That Will Be Split
 
@@ -149,20 +159,25 @@ Rscript scripts/021_subsample_design_points.R
 Rscript scripts/022_validate_design_points.R
 ```
 
-Two-stage selection: cluster all parcels into a 10k pool, then trim to a 1k design via farthest-point sampling.
+Design point selection runs in two stages stratified by plant functional type (annual crop and woody perennial crop), and follows the Feature Space Coverage Sampling approach for random forest downscaling (Wadoux, Brus and Heuvelink 2019).
 
-- Cluster all parcels per PFT using k-means++ on scaled features (climate, soil, topo, EOF cropping history, phenology, management). Pick one representative per cluster as the pool. Anchor sites are force-included.
-- Apply greedy farthest-point sampling on the pool to pick the most diverse 1,000 design points for SIPNET runs.
-- Validate the design against the population (PFT allocation, MSSD coverage, cluster balance, anchor recovery, monitoring and climate region coverage) and produce diagnostic figures.
+**Clustering (020).** Per PFT, scale the 25 cluster features (climate, soil, topography, EOF cropping history, phenology, management), fit Lloyd's k-means with k-means++ initialization (Arthur and Vassilvitskii 2007) on a random subsample to recover stable centers, then assign every population field to its nearest center. The cluster representative is the field closest to cluster center in scaled feature space. The result is a frozen pool of 10,000 cluster representatives allocated proportional to PFT area, with anchor sites swapped into their cluster slots so they are guaranteed to appear in the design.
+
+**Subsampling (021).** Apply greedy farthest point sampling (Pronzato and Muller 2012) to clustered pool to produce a nested ordering. Any prefix of that ordering is a valid maximin space filling subset. The size of the SIPNET runnable subset is controlled by `n_design` in `000-config.R` (default 1,000).
+
+**Validation (022).** Validates the design against the population using per feature CDFs with the Kolmogorov-Smirnov statistic, PCA envelope coverage, nearest neighbor distance distribution, cluster size balance, cluster feature variable importance, and spatial coverage. Writes a quarto report and diagnostic figures.
 
 **Inputs:**
+
 - `data/site_covariates.csv`
 - `data/anchor_sites.csv`
 
 **Outputs:**
-- `data/clustered_sites.csv` (10k pool, frozen artifact)
-- `data/design_points.csv` (1k design)
-- `reports/design_point_validation.md` and `figures/*` for QA
+
+- `data/clustered_sites.csv` (10,000 row pool)
+- `data/design_points.csv` (1,000 row design)
+- `cache/clustering_pool.rds`, `cache/fps_order.rds`
+- `reports/design_point_validation.qmd` and `figures/`
 
 ### 3. SIPNET Model Runs
 
