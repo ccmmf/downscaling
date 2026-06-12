@@ -3,7 +3,7 @@ source("000-config.R")
 PEcAn.logger::logger.info("*** Design Point Validation ***")
 
 # tabular KPIs + diagnostic figures. produces:
-# reports/design_point_validation.md
+# reports/design_point_validation.qmd
 # figures/cluster_variable_importance.svg
 # figures/cdf_overlay_<pft>.webp
 # figures/pca_scatter_<pft>.webp
@@ -467,14 +467,19 @@ ggsave_optimized("figures/design_points.webp",
 # # davies bouldin index
 # clusterSim::index.DB(d, clusters)$DB
 
-##write markdown report
+##write quarto report
 report_dir <- here::here("reports")
 if (!dir.exists(report_dir)) dir.create(report_dir, recursive = TRUE)
 
 report_lines <- c(
-  "# Design Point Validation",
+  "---",
+  "title: \"Design Point Validation\"",
+  "date: today",
+  "format: html",
+  "---",
   "",
   paste0("Generated: ", format(Sys.time())),
+  "",
   paste0("Total design points: ", nrow(design_points)),
   paste0("Seed: ", clustering$seed),
   paste0("Features: ", paste(clustering$feature_cols, collapse = ", ")),
@@ -545,6 +550,6 @@ for (pft_name in names(clustering$by_pft)) {
   )
 }
 
-report_path <- file.path(report_dir, "design_point_validation.md")
+report_path <- file.path(report_dir, "design_point_validation.qmd")
 writeLines(report_lines, report_path)
-PEcAn.logger::logger.info("report written: ", report_path)
+PEcAn.logger::logger.info("quarto report written: ", report_path)
