@@ -60,7 +60,11 @@ PEcAn.logger::logger.info(
 # anchors prepended to each PFT's order so they're in every non empty subset
 fps_cache_path <- file.path(cache_dir, "fps_order.rds")
 
-if (file.exists(fps_cache_path)) {
+# rebuild if clustering pool is newer than cached order (make style)
+fps_fresh <- file.exists(fps_cache_path) &&
+  file.mtime(fps_cache_path) > file.mtime(clustering_path)
+
+if (fps_fresh) {
   fps_order <- readRDS(fps_cache_path)
   PEcAn.logger::logger.info("loaded FPS order from cache")
 } else {
