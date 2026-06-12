@@ -896,7 +896,7 @@
     },
     "PEcAn.data.land": {
       "Package": "PEcAn.data.land",
-      "Version": "1.8.0.9000",
+      "Version": "1.9.0.9000",
       "Source": "Git",
       "Type": "Package",
       "Title": "PEcAn Functions Used for Ecological Forecasts and Reanalysis",
