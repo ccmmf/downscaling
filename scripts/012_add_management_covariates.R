@@ -23,21 +23,6 @@ PEcAn.logger::logger.info("*** Adding Management Covariates ***")
 #   2018 was ~48% of irrigated acres (CA DWR) so this is a real limit
 #   of the monitoring product, not of our ingest.
 
-list_shards <- function(product) {
-  d <- file.path(management_dir, product)
-  if (!dir.exists(d)) {
-    PEcAn.logger::logger.severe("management product dir not found: ", d)
-  }
-  list.files(d, pattern = "\\.parq(uet)?$", full.names = TRUE)
-}
-
-# open all parquet shards under a product as one arrow dataset.
-# lets dplyr filter/select push into the parquet scan; no full bind.
-# pass file list (not the dir) because tillage has json sidecars.
-open_product <- function(product) {
-  arrow::open_dataset(list_shards(product))
-}
-
 site_covariates <- readr::read_csv(
   file.path(data_dir, "site_covariates.csv"),
   show_col_types = FALSE
@@ -62,24 +47,39 @@ years_covered <- c(2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)
 # years. parcels with no detected event get 0 for both intensity and freq.
 # frequency is introduced feature (ensemble pipeline only uses per-
 # event intensity); it carries signal because a parcel tilled 1 year in 7
-# is agronomically different from one tilled 6 of 7
+# is agronomically different from one tilled 6 of 7.
+# isnan guard is load bearing: GREATEST/LEAST don't propagate NaN.
 PEcAn.logger::logger.info("tillage: fetch + aggregate")
-tillage_mgmt <- open_product("tillage") |>
-  dplyr::filter(year %in% years_covered) |>
-  dplyr::select(site_id, year, ndti_pct_change) |>
-  dplyr::collect() |>
-  dplyr::mutate(site_id = as.character(site_id)) |>
-  dplyr::filter(site_id %in% ids) |>
-  dplyr::transmute(
-    site_id,
-    year,
-    ndti_rank = pmax(0, pmin(1, ndti_pct_change / 100))
-  ) |>
-  dplyr::summarise(
-    tillage_rank = mean(ndti_rank, na.rm = TRUE),
-    tillage_freq = dplyr::n_distinct(year) / length(years_covered),
-    .by = site_id
+till_dbdir <- file.path(Sys.getenv("TMPDIR", "/tmp"), paste0("till_", Sys.getpid(), ".duckdb"))
+till_conn <- DBI::dbConnect(duckdb::duckdb(dbdir = till_dbdir))
+on.exit({
+  DBI::dbDisconnect(till_conn, shutdown = TRUE)
+  unlink(till_dbdir)
+}, add = TRUE)
+DBI::dbWriteTable(till_conn, "wanted_ids",
+                  data.frame(site_id_int = as.integer(ids)),
+                  temporary = TRUE)
+till_dir <- file.path(management_dir, "tillage")
+tillage_mgmt <- DBI::dbGetQuery(till_conn, sprintf("
+  WITH src AS (
+    SELECT CAST(site_id AS BIGINT) AS site_id_int,
+           year,
+           CASE WHEN ndti_pct_change IS NULL OR isnan(ndti_pct_change) THEN NULL
+                ELSE GREATEST(0.0, LEAST(1.0, CAST(ndti_pct_change AS DOUBLE) / 100.0))
+           END AS ndti_rank
+    FROM read_parquet('%s/*.parquet')
+    WHERE year IN (%s)
+  ),
+  filtered AS (
+    SELECT s.* FROM src s JOIN wanted_ids w USING (site_id_int)
   )
+  SELECT
+    CAST(site_id_int AS VARCHAR) AS site_id,
+    AVG(ndti_rank) AS tillage_rank,
+    CAST(COUNT(DISTINCT year) AS DOUBLE) / %d.0 AS tillage_freq
+  FROM filtered
+  GROUP BY site_id_int
+", till_dir, paste(years_covered, collapse = ", "), length(years_covered)))
 
 ##phenology
 # DOY mean and SD. SD captures interannual stress and management signal that
