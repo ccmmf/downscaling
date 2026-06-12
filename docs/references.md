@@ -32,3 +32,21 @@ Sacks, William J., David S. Schimel, Russell K. Monson, and Bobby H. Braswell. 2
 **Random Forest**
 
 Liaw, Andy, and Matthew Wiener. 2002. “Classification and Regression by randomForest.” R News 2 (3): 18–22. https://CRAN.R-project.org/doc/Rnews/.
+
+**Feature Space Coverage Sampling**
+
+Wadoux, Alexandre M. J-C., Dick J. Brus, and Gerard B. M. Heuvelink. 2019. “Sampling Design Optimization for Soil Mapping with Random Forest.” Geoderma 355: 113913. https://doi.org/10.1016/j.geoderma.2019.113913
+
+Brus, Dick J. 2019. “Sampling for Digital Soil Mapping: A Tutorial Supported by R Scripts.” Geoderma 338: 464–480. https://doi.org/10.1016/j.geoderma.2018.07.036
+
+**k-means Clustering**
+
+Arthur, David, and Sergei Vassilvitskii. 2007. “k-means++: The Advantages of Careful Seeding.” In Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms, 1027–1035.
+
+**Farthest Point Sampling**
+
+Pronzato, Luc, and Werner G. Müller. 2012. “Design of Computer Experiments: Space Filling and Beyond.” Statistics and Computing 22 (3): 681–701. https://doi.org/10.1007/s11222-011-9242-3
+
+**Normalized Difference Tillage Index**
+
+Zheng, Baojuan, James B. Campbell, and Kirsten M. de Beurs. 2012. “Remote Sensing of Crop Residue Cover Using Multi-Temporal Landsat Imagery.” Remote Sensing of Environment 117: 177–183. https://doi.org/10.1016/j.rse.2011.09.016
