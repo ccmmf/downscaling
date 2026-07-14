@@ -7,7 +7,7 @@
 #
 # Requires: yq (mikefarah/yq v4+), Rscript
 
-set -euo pipefail
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
@@ -20,12 +20,16 @@ usage() {
 Usage: magic-downscaling [--config <path>] [--verbose] <command>
 
 Commands:
-  prepare    Extract covariates, anchor sites, cluster design points
-             Run before magic-ensemble.
-  extract    Read SIPNET outputs, reshape to EFI format, aggregate scenarios.
-             Run after magic-ensemble run-ensembles.
-  downscale  Random Forest downscaling to all LandIQ fields; aggregate to county.
-  analyze    Diagnostic summaries, uncertainty quantification, plots.
+  get-demo-data   Download and extract demo artifacts to demo-data/ in the repo root.
+                  Run once before prepare. Requires AWS CLI. Uses the AWS profile
+                  specified by downscaling.aws_profile in config (default: 'magic').
+  prepare         Stage ensemble output and data layers into run_dir.
+                  Run after magic-ensemble run-ensembles, before extract.
+  cluster         Extract covariates, anchor sites, cluster design points.
+                  Run before magic-ensemble. (Placeholder name — to be renamed.)
+  extract         Read SIPNET outputs, reshape to EFI format, aggregate scenarios.
+  downscale       Random Forest downscaling to all LandIQ fields; aggregate to county.
+  analyze         Diagnostic summaries, uncertainty quantification, plots.
 
 Options:
   --config <path>   Path to user YAML config file (required for all commands)
@@ -33,10 +37,13 @@ Options:
   -h, --help        Print this help and exit
 
 User config keys:
-  run_dir    Working directory for this run (required). Relative to invocation
-             CWD or absolute. Same value as used for magic-ensemble.
-  mode       Run mode: production (default), dev, or demo
-  n_cores    Parallel workers for applicable steps (default: availableCores()-1)
+  global.run_dir              Working directory for this run (required except for get-demo-data).
+  downscaling.mode            Run mode: production (default), dev, or demo.
+  downscaling.n_cores         Parallel workers for applicable steps (default: availableCores()-1).
+  downscaling.pecan_output_dir        Source path for PEcAn/SIPNET ensemble output (optional; if set, prepare stages it).
+  downscaling.data_layers_dir         Source path for spatial data layers (required for prepare).
+  downscaling.anchor_site_locations   Path to anchor site locations CSV (required for prepare).
+  global.aws_profile                  AWS CLI profile for S3 access in get-demo-data (default: 'magic').
 EOF
 }
 
@@ -48,6 +55,13 @@ require_yq() {
   fi
   if ! yq eval 'null' /dev/null &>/dev/null; then
     echo "magic-downscaling: mikefarah/yq (v4+) is required. The installed yq may be a different variant." >&2
+    exit 1
+  fi
+}
+
+require_aws() {
+  if ! command -v aws &>/dev/null; then
+    echo "magic-downscaling: aws CLI is required for get-demo-data but not found on PATH." >&2
     exit 1
   fi
 }
@@ -95,7 +109,7 @@ while [[ $# -gt 0 ]]; do
       [[ $# -lt 2 ]] && { echo "magic-downscaling: --config requires a PATH." >&2; usage >&2; exit 1; }
       CONFIG_FILE="$2"; shift 2 ;;
     --verbose) VERBOSE=1; shift ;;
-    prepare|extract|downscale|analyze) COMMAND="$1"; shift ;;
+    get-demo-data|prepare|cluster|extract|downscale|analyze) COMMAND="$1"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "magic-downscaling: Unknown option: $1" >&2; usage >&2; exit 1 ;;
   esac
@@ -118,67 +132,113 @@ require_yq
 
 # --- Config helpers ---
 
+# Check whether a key exists and is non-null in a config file.
+# Args: <file> <dotted-key> [required|optional]  (default: required)
+# Required: exits with error if key is absent or null.
+# Optional: returns 1 (caller should use its default); returns 0 if present.
+check_config_key() {
+  local file="$1" key="$2" required="${3:-required}" value response_code
+  local restore_errexit=0
+  [[ $- == *e* ]] && restore_errexit=1
+  set +e
+  value=$(yq eval ".${key}" "$file" 2>/dev/null)
+  response_code=$?
+  [[ $restore_errexit -eq 1 ]] && set -e
+  if [[ $response_code -ne 0 || "$value" == "null" ]]; then
+    if [[ "$required" == "required" ]]; then
+      echo "magic-downscaling: required key '${key}' not found in ${file}" >&2; exit 1
+    fi
+    return 1
+  fi
+}
+
 # Read a scalar from user config; fall back to default if absent or null.
 get_val() {
   local key="$1" default="$2"
-  local v
-  v=$(yq eval ".${key}" "$CONFIG_FILE" 2>/dev/null)
-  if [[ -n "$v" && "$v" != "null" ]]; then echo "$v"; else echo "$default"; fi
+  if ! check_config_key "$CONFIG_FILE" "$key" "optional"; then
+    echo "$default"; return
+  fi
+  yq eval ".${key}" "$CONFIG_FILE" 2>/dev/null
 }
 
 # Resolve a list from mode_params with fallback to fixed_values; output as comma-separated string.
 get_list() {
   local key="$1"
-  yq eval "(.mode_params.${mode}.${key} // .fixed_values.${key}) | join(\",\")" "$MANIFEST" 2>/dev/null
+  check_config_key "$MANIFEST" "fixed_values.${key}"
+  local items=()
+  while IFS= read -r item; do
+    [[ -n "$item" ]] && items+=("$item")
+  done < <(yq eval ".mode_params.${mode}.${key}[]" "$MANIFEST" 2>/dev/null)
+  if [[ ${#items[@]} -eq 0 ]]; then
+    while IFS= read -r item; do
+      [[ -n "$item" ]] && items+=("$item")
+    done < <(yq eval ".fixed_values.${key}[]" "$MANIFEST" 2>/dev/null)
+  fi
+  if [[ ${#items[@]} -eq 0 ]]; then
+    echo "magic-downscaling: key '${key}' has no value in manifest (mode: ${mode})" >&2; exit 1
+  fi
+  local IFS=','
+  echo "${items[*]}"
 }
 
-# Read a scalar from mode_params (all modes define all scalar keys).
+# Read a scalar from mode_params.
 get_mode_scalar() {
-  local key="$1"
-  yq eval ".mode_params.${mode}.${key}" "$MANIFEST" 2>/dev/null
+  local key="$1" value
+  check_config_key "$MANIFEST" "mode_params.${mode}.${key}"
+  value=$(yq eval ".mode_params.${mode}.${key}" "$MANIFEST" 2>/dev/null)
+  if [[ -z "$value" || "$value" == "null" ]]; then
+    echo "magic-downscaling: key 'mode_params.${mode}.${key}' has no value in manifest" >&2; exit 1
+  fi
+  echo "$value"
 }
 
 # --- Load user config ---
 run_dir=$(get_val "global.run_dir" "")
 mode=$(get_val "downscaling.mode" "production")
 n_cores=$(get_val "downscaling.n_cores" "")
+pecan_output_dir=$(get_val "downscaling.pecan_output_dir" "")
+data_layers_dir=$(get_val "downscaling.data_layers_dir" "")
+anchor_site_locations=$(get_val "downscaling.anchor_site_locations" "")
+aws_profile=$(get_val "global.aws_profile" "magic")
 
-if [[ -z "$run_dir" || "$run_dir" == "null" ]]; then
-  echo "magic-downscaling: run_dir is required in config: $CONFIG_FILE" >&2; exit 1
-fi
-case "$mode" in
-  production|dev|demo) ;;
-  *) echo "magic-downscaling: mode must be one of: production, dev, demo" >&2; exit 1 ;;
-esac
+if [[ "$COMMAND" != "get-demo-data" ]]; then
+  if [[ -z "$run_dir" || "$run_dir" == "null" ]]; then
+    echo "magic-downscaling: run_dir is required in config: $CONFIG_FILE" >&2; exit 1
+  fi
+  case "$mode" in
+    production|dev|demo) ;;
+    *) echo "magic-downscaling: mode must be one of: production, dev, demo" >&2; exit 1 ;;
+  esac
 
-# Resolve run_dir to absolute
-if [[ "$run_dir" != /* ]]; then
-  run_dir="${INVOCATION_CWD}/${run_dir}"
-fi
-run_dir="${run_dir%/}"
+  # Resolve paths to absolute
+  if [[ "$run_dir" != /* ]]; then
+    run_dir="${INVOCATION_CWD}/${run_dir}"
+  fi
+  run_dir="${run_dir%/}"
 
-# --- Resolve mode-specific parameters from manifest ---
-pool_size=$(get_mode_scalar "pool_size")
-n_design=$(get_mode_scalar "n_design")
-subsample_threshold=$(get_mode_scalar "subsample_threshold")
+  if [[ -n "$pecan_output_dir" && "$pecan_output_dir" != /* ]]; then
+    pecan_output_dir="${INVOCATION_CWD}/${pecan_output_dir}"
+  fi
+  if [[ -n "$data_layers_dir" && "$data_layers_dir" != /* ]]; then
+    data_layers_dir="${INVOCATION_CWD}/${data_layers_dir}"
+  fi
+  if [[ -n "$anchor_site_locations" && "$anchor_site_locations" != /* ]]; then
+    anchor_site_locations="${INVOCATION_CWD}/${anchor_site_locations}"
+  fi
 
-# pool_floors as "key=value,key=value" string for R parsing
-pool_floors=$(yq eval \
-  ".mode_params.${mode}.pool_floors | to_entries | map(.key + \"=\" + (.value | tostring)) | join(\",\")" \
-  "$MANIFEST" 2>/dev/null)
+  # --- Resolve mode-specific parameters from manifest ---
+  outputs_to_extract=$(get_list "outputs_to_extract") || exit 1
+  management_scenarios=$(get_list "management_scenarios") || exit 1
 
-# Comma-separated list values; mode overrides fall back to fixed_values
-outputs_to_extract=$(get_list "outputs_to_extract")
-management_scenarios=$(get_list "management_scenarios")
-
-# --- Settings banner ---
-echo "magic-downscaling: command              : $COMMAND"
-echo "magic-downscaling: run_dir              : $run_dir"
-echo "magic-downscaling: mode                 : $mode"
-echo "magic-downscaling: outputs_to_extract   : $outputs_to_extract"
-echo "magic-downscaling: management_scenarios : $management_scenarios"
-if [[ -n "$n_cores" && "$n_cores" != "null" ]]; then
-  echo "magic-downscaling: n_cores              : $n_cores"
+  # --- Settings banner ---
+  echo "magic-downscaling: command              : $COMMAND"
+  echo "magic-downscaling: run_dir              : $run_dir"
+  echo "magic-downscaling: mode                 : $mode"
+  echo "magic-downscaling: outputs_to_extract   : $outputs_to_extract"
+  echo "magic-downscaling: management_scenarios : $management_scenarios"
+  if [[ -n "$n_cores" && "$n_cores" != "null" ]]; then
+    echo "magic-downscaling: n_cores              : $n_cores"
+  fi
 fi
 
 # --- Script runner ---
@@ -196,40 +256,120 @@ run_script() {
 
 # --- Command handlers ---
 
-run_prepare() {
+run_cluster() {
+  local pool_size n_design subsample_threshold pool_floors
+  pool_size=$(get_mode_scalar "pool_size") || exit 1
+  n_design=$(get_mode_scalar "n_design") || exit 1
+  subsample_threshold=$(get_mode_scalar "subsample_threshold") || exit 1
+
+  check_config_key "$MANIFEST" "mode_params.${mode}.pool_floors"
+  local floors_parts=()
+  while IFS= read -r part; do
+    [[ -n "$part" ]] && floors_parts+=("$part")
+  done < <(yq eval ".mode_params.${mode}.pool_floors | to_entries | .[] | .key + \"=\" + (.value | tostring)" "$MANIFEST" 2>/dev/null)
+  if [[ ${#floors_parts[@]} -eq 0 ]]; then
+    echo "magic-downscaling: key 'mode_params.${mode}.pool_floors' has no value in manifest" >&2; exit 1
+  fi
+  local IFS=','
+  pool_floors="${floors_parts[*]}"
+
   mkdir -p "${run_dir}/output_prepare"
 
-  echo "magic-downscaling: prepare step 1 of 5: scripts/010_prepare_covariates.R"
+  echo "magic-downscaling: cluster step 1 of 5: scripts/010_prepare_covariates.R"
   run_script "scripts/010_prepare_covariates.R" \
     --run_dir "$run_dir" --mode "$mode" \
     ${n_cores:+--n_cores "$n_cores"}
-  echo "magic-downscaling: prepare step 1 completed"
+  echo "magic-downscaling: cluster step 1 completed"
 
-  echo "magic-downscaling: prepare step 2 of 5: scripts/011_prepare_anchor_sites.R"
+  echo "magic-downscaling: cluster step 2 of 5: scripts/011_prepare_anchor_sites.R"
   run_script "scripts/011_prepare_anchor_sites.R" \
     --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: prepare step 2 completed"
+  echo "magic-downscaling: cluster step 2 completed"
 
-  echo "magic-downscaling: prepare step 3 of 5: scripts/020_cluster_sites.R"
+  echo "magic-downscaling: cluster step 3 of 5: scripts/020_cluster_sites.R"
   run_script "scripts/020_cluster_sites.R" \
     --run_dir "$run_dir" --mode "$mode" \
     --pool_size "$pool_size" \
     --pool_floors "$pool_floors" \
     --subsample_threshold "$subsample_threshold"
-  echo "magic-downscaling: prepare step 3 completed"
+  echo "magic-downscaling: cluster step 3 completed"
 
-  echo "magic-downscaling: prepare step 4 of 5: scripts/021_subsample_design_points.R"
+  echo "magic-downscaling: cluster step 4 of 5: scripts/021_subsample_design_points.R"
   run_script "scripts/021_subsample_design_points.R" \
     --run_dir "$run_dir" --mode "$mode" \
     --n_design "$n_design"
-  echo "magic-downscaling: prepare step 4 completed"
+  echo "magic-downscaling: cluster step 4 completed"
 
-  echo "magic-downscaling: prepare step 5 of 5: scripts/022_validate_design_points.R"
+  echo "magic-downscaling: cluster step 5 of 5: scripts/022_validate_design_points.R"
   run_script "scripts/022_validate_design_points.R" \
     --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: prepare step 5 completed"
+  echo "magic-downscaling: cluster step 5 completed"
 
-  echo "magic-downscaling: prepare finished"
+  echo "magic-downscaling: cluster finished"
+}
+
+run_prepare() {
+  if [[ -z "$data_layers_dir" || "$data_layers_dir" == "null" ]]; then
+    echo "magic-downscaling: downscaling.data_layers_dir is required in config for prepare." >&2; exit 1
+  fi
+  if [[ -z "$anchor_site_locations" || "$anchor_site_locations" == "null" ]]; then
+    echo "magic-downscaling: downscaling.anchor_site_locations is required in config for prepare." >&2; exit 1
+  fi
+  if [[ ! -f "$anchor_site_locations" ]]; then
+    echo "magic-downscaling: anchor_site_locations not found: $anchor_site_locations" >&2; exit 1
+  fi
+  if [[ ! -d "$data_layers_dir" ]]; then
+    echo "magic-downscaling: data_layers_dir not found: $data_layers_dir" >&2; exit 1
+  fi
+  if [[ ! -f "${data_layers_dir}/site_covariates.csv" ]]; then
+    echo "magic-downscaling: site_covariates.csv not found in data_layers_dir: $data_layers_dir" >&2; exit 1
+  fi
+
+  mkdir -p "$run_dir"
+
+  # Stage ensemble output only when pecan_output_dir is explicitly configured.
+  # If the key is absent or empty, the assumption is that magic-ensemble will write
+  # its output directly into run_dir at the appropriate time before extract is called.
+  if [[ -n "$pecan_output_dir" && "$pecan_output_dir" != "null" ]]; then
+    if [[ ! -d "$pecan_output_dir" ]]; then
+      echo "magic-downscaling: pecan_output_dir set but not found: $pecan_output_dir" >&2; exit 1
+    fi
+
+    local scenario
+    local -a scenario_arr
+    IFS=',' read -ra scenario_arr <<< "$management_scenarios"
+    for scenario in "${scenario_arr[@]}"; do
+      if [[ ! -d "${pecan_output_dir}/output_${scenario}" ]]; then
+        echo "magic-downscaling: expected scenario directory not found: ${pecan_output_dir}/output_${scenario}" >&2
+        echo "magic-downscaling: verify the ensemble has run and pecan_output_dir is correct." >&2
+        exit 1
+      fi
+    done
+
+    echo "magic-downscaling: prepare: staging ensemble output → output/"
+    mkdir -p "${run_dir}/output"
+    cp -r "${pecan_output_dir}/." "${run_dir}/output/"
+    echo "magic-downscaling: prepare: ensemble output staged"
+  else
+    echo "magic-downscaling: prepare: pecan_output_dir not set and will not be staged."
+  fi
+
+  echo "magic-downscaling: prepare: staging data layers → data/"
+  mkdir -p "${run_dir}/data"
+  cp -r "${data_layers_dir}/." "${run_dir}/data/"
+  echo "magic-downscaling: prepare: data layers staged"
+
+  echo "magic-downscaling: prepare: staging site_covariates.csv → output_prepare/"
+  mkdir -p "${run_dir}/output_prepare"
+  cp "${data_layers_dir}/site_covariates.csv" "${run_dir}/output_prepare/site_covariates.csv"
+  echo "magic-downscaling: prepare: site_covariates.csv staged"
+
+  echo "magic-downscaling: prepare: staging anchor site locations → data_raw/"
+  mkdir -p "${run_dir}/data_raw"
+  cp "$anchor_site_locations" "${run_dir}/data_raw/anchor_site_locations.csv"
+  echo "magic-downscaling: prepare: anchor_site_locations.csv staged"
+
+  echo "magic-downscaling: prepare finished — run_dir ready: $run_dir"
 }
 
 run_extract() {
@@ -284,13 +424,63 @@ run_analyze() {
   echo "magic-downscaling: analyze finished"
 }
 
-# --- R library pre-check ---
-check_r_libraries "$COMMAND"
+# --- get-demo-data handler ---
+run_get_demo_data() {
+  require_aws
+
+  local bucket key_prefix scenarios_artifact data_layers_artifact
+  bucket=$(yq eval ".s3.bucket" "$MANIFEST")
+  key_prefix=$(yq eval ".s3.key_prefix" "$MANIFEST")
+  scenarios_artifact=$(yq eval ".s3.scenarios_artifact" "$MANIFEST")
+  data_layers_artifact=$(yq eval ".s3.data_layers_artifact" "$MANIFEST")
+
+  local demo_data_dir="${INVOCATION_CWD}/demo-data"
+  local scenarios_tgz="${demo_data_dir}/${scenarios_artifact}"
+  local data_layers_tgz="${demo_data_dir}/${data_layers_artifact}"
+  local scenarios_extract="${demo_data_dir}/modelout"
+  local data_layers_extract="${demo_data_dir}/data"
+
+  mkdir -p "$scenarios_extract" "$data_layers_extract"
+
+  # Scenarios artifact
+  if [[ -f "$scenarios_tgz" ]]; then
+    echo "magic-downscaling: scenarios artifact already present, skipping download"
+  else
+    echo "magic-downscaling: downloading ${scenarios_artifact}"
+    aws s3 cp --profile "$aws_profile" --quiet \
+      "s3://${bucket}/${key_prefix}/${scenarios_artifact}" \
+      "$scenarios_tgz"
+  fi
+  echo "magic-downscaling: extracting ${scenarios_artifact} → demo-data/modelout/"
+  tar xzf "$scenarios_tgz" -C "$scenarios_extract"
+
+  # Data layers artifact
+  if [[ -f "$data_layers_tgz" ]]; then
+    echo "magic-downscaling: data layers artifact already present, skipping download"
+  else
+    echo "magic-downscaling: downloading ${data_layers_artifact}"
+    aws s3 cp --profile "$aws_profile" --quiet \
+      "s3://${bucket}/${key_prefix}/${data_layers_artifact}" \
+      "$data_layers_tgz"
+  fi
+  echo "magic-downscaling: extracting ${data_layers_artifact} → demo-data/data/"
+  tar xzf "$data_layers_tgz" -C "$data_layers_extract"
+
+  echo "magic-downscaling: get-demo-data complete"
+  echo "magic-downscaling: run 'magic-downscaling prepare --config <config>' to stage data into run_dir"
+}
+
+# --- R library pre-check (skipped for get-demo-data) ---
+if [[ "$COMMAND" != "get-demo-data" ]]; then
+  check_r_libraries "$COMMAND"
+fi
 
 # --- Main dispatch ---
 case "$COMMAND" in
-  prepare)   run_prepare ;;
-  extract)   run_extract ;;
-  downscale) run_downscale ;;
-  analyze)   run_analyze ;;
+  get-demo-data) run_get_demo_data ;;
+  prepare)       run_prepare ;;
+  cluster) run_cluster ;;
+  extract)       run_extract ;;
+  downscale)     run_downscale ;;
+  analyze)       run_analyze ;;
 esac
