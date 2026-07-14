@@ -5,15 +5,38 @@
 global:
   # Path to the run directory. Same value used for magic-ensemble.
   # Relative paths are resolved from the directory where you invoke the CLI.
-  run_dir: "/path/to/run_dir"
+  # run_dir: "/path/to/run_dir"
+  run_dir: "demo-run-dir/"
 
 downscaling:
   # Run mode: production, dev, or demo
   #   production  Full dataset (pool=10000, n=1000, all 4 outputs, all 6 scenarios)
   #   dev         Reduced dataset for development (pool=500, n=100, TotSoilCarb only)
   #   demo        Same as dev, baseline scenario only
-  mode: production
-
+  mode: demo
+  # AWS CLI profile used by get-demo-data to access S3. Defaults to 'magic'.
+  aws_profile: magic
   # Number of parallel workers for applicable steps.
   # Defaults to availableCores() - 1 if not set.
   # n_cores: 4
+
+  # Source paths for the two required data artifacts.
+  # For demo: point at the extracted demo-data/ cache (populated by get-demo-data).
+  # For production: point at your own locally staged equivalents.
+
+
+  # pecan_output_dir: path to the PEcAn/SIPNET ensemble output directory.
+  #   Expected contents: output_<scenario>/ subdirectories + site_info.csv
+  #   For production: point at your own ensemble output.
+  pecan_output_dir: "demo-data/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
+
+  # data_layers_dir: path to the spatial data layers directory.
+  #   Expected contents: ca_fields.gpkg, ca_field_attributes.csv, site_covariates.csv
+  #   For production: point at your own data layers.
+  data_layers_dir: "demo-data/data"
+
+  # anchor_site_locations: path to the anchor site locations CSV.
+  #   Expected columns: external_site_id, site_name, lat, lon, crops, pft
+  #   The repo ships a default at data_raw/anchor_site_locations.csv (25 Ameriflux sites).
+  #   For production: point at your own anchor site file if using custom sites.
+  anchor_site_locations: "data_raw/anchor_site_locations.csv"

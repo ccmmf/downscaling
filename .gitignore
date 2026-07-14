@@ -42,3 +42,6 @@ rsconnect/
 ########## Generated figures ##########
 # Do not track any rendered images; site publishing copies from _site
 figures/
+
+########## Demo data cache ##########
+demo-data/

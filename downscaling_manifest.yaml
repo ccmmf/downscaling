@@ -12,8 +12,14 @@
 #   inputs:      List of path keys this script reads
 #   outputs:     List of path keys this script creates or writes
 
+s3:
+  bucket: "carb"
+  key_prefix: "data_raw"
+  scenarios_artifact: "ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz"
+  data_layers_artifact: "ccmmf_downscaling_data_layers.tgz"
+
 steps:
-  prepare:
+  cluster:
     - name: prepare_covariates
       script: "scripts/010_prepare_covariates.R"
       r_libraries: [terra, sf, tidyverse, future, furrr, caladaptr]

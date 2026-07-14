@@ -40,7 +40,7 @@ User config keys:
 EOF
 }
 
-# --- Dependency check ---
+# --- Dependency checks ---
 require_yq() {
   if ! command -v yq &>/dev/null; then
     echo "magic-downscaling: yq (mikefarah/yq v4+) is required but not found on PATH." >&2
@@ -48,6 +48,38 @@ require_yq() {
   fi
   if ! yq eval 'null' /dev/null &>/dev/null; then
     echo "magic-downscaling: mikefarah/yq (v4+) is required. The installed yq may be a different variant." >&2
+    exit 1
+  fi
+}
+
+check_r_libraries() {
+  local command="$1"
+  if ! command -v Rscript &>/dev/null; then
+    echo "magic-downscaling: Rscript is required but not found on PATH." >&2
+    exit 1
+  fi
+
+  local libs_arr=()
+  while IFS= read -r lib; do
+    [[ -n "$lib" ]] && libs_arr+=("$lib")
+  done < <(yq eval ".steps.${command}[].r_libraries[]" "$MANIFEST" 2>/dev/null | sort -u)
+
+  if [[ ${#libs_arr[@]} -eq 0 ]]; then return 0; fi
+
+  local r_vec
+  r_vec=$(printf '"%s",' "${libs_arr[@]}" | sed 's/,$//')
+
+  local missing
+  missing=$(Rscript --vanilla -e "
+pkgs <- c(${r_vec})
+missing <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]
+if (length(missing)) cat(paste(missing, collapse = ' '))
+" 2>/dev/null)
+
+  if [[ -n "$missing" ]]; then
+    echo "magic-downscaling: The following R packages are required for '${command}' but are not installed:" >&2
+    echo "  ${missing}" >&2
+    echo "magic-downscaling: Activate the pecan-all conda environment before running this command." >&2
     exit 1
   fi
 }
@@ -251,6 +283,9 @@ run_analyze() {
 
   echo "magic-downscaling: analyze finished"
 }
+
+# --- R library pre-check ---
+check_r_libraries "$COMMAND"
 
 # --- Main dispatch ---
 case "$COMMAND" in
