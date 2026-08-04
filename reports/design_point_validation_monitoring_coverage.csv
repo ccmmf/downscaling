@@ -1,0 +1,9 @@
+feature,pop_n,pop_pct,design_n,design_pct
+tillage_rank,285674,51.9,609,60.9
+tillage_freq,286083,52,609,60.9
+leafon_doy,550053,100,1000,100
+leafoff_doy,550053,100,1000,100
+leafon_doy_sd,550053,100,1000,100
+leafoff_doy_sd,550053,100,1000,100
+irr_canopy,498829,90.7,723,72.3
+irr_flood,32739,5.9,175,17.5
