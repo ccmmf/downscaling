@@ -14,7 +14,7 @@ sections to include in release notes:
 ### Added
 
 - Statewide design point selection across all crop types, scaled to a 10k candidate pool and thinned to a 1000 site subsample
-- Support for the harmonized LandIQ v4.1 crop dataset as the source of crop type, PFT, and field coordinates
+- Support for the CADWR LandIQ Crop Map (harmonized LandIQ v4.1) as the source of crop type, PFT, and field coordinates
 - EOF temporal features summarizing each field's multi year cropping history
 - Tillage, irrigation, and phenology added to the site selection covariates
 - Validation report and diagnostic figures for the selected design points

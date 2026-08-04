@@ -25,7 +25,7 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 - **Crop Fields**: All cropland parcels in the CADWR LandIQ Crop Map (harmonized LandIQ v4.1, ~550,000 rows after NAs in the cluster features are dropped). This dataset is referred to as the CADWR LandIQ Crop Map throughout.
 - **Design Points**: The 1,000 row SIPNET runnable subset that `021_subsample_design_points.R` slices out of the 10k pool via farthest point sampling. `n_design` in `000-config.R` controls the size.
 - **DOY**: Day of year (1 to 365).
-- **EOF**: Empirical Orthogonal Function. PCA on the field by crop class by year one hot matrix from LandIQ v4.1. Compresses about 8 years of crop rotation history into 10 continuous features (`eof_1` through `eof_10`).
+- **EOF**: Empirical Orthogonal Function. PCA on the field by crop class by year one hot matrix from the CADWR LandIQ Crop Map. Compresses about 8 years of crop rotation history into 10 continuous features (`eof_1` through `eof_10`).
 - **FPS**: Farthest Point Sampling, also called greedy maximin. Produces a nested ordering so any prefix is a valid space filling subset. Used in 021 to slice the 10k pool down to the 1k design (Pronzato and Müller 2012).
 - **FSCS**: Feature Space Coverage Sampling. The general approach 020 uses: cluster the predictors, take one representative per cluster, fit the downstream model on those representatives (Wadoux, Brus and Heuvelink 2019).
 - **k-means++**: k-means initialization that scatters the initial centers across the feature space, weighted by squared distance from already chosen centers. Used as the `initializer` argument in `ClusterR::KMeans_rcpp` (Arthur and Vassilvitskii 2007).
