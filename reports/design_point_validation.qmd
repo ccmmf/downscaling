@@ -2,71 +2,80 @@
 title: "Design Point Validation"
 date: today
 format: html
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
-Generated: 2026-06-12 15:28:32
+This report validates feature-space coverage of the selected design points relative to the statewide population. It does not determine the optimal number of SIPNET design points. The 1,000-site design evaluated here is selected from the 10,000-site candidate pool for demonstration.
+<!-- TODO update after the optimal number of design points is determined by github.com/ccmmf/organization#192 -->
 
-Total design points: 1000
-Seed: 42
-Features: temp, precip, srad, vapr, clay, ocd, twi, eof_1, eof_10, eof_2, eof_3, eof_4, eof_5, eof_6, eof_7, eof_8, eof_9, leafon_doy, leafoff_doy, leafon_doy_sd, leafoff_doy_sd, tillage_rank, tillage_freq, irr_canopy, irr_flood
+```{r setup}
+library(knitr)
+val <- function(name) {
+  readr::read_csv(
+    here::here("reports", paste0("design_point_validation_", name, ".csv")),
+    show_col_types = FALSE
+  )
+}
+```
+
+## Overview
+
+Design points are the field locations where SIPNET is run; a Random Forest then downscales those outputs to every cropland field in the CADWR LandIQ Crop Map. `020_cluster_sites.R` clusters the population per plant functional type and keeps one representative per cluster as a 10,000-site candidate pool, `021_subsample_design_points.R` draws the design from that pool by farthest point sampling, and `022_validate_design_points.R` writes the tables and figures below. Coverage matters because the Random Forest predicts reliably only within the range of conditions the design spans, so gaps in covariate coverage become extrapolation.
+
+Clustering uses seed 42 (`020_cluster_sites.R`).
 
 ## PFT allocation
 
-|pft                  |  n_pop| area_pop| pct_pop_n| pct_pop_area| n_design| pct_design|
-|:--------------------|------:|--------:|---------:|------------:|--------:|----------:|
-|woody perennial crop | 329401|  1763197|      59.9|         48.1|      480|         48|
-|annual crop          | 220859|  1906107|      40.1|         51.9|      520|         52|
+Population and design counts and area share per PFT.
+
+```{r}
+kable(val("pft_allocation"))
+```
 
 ## Feature space coverage (MSSD, scaled)
 
-|pft                  |  n_pop| n_design|    mssd|
-|:--------------------|------:|--------:|-------:|
-|annual crop          | 220859|      520|  9.7576|
-|woody perennial crop | 329194|      480| 11.0829|
+Mean squared shortest distance from each population field to its nearest design point in scaled feature space. Lower is better coverage.
+
+```{r}
+kable(val("mssd"), digits = 4)
+```
 
 ## Cluster balance (Gini of cluster sizes)
 
-|pft                  | n_clusters| min_size| median_size| max_size|  gini|
-|:--------------------|----------:|--------:|-----------:|--------:|-----:|
-|annual crop          |       5195|        1|          32|      382| 0.443|
-|woody perennial crop |       4805|        1|          42|      683| 0.520|
+```{r}
+kable(val("cluster_balance"), digits = 3)
+```
 
 ## Anchor recovery
 
-| n_anchors| in_design| missing|
-|---------:|---------:|-------:|
-|        27|        26|       1|
+```{r}
+kable(val("anchor_recovery"))
+```
 
-## Monitoring layer coverage
+```{r}
+#| output: asis
+mon <- here::here("reports", "design_point_validation_monitoring_coverage.csv")
+if (file.exists(mon)) {
+  cat("## Monitoring layer coverage\n\nShare of the population and of the design carrying each management and phenology feature.\n\n")
+  print(kable(readr::read_csv(mon, show_col_types = FALSE)))
+}
+```
 
-|feature        |  pop_n| pop_pct| design_n| design_pct|
-|:--------------|------:|-------:|--------:|----------:|
-|tillage_rank   | 285674|    51.9|      609|       60.9|
-|tillage_freq   | 286083|    52.0|      609|       60.9|
-|leafon_doy     | 550053|   100.0|     1000|      100.0|
-|leafoff_doy    | 550053|   100.0|     1000|      100.0|
-|leafon_doy_sd  | 550053|   100.0|     1000|      100.0|
-|leafoff_doy_sd | 550053|   100.0|     1000|      100.0|
-|irr_canopy     | 498829|    90.7|      723|       72.3|
-|irr_flood      |  32739|     5.9|      175|       17.5|
-
-## Climate region coverage
-
-| climregion_id|  n_pop| pct_pop| n_design| pct_design|
-|-------------:|------:|-------:|--------:|----------:|
-|             1|  55220|    10.0|       52|        5.2|
-|             2|  18990|     3.5|      136|       13.6|
-|             3| 166898|    30.3|      241|       24.1|
-|             4|   5698|     1.0|       19|        1.9|
-|             5|  16699|     3.0|       42|        4.2|
-|             6|   7614|     1.4|       17|        1.7|
-|             7|  73774|    13.4|      120|       12.0|
-|             8|  41279|     7.5|       81|        8.1|
-|             9|  16903|     3.1|       24|        2.4|
-|            10|   3195|     0.6|       14|        1.4|
-|            11| 143990|    26.2|      254|       25.4|
+```{r}
+#| output: asis
+reg <- here::here("reports", "design_point_validation_climate_region_coverage.csv")
+if (file.exists(reg)) {
+  cat("## Climate region coverage\n\n")
+  print(kable(readr::read_csv(reg, show_col_types = FALSE)))
+}
+```
 
 ## Figures
+
+<!-- two PFTs (annual crop, woody perennial crop); add figure blocks if a third PFT is introduced -->
 
 ![Variable importance (eta-squared)](../figures/cluster_variable_importance.svg)
 
@@ -85,4 +94,3 @@ Features: temp, precip, srad, vapr, clay, ocd, twi, eof_1, eof_10, eof_2, eof_3,
 ![PCA scatter (woody perennial crop)](../figures/pca_scatter_woody_perennial_crop.webp)
 
 ![Sorted cluster sizes (woody perennial crop)](../figures/cluster_sizes_woody_perennial_crop.webp)
-
