@@ -467,89 +467,17 @@ ggsave_optimized("figures/design_points.webp",
 # # davies bouldin index
 # clusterSim::index.DB(d, clusters)$DB
 
-##write quarto report
-report_dir <- here::here("reports")
-if (!dir.exists(report_dir)) dir.create(report_dir, recursive = TRUE)
-
-report_lines <- c(
-  "---",
-  "title: \"Design Point Validation\"",
-  "date: today",
-  "format: html",
-  "---",
-  "",
-  paste0("Generated: ", format(Sys.time())),
-  "",
-  paste0("Total design points: ", nrow(design_points)),
-  paste0("Seed: ", clustering$seed),
-  paste0("Features: ", paste(clustering$feature_cols, collapse = ", ")),
-  "",
-  "## PFT allocation",
-  "",
-  knitr::kable(pft_kpi, format = "markdown"),
-  "",
-  "## Feature space coverage (MSSD, scaled)",
-  "",
-  knitr::kable(mssd_per_pft, format = "markdown", digits = 4),
-  "",
-  "## Cluster balance (Gini of cluster sizes)",
-  "",
-  knitr::kable(cluster_balance, format = "markdown", digits = 3),
-  "",
-  "## Anchor recovery",
-  "",
-  knitr::kable(anchor_recovery, format = "markdown"),
-  ""
-)
-
-if (!is.null(mgmt_kpi)) {
-  report_lines <- c(
-    report_lines,
-    "## Monitoring layer coverage",
-    "",
-    knitr::kable(mgmt_kpi, format = "markdown"),
-    ""
-  )
+# write the KPI tables as data products. the script does the expensive
+# computation and figures; reports/design_point_validation.qmd reads these
+# CSVs in code chunks and renders the report.
+val_csv <- function(x, name) {
+  readr::write_csv(x, file.path(reports_dir, paste0("design_point_validation_", name, ".csv")))
 }
+val_csv(pft_kpi, "pft_allocation")
+val_csv(mssd_per_pft, "mssd")
+val_csv(cluster_balance, "cluster_balance")
+val_csv(anchor_recovery, "anchor_recovery")
+if (!is.null(mgmt_kpi)) val_csv(mgmt_kpi, "monitoring_coverage")
+if (!is.null(region_kpi)) val_csv(region_kpi, "climate_region_coverage")
 
-if (!is.null(region_kpi)) {
-  report_lines <- c(
-    report_lines,
-    "## Climate region coverage",
-    "",
-    knitr::kable(region_kpi, format = "markdown"),
-    ""
-  )
-}
-
-report_lines <- c(
-  report_lines,
-  "## Figures",
-  "",
-  "![Variable importance (eta-squared)](../figures/cluster_variable_importance.svg)",
-  "",
-  "![Design points on California cropland](../figures/design_points.webp)",
-  "",
-  "![Nearest-neighbor distances](../figures/nn_distance.svg)",
-  ""
-)
-
-# embed per pft figures (CDF + PCA + cluster sizes). loop over PFTs
-# in the clustering cache so the report stays in sync if a third PFT is
-# ever added
-for (pft_name in names(clustering$by_pft)) {
-  slug <- gsub("[^a-z]", "_", tolower(pft_name))
-  report_lines <- c(
-    report_lines,
-    sprintf("![CDF overlay (%s)](../figures/cdf_overlay_%s.webp)", pft_name, slug),
-    "",
-    sprintf("![PCA scatter (%s)](../figures/pca_scatter_%s.webp)", pft_name, slug),
-    "",
-    sprintf("![Sorted cluster sizes (%s)](../figures/cluster_sizes_%s.webp)", pft_name, slug),
-    ""
-  )
-}
-
-report_path <- file.path(report_dir, "design_point_validation.qmd")
-writeLines(report_lines, report_path)
-PEcAn.logger::logger.info("quarto report written: ", report_path)
+PEcAn.logger::logger.info("validation tables written to ", reports_dir)
