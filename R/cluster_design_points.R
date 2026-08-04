@@ -47,7 +47,6 @@ allocate_design_points_by_pft <- function(site_covariates, total, floors) {
 #' @param num_init integer, k-means++ restarts.
 #' @param seed integer random seed.
 #' @param anchor_site_ids character vector of anchors to force-include.
-#' @param selection_mode "nearest_centroid" (default) or "weighted_random".
 #' @return list: design, cluster_assignment, centers, scaling, sizes.
 #' @export
 cluster_pft_population <- function(
@@ -57,9 +56,7 @@ cluster_pft_population <- function(
     subsample_threshold = 20000L,
     num_init = 5L,
     seed = 42L,
-    anchor_site_ids = character(0),
-    selection_mode = c("nearest_centroid", "weighted_random")) {
-  selection_mode <- match.arg(selection_mode)
+    anchor_site_ids = character(0)) {
   if (!requireNamespace("ClusterR", quietly = TRUE)) {
     PEcAn.logger::logger.severe("ClusterR package is required for clustering.")
   }
@@ -132,17 +129,11 @@ cluster_pft_population <- function(
     (feat_scaled - centers[clusters_all, , drop = FALSE])^2
   ))
 
-  design <- switch(
-    selection_mode,
-    nearest_centroid = pop_data |>
-      dplyr::slice_min(dist_to_centroid, n = 1L, with_ties = FALSE, by = cluster) |>
-      dplyr::ungroup(),
-    weighted_random = {
-      set.seed(seed)
-      pop_data |>
-        dplyr::slice_sample(n = 1L, by = cluster)
-    }
-  )
+  # one design point per cluster: the field nearest the centroid, the FSCS
+  # cluster representative (Wadoux, Brus and Heuvelink 2019)
+  design <- pop_data |>
+    dplyr::slice_min(dist_to_centroid, n = 1L, with_ties = FALSE, by = cluster) |>
+    dplyr::ungroup()
 
   # swap each anchor into its own cluster's slot. when two anchors land
   # in the same cluster, both are kept -- the filter exempts already
