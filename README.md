@@ -40,25 +40,4 @@ R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); r
 
 See full details about how to set up and run the workflows in the [Technical Documentation](docs/workflow_documentation.md#sec-tech-doc). 
 
-```bash
-# Data prep and clustering
-Rscript scripts/009_prepare_cadwr_crops.R
-Rscript scripts/010_prepare_covariates.R
-Rscript scripts/011_prepare_anchor_sites.R
-Rscript scripts/012_add_management_covariates.R
-Rscript scripts/020_cluster_sites.R
-Rscript scripts/021_subsample_design_points.R
-Rscript scripts/022_validate_design_points.R
-
-# Extract SIPNET outputs and create mixed-PFT scenarios
-Rscript scripts/030_extract_sipnet_output.R
-Rscript scripts/031_aggregate_sipnet_output.R
-
-# Downscale and aggregate
-Rscript scripts/040_downscale.R
-Rscript scripts/041_aggregate_to_county.R
-
-# Analysis and figures
-Rscript scripts/042_downscale_analysis.R
-Rscript scripts/043_county_level_plots.R
-```
+The workflow runs as numbered scripts in three stages: data preparation and design-point selection (`009`..`022`), SIPNET output extraction (`030`..`031`), and downscaling with aggregation and figures (`040`..`043`). The Technical Documentation linked above lists the full command sequence with the inputs and outputs of each step.
