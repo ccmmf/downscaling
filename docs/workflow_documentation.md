@@ -20,6 +20,8 @@ It uses an ensemble-based approach to uncertainty propagation and analysis, main
 
 <!-- TODO move to and curate a project level glossary (?) -->
 
+<!-- TODO move to and curate a project level glossary (?) -->
+
 - **Anchor Sites**: Sites with long observation records used as ground truth for calibration and validation, currently UC research stations and Ameriflux towers. Force-included in the design so they are simulated in SIPNET.
 - **Clustered Sites**: The 10,000 row pool that `020_cluster_sites.R` writes. One representative per cluster (the field closest to the cluster center in scaled feature space). Frozen artifact, decoupled from the SIPNET compute budget.
 - **Crop Fields**: All cropland parcels in the CADWR LandIQ Crop Map (harmonized LandIQ v4.1, ~550,000 rows after NAs in the cluster features are dropped). This dataset is referred to as the CADWR LandIQ Crop Map throughout.
