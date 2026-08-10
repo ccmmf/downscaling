@@ -62,10 +62,16 @@ if (DEMO) {
 
 ### Configuration Settings that can be set to default ###
 
-# Assume consistent directory structure for other directories
-data_dir <- file.path(ccmmf_dir, "data")
+##site selection outputs + management staging
+# stage under usr/akash to avoid clobbering the shared data dir artifacts used by any prev runs
+# management/ holds the per-product parquets read by 012:
+# phenology/, tillage/, irrigation/.
+akash_dir      <- "/projectnb/dietzelab/ccmmf/usr/akash"
+data_dir       <- file.path(akash_dir, "data")
+cache_dir      <- file.path(akash_dir, "cache")
+management_dir <- file.path(akash_dir, "management")
+
 raw_data_dir <- file.path(ccmmf_dir, "data_raw")
-cache_dir <- file.path(pecan_outdir, "cache")
 model_outdir <- pecan_outdir
 
 # design-point clustering + subsampling (020, 022).

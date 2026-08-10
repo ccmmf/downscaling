@@ -14,7 +14,7 @@ project:
     - reports/atlas_biomass.qmd
     - reports/atlas_model_drivers.qmd
     - reports/downscaling_results.qmd
-    - reports/design_points_analysis.qmd
+    - reports/design_point_validation.qmd
     - reports/variable_importance.qmd
     - docs/intro_to_downscaling.qmd
     - docs/workflow_documentation.md
@@ -47,8 +47,8 @@ website:
         contents:
           - href: reports/downscaling_results.qmd
             text: Downscaling Results
-          - href: reports/design_points_analysis.qmd
-            text: Design Points Analysis
+          - href: reports/design_point_validation.qmd
+            text: Design Point Validation
           - href: reports/variable_importance.qmd
             text: Downscaling Model Evaluation
       - section: Docs
