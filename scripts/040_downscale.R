@@ -34,6 +34,7 @@ PRODUCTION         <- args$mode == "production"
 outputs_to_extract <- strsplit(args$outputs_to_extract, ",")[[1]]
 
 source(file.path(here::here(), "R", "helper.R"))
+source(file.path(here::here(), "R", "combine_mixed_crops.R"))
 no_cores <- max(future::availableCores() - 1, 1)
 future::plan(future::multicore, workers = no_cores)
 set.seed(42)

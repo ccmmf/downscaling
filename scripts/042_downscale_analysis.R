@@ -14,6 +14,7 @@ prepare_dir  <- file.path(run_dir, "output_prepare")
 model_outdir <- file.path(run_dir, "output_downscale")
 cache_dir    <- file.path(run_dir, "cache")
 
+source(file.path(here::here(), "R", "ggsave_optimized.R"))
 options(tibble.width = Inf, readr.show_col_types = FALSE)
 
 # Variable Importance (VI)
