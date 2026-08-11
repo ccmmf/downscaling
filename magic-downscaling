@@ -7,7 +7,7 @@
 #
 # Requires: yq (mikefarah/yq v4+), Rscript
 
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
@@ -84,11 +84,15 @@ check_r_libraries() {
   r_vec=$(printf '"%s",' "${libs_arr[@]}" | sed 's/,$//')
 
   local missing
-  missing=$(Rscript --vanilla -e "
+  if ! missing=$(Rscript --vanilla -e "
 pkgs <- c(${r_vec})
 missing <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]
 if (length(missing)) cat(paste(missing, collapse = ' '))
-" 2>/dev/null)
+" 2>&1); then
+    echo "magic-downscaling: Rscript failed while checking R package availability:" >&2
+    echo "  ${missing}" >&2
+    exit 1
+  fi
 
   if [[ -n "$missing" ]]; then
     echo "magic-downscaling: The following R packages are required for '${command}' but are not installed:" >&2
@@ -251,7 +255,10 @@ run_script() {
   if [[ $VERBOSE -eq 1 ]]; then
     echo "(cd \"${REPO_ROOT}\" && Rscript \"${script_path}\" $*)" >&2
   fi
-  (cd "$REPO_ROOT" && Rscript "$script_path" "$@")
+  if ! (cd "$REPO_ROOT" && Rscript "$script_path" "$@"); then
+    echo "magic-downscaling: ${script} failed" >&2
+    exit 1
+  fi
 }
 
 # --- Command handlers ---
