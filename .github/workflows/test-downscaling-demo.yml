@@ -1,0 +1,105 @@
+name: Test Downscaling Demo (Conda)
+
+# Runs the downscaling demo pipeline end-to-end (get-demo-data through
+# analyze) using a pre-built pecan-all conda environment for R. This
+# workflow does not build the environment — it must already exist at
+# $RUNNER_TOOL_CACHE/pecan-all-<version> on the runner (same convention as
+# the workflows repo's test-example-*-conda.yml).
+# 'cluster' is not run here — it needs raw CADWR/ERA5/SoilGrids/TWI access
+# that isn't part of the demo data bundle; 'prepare' stages pre-computed
+# covariates instead, matching local demo usage.
+# Requires a self-hosted runner with the aws CLI and network access to fetch
+# the demo data bundle.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pecan_env_version:
+        description: 'pecan-all conda env version (e.g. 1.14)'
+        default: '1.14'
+        required: false
+  push:
+    branches: [develop]
+    paths:
+      - 'scripts/**'
+      - 'R/**'
+      - 'downscaling_manifest.yaml'
+      - 'magic-downscaling'
+      - 'example_user_config.yaml'
+      - '.github/workflows/test-downscaling-demo.yml'
+      - '.github/ci/downscaling_ci_config.yaml'
+
+env:
+  PECAN_ENV_VERSION: ${{ github.event.inputs.pecan_env_version || '1.14' }}
+  CONFIG: .github/ci/downscaling_ci_config.yaml
+
+jobs:
+  run:
+    name: Downscaling demo (conda)
+    runs-on: self-hosted
+    timeout-minutes: 480
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: garage
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Locate conda environment
+        run: |
+          PECAN_ENV_PATH="${RUNNER_TOOL_CACHE}/pecan-all-${PECAN_ENV_VERSION}"
+          if [[ ! -d "${PECAN_ENV_PATH}" ]]; then
+            echo "::error::No pecan-all conda environment found for version ${PECAN_ENV_VERSION} at ${PECAN_ENV_PATH}."
+            echo "Set it up there before dispatching this workflow with pecan_env_version=${PECAN_ENV_VERSION}."
+            exit 1
+          fi
+          echo "Using pecan-all ${PECAN_ENV_VERSION} at ${PECAN_ENV_PATH}"
+          echo "PECAN_ENV_PATH=${PECAN_ENV_PATH}" >> "$GITHUB_ENV"
+          echo "RETICULATE_PYTHON=${PECAN_ENV_PATH}/bin/python" >> "$GITHUB_ENV"
+
+      - name: Get demo data
+        run: |
+          set +u
+          eval "$(conda shell.bash hook)"
+          conda activate "${PECAN_ENV_PATH}"
+          set -u
+          ./magic-downscaling get-demo-data --verbose --config "$CONFIG"
+
+      - name: Prepare
+        run: |
+          set +u
+          eval "$(conda shell.bash hook)"
+          conda activate "${PECAN_ENV_PATH}"
+          set -u
+          ./magic-downscaling prepare --verbose --config "$CONFIG"
+
+      - name: Extract
+        run: |
+          set +u
+          eval "$(conda shell.bash hook)"
+          conda activate "${PECAN_ENV_PATH}"
+          set -u
+          ./magic-downscaling extract --verbose --config "$CONFIG"
+
+      - name: Downscale
+        run: |
+          set +u
+          eval "$(conda shell.bash hook)"
+          conda activate "${PECAN_ENV_PATH}"
+          set -u
+          ./magic-downscaling downscale --verbose --config "$CONFIG"
+
+      - name: Analyze
+        run: |
+          set +u
+          eval "$(conda shell.bash hook)"
+          conda activate "${PECAN_ENV_PATH}"
+          set -u
+          ./magic-downscaling analyze --verbose --config "$CONFIG"
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf ci-downscaling-rundir

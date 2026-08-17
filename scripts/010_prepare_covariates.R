@@ -9,15 +9,20 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--mode", type = "character", default = "production",
     help = "Run mode: production, dev, demo [default: %default]"),
   make_option("--n_cores", type = "integer", default = NULL,
-    help = "Number of parallel workers (default: availableCores()-1)")
+    help = "Number of parallel workers (default: availableCores()-1)"),
+  make_option("--raw_data_dir", type = "character",
+    help = "Path to raw data directory (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Output path for site covariates CSV (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
 
 run_dir       <- args$run_dir
-data_dir      <- file.path(run_dir, "data")
-raw_data_dir  <- file.path(run_dir, "data_raw")
-prepare_dir   <- file.path(run_dir, "output_prepare")
+data_dir      <- args$data_dir
+raw_data_dir  <- args$raw_data_dir
 ca_albers_crs <- "EPSG:3310"
 
 no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
@@ -305,7 +310,7 @@ site_covariates <- site_covariates |>
   )
 
 
-output_csv <- file.path(data_dir, "site_covariates.csv")
+output_csv <- args$covariates_csv
 readr::write_csv(site_covariates, output_csv)
 
 PEcAn.logger::logger.info("Saved site covariates to: ", output_csv)

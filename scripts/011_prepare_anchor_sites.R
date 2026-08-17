@@ -4,14 +4,21 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--run_dir", type = "character",
     help = "Path to the run directory (required)"),
   make_option("--mode", type = "character", default = "production",
-    help = "Run mode: production, dev, demo [default: %default]")
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--raw_data_dir", type = "character",
+    help = "Path to raw data directory (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--anchor_sites_csv", type = "character",
+    help = "Output path for anchor sites CSV (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 
 run_dir       <- args$run_dir
-data_dir      <- file.path(run_dir, "data")
-raw_data_dir  <- file.path(run_dir, "data_raw")
-prepare_dir   <- file.path(run_dir, "output_prepare")
+data_dir      <- args$data_dir
+raw_data_dir  <- args$raw_data_dir
 ca_albers_crs <- "EPSG:3310"
 
 source(file.path(here::here(), "R", "ggsave_optimized.R"))
@@ -57,7 +64,7 @@ if (!file.exists(cadwr_fields_gpkg)) {
 ca_fields <- sf::st_read(cadwr_fields_gpkg, quiet = TRUE) |>
   sf::st_transform(crs = ca_albers_crs)
 
-site_covariates_csv <- file.path(data_dir, "site_covariates.csv")
+site_covariates_csv <- args$covariates_csv
 site_covariates <- readr::read_csv(site_covariates_csv, show_col_types = FALSE) |>
   dplyr::mutate(site_id = as.character(site_id))
 
@@ -100,4 +107,4 @@ anchor_sites_with_ids |>
   sf::st_drop_geometry() |>
   dplyr::select(site_id, lat, lon, external_site_id, site_name, crops, pft) |>
   dplyr::mutate(across(c(lat, lon), ~ round(.x, 5))) |>
-  readr::write_csv(file.path(prepare_dir, "anchor_sites.csv"))
+  readr::write_csv(args$anchor_sites_csv)

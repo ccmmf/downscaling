@@ -199,7 +199,7 @@ get_mode_scalar() {
 # --- Load user config ---
 run_dir=$(get_val "global.run_dir" "")
 mode=$(get_val "downscaling.mode" "production")
-n_cores=$(get_val "downscaling.n_cores" "")
+n_cores=$(get_val "downscaling.n_cores" "1")  # we set default cores to 1; improve default value shipping soon
 pecan_output_dir=$(get_val "downscaling.pecan_output_dir" "")
 data_layers_dir=$(get_val "downscaling.data_layers_dir" "")
 anchor_site_locations=$(get_val "downscaling.anchor_site_locations" "")
@@ -261,58 +261,130 @@ run_script() {
   fi
 }
 
+# --- Populate STEPS/STEP_NAMES from the manifest for the current command. ---
+get_steps_array() {
+  STEPS=()
+  STEP_NAMES=()
+  local script name
+  while IFS= read -r script; do
+    [[ -z "$script" || "$script" == "null" ]] && continue
+    STEPS+=("$script")
+  done < <(yq eval ".steps.${COMMAND}[].script" "$MANIFEST" 2>/dev/null)
+  while IFS= read -r name; do
+    [[ -z "$name" || "$name" == "null" ]] && continue
+    STEP_NAMES+=("$name")
+  done < <(yq eval ".steps.${COMMAND}[].name" "$MANIFEST" 2>/dev/null)
+}
+
+# --- Resolve a manifest path key to an absolute path under run_dir. ---
+resolve_path() {
+  local key="$1" rel
+  rel=$(yq eval ".paths.${key}" "$MANIFEST" 2>/dev/null)
+  if [[ -z "$rel" || "$rel" == "null" ]]; then
+    echo "magic-downscaling: no path defined for key '${key}' in manifest" >&2; exit 1
+  fi
+  echo "${run_dir}/${rel}"
+}
+
+# --- Create the directory an output key needs before its script runs.
+# Directory-valued keys (manifest value has no '.', e.g. "cache") are created
+# directly; file-valued keys (e.g. "output_prepare/x.csv") have their parent
+# directory created instead. ---
+ensure_output_dir() {
+  local key="$1" resolved="$2" rel
+  rel=$(yq eval ".paths.${key}" "$MANIFEST" 2>/dev/null)
+  if [[ "$rel" == *.* ]]; then
+    mkdir -p "$(dirname "$resolved")"
+  else
+    mkdir -p "$resolved"
+  fi
+}
+
+# --- Resolve a scalar/list param key for the current mode. n_cores is the
+# one key not sourced from mode_params/fixed_values (it's user-config only,
+# defaulted to 1 in get_val above, so always has a value). pool_floors is a
+# map, not a scalar or list, so it gets its own "pft=n,pft=n" serialization. ---
+resolve_param() {
+  local key="$1"
+  case "$key" in
+    n_cores)
+      echo "$n_cores" ;;
+    outputs_to_extract|management_scenarios)
+      get_list "$key" || exit 1 ;;
+    pool_floors)
+      check_config_key "$MANIFEST" "mode_params.${mode}.pool_floors"
+      local parts=()
+      while IFS= read -r part; do
+        [[ -n "$part" ]] && parts+=("$part")
+      done < <(yq eval ".mode_params.${mode}.pool_floors | to_entries | .[] | .key + \"=\" + (.value | tostring)" "$MANIFEST" 2>/dev/null)
+      if [[ ${#parts[@]} -eq 0 ]]; then
+        echo "magic-downscaling: key 'mode_params.${mode}.pool_floors' has no value in manifest" >&2; exit 1
+      fi
+      local IFS=','
+      echo "${parts[*]}" ;;
+    *)
+      get_mode_scalar "$key" || exit 1 ;;
+  esac
+}
+
+# --- Build the full argument list (STEP_ARGS) for one named step of the
+# current command, entirely from the manifest's inputs/outputs/params for
+# that step. This is the only place that turns manifest declarations into
+# --flag values; no script-specific code lives here or in the command
+# handlers below. ---
+build_step_args() {
+  local name="$1"
+  STEP_ARGS=(--run_dir "$run_dir" --mode "$mode")
+
+  # Every command substitution below is followed by "|| exit 1" explicitly —
+  # do not rely on set -e propagating through "arr+=(\"$(cmd)\")"; that
+  # behavior is not reliable enough across bash versions to trust silently.
+  #
+  # Path variable resolution
+  local key resolved param_value
+  while IFS= read -r key; do
+    [[ -z "$key" || "$key" == "null" ]] && continue
+    resolved=$(resolve_path "$key") || exit 1
+    STEP_ARGS+=("--${key}" "$resolved")
+  done < <(yq eval ".steps.${COMMAND}[] | select(.name == \"${name}\") | .inputs[]" "$MANIFEST" 2>/dev/null)
+
+# output location resolution
+  while IFS= read -r key; do
+    [[ -z "$key" || "$key" == "null" ]] && continue
+    resolved=$(resolve_path "$key") || exit 1
+    ensure_output_dir "$key" "$resolved"
+    # a key can appear in both inputs and outputs (read-modify-write dirs
+    # like data_dir); don't pass the same flag twice.
+    if [[ " ${STEP_ARGS[*]} " != *" --${key} "* ]]; then
+      STEP_ARGS+=("--${key}" "$resolved")
+    fi
+  done < <(yq eval ".steps.${COMMAND}[] | select(.name == \"${name}\") | .outputs[]" "$MANIFEST" 2>/dev/null)
+
+# scalar parameter value resolution
+  while IFS= read -r key; do
+    [[ -z "$key" || "$key" == "null" ]] && continue
+    param_value=$(resolve_param "$key") || exit 1
+    STEP_ARGS+=("--${key}" "$param_value")
+  done < <(yq eval ".steps.${COMMAND}[] | select(.name == \"${name}\") | .params[]" "$MANIFEST" 2>/dev/null)
+}
+
 # --- Command handlers ---
 
-run_cluster() {
-  local pool_size n_design subsample_threshold pool_floors
-  pool_size=$(get_mode_scalar "pool_size") || exit 1
-  n_design=$(get_mode_scalar "n_design") || exit 1
-  subsample_threshold=$(get_mode_scalar "subsample_threshold") || exit 1
-
-  check_config_key "$MANIFEST" "mode_params.${mode}.pool_floors"
-  local floors_parts=()
-  while IFS= read -r part; do
-    [[ -n "$part" ]] && floors_parts+=("$part")
-  done < <(yq eval ".mode_params.${mode}.pool_floors | to_entries | .[] | .key + \"=\" + (.value | tostring)" "$MANIFEST" 2>/dev/null)
-  if [[ ${#floors_parts[@]} -eq 0 ]]; then
-    echo "magic-downscaling: key 'mode_params.${mode}.pool_floors' has no value in manifest" >&2; exit 1
-  fi
-  local IFS=','
-  pool_floors="${floors_parts[*]}"
-
-  mkdir -p "${run_dir}/output_prepare"
-
-  echo "magic-downscaling: cluster step 1 of 5: scripts/010_prepare_covariates.R"
-  run_script "scripts/010_prepare_covariates.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    ${n_cores:+--n_cores "$n_cores"}
-  echo "magic-downscaling: cluster step 1 completed"
-
-  echo "magic-downscaling: cluster step 2 of 5: scripts/011_prepare_anchor_sites.R"
-  run_script "scripts/011_prepare_anchor_sites.R" \
-    --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: cluster step 2 completed"
-
-  echo "magic-downscaling: cluster step 3 of 5: scripts/020_cluster_sites.R"
-  run_script "scripts/020_cluster_sites.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    --pool_size "$pool_size" \
-    --pool_floors "$pool_floors" \
-    --subsample_threshold "$subsample_threshold"
-  echo "magic-downscaling: cluster step 3 completed"
-
-  echo "magic-downscaling: cluster step 4 of 5: scripts/021_subsample_design_points.R"
-  run_script "scripts/021_subsample_design_points.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    --n_design "$n_design"
-  echo "magic-downscaling: cluster step 4 completed"
-
-  echo "magic-downscaling: cluster step 5 of 5: scripts/022_validate_design_points.R"
-  run_script "scripts/022_validate_design_points.R" \
-    --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: cluster step 5 completed"
-
-  echo "magic-downscaling: cluster finished"
+# Generic handler for every manifest-driven command (cluster/extract/
+# downscale/analyze): step list, script paths, and arguments all come from
+# the manifest. Adding, removing, or reordering a step only requires editing
+# downscaling_manifest.yaml.
+run_manifest_command() {
+  get_steps_array
+  local total="${#STEPS[@]}" i step_num script name
+  for i in "${!STEPS[@]}"; do
+    script="${STEPS[i]}"; name="${STEP_NAMES[i]}"; step_num=$((i + 1))
+    echo "magic-downscaling: ${COMMAND} step ${step_num} of ${total}: ${script}"
+    build_step_args "$name"
+    run_script "$script" "${STEP_ARGS[@]}"
+    echo "magic-downscaling: ${COMMAND} step ${step_num} completed"
+  done
+  echo "magic-downscaling: ${COMMAND} finished (${total} steps)"
 }
 
 run_prepare() {
@@ -379,58 +451,6 @@ run_prepare() {
   echo "magic-downscaling: prepare finished — run_dir ready: $run_dir"
 }
 
-run_extract() {
-  mkdir -p "${run_dir}/output_extract"
-
-  echo "magic-downscaling: extract step 1 of 2: scripts/030_extract_sipnet_output.R"
-  run_script "scripts/030_extract_sipnet_output.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    --outputs_to_extract "$outputs_to_extract" \
-    --management_scenarios "$management_scenarios"
-  echo "magic-downscaling: extract step 1 completed"
-
-  echo "magic-downscaling: extract step 2 of 2: scripts/031_aggregate_sipnet_output.R"
-  run_script "scripts/031_aggregate_sipnet_output.R" \
-    --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: extract step 2 completed"
-
-  echo "magic-downscaling: extract finished"
-}
-
-run_downscale() {
-  mkdir -p "${run_dir}/output_downscale"
-
-  echo "magic-downscaling: downscale step 1 of 2: scripts/040_downscale.R"
-  run_script "scripts/040_downscale.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    --outputs_to_extract "$outputs_to_extract"
-  echo "magic-downscaling: downscale step 1 completed"
-
-  echo "magic-downscaling: downscale step 2 of 2: scripts/041_aggregate_to_county.R"
-  run_script "scripts/041_aggregate_to_county.R" \
-    --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: downscale step 2 completed"
-
-  echo "magic-downscaling: downscale finished"
-}
-
-run_analyze() {
-  mkdir -p "${run_dir}/output_analyze"
-
-  echo "magic-downscaling: analyze step 1 of 2: scripts/042_downscale_analysis.R"
-  run_script "scripts/042_downscale_analysis.R" \
-    --run_dir "$run_dir" --mode "$mode"
-  echo "magic-downscaling: analyze step 1 completed"
-
-  echo "magic-downscaling: analyze step 2 of 2: scripts/043_county_level_plots.R"
-  run_script "scripts/043_county_level_plots.R" \
-    --run_dir "$run_dir" --mode "$mode" \
-    --management_scenarios "$management_scenarios"
-  echo "magic-downscaling: analyze step 2 completed"
-
-  echo "magic-downscaling: analyze finished"
-}
-
 # --- get-demo-data handler ---
 run_get_demo_data() {
   require_aws
@@ -486,8 +506,5 @@ fi
 case "$COMMAND" in
   get-demo-data) run_get_demo_data ;;
   prepare)       run_prepare ;;
-  cluster) run_cluster ;;
-  extract)       run_extract ;;
-  downscale)     run_downscale ;;
-  analyze)       run_analyze ;;
+  cluster|extract|downscale|analyze) run_manifest_command ;;
 esac

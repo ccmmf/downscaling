@@ -1,0 +1,12 @@
+# CI config for test-downscaling-demo.yml — same shape as example_user_config.yaml,
+# with an isolated run_dir so CI runs don't collide with local dev-run dirs.
+
+global:
+  run_dir: "ci-downscaling-rundir/"
+
+downscaling:
+  mode: demo
+  aws_profile: magic
+  pecan_output_dir: "demo-data/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
+  data_layers_dir: "demo-data/data"
+  anchor_site_locations: "data_raw/anchor_site_locations.csv"

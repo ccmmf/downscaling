@@ -11,13 +11,15 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--run_dir", type = "character",
     help = "Path to the run directory (required)"),
   make_option("--mode", type = "character", default = "production",
-    help = "Run mode: production, dev, demo [default: %default]")
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--downscale_dir", type = "character",
+    help = "Directory with downscaling results from 040, and where county/state summaries are written (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
 
 run_dir      <- args$run_dir
-model_outdir <- file.path(run_dir, "output_downscale")
+model_outdir <- args$downscale_dir
 PRODUCTION   <- args$mode == "production"
 DEMO         <- args$mode == "demo"
 

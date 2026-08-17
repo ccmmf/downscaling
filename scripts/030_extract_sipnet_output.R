@@ -21,14 +21,20 @@ args <- parse_args(OptionParser(option_list = list(
     help = "Comma-separated variables to extract [default: %default]"),
   make_option("--management_scenarios", type = "character",
     default = "baseline,compost,reduced_till,zero_till,reduced_irrig_drip,stacked",
-    help = "Comma-separated management scenarios [default: %default]")
+    help = "Comma-separated management scenarios [default: %default]"),
+  make_option("--model_outdir", type = "character",
+    help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
+  make_option("--extract_dir", type = "character",
+    help = "Output directory for extracted ensemble output (required)"),
+  make_option("--ensemble_output_csv", type = "character",
+    help = "Output path for the extracted ensemble output CSV (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
 
 run_dir              <- args$run_dir
-pecan_outdir         <- file.path(run_dir, "output")
-extract_dir          <- file.path(run_dir, "output_extract")
+pecan_outdir         <- args$model_outdir
+extract_dir          <- args$extract_dir
 PRODUCTION           <- args$mode == "production"
 DEMO                 <- args$mode == "demo"
 outputs_to_extract   <- strsplit(args$outputs_to_extract, ",")[[1]]
@@ -209,7 +215,7 @@ if (any(ens_results$variable_type == "flux")) {
     )
 }
 
-ensemble_output_csv <- file.path(extract_dir, "ensemble_output.csv")
+ensemble_output_csv <- args$ensemble_output_csv
 readr::write_csv(ens_results, ensemble_output_csv)
 PEcAn.logger::logger.info(
     "Extraction complete. ",

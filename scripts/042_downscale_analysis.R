@@ -4,15 +4,19 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--run_dir", type = "character",
     help = "Path to the run directory (required)"),
   make_option("--mode", type = "character", default = "production",
-    help = "Run mode: production, dev, demo [default: %default]")
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--downscale_dir", type = "character",
+    help = "Directory with downscaling results from 040 (required)"),
+  make_option("--cache_dir", type = "character",
+    help = "Path to cache directory for model/training artifacts (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 
 run_dir      <- args$run_dir
-data_dir     <- file.path(run_dir, "data")
-prepare_dir  <- file.path(run_dir, "output_prepare")
-model_outdir <- file.path(run_dir, "output_downscale")
-cache_dir    <- file.path(run_dir, "cache")
+model_outdir <- args$downscale_dir
+cache_dir    <- args$cache_dir
 
 source(file.path(here::here(), "R", "ggsave_optimized.R"))
 options(tibble.width = Inf, readr.show_col_types = FALSE)
@@ -39,7 +43,7 @@ downscale_preds <- vroom::vroom(
 meta <- jsonlite::read_json(meta_json, simplifyVector = TRUE)
 ensemble_ids <- if (!is.null(meta$ensembles)) meta$ensembles else sort(unique(downscale_preds$ensemble))
 
-covariates_csv <- file.path(prepare_dir, "site_covariates.csv")
+covariates_csv <- args$covariates_csv
 
 covariates <- readr::read_csv(covariates_csv) |>
   dplyr::select(site_id, where(is.numeric), -climregion_id)

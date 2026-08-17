@@ -18,18 +18,32 @@ args <- parse_args(OptionParser(option_list = list(
     help = "Run mode: production, dev, demo [default: %default]"),
   make_option("--outputs_to_extract", type = "character",
     default = "TotSoilCarb,AGB,N2O_flux,CH4_flux",
-    help = "Comma-separated variables to downscale [default: %default]")
+    help = "Comma-separated variables to downscale [default: %default]"),
+  make_option("--ensemble_output_csv", type = "character",
+    help = "Path to extracted ensemble output CSV, from 030 (required)"),
+  make_option("--ca_fields_gpkg", type = "character",
+    help = "Path to LandIQ fields GeoPackage (required)"),
+  make_option("--ca_field_attributes_csv", type = "character",
+    help = "Path to LandIQ field attributes CSV (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--model_outdir", type = "character",
+    help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
+  make_option("--downscale_dir", type = "character",
+    help = "Output directory for downscaling results (required)"),
+  make_option("--cache_dir", type = "character",
+    help = "Path to cache directory for model/training artifacts (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
 
 run_dir            <- args$run_dir
-data_dir           <- file.path(run_dir, "data")
-prepare_dir        <- file.path(run_dir, "output_prepare")
-pecan_outdir       <- file.path(run_dir, "output")
-extract_dir        <- file.path(run_dir, "output_extract")
-model_outdir       <- file.path(run_dir, "output_downscale")
-cache_dir          <- file.path(run_dir, "cache")
+data_dir           <- args$data_dir
+pecan_outdir       <- args$model_outdir
+model_outdir       <- args$downscale_dir
+cache_dir          <- args$cache_dir
 PRODUCTION         <- args$mode == "production"
 outputs_to_extract <- strsplit(args$outputs_to_extract, ",")[[1]]
 
@@ -42,7 +56,7 @@ options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 
 # Load ensemble output
-ensemble_csv <- file.path(extract_dir, "ensemble_output.csv")
+ensemble_csv <- args$ensemble_output_csv
 timer_read_ensemble <- step_timer()
 ensemble_data <- readr::read_csv(ensemble_csv) |>
   dplyr::rename(
@@ -81,7 +95,7 @@ end_date <- lubridate::as_date(max(ensemble_data$datetime))
 # sessions don't re-read the gpkg.
 ## TODO: switch to memoise::memoise() or pass it in as an arg.
 if (!exists("ca_fields_full")) {
-  ca_fields_full <- sf::read_sf(file.path(data_dir, "ca_fields.gpkg"))
+  ca_fields_full <- sf::read_sf(args$ca_fields_gpkg)
 }
 
 ca_fields <- ca_fields_full |>
@@ -107,7 +121,7 @@ ca_fields <- ca_fields |>
     .groups = "drop"
   )
 
-ca_field_attributes <- readr::read_csv(file.path(data_dir, "ca_field_attributes.csv"))
+ca_field_attributes <- readr::read_csv(args$ca_field_attributes_csv)
 
 # Pick PFTs that show up in both the ensemble data and the field table
 ensemble_pfts <- sort(unique(ensemble_data$pft))
@@ -121,7 +135,7 @@ if (length(pfts) == 0) {
 }
 
 # Load site covariates
-covariates_csv <- file.path(prepare_dir, "site_covariates.csv")
+covariates_csv <- args$covariates_csv
 timer_read_cov <- step_timer()
 covariates <- readr::read_csv(covariates_csv) |>
   dplyr::select(

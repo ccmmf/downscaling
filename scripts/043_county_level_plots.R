@@ -8,13 +8,18 @@ args <- parse_args(OptionParser(option_list = list(
     help = "Run mode: production, dev, demo [default: %default]"),
   make_option("--management_scenarios", type = "character",
     default = "baseline,compost,reduced_till,zero_till,reduced_irrig_drip,stacked",
-    help = "Comma-separated management scenarios [default: %default]")
+    help = "Comma-separated management scenarios [default: %default]"),
+  make_option("--ca_fields_gpkg", type = "character",
+    help = "Path to LandIQ fields GeoPackage (required)"),
+  make_option("--ca_counties_gpkg", type = "character",
+    help = "Path to California counties GeoPackage (required)"),
+  make_option("--downscale_dir", type = "character",
+    help = "Directory with downscaling results from 040 (required)")
 )))
 if (is.null(args$run_dir)) stop("--run_dir is required")
 
 run_dir              <- args$run_dir
-data_dir             <- file.path(run_dir, "data")
-model_outdir         <- file.path(run_dir, "output_downscale")
+model_outdir         <- args$downscale_dir
 management_scenarios <- strsplit(args$management_scenarios, ",")[[1]]
 
 source(file.path(here::here(), "R", "ggsave_optimized.R"))
@@ -104,7 +109,7 @@ format_unit_label <- function(model_output,
 }
 
 # load data.
-county_boundaries <- sf::st_read(file.path(data_dir, "ca_counties.gpkg"))
+county_boundaries <- sf::st_read(args$ca_counties_gpkg)
 
 county_summaries <- readr::read_csv(
   file.path(model_outdir, "county_aggregated_preds.csv"),
@@ -557,7 +562,7 @@ dp <- dp |>
   dplyr::select(-.gas_factor)
 
 # field centroids.
-ca_fields <- sf::st_read(file.path(data_dir, "ca_fields.gpkg"))
+ca_fields <- sf::st_read(args$ca_fields_gpkg)
 field_centroids <- ca_fields |>
   sf::st_centroid() |>
   dplyr::select(site_id, geom)
