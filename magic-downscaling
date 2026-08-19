@@ -20,13 +20,14 @@ usage() {
 Usage: magic-downscaling [--config <path>] [--verbose] <command>
 
 Commands:
-  get-demo-data   Download and extract demo artifacts to demo-data/ in the repo root.
+  get-demo-data   Download and extract demo artifacts to ./demo-data/, relative to
+                  the directory you invoke the CLI from (not necessarily the repo root).
                   Run once before prepare. Requires AWS CLI. Uses the AWS profile
-                  specified by downscaling.aws_profile in config (default: 'magic').
+                  specified by global.aws_profile in config (default: 'magic').
   prepare         Stage ensemble output and data layers into run_dir.
                   Run after magic-ensemble run-ensembles, before extract.
   cluster         Extract covariates, anchor sites, cluster design points.
-                  Run before magic-ensemble. (Placeholder name — to be renamed.)
+                  Run before magic-ensemble.
   extract         Read SIPNET outputs, reshape to EFI format, aggregate scenarios.
   downscale       Random Forest downscaling to all LandIQ fields; aggregate to county.
   analyze         Diagnostic summaries, uncertainty quantification, plots.
@@ -83,14 +84,20 @@ check_r_libraries() {
   local r_vec
   r_vec=$(printf '"%s",' "${libs_arr[@]}" | sed 's/,$//')
 
-  local missing
-  if ! missing=$(Rscript --vanilla -e "
+  local missing rc rscript_stderr stderr_file
+  stderr_file=$(mktemp)
+  missing=$(Rscript --vanilla -e "
 pkgs <- c(${r_vec})
 missing <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]
 if (length(missing)) cat(paste(missing, collapse = ' '))
-" 2>&1); then
+" 2>"$stderr_file")
+  rc=$?
+  rscript_stderr=$(cat "$stderr_file")
+  rm -f "$stderr_file"
+
+  if [[ $rc -ne 0 ]]; then
     echo "magic-downscaling: Rscript failed while checking R package availability:" >&2
-    echo "  ${missing}" >&2
+    echo "  ${rscript_stderr}" >&2
     exit 1
   fi
 
@@ -261,19 +268,31 @@ run_script() {
   fi
 }
 
-# --- Populate STEPS/STEP_NAMES from the manifest for the current command. ---
+# --- Populate STEPS/STEP_NAMES from the manifest for the current command.
+# Every step must declare both `script` and `name` — a step missing either
+# is a manifest error and stops the whole command immediately. (Dispatch
+# elsewhere is name-keyed via `select(.name == ...)`, so a missing name
+# doesn't just misalign an index, it silently breaks that lookup too.) ---
 get_steps_array() {
   STEPS=()
   STEP_NAMES=()
-  local script name
-  while IFS= read -r script; do
-    [[ -z "$script" || "$script" == "null" ]] && continue
+  local total i script name
+  total=$(yq eval ".steps.${COMMAND} | length" "$MANIFEST" 2>/dev/null)
+  [[ -z "$total" || "$total" == "null" ]] && total=0
+  for ((i = 0; i < total; i++)); do
+    script=$(yq eval ".steps.${COMMAND}[${i}].script" "$MANIFEST" 2>/dev/null)
+    name=$(yq eval ".steps.${COMMAND}[${i}].name" "$MANIFEST" 2>/dev/null)
+    if [[ -z "$script" || "$script" == "null" ]]; then
+      echo "magic-downscaling: manifest error: steps.${COMMAND}[${i}] is missing 'script'." >&2
+      exit 1
+    fi
+    if [[ -z "$name" || "$name" == "null" ]]; then
+      echo "magic-downscaling: manifest error: steps.${COMMAND}[${i}] (script: ${script}) is missing 'name'." >&2
+      exit 1
+    fi
     STEPS+=("$script")
-  done < <(yq eval ".steps.${COMMAND}[].script" "$MANIFEST" 2>/dev/null)
-  while IFS= read -r name; do
-    [[ -z "$name" || "$name" == "null" ]] && continue
     STEP_NAMES+=("$name")
-  done < <(yq eval ".steps.${COMMAND}[].name" "$MANIFEST" 2>/dev/null)
+  done
 }
 
 # --- Resolve a manifest path key to an absolute path under run_dir. ---

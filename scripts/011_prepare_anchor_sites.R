@@ -14,7 +14,7 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--anchor_sites_csv", type = "character",
     help = "Output path for anchor sites CSV (required)")
 )))
-if (is.null(args$run_dir)) stop("--run_dir is required")
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
 
 run_dir       <- args$run_dir
 data_dir      <- args$data_dir

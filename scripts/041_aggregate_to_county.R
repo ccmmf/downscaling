@@ -15,8 +15,8 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--downscale_dir", type = "character",
     help = "Directory with downscaling results from 040, and where county/state summaries are written (required)")
 )))
-if (is.null(args$run_dir)) stop("--run_dir is required")
-if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
 
 run_dir      <- args$run_dir
 model_outdir <- args$downscale_dir

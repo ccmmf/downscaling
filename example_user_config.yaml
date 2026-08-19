@@ -7,6 +7,8 @@ global:
   # Relative paths are resolved from the directory where you invoke the CLI.
   # run_dir: "/path/to/run_dir"
   run_dir: "demo-run-dir/"
+  # AWS CLI profile used by get-demo-data to access S3. Defaults to 'magic'.
+  aws_profile: magic
 
 downscaling:
   # Run mode: production, dev, or demo
@@ -14,8 +16,6 @@ downscaling:
   #   dev         Reduced dataset for development (pool=500, n=100, TotSoilCarb only)
   #   demo        Same as dev, baseline scenario only
   mode: demo
-  # AWS CLI profile used by get-demo-data to access S3. Defaults to 'magic'.
-  aws_profile: magic
   # Number of parallel workers for applicable steps.
   # Defaults to availableCores() - 1 if not set.
   # n_cores: 4

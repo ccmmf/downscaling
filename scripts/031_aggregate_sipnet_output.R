@@ -25,7 +25,7 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--aggregated_output_csv", type = "character",
     help = "Output path for the multi-PFT aggregated CSV (required)")
 )))
-if (is.null(args$run_dir)) stop("--run_dir is required")
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
 
 run_dir <- args$run_dir
 

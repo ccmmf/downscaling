@@ -16,7 +16,7 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--downscale_dir", type = "character",
     help = "Directory with downscaling results from 040 (required)")
 )))
-if (is.null(args$run_dir)) stop("--run_dir is required")
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
 
 run_dir              <- args$run_dir
 model_outdir         <- args$downscale_dir

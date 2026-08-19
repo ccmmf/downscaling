@@ -17,8 +17,8 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--covariates_csv", type = "character",
     help = "Output path for site covariates CSV (required)")
 )))
-if (is.null(args$run_dir)) stop("--run_dir is required")
-if (!args$mode %in% c("production", "dev", "demo")) stop("--mode must be one of: production, dev, demo")
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
 
 run_dir       <- args$run_dir
 data_dir      <- args$data_dir

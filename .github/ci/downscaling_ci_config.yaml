@@ -3,10 +3,10 @@
 
 global:
   run_dir: "ci-downscaling-rundir/"
+  aws_profile: magic
 
 downscaling:
   mode: demo
-  aws_profile: magic
   pecan_output_dir: "demo-data/modelout/ccmmf_phase_3_scenarios_v2_n2o_ch4"
   data_layers_dir: "demo-data/data"
   anchor_site_locations: "data_raw/anchor_site_locations.csv"

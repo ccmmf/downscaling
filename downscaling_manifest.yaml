@@ -28,35 +28,35 @@ steps:
   cluster:
     - name: prepare_covariates
       script: "scripts/010_prepare_covariates.R"
-      r_libraries: [terra, sf, tidyverse, future, furrr, caladaptr]
+      r_libraries: [terra, sf, tidyverse, future, furrr, caladaptr, PEcAn.utils, knitr]
       inputs:  [raw_data_dir, data_dir]
       outputs: [data_dir, covariates_csv]
       params:  [n_cores]
 
     - name: prepare_anchor_sites
       script: "scripts/011_prepare_anchor_sites.R"
-      r_libraries: [sf, tidyverse, caladaptr]
+      r_libraries: [sf, tidyverse, here, knitr, magick, units, withr]
       inputs:  [raw_data_dir, data_dir, covariates_csv]
       outputs: [anchor_sites_csv]
       params:  []
 
     - name: cluster_sites
       script: "scripts/020_cluster_sites.R"
-      r_libraries: [tidyverse, sf, furrr, purrr]
+      r_libraries: [tidyverse, purrr, ClusterR, here]
       inputs:  [covariates_csv, anchor_sites_csv, data_dir]
       outputs: [clustered_sites_csv, cache_dir]
       params:  [pool_size, pool_floors, subsample_threshold]
 
     - name: subsample_design_points
       script: "scripts/021_subsample_design_points.R"
-      r_libraries: [tidyverse, sf]
+      r_libraries: [tidyverse, here]
       inputs:  [clustered_sites_csv, covariates_csv, anchor_sites_csv, cache_dir]
       outputs: [design_points_csv, cache_dir]
       params:  [n_design]
 
     - name: validate_design_points
       script: "scripts/022_validate_design_points.R"
-      r_libraries: [tidyverse, ggplot2, sf]
+      r_libraries: [tidyverse, ggplot2, sf, here, knitr, magick, withr]
       inputs:  [design_points_csv, covariates_csv, anchor_sites_csv, cache_dir, data_dir]
       outputs: []
       params:  []
@@ -64,14 +64,14 @@ steps:
   extract:
     - name: extract_sipnet_output
       script: "scripts/030_extract_sipnet_output.R"
-      r_libraries: [PEcAn.utils, PEcAn.settings, furrr, tidyverse]
+      r_libraries: [PEcAn.utils, PEcAn.settings, furrr, future, tidyverse]
       inputs:  [model_outdir]
       outputs: [extract_dir, ensemble_output_csv]
       params:  [outputs_to_extract, management_scenarios]
 
     - name: aggregate_sipnet_output
       script: "scripts/031_aggregate_sipnet_output.R"
-      r_libraries: [tidyverse]
+      r_libraries: [tidyverse, here, PEcAn.utils, lubridate]
       inputs:  [ensemble_output_csv]
       outputs: [aggregated_output_csv]
       params:  []
@@ -79,14 +79,14 @@ steps:
   downscale:
     - name: downscale
       script: "scripts/040_downscale.R"
-      r_libraries: [PEcAnAssimSequential, tidyverse, sf, ranger]
+      r_libraries: [PEcAnAssimSequential, tidyverse, sf, ranger, randomForest, arrow, future, here, janitor, jsonlite, knitr, lubridate, PEcAn.utils]
       inputs:  [ensemble_output_csv, ca_fields_gpkg, ca_field_attributes_csv, covariates_csv, data_dir, model_outdir]
       outputs: [downscale_dir, cache_dir]
       params:  [outputs_to_extract]
 
     - name: aggregate_to_county
       script: "scripts/041_aggregate_to_county.R"
-      r_libraries: [tidyverse]
+      r_libraries: [tidyverse, arrow, jsonlite, vroom]
       inputs:  [downscale_dir]
       outputs: [downscale_dir]
       params:  []
@@ -94,14 +94,14 @@ steps:
   analyze:
     - name: downscale_analysis
       script: "scripts/042_downscale_analysis.R"
-      r_libraries: [tidyverse, ggplot2]
+      r_libraries: [tidyverse, ggplot2, here, janitor, jsonlite, magick, iml, vroom, withr, randomForest]
       inputs:  [covariates_csv, downscale_dir, cache_dir]
       outputs: [cache_dir]
       params:  []
 
     - name: county_level_plots
       script: "scripts/043_county_level_plots.R"
-      r_libraries: [tidyverse, ggplot2, sf]
+      r_libraries: [tidyverse, ggplot2, sf, here, magick, patchwork, scales, vroom, withr, PEcAn.data.land]
       inputs:  [ca_fields_gpkg, ca_counties_gpkg, downscale_dir]
       outputs: []
       params:  [management_scenarios]
@@ -138,8 +138,7 @@ paths:
   # step's inputs/outputs — 040/041 write several files under downscale_dir
   # (e.g. "downscaled_preds.csv", not "downscaled_output.csv" as this key
   # would imply) and read/write it as a directory rather than one CSV. Left
-  # here unused rather than guessing at a rename; see
-  # docs/manifest-driven-cli-design.md.
+  # here unused rather than guessing at a rename.
   downscale_dir:     "output_downscale"
   downscaled_csv:    "output_downscale/downscaled_output.csv"
   county_totals_csv: "output_downscale/county_totals.csv"
