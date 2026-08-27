@@ -25,6 +25,9 @@ s3:
   data_layers_artifact: "ccmmf_downscaling_data_layers.tgz"
 
 steps:
+  # cluster is intentionally disconnected from magic-downscaling (not a
+  # recognized CLI verb) -- this block and scripts/010-022 remain in place,
+  # but nothing currently dispatches to them.
   cluster:
     - name: prepare_covariates
       script: "scripts/010_prepare_covariates.R"
@@ -61,20 +64,17 @@ steps:
       outputs: []
       params:  []
 
+  # scripts/031_aggregate_sipnet_output.R (mixed-system aggregation) is
+  # intentionally excluded here -- it isn't wired in because the monitoring
+  # and ensembles workflows don't yet generate its required inputs. The
+  # script remains in the repo as a non-CLI tool until that's addressed.
   extract:
     - name: extract_sipnet_output
       script: "scripts/030_extract_sipnet_output.R"
       r_libraries: [PEcAn.utils, PEcAn.settings, furrr, future, tidyverse]
       inputs:  [model_outdir]
-      outputs: [extract_dir, ensemble_output_csv]
+      outputs: [ensemble_output_csv]
       params:  [outputs_to_extract, management_scenarios]
-
-    - name: aggregate_sipnet_output
-      script: "scripts/031_aggregate_sipnet_output.R"
-      r_libraries: [tidyverse, here, PEcAn.utils, lubridate]
-      inputs:  [ensemble_output_csv]
-      outputs: [aggregated_output_csv]
-      params:  []
 
   downscale:
     - name: downscale
@@ -122,32 +122,16 @@ paths:
   cache_dir:       "cache"
 
   # --- output_prepare/ outputs (scripts 010-021) ---
-  prepare_dir:          "output_prepare"
   covariates_csv:       "output_prepare/site_covariates.csv"
   anchor_sites_csv:     "output_prepare/anchor_sites.csv"
   clustered_sites_csv:  "output_prepare/clustered_sites.csv"
   design_points_csv:    "output_prepare/design_points.csv"
 
-  # --- output_extract/ outputs (scripts 030-031) ---
-  extract_dir:           "output_extract"
+  # --- output_extract/ outputs (script 030) ---
   ensemble_output_csv:   "output_extract/ensemble_output.csv"
-  aggregated_output_csv: "output_extract/aggregated_sipnet_output.csv"
 
   # --- output_downscale/ outputs (scripts 040-041) ---
-  # NOTE: downscaled_csv/county_totals_csv are not currently wired into any
-  # step's inputs/outputs — 040/041 write several files under downscale_dir
-  # (e.g. "downscaled_preds.csv", not "downscaled_output.csv" as this key
-  # would imply) and read/write it as a directory rather than one CSV. Left
-  # here unused rather than guessing at a rename.
   downscale_dir:     "output_downscale"
-  downscaled_csv:    "output_downscale/downscaled_output.csv"
-  county_totals_csv: "output_downscale/county_totals.csv"
-
-  # --- output_analyze/ (scripts 042-043) ---
-  # NOTE: neither script currently writes here — 042 writes into cache_dir,
-  # 043 writes only to the repo-root figures/ dir (outside run_dir). Left
-  # unused rather than guessing at intent.
-  analyze_dir:   "output_analyze"
 
 # Fixed domain values. Not user-overridable.
 fixed_values:

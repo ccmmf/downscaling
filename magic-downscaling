@@ -26,8 +26,6 @@ Commands:
                   specified by global.aws_profile in config (default: 'magic').
   prepare         Stage ensemble output and data layers into run_dir.
                   Run after magic-ensemble run-ensembles, before extract.
-  cluster         Extract covariates, anchor sites, cluster design points.
-                  Run before magic-ensemble.
   extract         Read SIPNET outputs, reshape to EFI format, aggregate scenarios.
   downscale       Random Forest downscaling to all LandIQ fields; aggregate to county.
   analyze         Diagnostic summaries, uncertainty quantification, plots.
@@ -120,7 +118,7 @@ while [[ $# -gt 0 ]]; do
       [[ $# -lt 2 ]] && { echo "magic-downscaling: --config requires a PATH." >&2; usage >&2; exit 1; }
       CONFIG_FILE="$2"; shift 2 ;;
     --verbose) VERBOSE=1; shift ;;
-    get-demo-data|prepare|cluster|extract|downscale|analyze) COMMAND="$1"; shift ;;
+    get-demo-data|prepare|extract|downscale|analyze) COMMAND="$1"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "magic-downscaling: Unknown option: $1" >&2; usage >&2; exit 1 ;;
   esac
@@ -389,10 +387,11 @@ build_step_args() {
 
 # --- Command handlers ---
 
-# Generic handler for every manifest-driven command (cluster/extract/
-# downscale/analyze): step list, script paths, and arguments all come from
-# the manifest. Adding, removing, or reordering a step only requires editing
-# downscaling_manifest.yaml.
+# Generic handler for every manifest-driven command (extract/downscale/
+# analyze): step list, script paths, and arguments all come from the
+# manifest. Adding, removing, or reordering a step only requires editing
+# downscaling_manifest.yaml. (cluster's steps.cluster manifest block is
+# still present but unreachable from the CLI -- see downscaling_manifest.yaml.)
 run_manifest_command() {
   get_steps_array
   local total="${#STEPS[@]}" i step_num script name
@@ -525,5 +524,5 @@ fi
 case "$COMMAND" in
   get-demo-data) run_get_demo_data ;;
   prepare)       run_prepare ;;
-  cluster|extract|downscale|analyze) run_manifest_command ;;
+  extract|downscale|analyze) run_manifest_command ;;
 esac

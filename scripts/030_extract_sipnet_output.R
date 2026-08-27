@@ -24,8 +24,6 @@ args <- parse_args(OptionParser(option_list = list(
     help = "Comma-separated management scenarios [default: %default]"),
   make_option("--model_outdir", type = "character",
     help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
-  make_option("--extract_dir", type = "character",
-    help = "Output directory for extracted ensemble output (required)"),
   make_option("--ensemble_output_csv", type = "character",
     help = "Output path for the extracted ensemble output CSV (required)")
 )))
@@ -34,7 +32,6 @@ if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe(
 
 run_dir              <- args$run_dir
 pecan_outdir         <- args$model_outdir
-extract_dir          <- args$extract_dir
 PRODUCTION           <- args$mode == "production"
 DEMO                 <- args$mode == "demo"
 outputs_to_extract   <- strsplit(args$outputs_to_extract, ",")[[1]]
