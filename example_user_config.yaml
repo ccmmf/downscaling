@@ -17,7 +17,9 @@ downscaling:
   #   demo        Same as dev, baseline scenario only
   mode: demo
   # Number of parallel workers for applicable steps.
-  # Defaults to availableCores() - 1 if not set.
+  # Defaults to SLURM_JOB_CPUS_PER_NODE if set (running under Slurm), else 1.
+  # Set explicitly to override -- e.g. if you're running in an already-reserved
+  # compute session where SLURM_JOB_CPUS_PER_NODE isn't set in your shell.
   # n_cores: 4
 
   # Source paths for the two required data artifacts.

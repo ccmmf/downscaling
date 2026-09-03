@@ -38,7 +38,11 @@ Options:
 User config keys:
   global.run_dir              Working directory for this run (required except for get-demo-data).
   downscaling.mode            Run mode: production (default), dev, or demo.
-  downscaling.n_cores         Parallel workers for applicable steps (default: availableCores()-1).
+  downscaling.n_cores         Parallel workers for applicable steps. Defaults to
+                              SLURM_JOB_CPUS_PER_NODE if set (i.e. running under Slurm),
+                              else 1. Set explicitly to override either default, e.g. when
+                              invoking the CLI in an already-reserved compute session where
+                              SLURM_JOB_CPUS_PER_NODE isn't propagated to your shell.
   downscaling.pecan_output_dir        Source path for PEcAn/SIPNET ensemble output (optional; if set, prepare stages it).
   downscaling.data_layers_dir         Source path for spatial data layers (required for prepare).
   downscaling.anchor_site_locations   Path to anchor site locations CSV (required for prepare).
@@ -204,7 +208,7 @@ get_mode_scalar() {
 # --- Load user config ---
 run_dir=$(get_val "global.run_dir" "")
 mode=$(get_val "downscaling.mode" "production")
-n_cores=$(get_val "downscaling.n_cores" "1")  # we set default cores to 1; improve default value shipping soon
+n_cores=$(get_val "downscaling.n_cores" "${SLURM_JOB_CPUS_PER_NODE:-1}")
 pecan_output_dir=$(get_val "downscaling.pecan_output_dir" "")
 data_layers_dir=$(get_val "downscaling.data_layers_dir" "")
 anchor_site_locations=$(get_val "downscaling.anchor_site_locations" "")
@@ -318,9 +322,10 @@ ensure_output_dir() {
 }
 
 # --- Resolve a scalar/list param key for the current mode. n_cores is the
-# one key not sourced from mode_params/fixed_values (it's user-config only,
-# defaulted to 1 in get_val above, so always has a value). pool_floors is a
-# map, not a scalar or list, so it gets its own "pft=n,pft=n" serialization. ---
+# one key not sourced from mode_params/fixed_values -- it's user-config only,
+# defaulted above to SLURM_JOB_CPUS_PER_NODE (if set) or 1, so always has a
+# value. pool_floors is a map, not a scalar or list, so it gets its own
+# "pft=n,pft=n" serialization. ---
 resolve_param() {
   local key="$1"
   case "$key" in

@@ -74,7 +74,7 @@ steps:
       r_libraries: [PEcAn.utils, PEcAn.settings, furrr, future, tidyverse]
       inputs:  [model_outdir]
       outputs: [ensemble_output_csv]
-      params:  [outputs_to_extract, management_scenarios]
+      params:  [outputs_to_extract, management_scenarios, n_cores]
 
   downscale:
     - name: downscale
@@ -82,7 +82,7 @@ steps:
       r_libraries: [PEcAnAssimSequential, tidyverse, sf, ranger, randomForest, arrow, future, here, janitor, jsonlite, knitr, lubridate, PEcAn.utils]
       inputs:  [ensemble_output_csv, ca_fields_gpkg, ca_field_attributes_csv, covariates_csv, data_dir, model_outdir]
       outputs: [downscale_dir, cache_dir]
-      params:  [outputs_to_extract]
+      params:  [outputs_to_extract, n_cores]
 
     - name: aggregate_to_county
       script: "scripts/041_aggregate_to_county.R"

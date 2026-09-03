@@ -22,6 +22,8 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--management_scenarios", type = "character",
     default = "baseline,compost,reduced_till,zero_till,reduced_irrig_drip,stacked",
     help = "Comma-separated management scenarios [default: %default]"),
+  make_option("--n_cores", type = "integer", default = NULL,
+    help = "Number of parallel workers (default: availableCores()-1)"),
   make_option("--model_outdir", type = "character",
     help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
   make_option("--ensemble_output_csv", type = "character",
@@ -37,7 +39,7 @@ DEMO                 <- args$mode == "demo"
 outputs_to_extract   <- strsplit(args$outputs_to_extract, ",")[[1]]
 management_scenarios <- strsplit(args$management_scenarios, ",")[[1]]
 
-no_cores <- max(future::availableCores() - 1, 1)
+no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
 future::plan(future::multicore, workers = no_cores)
 options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("***Starting SIPNET output extraction***")
