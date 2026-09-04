@@ -42,8 +42,9 @@ conda activate pecan-all-1.16
 ./magic-downscaling analyze       --config example_user_config.yaml   # diagnostics, uncertainty, plots
 ```
 
-Each command reads/writes under `global.run_dir` (`demo-run-dir/` in the example
-config) and prints its own progress; run any command with `--verbose` to also echo
+Outputs go under `global.run_dir`, except demo downloads (`./demo-data/`) and
+generated figures (repository `figures/`). Each command prints its own progress;
+run any command with `--verbose` to also echo
 the underlying `Rscript` invocations. `example_user_config.yaml` is commented with
 what each key does — copy it as the starting point for a real config, updating:
 
