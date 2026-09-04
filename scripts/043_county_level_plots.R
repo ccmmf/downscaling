@@ -14,9 +14,12 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--ca_counties_gpkg", type = "character",
     help = "Path to California counties GeoPackage (required)"),
   make_option("--downscale_dir", type = "character",
-    help = "Directory with downscaling results from 040 (required)")
+    help = "Directory with downscaling results from 040 (required)"),
+  make_option("--figures_dir", type = "character",
+    help = "Output directory for generated figures (required)")
 )))
 if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (is.null(args$figures_dir)) PEcAn.logger::logger.severe("--figures_dir is required")
 
 run_dir              <- args$run_dir
 model_outdir         <- args$downscale_dir
@@ -214,7 +217,7 @@ for (row_i in seq_len(nrow(combos))) {
       )
 
     ggsave_optimized(
-      filename = here::here("figures", paste0(
+      filename = file.path(args$figures_dir, paste0(
         "county_", safe_key(scn), "_", safe_key(pft_i), "_", mo_i, "_carbon_stock.webp"
       )),
       plot = p, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -260,7 +263,7 @@ for (row_i in seq_len(nrow(combos))) {
     )
 
   ggsave_optimized(
-    filename = here::here("figures", paste0(
+    filename = file.path(args$figures_dir, paste0(
       "facet_county_", safe_key(pft_i), "_", mo_i, "_stock_comparison.webp"
     )),
     plot = p_facet, width = 18, height = 12, units = "in", dpi = 150, bg = "white"
@@ -358,7 +361,7 @@ if (length(non_baseline) > 0) {
         )
 
       ggsave_optimized(
-        filename = here::here("figures", paste0(
+        filename = file.path(args$figures_dir, paste0(
           "diff_county_", safe_key(scn), "_", safe_key(pft_i), "_", mo_i, "_vs_baseline.webp"
         )),
         plot = p_diff, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -421,7 +424,7 @@ if (length(non_baseline) > 0) {
       )
 
     ggsave_optimized(
-      filename = here::here("figures", paste0(
+      filename = file.path(args$figures_dir, paste0(
         "facet_diff_county_", safe_key(pft_i), "_", mo_i, "_vs_baseline.webp"
       )),
       plot = p_fdiff, width = 18, height = 12, units = "in", dpi = 150, bg = "white"
@@ -505,7 +508,7 @@ if (length(non_baseline) > 0) {
         )
 
       ggsave_optimized(
-        filename = here::here("figures", paste0(
+        filename = file.path(args$figures_dir, paste0(
           "mixed_county_", safe_key(pft_i), "_", mo_i, "_baseline_plus_diffs.webp"
         )),
         plot = p_mixed, width = 20, height = 14, units = "in", dpi = 150, bg = "white"
@@ -638,7 +641,7 @@ for (row_i in seq_len(nrow(combos_field))) {
       )
 
     ggsave_optimized(
-      filename = here::here("figures", paste0(
+      filename = file.path(args$figures_dir, paste0(
         "field_", safe_key(scn), "_", safe_key(pft_i), "_", mo_i, "_carbon_density.webp"
       )),
       plot = p, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -689,7 +692,7 @@ for (row_i in seq_len(nrow(combos_field))) {
     )
 
   ggsave_optimized(
-    filename = here::here("figures", paste0(
+    filename = file.path(args$figures_dir, paste0(
       "facet_field_", safe_key(pft_i), "_", mo_i, "_density_comparison.webp"
     )),
     plot = p_facet, width = 18, height = 12, units = "in", dpi = 150, bg = "white"
@@ -764,7 +767,7 @@ if (length(non_baseline) > 0) {
         )
 
       ggsave_optimized(
-        filename = here::here("figures", paste0(
+        filename = file.path(args$figures_dir, paste0(
           "diff_field_", safe_key(scn), "_", safe_key(pft_i), "_", mo_i, "_vs_baseline.webp"
         )),
         plot = p, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -839,7 +842,7 @@ if (length(non_baseline) > 0) {
       )
 
     ggsave_optimized(
-      filename = here::here("figures", paste0(
+      filename = file.path(args$figures_dir, paste0(
         "facet_diff_field_", safe_key(pft_i), "_", mo_i, "_vs_baseline.webp"
       )),
       plot = p_fdiff, width = 18, height = 12, units = "in", dpi = 150, bg = "white"
@@ -925,7 +928,7 @@ if (nrow(mix) > 0 && nrow(wood) > 0) {
         )
 
       ggsave_optimized(
-        filename = here::here("figures", paste0(
+        filename = file.path(args$figures_dir, paste0(
           "county_diff_woody_plus_annual_minus_woody_", pool, "_carbon_stock.webp"
         )),
         plot = p_stock, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -1030,7 +1033,7 @@ if (file.exists(delta_csv)) {
         )
 
       ggsave_optimized(
-        filename = here::here("figures", paste0(
+        filename = file.path(args$figures_dir, paste0(
           "county_delta_", safe_key(scenario), "_", safe_key(pft), "_", model_output, "_carbon_stock.webp"
         )),
         plot = p_stk, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -1162,7 +1165,7 @@ for (comp_i in co2e_components) {
       )
 
     ggsave_optimized(
-      filename = here::here("figures", paste0(
+      filename = file.path(args$figures_dir, paste0(
         "co2e_county_", safe_key(scn), "_", comp_i, ".webp"
       )),
       plot = p_co2e, width = 10, height = 8, units = "in", dpi = 150, bg = "white"
@@ -1205,7 +1208,7 @@ for (comp_i in co2e_components) {
     )
 
   ggsave_optimized(
-    filename = here::here("figures", paste0(
+    filename = file.path(args$figures_dir, paste0(
       "facet_co2e_county_", comp_i, ".webp"
     )),
     plot = p_facet, width = 18, height = 12, units = "in", dpi = 150, bg = "white"

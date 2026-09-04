@@ -96,14 +96,14 @@ steps:
       script: "scripts/042_downscale_analysis.R"
       r_libraries: [tidyverse, ggplot2, here, janitor, jsonlite, magick, iml, vroom, withr, randomForest]
       inputs:  [covariates_csv, downscale_dir, cache_dir]
-      outputs: [cache_dir]
+      outputs: [figures_dir]
       params:  []
 
     - name: county_level_plots
       script: "scripts/043_county_level_plots.R"
       r_libraries: [tidyverse, ggplot2, sf, here, magick, patchwork, scales, vroom, withr, PEcAn.data.land]
       inputs:  [ca_fields_gpkg, ca_counties_gpkg, downscale_dir]
-      outputs: []
+      outputs: [figures_dir]
       params:  [management_scenarios]
 
 # Path definitions: all relative to run_dir.
@@ -132,6 +132,9 @@ paths:
 
   # --- output_downscale/ outputs (scripts 040-041) ---
   downscale_dir:     "output_downscale"
+
+  # --- output_analyze/ outputs (scripts 042-043) ---
+  figures_dir:       "output_analyze/figures"
 
 # Fixed domain values. Not user-overridable.
 fixed_values:

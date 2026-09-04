@@ -10,9 +10,12 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--downscale_dir", type = "character",
     help = "Directory with downscaling results from 040 (required)"),
   make_option("--cache_dir", type = "character",
-    help = "Path to cache directory for model/training artifacts (required)")
+    help = "Path to cache directory for model/training artifacts (required)"),
+  make_option("--figures_dir", type = "character",
+    help = "Output directory for generated figures (required)")
 )))
 if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (is.null(args$figures_dir)) PEcAn.logger::logger.severe("--figures_dir is required")
 
 run_dir      <- args$run_dir
 model_outdir <- args$downscale_dir
@@ -140,13 +143,13 @@ for (row in seq_len(nrow(spec_table))) {
     pred_var_name <- top_predictors[j]
     ale <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ale")
     ggsave_optimized(
-      filename = here::here("figures", paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ALE_predictor", j, ".svg")),
+      filename = file.path(args$figures_dir, paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ALE_predictor", j, ".svg")),
       plot = plot(ale) + ggplot2::ggtitle(paste("ALE for", pred_var_name, "on", pool, "-", pft_i)),
       width = 6, height = 4, units = "in"
     )
     ice <- iml::FeatureEffect$new(predictor_obj, feature = pred_var_name, method = "ice")
     ggsave_optimized(
-      filename = here::here("figures", paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ICE_predictor", j, ".svg")),
+      filename = file.path(args$figures_dir, paste0(janitor::make_clean_names(pft_i), "_", janitor::make_clean_names(pool), "_ICE_predictor", j, ".svg")),
       plot = plot(ice) + ggplot2::ggtitle(paste("ICE for", pred_var_name, "on", pool, "-", pft_i)),
       width = 6, height = 4, units = "in"
     )
@@ -224,8 +227,8 @@ for (row in seq_len(nrow(spec_table))) {
   PEcAn.logger::logger.info("Creating importance and partial plots (PDP) for", paste(pft_i, pool, sep = "::"))
   clean_pft <- janitor::make_clean_names(pft_i)
   clean_pool <- janitor::make_clean_names(pool)
-  importance_partial_plot_fig <- here::here(
-    "figures",
+  importance_partial_plot_fig <- file.path(
+    args$figures_dir,
     paste0(clean_pft, "_", clean_pool, "_importance_partial_plots.png")
   )
 
@@ -313,7 +316,7 @@ vi_summary_plot <- ggplot2::ggplot(
   )
 
 ggsave_optimized(
-  filename = here::here("figures", "variable_importance_summary.png"),
+  filename = file.path(args$figures_dir, "variable_importance_summary.png"),
   plot = vi_summary_plot,
   width = 10, height = 7, units = "in"
 )
