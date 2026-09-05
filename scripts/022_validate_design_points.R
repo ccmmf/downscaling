@@ -1,5 +1,30 @@
 library(ggplot2)
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--design_points_csv", type = "character",
+    help = "Path to design points CSV, from 021 (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--anchor_sites_csv", type = "character",
+    help = "Path to anchor sites CSV, from 011 (required)"),
+  make_option("--cache_dir", type = "character",
+    help = "Path to cache directory for clustering artifacts (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
+
+run_dir   <- args$run_dir
+data_dir  <- args$data_dir
+cache_dir <- args$cache_dir
+
+source(file.path(here::here(), "R", "ggsave_optimized.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Design Point Validation ***")
 
 # tabular KPIs + diagnostic figures. produces:
@@ -18,19 +43,19 @@ if (!dir.exists(reports_dir)) dir.create(reports_dir, recursive = TRUE)
 
 ##inputs
 design_points <- readr::read_csv(
-  here::here("data", "design_points.csv"),
+  args$design_points_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 site_covariates <- readr::read_csv(
-  file.path(data_dir, "site_covariates.csv"),
+  args$covariates_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 anchor_sites <- readr::read_csv(
-  here::here("data", "anchor_sites.csv"),
+  args$anchor_sites_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))

@@ -1,8 +1,35 @@
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--n_design", type = "integer", default = 1000L,
+    help = "Design point subsample size [default: %default]"),
+  make_option("--clustered_sites_csv", type = "character",
+    help = "Path to clustered sites CSV, from 020 (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--anchor_sites_csv", type = "character",
+    help = "Path to anchor sites CSV, from 011 (required)"),
+  make_option("--cache_dir", type = "character",
+    help = "Path to cache directory for clustering artifacts (required)"),
+  make_option("--design_points_csv", type = "character",
+    help = "Output path for design points CSV (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
+
+run_dir   <- args$run_dir
+cache_dir <- args$cache_dir
+n_design  <- args$n_design
+
+source(file.path(here::here(), "R", "fps_sampler.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Subsampling design points from clustered pool ***")
 
-# n_design is defined in 000-config.R. 021 emits data/design_points.csv
-# with that many rows, sliced from the nested FPS order cached below.
+# 021 emits output_prepare/design_points.csv with n_design rows, sliced from
+# the nested FPS order cached below.
 
 clustering_path <- file.path(cache_dir, "clustering_pool.rds")
 if (!file.exists(clustering_path)) {
@@ -13,19 +40,19 @@ if (!file.exists(clustering_path)) {
 clustering <- readRDS(clustering_path)
 
 clustered_sites <- readr::read_csv(
-  here::here("data", "clustered_sites.csv"),
+  args$clustered_sites_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 site_covariates <- readr::read_csv(
-  file.path(data_dir, "site_covariates.csv"),
+  args$covariates_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
 
 anchor_sites <- readr::read_csv(
-  here::here("data", "anchor_sites.csv"),
+  args$anchor_sites_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
@@ -116,7 +143,7 @@ design_points <- clustered_sites |>
   dplyr::filter(site_id %in% design_ids) |>
   dplyr::select(site_id, lat, lon, pft)
 
-readr::write_csv(design_points, here::here("data", "design_points.csv"))
+readr::write_csv(design_points, args$design_points_csv)
 PEcAn.logger::logger.info(
-  nrow(design_points), " design points -> data/design_points.csv"
+  nrow(design_points), " design points -> ", args$design_points_csv
 )

@@ -2,7 +2,32 @@
 # writes data/site_covariates.csv for downstream clustering in 020.
 # CRS: EPSG:3310 for spatial joins, 4326 for lat/lon output.
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--n_cores", type = "integer", default = NULL,
+    help = "Number of parallel workers (default: availableCores()-1)"),
+  make_option("--raw_data_dir", type = "character",
+    help = "Path to raw data directory (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--covariates_csv", type = "character",
+    help = "Output path for site covariates CSV (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
+
+run_dir       <- args$run_dir
+data_dir      <- args$data_dir
+raw_data_dir  <- args$raw_data_dir
+ca_albers_crs <- "EPSG:3310"
+
+no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Starting Environmental Covariate Preparation ***")
 
 CRS_ALBERS <- 3310L
@@ -285,7 +310,7 @@ site_covariates <- site_covariates |>
   )
 
 
-output_csv <- file.path(data_dir, "site_covariates.csv")
+output_csv <- args$covariates_csv
 readr::write_csv(site_covariates, output_csv)
 
 PEcAn.logger::logger.info("Saved site covariates to: ", output_csv)

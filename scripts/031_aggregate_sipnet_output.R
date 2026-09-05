@@ -14,7 +14,23 @@
 ##   woody_cover  -> f_{woody}
 ##   annual_cover -> f_{annual}
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--ensemble_output_csv", type = "character",
+    help = "Path to extracted ensemble output CSV, from 030 (required)"),
+  make_option("--aggregated_output_csv", type = "character",
+    help = "Output path for the multi-PFT aggregated CSV (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+
+run_dir <- args$run_dir
+
+source(file.path(here::here(), "R", "combine_mixed_crops.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 
 # Skip: multi-PFT aggregation is not applicable for single-PFT management
 # scenarios. We hard-exit so the master orchestrator sees exit code 0 and
@@ -30,7 +46,8 @@ quit(save = "no", status = 0)
 PEcAn.logger::logger.info("*** Starting multi-PFT aggregation ***")
 
 # ---- Load ensemble output ----------------------------------------------------
-ensemble_output_csv <- file.path(model_outdir, "ensemble_output.csv")
+model_outdir <- dirname(args$ensemble_output_csv)
+ensemble_output_csv <- args$ensemble_output_csv
 ensemble_data_all <- readr::read_csv(ensemble_output_csv) |>
   # rename EFI std names for clarity
   # efi name   | new name

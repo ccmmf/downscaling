@@ -1,14 +1,53 @@
 library(ggplot2)
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--pool_size", type = "integer", default = 10000L,
+    help = "Clustered-site pool size [default: %default]"),
+  make_option("--pool_floors", type = "character",
+    default = "annual crop=700,woody perennial crop=300",
+    help = "Per-PFT minimum pool allocation as 'pft=n,...' [default: %default]"),
+  make_option("--subsample_threshold", type = "integer", default = 20000L,
+    help = "Threshold triggering two-stage clustering [default: %default]"),
+  make_option("--covariates_csv", type = "character",
+    help = "Path to site covariates CSV, from 010 (required)"),
+  make_option("--anchor_sites_csv", type = "character",
+    help = "Path to anchor sites CSV, from 011 (required)"),
+  make_option("--data_dir", type = "character",
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--clustered_sites_csv", type = "character",
+    help = "Output path for clustered sites CSV (required)"),
+  make_option("--cache_dir", type = "character",
+    help = "Path to cache directory for clustering artifacts (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
+
+run_dir     <- args$run_dir
+data_dir    <- args$data_dir
+cache_dir   <- args$cache_dir
+
+pool_size           <- args$pool_size
+subsample_threshold <- args$subsample_threshold
+pool_floors_pairs <- strsplit(args$pool_floors, ",")[[1]]
+pool_floors <- setNames(
+  as.integer(sapply(pool_floors_pairs, function(p) strsplit(p, "=")[[1]][2])),
+  sapply(pool_floors_pairs, function(p) strsplit(p, "=")[[1]][1])
+)
+
+source(file.path(here::here(), "R", "cluster_design_points.R"))
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("*** Clustering sites into pool ***")
 
-# pool_size, pool_floors, subsample_threshold are defined in 000-config.R.
 # pool is the frozen cluster artifact; 021 subsamples from it
 seed <- 42L
 
 # load covariates and coordinates
 site_covariates <- readr::read_csv(
-  file.path(data_dir, "site_covariates.csv"),
+  args$covariates_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
@@ -58,7 +97,7 @@ PEcAn.logger::logger.info(
 
 # anchor sites to force include
 anchor_sites <- readr::read_csv(
-  here::here("data", "anchor_sites.csv"),
+  args$anchor_sites_csv,
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
@@ -103,7 +142,7 @@ clustered_sites <- purrr::imap_dfr(results, function(r, pft_name) {
   dplyr::select(site_id, lat, lon, pft, cluster, dist_to_centroid) |>
   dplyr::mutate(dplyr::across(c(lat, lon), \(x) round(x, 5)))
 
-readr::write_csv(clustered_sites, here::here("data", "clustered_sites.csv"))
+readr::write_csv(clustered_sites, args$clustered_sites_csv)
 
 # cache for 021 (subsampling) and 022 (validation)
 if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE)
@@ -132,5 +171,5 @@ sites_clustered <- purrr::imap_dfr(results, function(r, pft_name) {
 saveRDS(sites_clustered, file.path(cache_dir, "sites_clustered.rds"))
 
 PEcAn.logger::logger.info(
-  nrow(clustered_sites), " clustered sites -> data/clustered_sites.csv"
+  nrow(clustered_sites), " clustered sites -> ", args$clustered_sites_csv
 )

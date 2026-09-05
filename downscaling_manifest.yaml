@@ -1,0 +1,182 @@
+# Downscaling workflow manifest: fixed paths, step I/O, and domain parameters.
+# CLI loads this automatically; do not pass via --config.
+#
+# Paths: All entries under 'paths' are inside the run directory.
+# Keys are referenced by name in steps (inputs/outputs). At runtime the CLI
+# resolves each path as run_dir + "/" + value and passes it to the script as
+# --<key> <resolved-path>. Scripts receive these directly; they do not derive
+# paths from --run_dir themselves (except run_dir/mode, which are universal).
+#
+# Steps: Each command has a list of step objects. Each step has:
+#   name:        Short identifier for this step
+#   script:      Script path (relative to downscaling repo root)
+#   r_libraries: R packages to check before running this script
+#   inputs:      List of path keys this script reads (each becomes --<key>)
+#   outputs:     List of path keys this script creates or writes (each becomes --<key>)
+#   params:      List of scalar/list keys this script needs, resolved from
+#                mode_params.$mode.<key> falling back to fixed_values.<key>
+#                (each becomes --<key>); n_cores is the one exception, sourced
+#                from the user config instead (see magic-downscaling)
+
+s3:
+  bucket: "carb"
+  key_prefix: "data_raw"
+  scenarios_artifact: "ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz"
+  data_layers_artifact: "ccmmf_downscaling_data_layers.tgz"
+
+steps:
+  # cluster is intentionally disconnected from magic-downscaling (not a
+  # recognized CLI verb) -- this block and scripts/010-022 remain in place,
+  # but nothing currently dispatches to them.
+  cluster:
+    - name: prepare_covariates
+      script: "scripts/010_prepare_covariates.R"
+      r_libraries: [terra, sf, tidyverse, future, furrr, caladaptr, PEcAn.utils, knitr]
+      inputs:  [raw_data_dir, data_dir]
+      outputs: [data_dir, covariates_csv]
+      params:  [n_cores]
+
+    - name: prepare_anchor_sites
+      script: "scripts/011_prepare_anchor_sites.R"
+      r_libraries: [sf, tidyverse, here, knitr, magick, units, withr]
+      inputs:  [raw_data_dir, data_dir, covariates_csv]
+      outputs: [anchor_sites_csv]
+      params:  []
+
+    - name: cluster_sites
+      script: "scripts/020_cluster_sites.R"
+      r_libraries: [tidyverse, purrr, ClusterR, here]
+      inputs:  [covariates_csv, anchor_sites_csv, data_dir]
+      outputs: [clustered_sites_csv, cache_dir]
+      params:  [pool_size, pool_floors, subsample_threshold]
+
+    - name: subsample_design_points
+      script: "scripts/021_subsample_design_points.R"
+      r_libraries: [tidyverse, here]
+      inputs:  [clustered_sites_csv, covariates_csv, anchor_sites_csv, cache_dir]
+      outputs: [design_points_csv, cache_dir]
+      params:  [n_design]
+
+    - name: validate_design_points
+      script: "scripts/022_validate_design_points.R"
+      r_libraries: [tidyverse, ggplot2, sf, here, knitr, magick, withr]
+      inputs:  [design_points_csv, covariates_csv, anchor_sites_csv, cache_dir, data_dir]
+      outputs: []
+      params:  []
+
+  # scripts/031_aggregate_sipnet_output.R (mixed-system aggregation) is
+  # intentionally excluded here -- it isn't wired in because the monitoring
+  # and ensembles workflows don't yet generate its required inputs. The
+  # script remains in the repo as a non-CLI tool until that's addressed.
+  extract:
+    - name: extract_sipnet_output
+      script: "scripts/030_extract_sipnet_output.R"
+      r_libraries: [PEcAn.utils, PEcAn.settings, furrr, future, tidyverse]
+      inputs:  [model_outdir]
+      outputs: [ensemble_output_csv]
+      params:  [outputs_to_extract, management_scenarios, n_cores]
+
+  downscale:
+    - name: downscale
+      script: "scripts/040_downscale.R"
+      r_libraries: [PEcAnAssimSequential, tidyverse, sf, ranger, randomForest, arrow, future, here, janitor, jsonlite, knitr, lubridate, PEcAn.utils]
+      inputs:  [ensemble_output_csv, ca_fields_gpkg, ca_field_attributes_csv, covariates_csv, data_dir, model_outdir]
+      outputs: [downscale_dir, cache_dir]
+      params:  [outputs_to_extract, n_cores]
+
+    - name: aggregate_to_county
+      script: "scripts/041_aggregate_to_county.R"
+      r_libraries: [tidyverse, arrow, jsonlite, vroom]
+      inputs:  [downscale_dir]
+      outputs: [downscale_dir]
+      params:  []
+
+  analyze:
+    - name: downscale_analysis
+      script: "scripts/042_downscale_analysis.R"
+      r_libraries: [tidyverse, ggplot2, here, janitor, jsonlite, magick, iml, vroom, withr, randomForest]
+      inputs:  [covariates_csv, downscale_dir, cache_dir]
+      outputs: [cache_dir]
+      params:  []
+
+    - name: county_level_plots
+      script: "scripts/043_county_level_plots.R"
+      r_libraries: [tidyverse, ggplot2, sf, here, magick, patchwork, scales, vroom, withr, PEcAn.data.land]
+      inputs:  [ca_fields_gpkg, ca_counties_gpkg, downscale_dir]
+      outputs: []
+      params:  [management_scenarios]
+
+# Path definitions: all relative to run_dir.
+# Keys are referenced by name in steps (inputs/outputs).
+# CLI resolves each as run_dir + "/" + value at runtime.
+paths:
+  # --- Read-only inputs (staged before magic-downscaling runs) ---
+  raw_data_dir:            "data_raw"
+  data_dir:                "data"
+  ca_fields_gpkg:          "data/ca_fields.gpkg"
+  ca_field_attributes_csv: "data/ca_field_attributes.csv"
+  ca_counties_gpkg:        "data/ca_counties.gpkg"
+  model_outdir:            "output"
+
+  # --- cache ---
+  cache_dir:       "cache"
+
+  # --- output_prepare/ outputs (scripts 010-021) ---
+  covariates_csv:       "output_prepare/site_covariates.csv"
+  anchor_sites_csv:     "output_prepare/anchor_sites.csv"
+  clustered_sites_csv:  "output_prepare/clustered_sites.csv"
+  design_points_csv:    "output_prepare/design_points.csv"
+
+  # --- output_extract/ outputs (script 030) ---
+  ensemble_output_csv:   "output_extract/ensemble_output.csv"
+
+  # --- output_downscale/ outputs (scripts 040-041) ---
+  downscale_dir:     "output_downscale"
+
+# Fixed domain values. Not user-overridable.
+fixed_values:
+  seed: 42
+  ca_albers_crs: "EPSG:3310"
+  outputs_to_extract:
+    - TotSoilCarb
+    - AGB
+    - N2O_flux
+    - CH4_flux
+  management_scenarios:
+    - baseline
+    - compost
+    - reduced_till
+    - zero_till
+    - reduced_irrig_drip
+    - stacked
+
+# Mode-specific parameter overrides.
+# Where a key is absent, fixed_values is the fallback.
+mode_params:
+  production:
+    pool_size: 10000
+    n_design: 1000
+    pool_floors:
+      "annual crop": 700
+      "woody perennial crop": 300
+    subsample_threshold: 20000
+  dev:
+    pool_size: 500
+    n_design: 100
+    pool_floors:
+      "annual crop": 35
+      "woody perennial crop": 15
+    subsample_threshold: 5000
+    outputs_to_extract:
+      - TotSoilCarb
+  demo:
+    pool_size: 500
+    n_design: 100
+    pool_floors:
+      "annual crop": 35
+      "woody perennial crop": 15
+    subsample_threshold: 5000
+    outputs_to_extract:
+      - TotSoilCarb
+    management_scenarios:
+      - baseline

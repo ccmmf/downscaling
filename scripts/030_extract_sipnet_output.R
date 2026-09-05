@@ -10,7 +10,38 @@
 # TODO: write out EML metadata so we are fully EFI compliant
 # TODO: extend to multi-PFT scenarios once woody crop runs are added
 
-source("000-config.R")
+library(optparse)
+args <- parse_args(OptionParser(option_list = list(
+  make_option("--run_dir", type = "character",
+    help = "Path to the run directory (required)"),
+  make_option("--mode", type = "character", default = "production",
+    help = "Run mode: production, dev, demo [default: %default]"),
+  make_option("--outputs_to_extract", type = "character",
+    default = "TotSoilCarb,AGB,N2O_flux,CH4_flux",
+    help = "Comma-separated variables to extract [default: %default]"),
+  make_option("--management_scenarios", type = "character",
+    default = "baseline,compost,reduced_till,zero_till,reduced_irrig_drip,stacked",
+    help = "Comma-separated management scenarios [default: %default]"),
+  make_option("--n_cores", type = "integer", default = NULL,
+    help = "Number of parallel workers (default: availableCores()-1)"),
+  make_option("--model_outdir", type = "character",
+    help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
+  make_option("--ensemble_output_csv", type = "character",
+    help = "Output path for the extracted ensemble output CSV (required)")
+)))
+if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
+if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
+
+run_dir              <- args$run_dir
+pecan_outdir         <- args$model_outdir
+PRODUCTION           <- args$mode == "production"
+DEMO                 <- args$mode == "demo"
+outputs_to_extract   <- strsplit(args$outputs_to_extract, ",")[[1]]
+management_scenarios <- strsplit(args$management_scenarios, ",")[[1]]
+
+no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
+future::plan(future::multicore, workers = no_cores)
+options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("***Starting SIPNET output extraction***")
 
 # Site lat/lon for all 100 annual_crop sites
@@ -183,7 +214,7 @@ if (any(ens_results$variable_type == "flux")) {
     )
 }
 
-ensemble_output_csv <- file.path(pecan_outdir, "ensemble_output.csv")
+ensemble_output_csv <- args$ensemble_output_csv
 readr::write_csv(ens_results, ensemble_output_csv)
 PEcAn.logger::logger.info(
     "Extraction complete. ",
