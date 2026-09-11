@@ -134,13 +134,24 @@ if (fps_fresh) {
   PEcAn.logger::logger.info("cached FPS order -> ", fps_cache_path)
 }
 
-# slice the first n_by_pft[p] from each PFT's FPS order
-design_ids <- unlist(purrr::imap(fps_order, function(ids, pft_name) {
-  head(ids, n_by_pft[pft_name])
-}))
+# take the first n_by_pft[p] from each PFT's FPS order, then interleave the PFTs.
+# FPS order is nested, so any prefix is space filling. slot places each point at its
+# fractional position within its own PFT; sorting on it merges the lists in proportion
+# to the allocation, so a prefix of the design keeps both PFTs near the full-set ratio.
+design_ids <- purrr::imap(fps_order, function(ids, pft_name) {
+  n <- min(n_by_pft[[pft_name]], length(ids))
+  tibble::tibble(
+    site_id = ids[seq_len(n)],
+    slot = (seq_len(n) - 0.5) / n
+  )
+}) |>
+  dplyr::bind_rows() |>
+  dplyr::arrange(slot)
 
-design_points <- clustered_sites |>
-  dplyr::filter(site_id %in% design_ids) |>
+# join onto design_ids, not the other way round: a filter would return
+# clustered_sites row order and discard the ordering built above
+design_points <- design_ids |>
+  dplyr::left_join(clustered_sites, by = "site_id") |>
   dplyr::select(site_id, lat, lon, pft)
 
 readr::write_csv(design_points, args$design_points_csv)
