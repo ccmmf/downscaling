@@ -1,3 +1,3 @@
 pft,n_clusters,min_size,median_size,max_size,gini
-annual crop,5195,1,32,382,0.4430126902220846
-woody perennial crop,4805,1,42,683,0.5200735878619364
+annual crop,5171,1,25,335,0.43596790367359495
+woody perennial crop,4829,1,32,387,0.4599844136610505
