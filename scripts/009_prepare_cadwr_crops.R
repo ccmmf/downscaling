@@ -14,10 +14,12 @@ source("000-config.R")
 PEcAn.logger::logger.info("Preparing CADWR crops data")
 
 ##input paths
-landiq_dir <- file.path(ccmmf_dir, "LandIQ-harmonized-v4.1")
+# use the consolidated parcels; the unconsolidated file also contains sliver geometry
+landiq_dir <- file.path(ccmmf_dir, paste0("LandIQ-harmonized-", landiq_version))
 crops_parq <- file.path(landiq_dir, "crops_all_years.parq")
-parcels_gpkg <- file.path(landiq_dir, "parcels.gpkg")
-pft_mapping_csv <- file.path(raw_data_dir, "cadwr_land_use", "CARB_PFTs_table.csv")
+parcels_gpkg <- file.path(landiq_dir, "parcels-consolidated.gpkg")
+# crop code lookup covering both DWR legends (2016 codes and the 2021 renumbering)
+pft_mapping_csv <- file.path(raw_data_dir, "cadwr_land_use", "LandIQ_cropCode_lookup_table.csv")
 
 for (f in c(crops_parq, parcels_gpkg, pft_mapping_csv)) {
   if (!file.exists(f)) {
