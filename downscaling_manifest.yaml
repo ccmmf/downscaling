@@ -60,7 +60,7 @@ steps:
     - name: validate_design_points
       script: "scripts/022_validate_design_points.R"
       r_libraries: [tidyverse, ggplot2, sf, here, knitr, magick, withr]
-      inputs:  [design_points_csv, covariates_csv, anchor_sites_csv, cache_dir, data_dir]
+      inputs:  [design_points_csv, covariates_csv, anchor_sites_csv, cache_dir, data_dir, parcels_gpkg]
       outputs: []
       params:  []
 
@@ -117,6 +117,8 @@ paths:
   ca_field_attributes_csv: "data/ca_field_attributes.csv"
   ca_counties_gpkg:        "data/ca_counties.gpkg"
   model_outdir:            "output"
+  # consolidated parcel geometry; 022 checks every design point against it
+  parcels_gpkg:            "data/parcels-consolidated.gpkg"
 
   # --- cache ---
   cache_dir:       "cache"
