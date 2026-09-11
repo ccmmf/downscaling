@@ -98,13 +98,12 @@ calif_fields <- sf::st_read(cadwr_sites_gpkg, quiet = TRUE) |>
 
 calif_field_attributes <- readr::read_csv(cadwr_summary_csv, show_col_types = FALSE) |>
   dplyr::mutate(site_id = as.character(site_id)) |>
+  # non-cropland parcels arrive from 009 with pft = NA and are removed by the
+  # drop_na() further down, so no land use filter is needed here
   dplyr::rename(
     crop = dominant_crop,
     pft = dominant_pft
-  ) |>
-  # drop urban / idle / greenhouse / nursery rows;
-  # and the big urban polygons inflate area share by ~33%
-  dplyr::filter(!grepl("urban|idle|greenhouse|nursery", crop, ignore.case = TRUE))
+  )
 
 ##EOF features from 009 (optional, merged later)
 eof_features <- NULL
