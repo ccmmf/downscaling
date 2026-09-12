@@ -42,6 +42,20 @@ ids <- site_covariates$site_id
 
 years_covered <- c(2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)
 
+# each product is read from management_dir/<product>/<version>/, pinned in 000-config.R.
+# the queries below glob that directory, so check it resolves rather than returning
+# zero rows and giving every parcel an NA covariate.
+mgmt_product_dir <- function(product) {
+  d <- file.path(management_dir, product, mgmt_versions[[product]])
+  if (!dir.exists(d)) {
+    PEcAn.logger::logger.severe("management product dir not found: ", d)
+  }
+  if (length(list.files(d, pattern = "\\.parq")) == 0) {
+    PEcAn.logger::logger.severe("no parquet files in management product dir: ", d)
+  }
+  d
+}
+
 ##tillage
 # NDTI percent change is rescaled to [0, 1] as a rank and averaged across
 # years. parcels with no detected event get 0 for both intensity and freq.
@@ -59,7 +73,7 @@ on.exit({
 DBI::dbWriteTable(till_conn, "wanted_ids",
                   data.frame(site_id_int = as.integer(ids)),
                   temporary = TRUE)
-till_dir <- file.path(management_dir, "tillage")
+till_dir <- mgmt_product_dir("tillage")
 tillage_mgmt <- DBI::dbGetQuery(till_conn, sprintf("
   WITH src AS (
     SELECT CAST(site_id AS BIGINT) AS site_id_int,
@@ -95,7 +109,7 @@ on.exit({
 DBI::dbWriteTable(phen_conn, "wanted_ids",
                   data.frame(site_id_int = as.integer(ids)),
                   temporary = TRUE)
-phen_dir <- file.path(management_dir, "phenology")
+phen_dir <- mgmt_product_dir("phenology")
 phen_mgmt <- DBI::dbGetQuery(phen_conn, sprintf("
   WITH src AS (
     SELECT CAST(site_id AS BIGINT) AS site_id_int,
@@ -132,7 +146,7 @@ on.exit({
 DBI::dbWriteTable(irr_conn, "wanted_ids",
                   data.frame(site_id_int = as.integer(ids)),
                   temporary = TRUE)
-irr_dir <- file.path(management_dir, "irrigation")
+irr_dir <- mgmt_product_dir("irrigation")
 irr_mgmt <- DBI::dbGetQuery(irr_conn, sprintf("
   WITH src AS (
     SELECT CAST(parcel_id AS BIGINT) AS site_id_int, method

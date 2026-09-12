@@ -64,15 +64,29 @@ if (DEMO) {
 
 ##site selection outputs + management staging
 # stage under usr/akash to avoid clobbering the shared data dir artifacts used by any prev runs
-# management/ holds the per-product parquets read by 012:
-# phenology/, tillage/, irrigation/.
+# management_s3/ mirrors s3://carb/management/<product>/<version>/. the version is in
+# the path so a run record can state what was read; bump mgmt_versions to move to a new
+# one rather than overwriting in place.
+# data/ and cache/ are specific to a parcel basis, so the consolidated build writes to
+# its own directories and leaves the v4.1 artifacts intact.
 akash_dir      <- "/projectnb/dietzelab/ccmmf/usr/akash"
-data_dir       <- file.path(akash_dir, "data")
-cache_dir      <- file.path(akash_dir, "cache")
-management_dir <- file.path(akash_dir, "management")
+data_dir       <- file.path(akash_dir, "data_consolidated_v4.1.2")
+cache_dir      <- file.path(akash_dir, "cache_consolidated_v4.1.2")
+management_dir <- file.path(akash_dir, "management_s3")
+mgmt_versions  <- c(phenology = "v2.0", tillage = "v1.0", irrigation = "v1.1")
+
+# management_dir is deliberately not created here: it is staged from s3, and a missing
+# one means the stage step never ran.
+for (d in c(data_dir, cache_dir)) {
+  if (!dir.exists(d)) dir.create(d, recursive = TRUE)
+}
 
 raw_data_dir <- file.path(ccmmf_dir, "data_raw")
 model_outdir <- pecan_outdir
+
+##parcel basis (009)
+# v4.1.2 adds gap-filled crop identity and ADOY; its geometry is shared with v4.1.
+landiq_version <- "v4.1.2"
 
 # design-point clustering + subsampling (020, 022).
 # pool_size is the clustered-site pool (frozen artifact).

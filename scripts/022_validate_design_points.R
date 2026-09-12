@@ -14,7 +14,10 @@ args <- parse_args(OptionParser(option_list = list(
   make_option("--cache_dir", type = "character",
     help = "Path to cache directory for clustering artifacts (required)"),
   make_option("--data_dir", type = "character",
-    help = "Path to staged/cached data directory (required)")
+    help = "Path to staged/cached data directory (required)"),
+  make_option("--parcels_gpkg", type = "character",
+    help = paste("Path to parcels-consolidated.gpkg. If given, every design point",
+                 "must resolve to a parcel in it or validation fails."))
 )))
 if (is.null(args$run_dir)) PEcAn.logger::logger.severe("--run_dir is required")
 if (!args$mode %in% c("production", "dev", "demo")) PEcAn.logger::logger.severe("--mode must be one of: production, dev, demo")
@@ -59,6 +62,23 @@ anchor_sites <- readr::read_csv(
   show_col_types = FALSE
 ) |>
   dplyr::mutate(site_id = as.character(site_id))
+
+# every design point must exist in the consolidated parcels or it cannot be run
+if (!is.null(args$parcels_gpkg)) {
+  parcel_ids <- sf::st_read(
+    args$parcels_gpkg, quiet = TRUE,
+    query = paste0("SELECT parcel_id FROM \"", sf::st_layers(args$parcels_gpkg)$name[1], "\"")
+  )
+  missing_ids <- setdiff(design_points$site_id, as.character(parcel_ids$parcel_id))
+  if (length(missing_ids) > 0) {
+    PEcAn.logger::logger.severe(
+      length(missing_ids), " of ", nrow(design_points), " design points are absent from ",
+      basename(args$parcels_gpkg), "; first few: ",
+      paste(utils::head(missing_ids, 10), collapse = ", ")
+    )
+  }
+  PEcAn.logger::logger.info("all ", nrow(design_points), " design points are runnable")
+}
 
 clustering_path <- file.path(cache_dir, "clustering_pool.rds")
 if (!file.exists(clustering_path)) {
