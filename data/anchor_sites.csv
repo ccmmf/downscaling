@@ -14,8 +14,8 @@ site_id,lat,lon,external_site_id,site_name,crops,pft
 440393,39.57712,-121.86221,US-RGB,Butte County Rice Farm,Rice,herbaceous crop
 420343,37.69949,-121.1391,US-RGF,Stanislaus Forage Farm,Forage crops,herbaceous crop
 132390,39.59614,-122.0226,US-RGG,Glenn County Rice Farm,Rice,herbaceous crop
-218534,38.1741,-121.50302,US-Si1,Staten Island Fallow,Fallow,non crop
-52519,38.17441,-121.51733,US-Si2,Staten Island Flooded,Rice,herbaceous crop
+218534,38.1741,-121.50302,US-Si1,Staten Island Fallow,Corn with winter fallow,herbaceous crop
+52519,38.17441,-121.51733,US-Si2,Staten Island Flooded,Corn with winter flooding,herbaceous crop
 248496,38.11573,-121.64507,US-Tw3,Twitchell Alfalfa,Alfalfa,herbaceous crop
 296871,38.54294,-121.87237,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
 16073,38.50244,-121.97646,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
