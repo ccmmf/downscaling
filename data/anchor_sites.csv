@@ -18,6 +18,7 @@ site_id,lat,lon,external_site_id,site_name,crops,pft
 52519,38.17441,-121.51733,US-Si2,Staten Island Flooded,Corn with winter flooding,herbaceous crop
 248496,38.11573,-121.64507,US-Tw3,Twitchell Alfalfa,Alfalfa,herbaceous crop
 296871,38.54294,-121.87237,russell-ranch,Russell Ranch,"tomato, corn, wheat",herbaceous crop
+528423,36.34069,-120.1207,west-side,West Side tillage and cover crop experiment,Row crops including cotton,herbaceous crop
 16073,38.50244,-121.97646,wolfskill,Wolfskill Experimental Orchards,Fruit and nut breeding,woody perennial crop
 415399,33.96684,-117.34049,ucr-citrus,UC Riverside Citrus Research,Citrus variety collection,woody perennial crop
 589918,36.62289,-121.54925,salinas_socs,USDA-ARS Salinas Organic Cropping Systems,"Romaine lettuce, broccoli",herbaceous crop
@@ -25,4 +26,3 @@ site_id,lat,lon,external_site_id,site_name,crops,pft
 535358,39.68222,-122.0026,US-RGO,Glenn County Organic Rice,Organic rice,herbaceous crop
 589581,38.09222,-121.64036,US-Tw2,Twitchell Corn,Corn,herbaceous crop
 590073,38.10809,-121.65527,US-Twt,Twitchell Island Rice,Rice,herbaceous crop
-168764,36.34444,-120.10789,west-side,West Side Research Center,Row crops including cotton,herbaceous crop
