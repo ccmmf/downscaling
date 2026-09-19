@@ -15,8 +15,8 @@ on:
   workflow_dispatch:
     inputs:
       pecan_env_version:
-        description: 'pecan-all conda env version (e.g. 1.14)'
-        default: '1.14'
+        description: 'pecan-all conda env version (e.g. 1.17)'
+        default: '1.17'
         required: false
   push:
     branches: [develop]
@@ -30,7 +30,7 @@ on:
       - '.github/ci/downscaling_ci_config.yaml'
 
 env:
-  PECAN_ENV_VERSION: ${{ github.event.inputs.pecan_env_version || '1.14' }}
+  PECAN_ENV_VERSION: ${{ github.event.inputs.pecan_env_version || '1.17' }}
   CONFIG: .github/ci/downscaling_ci_config.yaml
 
 jobs:
