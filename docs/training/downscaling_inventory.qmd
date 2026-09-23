@@ -247,13 +247,8 @@ constraints. `downscale` is the step that sets them: its cost scales with target
 and ensemble members, not with how many design points trained the forest, so a smaller
 design does not make it cheaper.
 
-`downscale` is the step to size carefully. Its cost is driven by target fields and
-ensemble members, not by how many design points trained the forest, so it does not
-shrink much with a smaller design. Request around 400 GB and do not run it on a login
-node.
-
-Also plan for disk: `prepare` copies `pecan_output_dir` into `run_dir`, and a statewide
-ensemble output is well over 100 GB.
+Note `prepare` copies `pecan_output_dir` into `run_dir`, so a statewide run needs room
+for two copies of the ensemble output.
 
 ## Scenarios
 
