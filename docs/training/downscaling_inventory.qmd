@@ -40,44 +40,10 @@ For the concepts behind all of this -- why design points, how the Random Forest 
 fit, what the covariates are -- see
 [Intro to MAGiC Downscaling](../intro_to_downscaling.qmd)
 
-## File locations
-
-A few variables specific to my own environment. These will take different values on
-your system.
-
-```bash
-export DEMO_DIR=/path/to/your/workdir
-export CONDA_DIR=~/.conda/envs
-```
-
-## Set up environment (once)
-
-(do ahead; it takes some time)
-
-```bash
-module load awscli_v2
-export AWS_PROFILE=magic
-aws s3 cp s3://carb/deploy/setup-pecan-env.sh ./
-bash setup-pecan-env.sh 1.18 ${CONDA_DIR}/pecan-all-1.18
-```
-
-## Activate existing environment
-
-```bash
-export AWS_PROFILE=magic
-conda activate ${CONDA_DIR}/pecan-all-1.18
-```
-
-## Clone the downscaling repo (once)
-
-```bash
-mkdir -p "$DEMO_DIR" && cd "$DEMO_DIR"
-git clone https://github.com/ccmmf/downscaling.git
-cd downscaling
-```
-
-The CLI lives at the repo root and finds its manifest beside itself, so run everything
-from here.
+This documentation assumes that the steps in
+[Environment setup](CARB-downscaling-setup.md) have been completed. For a new shell,
+follow its [Every new shell](CARB-downscaling-setup.md#every-new-shell) instructions.
+Run all commands below from the downscaling repository root.
 
 ## Fetch demo data
 
@@ -268,12 +234,18 @@ pecan_output_dir: /path/to/your/magic-ensemble/output
 data_layers_dir: /path/to/statewide/data_layers
 ```
 
-| Step | Demo (4 counties) | Statewide |
+| | Demo (4 counties) | Statewide |
 |---|---|---|
-| prepare | 3.5 min | depends on disk |
-| extract | 3.5 min | 13 min, 149 GB |
-| downscale | 1.5 min | 53 min, 386 GB |
-| analyze | 1 min | 7 min, 20 GB |
+| target fields | 23,311 | 385,234 |
+| minimum RAM | 16 GB | 400 GB |
+| cores used | 4 | 8 |
+| download | 1.4 GB | your own ensemble output |
+| run_dir on disk | ~6 GB | >100 GB |
+
+Wall time depends on the machine, so treat the memory and disk figures as the binding
+constraints. `downscale` is the step that sets them: its cost scales with target fields
+and ensemble members, not with how many design points trained the forest, so a smaller
+design does not make it cheaper.
 
 `downscale` is the step to size carefully. Its cost is driven by target fields and
 ensemble members, not by how many design points trained the forest, so it does not
