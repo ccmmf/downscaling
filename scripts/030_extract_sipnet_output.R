@@ -8,7 +8,6 @@
 #   2. a NetCDF file (time, site, ensemble, variable)
 #
 # TODO: write out EML metadata so we are fully EFI compliant
-# TODO: extend to multi-PFT scenarios once woody crop runs are added
 
 library(optparse)
 args <- parse_args(OptionParser(option_list = list(
@@ -24,6 +23,11 @@ args <- parse_args(OptionParser(option_list = list(
     help = "Comma-separated management scenarios [default: %default]"),
   make_option("--n_cores", type = "integer", default = NULL,
     help = "Number of parallel workers (default: availableCores()-1)"),
+  make_option("--output_prefix", type = "character", default = "output_",
+    help = "Prefix on each scenario's output directory [default: %default]"),
+  make_option("--exclude_sites", type = "character", default = "",
+    help = paste("Comma-separated site_ids to drop before extraction, for runs known",
+                 "to be unusable. Sites not listed here must be complete [default: none]")),
   make_option("--model_outdir", type = "character",
     help = "Path to PEcAn/SIPNET ensemble output directory (required)"),
   make_option("--ensemble_output_csv", type = "character",
@@ -38,14 +42,26 @@ PRODUCTION           <- args$mode == "production"
 DEMO                 <- args$mode == "demo"
 outputs_to_extract   <- strsplit(args$outputs_to_extract, ",")[[1]]
 management_scenarios <- strsplit(args$management_scenarios, ",")[[1]]
+exclude_sites <- if (nzchar(args$exclude_sites)) {
+    trimws(strsplit(args$exclude_sites, ",")[[1]])
+} else {
+    character(0)
+}
 
 no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
 future::plan(future::multicore, workers = no_cores)
 options(tibble.width = Inf, readr.show_col_types = FALSE)
 PEcAn.logger::logger.info("***Starting SIPNET output extraction***")
 
-# Site lat/lon for all 100 annual_crop sites
-site_info <- readr::read_csv(file.path(pecan_outdir, "site_info.csv"))
+source(file.path(here::here(), "R", "standardize_cadwr_crops.R"))
+
+# site.pft is the run's vegetation PFT; collapsed to the downscaling pair below.
+# id is read as character to match the ids parsed out of the run directory names:
+# parcel ids would otherwise be guessed numeric, hash ids character.
+site_info <- readr::read_csv(
+    file.path(pecan_outdir, "site_info.csv"),
+    col_types = readr::cols(id = readr::col_character())
+)
 
 variables <- outputs_to_extract
 
@@ -66,7 +82,7 @@ all_scenario_results <- list()
 for (scenario in management_scenarios) {
     PEcAn.logger::logger.info("Processing scenario: ", scenario)
 
-    scenario_outdir <- file.path(pecan_outdir, paste0("output_", scenario))
+    scenario_outdir <- file.path(pecan_outdir, paste0(args$output_prefix, scenario))
     scenario_model_outdir <- file.path(scenario_outdir, "out")
 
     # Pull the run window straight from the scenario's CONFIGS file
@@ -91,15 +107,34 @@ for (scenario in management_scenarios) {
         ) |>
         dplyr::select(-prefix)
 
+    # Drop declared sites before the completeness checks below, so an excluded
+    # run cannot trip them and an undeclared one still does.
+    if (length(exclude_sites) > 0) {
+        absent <- setdiff(exclude_sites, ens_dirs$site_id)
+        if (length(absent) > 0) {
+            PEcAn.logger::logger.severe(
+                "--exclude_sites lists site_ids not in ", scenario, ": ",
+                paste(absent, collapse = ", ")
+            )
+        }
+        ens_dirs <- ens_dirs |> dplyr::filter(!site_id %in% exclude_sites)
+        PEcAn.logger::logger.warn(
+            "Excluded ", length(exclude_sites), " sites from ", scenario, ": ",
+            paste(exclude_sites, collapse = ", ")
+        )
+    }
+
     ensemble_size <- dplyr::n_distinct(ens_dirs$ens)
 
     # Attach lat/lon to each site_id
     site_meta <- ens_dirs |>
         dplyr::distinct(site_id) |>
         dplyr::left_join(
-            site_info |> dplyr::select(id, lat, lon),
+            site_info |> dplyr::select(id, lat, lon, site.pft),
             by = c("site_id" = "id")
-        )
+        ) |>
+        dplyr::mutate(pft = collapse_veg_pft(site.pft)) |>
+        dplyr::select(-site.pft)
 
     site_ids <- unique(site_meta$site_id)
     ens_ids <- 1:ensemble_size
@@ -131,6 +166,26 @@ for (scenario in management_scenarios) {
             "Missing ensemble directories in ", scenario_model_outdir, ": ",
             paste(head(missing, 10), collapse = ", "),
             if (length(missing) > 10) " ..." else ""
+        )
+    }
+
+    # A run whose restart chain broke leaves its directory behind with no
+    # output, so the check above passes. Require the years we are about to read.
+    expected_years <- as.character(start_year:end_year)
+    empty <- ens_dirs_subset$dir[
+        !vapply(
+            ens_dirs_subset$dir,
+            function(d) all(file.exists(file.path(d, paste0(expected_years, ".nc")))),
+            logical(1)
+        )
+    ]
+    if (length(empty) > 0) {
+        PEcAn.logger::logger.severe(
+            length(empty), " of ", nrow(ens_dirs_subset),
+            " ensemble directories are missing output for ",
+            start_year, "-", end_year, ": ",
+            paste(head(basename(empty), 10), collapse = ", "),
+            if (length(empty) > 10) " ..." else ""
         )
     }
 
@@ -168,10 +223,7 @@ for (scenario in management_scenarios) {
         ) |>
         dplyr::rename(datetime = time) |>
         dplyr::left_join(site_meta, by = "site_id") |>
-        dplyr::mutate(
-            scenario = .env$scenario,
-            pft = "annual crop"
-        )
+        dplyr::mutate(scenario = .env$scenario)
     rm(ens_results_raw)
 
     # Roll up to monthly inside the loop; holding raw sub-monthly data
