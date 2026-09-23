@@ -60,6 +60,8 @@ website:
             text: Intro to Downscaling
       - section: Training
         contents:
+          - href: docs/training/README.md
+            text: Overview
           - href: docs/training/CARB-downscaling-setup.md
             text: Environment Setup
           - href: docs/training/downscaling_inventory.qmd
@@ -90,5 +92,7 @@ execute:
   echo: false
   freeze: auto
 
-author: "David LeBauer"
+author:
+  - "David LeBauer"
+  - "Akash B V"
 date: today
