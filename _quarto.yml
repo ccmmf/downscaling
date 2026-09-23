@@ -17,6 +17,8 @@ project:
     - reports/design_point_validation.qmd
     - reports/variable_importance.qmd
     - docs/intro_to_downscaling.qmd
+    - docs/training/downscaling_inventory.qmd
+    - docs/training/CARB-downscaling-setup.md
     - docs/workflow_documentation.md
     - docs/references.md
     - docs/mixed_system_prototype.qmd
@@ -55,6 +57,12 @@ website:
         contents:
           - href: docs/intro_to_downscaling.qmd
             text: Intro to Downscaling
+      - section: Training
+        contents:
+          - href: docs/training/CARB-downscaling-setup.md
+            text: Environment Setup
+          - href: docs/training/downscaling_inventory.qmd
+            text: Inventory Downscaling
           - href: docs/workflow_documentation.md
             text: Technical Documentation
           - href: docs/mixed_system_prototype.qmd
