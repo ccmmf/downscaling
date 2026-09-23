@@ -209,7 +209,7 @@ for (row_i in seq_len(nrow(combos))) {
       theme_ccmmf_map() +
       ggplot2::labs(
         title = paste("County Total:", format_variable_label(mo_i)),
-        subtitle = paste("Scenario:", format_scenario_label(scn), " --  PFT:", pft_i),
+        subtitle = paste(format_scenario_label(scn), " --  PFT:", pft_i),
         fill = format_unit_label(mo_i, "county_total")
       )
 
@@ -255,7 +255,7 @@ for (row_i in seq_len(nrow(combos))) {
     theme_ccmmf_map(base_size = 12) +
     ggplot2::labs(
       title = paste("County Total:", format_variable_label(mo_i), "--", pft_i),
-      subtitle = "All scenarios on consistent scale",
+      subtitle = if (length(scenario_levels) > 1) "Consistent scale across panels" else NULL,
       fill = format_unit_label(mo_i, "county_total")
     )
 
@@ -270,9 +270,12 @@ for (row_i in seq_len(nrow(combos))) {
 
 
 # section 3 - county-level scenario minus baseline diffs.
+# needs both a baseline and something to compare against it, so an inventory run
+# with its single scenario skips this rather than differencing against nothing.
 non_baseline <- setdiff(as.character(scenario_levels), "baseline")
+has_baseline <- "baseline" %in% as.character(scenario_levels)
 
-if (length(non_baseline) > 0) {
+if (length(non_baseline) > 0 && has_baseline) {
   PEcAn.logger::logger.info("county diff maps")
 
   baseline_county <- county_summaries |>
@@ -631,7 +634,7 @@ for (row_i in seq_len(nrow(combos_field))) {
       ggplot2::labs(
         title = paste("Field Density:", format_variable_label(mo_i)),
         subtitle = paste(
-          "Scenario:", format_scenario_label(scn),
+          format_scenario_label(scn),
           " --  PFT:", pft_i
         ),
         fill = format_unit_label(mo_i, "density")
@@ -684,7 +687,7 @@ for (row_i in seq_len(nrow(combos_field))) {
     theme_ccmmf_map(base_size = 12) +
     ggplot2::labs(
       title = paste("Field Density:", format_variable_label(mo_i), "--", pft_i),
-      subtitle = "All scenarios on consistent scale",
+      subtitle = if (length(scenario_levels) > 1) "Consistent scale across panels" else NULL,
       fill = format_unit_label(mo_i, "density")
     )
 
@@ -699,7 +702,7 @@ for (row_i in seq_len(nrow(combos_field))) {
 
 
 # section 6 - field-level scenario minus baseline diffs.
-if (length(non_baseline) > 0) {
+if (length(non_baseline) > 0 && has_baseline) {
   PEcAn.logger::logger.info("field diff maps")
 
   baseline_field <- field_mean_density |>
@@ -996,8 +999,12 @@ if (file.exists(delta_csv)) {
       )
     )
 
+  # annual AGB is skipped: the start and end dates fall at arbitrary points in a
+  # crop cycle, so their difference is a phase offset rather than a trend. Woody
+  # AGB and soil carbon accumulate across years, so their deltas are meaningful.
   combos_delta <- delta_county |>
     dplyr::filter(!is.na(scenario), !is.na(model_output), !is.na(pft)) |>
+    dplyr::filter(!(pft == "annual crop" & model_output == "AGB")) |>
     dplyr::distinct(scenario, pft, model_output)
 
   purrr::pwalk(
@@ -1023,7 +1030,7 @@ if (file.exists(delta_csv)) {
         ggplot2::labs(
           title = paste("Delta (start -> end):", format_variable_label(model_output)),
           subtitle = paste(
-            "Scenario:", format_scenario_label(scenario),
+            format_scenario_label(scenario),
             " --  PFT:", pft
           ),
           fill = format_unit_label(model_output, "diff_total")
