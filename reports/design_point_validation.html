@@ -9,7 +9,7 @@
 <meta name="author" content="David LeBauer">
 <meta name="dcterms.date" content="2026-09-23">
 
-<title>MAGiC Downscaling</title>
+<title>Design Point Validation – MAGiC Downscaling</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,62 +25,31 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./reports/atlas_overview.html" rel="next">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/variable_importance.html" rel="next">
+<link href="../reports/downscaling_results.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -108,6 +77,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -121,7 +92,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Home</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/design_point_validation.html">Design Point Validation</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -136,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">MAGiC Downscaling</a> 
+      <a href="../">MAGiC Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
@@ -152,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Home</span></a>
   </div>
 </li>
@@ -167,31 +138,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Soil Carbon</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Aboveground Biomass</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
@@ -208,19 +179,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Downscaling Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Downscaling Model Evaluation</span></a>
   </div>
 </li>
@@ -237,25 +208,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Intro to Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Mixed System Prototype</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/references.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -272,13 +243,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Environment Setup</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
@@ -294,22 +265,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#downscaling-and-aggregation-workflow" id="toc-downscaling-and-aggregation-workflow" class="nav-link active" data-scroll-target="#downscaling-and-aggregation-workflow">Downscaling And Aggregation Workflow</a>
-  <ul class="collapse">
-  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick start</a>
-  <ul class="collapse">
-  <li><a href="#run-sequence" id="toc-run-sequence" class="nav-link" data-scroll-target="#run-sequence">Run Sequence</a></li>
-  </ul></li>
-  </ul></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#pft-allocation" id="toc-pft-allocation" class="nav-link" data-scroll-target="#pft-allocation">PFT allocation</a></li>
+  <li><a href="#feature-space-coverage-mssd-scaled" id="toc-feature-space-coverage-mssd-scaled" class="nav-link" data-scroll-target="#feature-space-coverage-mssd-scaled">Feature space coverage (MSSD, scaled)</a></li>
+  <li><a href="#cluster-balance-gini-of-cluster-sizes" id="toc-cluster-balance-gini-of-cluster-sizes" class="nav-link" data-scroll-target="#cluster-balance-gini-of-cluster-sizes">Cluster balance (Gini of cluster sizes)</a></li>
+  <li><a href="#anchor-recovery" id="toc-anchor-recovery" class="nav-link" data-scroll-target="#anchor-recovery">Anchor recovery</a></li>
+  <li><a href="#monitoring-layer-coverage" id="toc-monitoring-layer-coverage" class="nav-link" data-scroll-target="#monitoring-layer-coverage">Monitoring layer coverage</a></li>
+  <li><a href="#climate-region-coverage" id="toc-climate-region-coverage" class="nav-link" data-scroll-target="#climate-region-coverage">Climate region coverage</a></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/design_point_validation.html">Design Point Validation</a></li></ol></nav>
 <div class="quarto-title">
+<h1 class="title">Design Point Validation</h1>
 </div>
 
 
@@ -338,55 +310,387 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="downscaling-and-aggregation-workflow" class="level1">
-<h1>Downscaling And Aggregation Workflow</h1>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This proof of concept is untested and subject to change. Interpret results as illustrative.</p>
-</div>
-</div>
+<p>This report validates feature-space coverage of the selected design points relative to the statewide population. It does not determine the optimal number of SIPNET design points. The 1,000-site design evaluated here is selected from the 10,000-site candidate pool for demonstration. <!-- TODO update after the optimal number of design points is determined by github.com/ccmmf/organization#192 --></p>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level.</p>
-<p>Key components:</p>
-<ul>
-<li>Environmental covariates (ERA5, SoilGrids, TWI)</li>
-<li>Design point selection via k-means</li>
-<li>SIPNET simulations at design points [done externally]</li>
-<li>Random Forest downscaling to all fields</li>
-<li>County-level aggregation</li>
-</ul>
-<p>Configuration: see <code>000-config.R</code> for paths, variables, and parallel settings.</p>
+<p>Design points are the field locations where SIPNET is run; a Random Forest then downscales those outputs to every cropland field in the CADWR LandIQ Crop Map. <code>020_cluster_sites.R</code> clusters the population per plant functional type and keeps one representative per cluster as a 10,000-site candidate pool, <code>021_subsample_design_points.R</code> draws the design from that pool by farthest point sampling, and <code>022_validate_design_points.R</code> writes the tables and figures below. Coverage matters because the Random Forest predicts reliably only within the range of conditions the design spans, so gaps in covariate coverage become extrapolation.</p>
+<p>Clustering uses seed 42 (<code>020_cluster_sites.R</code>).</p>
 </section>
-<section id="quick-start" class="level2">
-<h2 class="anchored" data-anchor-id="quick-start">Quick start</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load modules (geo cluster example)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load R/4.4.0 gdal proj geos sqlite udunits quarto</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Point to the shared CCMMF directory (or set in .Renviron)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>/projectnb/dietzelab/ccmmf      <span class="co"># or $HOME/ccmmf-dev</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Restore exact packages for this workflow</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-e</span> <span class="st">'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); renv::restore()'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<section id="run-sequence" class="level3">
-<h3 class="anchored" data-anchor-id="run-sequence">Run Sequence</h3>
-<p>See full details about how to set up and run the workflows in the <a href="./docs/workflow_documentation.html#sec-tech-doc">Technical Documentation</a>.</p>
-<p>The workflow runs as numbered scripts in three stages: data preparation and design-point selection (<code>009</code>..<code>022</code>), SIPNET output extraction (<code>030</code>..<code>031</code>), and downscaling with aggregation and figures (<code>040</code>..<code>043</code>). The Technical Documentation linked above lists the full command sequence with the inputs and outputs of each step.</p>
+<section id="pft-allocation" class="level2">
+<h2 class="anchored" data-anchor-id="pft-allocation">PFT allocation</h2>
+<p>Population and design counts and area share per PFT.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 11%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">pft</th>
+<th style="text-align: right;">n_pop</th>
+<th style="text-align: right;">area_pop</th>
+<th style="text-align: right;">pct_pop_n</th>
+<th style="text-align: right;">pct_pop_area</th>
+<th style="text-align: right;">n_design</th>
+<th style="text-align: right;">pct_design</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">329401</td>
+<td style="text-align: right;">1763197</td>
+<td style="text-align: right;">59.9</td>
+<td style="text-align: right;">48.1</td>
+<td style="text-align: right;">480</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">220859</td>
+<td style="text-align: right;">1906107</td>
+<td style="text-align: right;">40.1</td>
+<td style="text-align: right;">51.9</td>
+<td style="text-align: right;">520</td>
+<td style="text-align: right;">52</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="feature-space-coverage-mssd-scaled" class="level2">
+<h2 class="anchored" data-anchor-id="feature-space-coverage-mssd-scaled">Feature space coverage (MSSD, scaled)</h2>
+<p>Mean squared shortest distance from each population field to its nearest design point in scaled feature space. Lower is better coverage.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">pft</th>
+<th style="text-align: right;">n_pop</th>
+<th style="text-align: right;">n_design</th>
+<th style="text-align: right;">mssd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">220859</td>
+<td style="text-align: right;">520</td>
+<td style="text-align: right;">9.7576</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">329194</td>
+<td style="text-align: right;">480</td>
+<td style="text-align: right;">11.0829</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="cluster-balance-gini-of-cluster-sizes" class="level2">
+<h2 class="anchored" data-anchor-id="cluster-balance-gini-of-cluster-sizes">Cluster balance (Gini of cluster sizes)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 16%">
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 13%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">pft</th>
+<th style="text-align: right;">n_clusters</th>
+<th style="text-align: right;">min_size</th>
+<th style="text-align: right;">median_size</th>
+<th style="text-align: right;">max_size</th>
+<th style="text-align: right;">gini</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">5195</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">382</td>
+<td style="text-align: right;">0.443</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">4805</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">683</td>
+<td style="text-align: right;">0.520</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="anchor-recovery" class="level2">
+<h2 class="anchored" data-anchor-id="anchor-recovery">Anchor recovery</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n_anchors</th>
+<th style="text-align: right;">in_design</th>
+<th style="text-align: right;">missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="monitoring-layer-coverage" class="level2">
+<h2 class="anchored" data-anchor-id="monitoring-layer-coverage">Monitoring layer coverage</h2>
+<p>Share of the population and of the design carrying each management and phenology feature.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">feature</th>
+<th style="text-align: right;">pop_n</th>
+<th style="text-align: right;">pop_pct</th>
+<th style="text-align: right;">design_n</th>
+<th style="text-align: right;">design_pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">tillage_rank</td>
+<td style="text-align: right;">285674</td>
+<td style="text-align: right;">51.9</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">60.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tillage_freq</td>
+<td style="text-align: right;">286083</td>
+<td style="text-align: right;">52.0</td>
+<td style="text-align: right;">609</td>
+<td style="text-align: right;">60.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">leafon_doy</td>
+<td style="text-align: right;">550053</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">leafoff_doy</td>
+<td style="text-align: right;">550053</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">leafon_doy_sd</td>
+<td style="text-align: right;">550053</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">leafoff_doy_sd</td>
+<td style="text-align: right;">550053</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">irr_canopy</td>
+<td style="text-align: right;">498829</td>
+<td style="text-align: right;">90.7</td>
+<td style="text-align: right;">723</td>
+<td style="text-align: right;">72.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">irr_flood</td>
+<td style="text-align: right;">32739</td>
+<td style="text-align: right;">5.9</td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">17.5</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="climate-region-coverage" class="level2">
+<h2 class="anchored" data-anchor-id="climate-region-coverage">Climate region coverage</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">climregion_id</th>
+<th style="text-align: right;">n_pop</th>
+<th style="text-align: right;">pct_pop</th>
+<th style="text-align: right;">n_design</th>
+<th style="text-align: right;">pct_design</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">55220</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">5.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">18990</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">13.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">166898</td>
+<td style="text-align: right;">30.3</td>
+<td style="text-align: right;">241</td>
+<td style="text-align: right;">24.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5698</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">16699</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">4.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7614</td>
+<td style="text-align: right;">1.4</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">73774</td>
+<td style="text-align: right;">13.4</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">12.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">41279</td>
+<td style="text-align: right;">7.5</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">8.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">16903</td>
+<td style="text-align: right;">3.1</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">2.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">3195</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">1.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">143990</td>
+<td style="text-align: right;">26.2</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">25.4</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="figures" class="level2">
+<h2 class="anchored" data-anchor-id="figures">Figures</h2>
+<!-- two PFTs (annual crop, woody perennial crop); add figure blocks if a third PFT is introduced -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/cluster_variable_importance.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Variable importance (eta-squared)"><img src="../figures/cluster_variable_importance.svg" class="img-fluid figure-img" alt="Variable importance (eta-squared)"></a></p>
+<figcaption>Variable importance (eta-squared)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/design_points.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Design points on California cropland"><img src="../figures/design_points.webp" class="img-fluid figure-img" alt="Design points on California cropland"></a></p>
+<figcaption>Design points on California cropland</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/nn_distance.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Nearest-neighbor distances"><img src="../figures/nn_distance.svg" class="img-fluid figure-img" alt="Nearest-neighbor distances"></a></p>
+<figcaption>Nearest-neighbor distances</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/cdf_overlay_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="CDF overlay (annual crop)"><img src="../figures/cdf_overlay_annual_crop.webp" class="img-fluid figure-img" alt="CDF overlay (annual crop)"></a></p>
+<figcaption>CDF overlay (annual crop)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/pca_scatter_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="PCA scatter (annual crop)"><img src="../figures/pca_scatter_annual_crop.webp" class="img-fluid figure-img" alt="PCA scatter (annual crop)"></a></p>
+<figcaption>PCA scatter (annual crop)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/cluster_sizes_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Sorted cluster sizes (annual crop)"><img src="../figures/cluster_sizes_annual_crop.webp" class="img-fluid figure-img" alt="Sorted cluster sizes (annual crop)"></a></p>
+<figcaption>Sorted cluster sizes (annual crop)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/cdf_overlay_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="CDF overlay (woody perennial crop)"><img src="../figures/cdf_overlay_woody_perennial_crop.webp" class="img-fluid figure-img" alt="CDF overlay (woody perennial crop)"></a></p>
+<figcaption>CDF overlay (woody perennial crop)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/pca_scatter_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="PCA scatter (woody perennial crop)"><img src="../figures/pca_scatter_woody_perennial_crop.webp" class="img-fluid figure-img" alt="PCA scatter (woody perennial crop)"></a></p>
+<figcaption>PCA scatter (woody perennial crop)</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/cluster_sizes_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Sorted cluster sizes (woody perennial crop)"><img src="../figures/cluster_sizes_woody_perennial_crop.webp" class="img-fluid figure-img" alt="Sorted cluster sizes (woody perennial crop)"></a></p>
+<figcaption>Sorted cluster sizes (woody perennial crop)</figcaption>
+</figure>
+</div>
 
 
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -792,14 +1096,49 @@ Warning
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Downscaling Results">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Results</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./reports/atlas_overview.html" class="pagination-link" aria-label="Overview &amp; Key Findings">
-        <span class="nav-page-text">Overview &amp; Key Findings</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reports/variable_importance.html" class="pagination-link" aria-label="Downscaling Model Evaluation">
+        <span class="nav-page-text">Downscaling Model Evaluation</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
