@@ -202,7 +202,7 @@
     "href": "docs/training/CARB-downscaling-setup.html",
     "title": "Environment setup",
     "section": "",
-    "text": "Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in CARB PEcAn Environment Setup. Follow that first. This page covers only what is specific to downscaling.\n\n\ngit clone https://github.com/ccmmf/downscaling.git\ncd downscaling\nThe rest of the instructions assume that you are working inside of the downscaling repository directory.\n\n\n\nReturn to the downscaling repository directory and activate conda before continuing.\ncd /path/to/downscaling\nconda activate &lt;your pecan-all env&gt;\nexport AWS_PROFILE=magic\n\n\n\nCopy the commented example and edit that copy, so you can always diff against it. The demo bundle ships a filled-in config, so for the training you will not need to write one from scratch.\ncp example_user_config.yaml my-config.yaml\n./magic-downscaling --help lists every key and its default. The three modes differ in scope rather than quality: production covers all four variables and all scenarios, dev and demo reduce the design size and variable list, and demo also drops to a single scenario. A demo run exercises the same code path as production on less data.\n\n\n\n./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.",
+    "text": "Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in CARB PEcAn Environment Setup. Follow that first. This page covers only what is specific to downscaling.\n\n\ngit clone https://github.com/ccmmf/downscaling.git\ncd downscaling\nThe rest of the instructions assume that you are working inside of the downscaling repository directory.\n\n\n\nReturn to the downscaling repository directory and activate conda before continuing.\ncd /path/to/downscaling\nconda activate &lt;your pecan-all env&gt;\nexport AWS_PROFILE=magic\n\n\n\nCopy the commented example and edit that copy, so you can always diff against it. The demo bundle ships a filled-in config, so for the training you will not need to write one from scratch.\ncp example_user_config.yaml my-config.yaml\n./magic-downscaling --help lists every key and its default. The three modes differ in scope rather than quality: production covers all four variables and all scenarios, dev and demo reduce the design size and variable list, and demo also drops to a single scenario. A demo run exercises the same code path as production on less data.\n\n\n\n./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.\nSpine: training overview.",
     "crumbs": [
       "Training",
       "Environment Setup"
@@ -246,7 +246,7 @@
     "href": "docs/training/CARB-downscaling-setup.html#confirm-setup",
     "title": "Environment setup",
     "section": "",
-    "text": "./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.",
+    "text": "./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.\nSpine: training overview.",
     "crumbs": [
       "Training",
       "Environment Setup"
@@ -958,28 +958,44 @@
     "href": "docs/training/README.html",
     "title": "MAGiC downscaling training",
     "section": "",
-    "text": "This is the downscaling half of the MAGiC system. It picks up where magic-ensemble stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.\nRunning SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.\nEach notebook is a self-study demo to work through beforehand, then discuss in the live session.\n\n\n\nTopic\nAudience\nObjectives\nNotes\n\n\n\n\nEnvironment setup\nEveryone\nConda, AWS, and the CLI’s yq requirement\nNeeded before the inventory notebook\n\n\nInventory downscaling\nMAGiC users\nTurn an ensemble run into field, county and state carbon\nDemo bundle is four Delta counties, runs in about ten minutes\n\n\nScenario downscaling\nMAGiC users\nPractice-change arms and scenario deltas\nDeferred; same four commands with a longer scenario list\n\n\nDesign point selection\nData managers\nHow the design points are chosen\nScripts 010-022, upstream of the ensemble and not a CLI command\n\n\n\n\n\nEach is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.\n\n\n\n\n\n\nflowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]\n\n\n\nFollowing the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers."
+    "text": "This is the downscaling half of the MAGiC system. It picks up where magic-ensemble stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.\nRunning SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.\nEach notebook is a self-study demo to work through beforehand, then discuss in the live session.\n\n\n\nTopic\nAudience\nObjectives\nNotes\n\n\n\n\nEnvironment setup\nEveryone\nConda, AWS, and the CLI’s yq requirement\nNeeded before the inventory notebook\n\n\nInventory downscaling\nMAGiC users\nTurn an ensemble run into field, county and state carbon\nDemo bundle is four Delta counties, runs in about ten minutes\n\n\nScenario downscaling\nMAGiC users\nPractice-change arms and scenario deltas\nDeferred; same four commands with a longer scenario list\n\n\nDesign point selection\nData managers\nHow the design points are chosen\nScripts 010-022, upstream of the ensemble and not a CLI command\n\n\n\n\n\nEach is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.\n\n\n\n\n\n\nflowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]\n\n\n\nFollowing the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers.",
+    "crumbs": [
+      "Training",
+      "Overview"
+    ]
   },
   {
     "objectID": "docs/training/README.html#commands",
     "href": "docs/training/README.html#commands",
     "title": "MAGiC downscaling training",
     "section": "",
-    "text": "Each is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps."
+    "text": "Each is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.",
+    "crumbs": [
+      "Training",
+      "Overview"
+    ]
   },
   {
     "objectID": "docs/training/README.html#data-flow",
     "href": "docs/training/README.html#data-flow",
     "title": "MAGiC downscaling training",
     "section": "",
-    "text": "flowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]"
+    "text": "flowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]",
+    "crumbs": [
+      "Training",
+      "Overview"
+    ]
   },
   {
     "objectID": "docs/training/README.html#audiences",
     "href": "docs/training/README.html#audiences",
     "title": "MAGiC downscaling training",
     "section": "",
-    "text": "Following the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers."
+    "text": "Following the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers.",
+    "crumbs": [
+      "Training",
+      "Overview"
+    ]
   },
   {
     "objectID": "docs/references.html",
