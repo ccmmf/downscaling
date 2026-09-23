@@ -56,6 +56,30 @@ load_landiq_pft_map <- function(path) {
   map
 }
 
+#' Collapse SIPNET vegetation PFTs to the two used for downscaling
+#'
+#' Runs carry six vegetation PFTs (`row`, `corn`, `alfalfa`, `rice`, `grass`,
+#' `woody_perennial`) while the field population and the design carry two. The
+#' split is within the annual crops, so everything except `woody_perennial`
+#' collapses to `annual crop`.
+#'
+#' @param veg_pft character vector of run vegetation PFTs
+#' @return character vector of downscaling PFTs
+collapse_veg_pft <- function(veg_pft) {
+  out <- dplyr::case_when(
+    veg_pft == "woody_perennial" ~ "woody perennial crop",
+    veg_pft %in% c("row", "corn", "alfalfa", "rice", "grass") ~ "annual crop",
+    TRUE ~ NA_character_
+  )
+  if (any(is.na(out))) {
+    PEcAn.logger::logger.severe(
+      "unrecognized vegetation PFT: ",
+      paste(unique(veg_pft[is.na(out)]), collapse = ", ")
+    )
+  }
+  out
+}
+
 #' Normalize a LandIQ SUBCLASS column to the PFT table's key
 #'
 #' SUBCLASS is a double in v4.1 and a character in v4.1.2, where it also carries "**"
