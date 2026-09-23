@@ -22,6 +22,16 @@ downscaling:
   # compute session where SLURM_JOB_CPUS_PER_NODE isn't set in your shell.
   # n_cores: 4
 
+  # Optional; the mode's defaults apply if you leave these out. Set them when the
+  # run doesn't match a mode -- an inventory is one arm named for itself, not one
+  # of the practice-change scenarios.
+  # management_scenarios must match the output_<scenario>/ dirs under pecan_output_dir.
+  # management_scenarios:
+  #   - inventory
+  # outputs_to_extract:
+  #   - TotSoilCarb
+  #   - AGB
+
   # Source paths for the two required data artifacts.
   # For demo: point at the extracted demo-data/ cache (populated by get-demo-data).
   # For production: point at your own locally staged equivalents.
