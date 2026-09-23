@@ -19,6 +19,7 @@ project:
     - docs/intro_to_downscaling.qmd
     - docs/training/downscaling_inventory.qmd
     - docs/training/CARB-downscaling-setup.md
+    - docs/training/README.md
     - docs/workflow_documentation.md
     - docs/references.md
     - docs/mixed_system_prototype.qmd
