@@ -17,7 +17,7 @@ session.
 Topic | Audience | Objectives | Notes
 --|--|--|--
 [Environment setup](CARB-downscaling-setup.md) | Everyone | Conda, AWS, and the CLI's `yq` requirement | Needed before the inventory notebook
-[Inventory downscaling](downscaling_inventory.md) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo bundle is one county, runs in about ten minutes
+[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo bundle is four Delta counties, runs in about six minutes
 Scenario downscaling | MAGiC users | Practice-change arms and scenario deltas | Deferred; same four commands with a longer scenario list
 Design point selection | Data managers | How the design points are chosen | Scripts 010-022, upstream of the ensemble and not a CLI command
 
