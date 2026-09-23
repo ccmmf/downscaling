@@ -83,7 +83,7 @@ from here.
 
 ```bash
 ./magic-downscaling get-demo-data --config example_user_config.yaml
-cp demo-data/demo_config.yaml config.yaml
+cp demo-data/modelout/demo_config.yaml config.yaml
 ```
 
 The bundle holds three things:
