@@ -40,6 +40,12 @@ ggsave_optimized <- function(
     webp_lossless = FALSE,
     ...) {
   ext <- tolower(tools::file_ext(filename))
+  # figures/ is gitignored, so it is absent on a fresh clone and neither ggsave
+  # nor the magick writers below will create it.
+  out_dir <- dirname(filename)
+  if (!dir.exists(out_dir)) {
+    dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  }
   # Choose device where applicable
   dev <- NULL
   if (ext %in% c("pdf", "svg", "eps")) {
