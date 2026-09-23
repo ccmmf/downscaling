@@ -297,13 +297,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link active" data-scroll-target="#environment-setup">Environment setup</a>
   <ul class="collapse">
-  <li><a href="#environment-once" id="toc-environment-once" class="nav-link" data-scroll-target="#environment-once">0.1 Environment (once)</a></li>
-  <li><a href="#clone-once" id="toc-clone-once" class="nav-link" data-scroll-target="#clone-once">0.2 Clone (once)</a></li>
-  <li><a href="#every-new-shell" id="toc-every-new-shell" class="nav-link" data-scroll-target="#every-new-shell">0.3 Every new shell</a></li>
-  <li><a href="#s3-access" id="toc-s3-access" class="nav-link" data-scroll-target="#s3-access">0.4 S3 access</a></li>
-  <li><a href="#how-the-cli-is-wired" id="toc-how-the-cli-is-wired" class="nav-link" data-scroll-target="#how-the-cli-is-wired">0.5 How the CLI is wired</a></li>
-  <li><a href="#your-config-file" id="toc-your-config-file" class="nav-link" data-scroll-target="#your-config-file">0.6 Your config file</a></li>
-  <li><a href="#confirm-setup" id="toc-confirm-setup" class="nav-link" data-scroll-target="#confirm-setup">0.7 Confirm setup</a></li>
+  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository">Clone the repository</a></li>
+  <li><a href="#every-new-shell" id="toc-every-new-shell" class="nav-link" data-scroll-target="#every-new-shell">Every new shell</a></li>
+  <li><a href="#your-config-file" id="toc-your-config-file" class="nav-link" data-scroll-target="#your-config-file">Your config file</a></li>
+  <li><a href="#confirm-setup" id="toc-confirm-setup" class="nav-link" data-scroll-target="#confirm-setup">Confirm setup</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -343,207 +340,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="environment-setup" class="level1">
 <h1>Environment setup</h1>
-<p><strong>What this session is for.</strong> Later sessions assume a working software stack, the downscaling repo on disk, S3 access, and a config file pointed at your data. This session gets that ready, including what to run every time you open a new shell.</p>
-<p>Nothing here downloads model output or runs the pipeline. That starts in <a href="downscaling_inventory.md">the inventory notebook</a>.</p>
-<hr>
-<section id="environment-once" class="level2">
-<h2 class="anchored" data-anchor-id="environment-once">0.1 Environment (once)</h2>
-<p>The workflow runs inside the <code>pecan-all</code> conda environment, which supplies R, the PEcAn stack and the CLI’s dependencies. Use that rather than assembling one by hand.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load awscli_v2       <span class="co"># site specific; skip if aws is already on PATH</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>magic</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://carb/deploy/setup-pecan-env.sh ./</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup-pecan-env.sh 1.18 ~/.conda/envs/pecan-all-1.18</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>That download and install takes 30 minutes or more. Do it ahead of the session.</p>
-<p>Activate it and confirm the two things the CLI checks for before it will run anything:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all-1.18</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<hr>
-</section>
-<section id="clone-once" class="level2">
-<h2 class="anchored" data-anchor-id="clone-once">0.2 Clone (once)</h2>
-<p>Set <code>$DS_DIR</code> to wherever you want the repo and your runs to live.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">DS_DIR</span><span class="op">=</span>/path/to/workdir</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$DS_DIR</span><span class="st">"</span> <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> <span class="st">"</span><span class="va">$DS_DIR</span><span class="st">"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Everything after this assumes you are inside that clone, because the CLI lives at its root and finds the manifest beside itself.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> magic-downscaling downscaling_manifest.yaml example_user_config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<hr>
+<p>Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in <a href="https://github.com/ccmmf/magic-training/blob/main/CARB-PEcAn-setup.md">CARB PEcAn Environment Setup</a>. Follow that first. This page covers only what is specific to downscaling.</p>
+<section id="clone-the-repository" class="level2">
+<h2 class="anchored" data-anchor-id="clone-the-repository">Clone the repository</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The rest of the instructions assume that you are working inside of the downscaling repository directory.</p>
 </section>
 <section id="every-new-shell" class="level2">
-<h2 class="anchored" data-anchor-id="every-new-shell">0.3 Every new shell</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all-1.18   <span class="co"># same env as 0.1</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>magic</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">DS_DIR</span><span class="op">=</span>/path/to/workdir                <span class="co"># same as 0.2</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$DS_DIR</span><span class="st">/downscaling"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The downscale step is heavy and belongs on a compute node, not a login node. Sizing and batch submission are covered in the scale-up section of the <a href="downscaling_inventory.md">inventory notebook</a>; the demo runs in the demo bundle is small enough to run interactively.</p>
-<hr>
-</section>
-<section id="s3-access" class="level2">
-<h2 class="anchored" data-anchor-id="s3-access">0.4 S3 access</h2>
-<p>Demo data and shared inputs live in an S3 bucket hosted at NCSA. It is not AWS, so the profile needs an explicit endpoint.</p>
-<p>Add to <code>~/.aws/credentials</code>:</p>
-<pre class="text"><code>[magic]
-aws_access_key_id = YOUR_KEY_ID
-aws_secret_access_key = YOUR_SECRET_KEY</code></pre>
-<p>Add to <code>~/.aws/config</code>:</p>
-<pre class="text"><code>[profile magic]
-region = garage
-endpoint_url = https://s3.garage.ccmmf.ncsa.cloud</code></pre>
-<p>Lock the files down and confirm the bucket reads:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/.aws/credentials ~/.aws/config</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>magic</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If that listing fails, stop and fix it here. <code>get-demo-data</code> in the inventory notebook is the first thing that needs it.</p>
-<hr>
-</section>
-<section id="how-the-cli-is-wired" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-cli-is-wired">0.5 How the CLI is wired</h2>
-<p>Worth five minutes before you run anything, because it explains why every step takes the arguments it does.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">--help</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Three files control the workflow, and they have clearly separated jobs:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 65%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>File</th>
-<th>Owns</th>
-<th>Do you edit it?</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>magic-downscaling</code></td>
-<td>Argument parsing, dependency checks, dispatch</td>
-<td>No</td>
-</tr>
-<tr class="even">
-<td><code>downscaling_manifest.yaml</code></td>
-<td>Which scripts each command runs, and every path and parameter they receive</td>
-<td>Rarely</td>
-</tr>
-<tr class="odd">
-<td>your config <code>.yaml</code></td>
-<td>Where your data is, which mode, how many cores</td>
-<td><strong>Yes, every run</strong></td>
-</tr>
-</tbody>
-</table>
-<p>Open the manifest and look at the <code>steps</code> block:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Key points:</p>
-<ul>
-<li>Each command is a list of steps, and each step calls exactly one script.</li>
-<li>A step declares its <code>inputs</code> (files), <code>outputs</code> (files), and <code>params</code> (everything else) as <code>{cli_flag: value_key}</code> pairs. The map key is the literal command-line flag the script expects; the map value names where the value comes from.</li>
-<li><code>inputs</code> and <code>outputs</code> values must be keys in the manifest’s <code>paths</code> block, which are all relative to your <code>run_dir</code>. That indirection is what lets you move a run somewhere else without touching any script.</li>
-<li><code>fixed_values</code> are domain constants that are not user-overridable, like the random seed and the CRS. <code>mode_params</code> override them per mode.</li>
-<li>Nothing is passed to scripts through environment variables. Every argument is explicit on the command line, which is why <code>--verbose</code> is useful: it echoes the exact <code>Rscript</code> invocation for each step.</li>
-</ul>
-<hr>
+<h2 class="anchored" data-anchor-id="every-new-shell">Every new shell</h2>
+<p>Return to the downscaling repository directory and activate conda before continuing.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /path/to/downscaling</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate <span class="op">&lt;</span>your pecan-all env<span class="op">&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>magic</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="your-config-file" class="level2">
-<h2 class="anchored" data-anchor-id="your-config-file">0.6 Your config file</h2>
-<p>Copy the commented example and edit that copy. Do not edit the example in place, so you can always diff against it.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> example_user_config.yaml my-config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The keys you will set:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 30%">
-<col style="width: 70%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Key</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>global.run_dir</code></td>
-<td>Working directory for this run. Every output path is relative to it. Use the same value as your <code>magic-ensemble</code> run.</td>
-</tr>
-<tr class="even">
-<td><code>global.aws_profile</code></td>
-<td>Profile for <code>get-demo-data</code>. Defaults to <code>magic</code>.</td>
-</tr>
-<tr class="odd">
-<td><code>downscaling.mode</code></td>
-<td><code>production</code>, <code>dev</code>, or <code>demo</code>. Controls variables, scenarios, and design size.</td>
-</tr>
-<tr class="even">
-<td><code>downscaling.n_cores</code></td>
-<td>Parallel workers. Defaults to <code>SLURM_JOB_CPUS_PER_NODE</code> if set, otherwise 1. Set it explicitly on a reserved compute session where that variable is not exported.</td>
-</tr>
-<tr class="odd">
-<td><code>downscaling.pecan_output_dir</code></td>
-<td>Your finished <code>magic-ensemble</code> output. Expects <code>output_&lt;scenario&gt;/</code> subdirectories plus <code>site_info.csv</code>.</td>
-</tr>
-<tr class="even">
-<td><code>downscaling.data_layers_dir</code></td>
-<td>Spatial data layers. Must contain <code>site_covariates.csv</code>.</td>
-</tr>
-<tr class="odd">
-<td><code>downscaling.anchor_site_locations</code></td>
-<td>Anchor site CSV. The repo ships a default under <code>data_raw/</code>.</td>
-</tr>
-</tbody>
-</table>
-<p>What the three modes actually change:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 33%">
-<col style="width: 27%">
-<col style="width: 27%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Mode</th>
-<th>Design size</th>
-<th>Variables</th>
-<th>Scenarios</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>production</code></td>
-<td>1000 design points, pool 10000</td>
-<td>TotSoilCarb, AGB, N2O_flux, CH4_flux</td>
-<td>all six</td>
-</tr>
-<tr class="even">
-<td><code>dev</code></td>
-<td>100 design points, pool 500</td>
-<td>TotSoilCarb only</td>
-<td>all six</td>
-</tr>
-<tr class="odd">
-<td><code>demo</code></td>
-<td>100 design points, pool 500</td>
-<td>TotSoilCarb only</td>
-<td>baseline only</td>
-</tr>
-</tbody>
-</table>
-<p>Mode is not a quality setting, it is a scope setting. A <code>demo</code> run exercises the same code path as <code>production</code> on less data.</p>
-<hr>
+<h2 class="anchored" data-anchor-id="your-config-file">Your config file</h2>
+<p>Copy the commented example and edit that copy, so you can always diff against it. The demo bundle ships a filled-in config, so for the training you will not need to write one from scratch.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> example_user_config.yaml my-config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>./magic-downscaling --help</code> lists every key and its default. The three modes differ in scope rather than quality: <code>production</code> covers all four variables and all scenarios, <code>dev</code> and <code>demo</code> reduce the design size and variable list, and <code>demo</code> also drops to a single scenario. A <code>demo</code> run exercises the same code path as <code>production</code> on less data.</p>
 </section>
 <section id="confirm-setup" class="level2">
-<h2 class="anchored" data-anchor-id="confirm-setup">0.7 Confirm setup</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all-1.18</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">$DS_DIR</span><span class="st">/downscaling"</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">--help</span>          <span class="co"># CLI runs</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/       <span class="co"># bucket reads</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> my-config.yaml                   <span class="co"># your config exists</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If any of those fail, fix it before starting the inventory notebook.</p>
+<h2 class="anchored" data-anchor-id="confirm-setup">Confirm setup</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">--help</span>          <span class="co"># CLI runs</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/       <span class="co"># bucket reads</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If either fails, fix it before starting the inventory notebook.</p>
+<p>The downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.</p>
 <hr>
-<p><strong>Next:</strong> <a href="downscaling_inventory.md">Inventory downscaling</a>.</p>
-<p><strong>Spine:</strong> <a href="README.md">tree README</a>.</p>
+<p><strong>Next:</strong> <a href="../../docs/training/downscaling_inventory.html">Inventory downscaling</a>.</p>
 
 
 </section>

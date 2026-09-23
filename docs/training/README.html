@@ -6,11 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Akash BV">
 <meta name="author" content="David LeBauer">
 <meta name="dcterms.date" content="2026-09-23">
 
-<title>Downscaling a MAGiC inventory – MAGiC Downscaling</title>
+<title>readme – MAGiC Downscaling</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,41 +25,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -71,7 +35,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../docs/training/CARB-downscaling-setup.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
@@ -82,9 +45,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -112,8 +72,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -127,7 +85,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/training/CARB-downscaling-setup.html">Training</a></li><li class="breadcrumb-item"><a href="../../docs/training/downscaling_inventory.html">Inventory Downscaling</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      MAGiC Downscaling
+      </li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -284,7 +244,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
@@ -299,26 +259,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
+  <ul>
+  <li><a href="#magic-downscaling-training" id="toc-magic-downscaling-training" class="nav-link active" data-scroll-target="#magic-downscaling-training">MAGiC downscaling training</a>
   <ul class="collapse">
-  <li><a href="#fetch-demo-data" id="toc-fetch-demo-data" class="nav-link active" data-scroll-target="#fetch-demo-data">Fetch demo data</a></li>
-  <li><a href="#explore-cli-layout" id="toc-explore-cli-layout" class="nav-link" data-scroll-target="#explore-cli-layout">Explore CLI layout</a></li>
-  <li><a href="#explore-configuration-file" id="toc-explore-configuration-file" class="nav-link" data-scroll-target="#explore-configuration-file">Explore configuration file</a></li>
-  <li><a href="#prepare-inputs" id="toc-prepare-inputs" class="nav-link" data-scroll-target="#prepare-inputs">Prepare inputs</a></li>
-  <li><a href="#extract-sipnet-output" id="toc-extract-sipnet-output" class="nav-link" data-scroll-target="#extract-sipnet-output">Extract SIPNET output</a></li>
-  <li><a href="#downscale-to-fields" id="toc-downscale-to-fields" class="nav-link" data-scroll-target="#downscale-to-fields">Downscale to fields</a></li>
-  <li><a href="#check-before-you-trust-it" id="toc-check-before-you-trust-it" class="nav-link" data-scroll-target="#check-before-you-trust-it">Check before you trust it</a></li>
-  <li><a href="#analyze-the-result" id="toc-analyze-the-result" class="nav-link" data-scroll-target="#analyze-the-result">Analyze the result!</a></li>
-  <li><a href="#the-full-inventory" id="toc-the-full-inventory" class="nav-link" data-scroll-target="#the-full-inventory">The full inventory</a></li>
-  <li><a href="#scenarios" id="toc-scenarios" class="nav-link" data-scroll-target="#scenarios">Scenarios</a></li>
+  <li><a href="#commands" id="toc-commands" class="nav-link" data-scroll-target="#commands">Commands</a></li>
+  <li><a href="#data-flow" id="toc-data-flow" class="nav-link" data-scroll-target="#data-flow">Data flow</a></li>
+  <li><a href="#audiences" id="toc-audiences" class="nav-link" data-scroll-target="#audiences">Audiences</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/training/CARB-downscaling-setup.html">Training</a></li><li class="breadcrumb-item"><a href="../../docs/training/downscaling_inventory.html">Inventory Downscaling</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Downscaling a MAGiC inventory</h1>
 </div>
 
 
@@ -326,9 +281,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Akash BV </p>
              <p>David LeBauer </p>
           </div>
   </div>
@@ -348,332 +302,104 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This session takes the output of a <code>magic-ensemble</code> inventory run and turns it into carbon estimates for every crop field, then aggregates to county and state.</p>
-<p>The demo bundle covers four Sacramento-San Joaquin Delta counties (Yolo, Solano, Sacramento, Contra Costa) and trains from the first 100 points of the statewide design, which are space filling on their own. The full chain runs in about ten minutes. Statewide numbers are at the end.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Scope
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The bundle ships data layers for four counties. A statewide run ships all 57 and uses the same four commands – the workflow predicts onto whatever fields the layers contain, so this is a data scope, not a limit of the pipeline.</p>
-</div>
-</div>
-<p>For the concepts behind all of this – why design points, how the Random Forest is fit, what the covariates are – see <a href="../../docs/intro_to_downscaling.html">Intro to MAGiC Downscaling</a></p>
-<p>This documentation assumes that the steps in <a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a> have been completed. For a new shell, follow its <a href="../../docs/training/CARB-downscaling-setup.html#every-new-shell">Every new shell</a> instructions. Run all commands below from the downscaling repository root.</p>
-<section id="fetch-demo-data" class="level2">
-<h2 class="anchored" data-anchor-id="fetch-demo-data">Fetch demo data</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> get-demo-data <span class="at">--config</span> example_user_config.yaml</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> demo-data/modelout/demo_config.yaml config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The bundle holds three things:</p>
-<ul>
-<li><code>modelout/</code> – SIPNET output, 100 design points x 10 ensemble members, 2016-2023, under <code>output_inventory/</code></li>
-<li><code>data/</code> – field geometry, attributes, covariates and county boundaries for the four demo counties, plus covariates for the design points so the model can train</li>
-<li><code>demo_config.yaml</code> – a filled-in config, copied to <code>config.yaml</code> above</li>
-</ul>
-</section>
-<section id="explore-cli-layout" class="level2">
-<h2 class="anchored" data-anchor-id="explore-cli-layout">Explore CLI layout</h2>
-<p>Execution is controlled by <code>magic-downscaling</code> and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The commands are defined by the <code>steps</code> section of the workflow manifest:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Key points:</p>
-<ul>
-<li>Each command is a list of steps, each calling one script.</li>
-<li>All tuning happens through command-line arguments the CLI builds. Scripts never read environment variables for config.</li>
-<li>A step declares <code>inputs</code> (files), <code>outputs</code> (files) and <code>params</code> (everything else) as <code>{cli_flag: value_key}</code> pairs. The key is the literal flag the script expects.</li>
-<li><code>inputs</code> and <code>outputs</code> values must be keys in the manifest’s <code>paths</code> block, all relative to <code>run_dir</code>. That indirection is what lets you move a run without editing a script.</li>
-<li><code>params</code> resolve from your config first, then <code>mode_params</code>, then <code>fixed_values</code>.</li>
-<li><code>--verbose</code> reports the exact call issued for each step.</li>
-</ul>
-</section>
-<section id="explore-configuration-file" class="level2">
-<h2 class="anchored" data-anchor-id="explore-configuration-file">Explore configuration file</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Everything you are likely to change lives here:</p>
-<ul>
-<li><code>run_dir</code> – where this run writes</li>
-<li><code>mode</code> – keep <code>production</code>. The other modes subsample: <code>demo</code> drops to one ensemble member and one year, <code>dev</code> to ten sites. The bundle is already small because of its data scope and does not need truncating as well.</li>
-<li><code>management_scenarios</code> – <code>inventory</code>. Must match the <code>output_&lt;scenario&gt;/</code> directory in the bundle.</li>
-<li><code>outputs_to_extract</code> – <code>TotSoilCarb</code></li>
-<li><code>pecan_output_dir</code>, <code>data_layers_dir</code> – where the bundle is</li>
-<li><code>n_cores</code></li>
-</ul>
-</section>
-<section id="prepare-inputs" class="level2">
-<h2 class="anchored" data-anchor-id="prepare-inputs">Prepare inputs</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<ul>
-<li>copies ensemble output and data layers into <code>run_dir</code>, so the run is self-contained and can be archived or moved</li>
-<li>fails immediately if a scenario in your config has no matching <code>output_&lt;scenario&gt;/</code> directory, which is the usual sign the config and the ensemble disagree</li>
-</ul>
-<p>About 3.5 minutes.</p>
-</section>
-<section id="extract-sipnet-output" class="level2">
-<h2 class="anchored" data-anchor-id="extract-sipnet-output">Extract SIPNET output</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>SIPNET writes one NetCDF per site, per member, per year at sub-daily resolution. This reads them all, averages to monthly, and writes one long table in EFI format.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>ensemble_output.csv as written by <code>extract</code></caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;">rows</th>
-<th style="text-align: right;">sites</th>
-<th style="text-align: right;">members</th>
-<th style="text-align: right;">months</th>
-<th style="text-align: left;">variables</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">96,000</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">96</td>
-<td style="text-align: left;">TotSoilCarb</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>The row count should be exactly <code>sites x members x months x variables</code>. If it is not, something was dropped and it is worth finding out what before going on.</p>
-<p>Values here are still in SIPNET units, kg C m<sup>-2</sup> for pools. Conversion to Mg C ha<sup>-1</sup> happens in the next step. About 4 minutes.</p>
-</section>
-<section id="downscale-to-fields" class="level2">
-<h2 class="anchored" data-anchor-id="downscale-to-fields">Downscale to fields</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For each PFT and carbon pool this:</p>
-<ul>
-<li>takes the design points that ran with that PFT as training data</li>
-<li>fits one Random Forest per ensemble member, covariates to model output</li>
-<li>predicts every field of that PFT, converts to reporting units, multiplies by area</li>
-<li>repeats at the start date so a change over the period can be formed</li>
-<li>aggregates to county and state</li>
-</ul>
-<p>Fitting one forest per member is what carries the ensemble’s parameter uncertainty through to the field level instead of collapsing it to a single number.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>Soil carbon by county. The Delta counties sit above Yolo, which is the peat soils showing through.</caption>
-<colgroup>
-<col style="width: 19%">
-<col style="width: 30%">
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 7%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">county</th>
-<th style="text-align: left;">pft</th>
-<th style="text-align: right;">fields</th>
-<th style="text-align: right;">Mg C/ha</th>
-<th style="text-align: right;">Gg C</th>
-<th style="text-align: right;">ensemble SD %</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">1183</td>
-<td style="text-align: right;">132.0</td>
-<td style="text-align: right;">1700</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">4554</td>
-<td style="text-align: right;">122.0</td>
-<td style="text-align: right;">5010</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">3547</td>
-<td style="text-align: right;">114.0</td>
-<td style="text-align: right;">5450</td>
-<td style="text-align: right;">11</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">5272</td>
-<td style="text-align: right;">103.0</td>
-<td style="text-align: right;">8170</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">646</td>
-<td style="text-align: right;">80.2</td>
-<td style="text-align: right;">218</td>
-<td style="text-align: right;">18</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">2261</td>
-<td style="text-align: right;">75.3</td>
-<td style="text-align: right;">1650</td>
-<td style="text-align: right;">19</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">1838</td>
-<td style="text-align: right;">68.8</td>
-<td style="text-align: right;">1330</td>
-<td style="text-align: right;">17</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">3428</td>
-<td style="text-align: right;">64.0</td>
-<td style="text-align: right;">2610</td>
-<td style="text-align: right;">16</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>About 1.5 minutes.</p>
-</section>
-<section id="check-before-you-trust-it" class="level2">
-<h2 class="anchored" data-anchor-id="check-before-you-trust-it">Check before you trust it</h2>
-<p>Two checks decide whether the maps are worth showing anyone.</p>
-<p>A Random Forest cannot extrapolate past its training range, so predictions outside the design points’ range mean a broken join or a unit mismatch rather than a discovery.</p>
-<p>Out-of-bag R<sup>2</sup> says whether the forest learned anything at all:</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>Negative means the forest does worse than predicting the training mean.</caption>
-<colgroup>
-<col style="width: 30%">
-<col style="width: 19%">
-<col style="width: 11%">
-<col style="width: 20%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">pft</th>
-<th style="text-align: left;">model_output</th>
-<th style="text-align: right;">members</th>
-<th style="text-align: right;">median OOB R2</th>
-<th style="text-align: right;">members &lt; 0</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: left;">TotSoilCarb</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0.411</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: left;">TotSoilCarb</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">0.309</td>
-<td style="text-align: right;">1</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="analyze-the-result" class="level2">
-<h2 class="anchored" data-anchor-id="analyze-the-result">Analyze the result!</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Writes diagnostics and maps to <code>figures/</code>: county and field maps per PFT and variable, ALE and ICE curves for the strongest predictors, and a variable-importance summary. About 1 minute.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="figures/demo_field_soc.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Field-level soil carbon for the four demo counties, as written by analyze. The statewide frame shows where the demo scope sits."><img src="figures/demo_field_soc.webp" class="img-fluid figure-img" alt="Field-level soil carbon for the four demo counties, as written by analyze. The statewide frame shows where the demo scope sits."></a></p>
-<figcaption>Field-level soil carbon for the four demo counties, as written by <code>analyze</code>. The statewide frame shows where the demo scope sits.</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>For comparison, the same product from the full 1000-site statewide inventory. This is what a production run delivers; the demo above is the same code on a smaller data scope.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="figures/statewide_field_soc.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Statewide field-level soil carbon, 1000 design points, 385,234 fields."><img src="figures/statewide_field_soc.webp" class="img-fluid figure-img" alt="Statewide field-level soil carbon, 1000 design points, 385,234 fields."></a></p>
-<figcaption>Statewide field-level soil carbon, 1000 design points, 385,234 fields.</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="the-full-inventory" class="level2">
-<h2 class="anchored" data-anchor-id="the-full-inventory">The full inventory</h2>
-<p>Same four commands. What changes is the config and the machine.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">8</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> /path/to/your/magic-ensemble/output</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> /path/to/statewide/data_layers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="magic-downscaling-training" class="level1">
+<h1>MAGiC downscaling training</h1>
+<p>This is the downscaling half of the MAGiC system. It picks up where <a href="https://github.com/ccmmf/magic-training">magic-ensemble</a> stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.</p>
+<p>Running SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.</p>
+<p>Each notebook is a self-study demo to work through beforehand, then discuss in the live session.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th></th>
-<th>Demo (4 counties)</th>
-<th>Statewide</th>
+<th>Topic</th>
+<th>Audience</th>
+<th>Objectives</th>
+<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>target fields</td>
-<td>22,729</td>
-<td>385,234</td>
+<td><a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a></td>
+<td>Everyone</td>
+<td>Conda, AWS, and the CLI’s <code>yq</code> requirement</td>
+<td>Needed before the inventory notebook</td>
 </tr>
 <tr class="even">
-<td>minimum RAM</td>
-<td>16 GB</td>
-<td>400 GB</td>
+<td><a href="../../docs/training/downscaling_inventory.html">Inventory downscaling</a></td>
+<td>MAGiC users</td>
+<td>Turn an ensemble run into field, county and state carbon</td>
+<td>Demo bundle is four Delta counties, runs in about ten minutes</td>
 </tr>
 <tr class="odd">
-<td>cores used</td>
-<td>4</td>
-<td>8</td>
+<td>Scenario downscaling</td>
+<td>MAGiC users</td>
+<td>Practice-change arms and scenario deltas</td>
+<td>Deferred; same four commands with a longer scenario list</td>
 </tr>
 <tr class="even">
-<td>download</td>
-<td>1.5 GB</td>
-<td>your own ensemble output</td>
-</tr>
-<tr class="odd">
-<td>run_dir on disk</td>
-<td>~6 GB</td>
-<td>&gt;100 GB</td>
+<td>Design point selection</td>
+<td>Data managers</td>
+<td>How the design points are chosen</td>
+<td>Scripts 010-022, upstream of the ensemble and not a CLI command</td>
 </tr>
 </tbody>
 </table>
-<p>Wall time depends on the machine, so treat the memory and disk figures as the binding constraints. <code>downscale</code> is the step that sets them: its cost scales with target fields and ensemble members, not with how many design points trained the forest, so a smaller design does not make it cheaper.</p>
-<p>Note <code>prepare</code> copies <code>pecan_output_dir</code> into <code>run_dir</code>, so a statewide run needs room for two copies of the ensemble output.</p>
+<section id="commands" class="level2">
+<h2 class="anchored" data-anchor-id="commands">Commands</h2>
+<p>Each is one CLI verb. The steps inside are declared in <a href="../../downscaling_manifest.yaml"><code>downscaling_manifest.yaml</code></a>, not hard coded.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>get-demo-data</code></td>
+<td>Downloads and extracts the demo bundle. Run once, before <code>prepare</code>.</td>
+</tr>
+<tr class="even">
+<td><code>prepare</code></td>
+<td>Stages ensemble output and data layers into <code>run_dir</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>extract</code></td>
+<td>Reads SIPNET NetCDF, reshapes to EFI long format.</td>
+</tr>
+<tr class="even">
+<td><code>downscale</code></td>
+<td>Random Forest downscaling to all fields, then county and state aggregation.</td>
+</tr>
+<tr class="odd">
+<td><code>analyze</code></td>
+<td>Diagnostics, uncertainty, maps.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="scenarios" class="level2">
-<h2 class="anchored" data-anchor-id="scenarios">Scenarios</h2>
-<p>Practice-change scenarios use the same four commands. The difference is that <code>management_scenarios</code> lists several arms, the ensemble output carries one <code>output_&lt;scenario&gt;/</code> directory per arm, and the analysis adds scenario-minus-baseline comparisons; this session covers the inventory only.</p>
+<section id="data-flow" class="level2">
+<h2 class="anchored" data-anchor-id="data-flow">Data flow</h2>
+<pre class="mermaid"><code>flowchart LR
+  ENS["magic-ensemble\nSIPNET at design points"] --&gt; PREP["prepare"]
+  PREP --&gt; EXT["extract"]
+  EXT --&gt; DS["downscale"]
+  DS --&gt; AN["analyze"]</code></pre>
+</section>
+<section id="audiences" class="level2">
+<h2 class="anchored" data-anchor-id="audiences">Audiences</h2>
+<p>Following the same roles as the <a href="https://github.com/ccmmf/magic-training">MAGiC training index</a>:</p>
+<ul>
+<li><strong>Everyone</strong> – environment setup.</li>
+<li><strong>MAGiC users</strong> – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.</li>
+<li><strong>Data managers</strong> – regenerating the design points or the covariate layers.</li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1077,48 +803,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../../docs/training/CARB-downscaling-setup.html" class="pagination-link" aria-label="Environment Setup">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Environment Setup</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-  </div>
-</nav>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 
