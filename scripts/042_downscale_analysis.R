@@ -45,7 +45,12 @@ ensemble_ids <- if (!is.null(meta$ensembles)) meta$ensembles else sort(unique(do
 
 covariates_csv <- args$covariates_csv
 
-covariates <- readr::read_csv(covariates_csv) |>
+# site_id is an identifier, not a covariate: read it as character so it joins
+# against the predictions and stays out of the numeric predictor set.
+covariates <- readr::read_csv(
+  covariates_csv,
+  col_types = readr::cols(site_id = readr::col_character())
+) |>
   dplyr::select(site_id, where(is.numeric), -climregion_id)
 covariate_names <- names(dplyr::select(covariates, where(is.numeric)))
 PEcAn.logger::logger.info("Loaded predictions, metadata, and covariates")

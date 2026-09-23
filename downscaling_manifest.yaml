@@ -17,10 +17,11 @@
 #                path_key is looked up in 'paths' (each entry becomes
 #                --<cli_flag> <path>)
 #   params:      Map of {cli_flag: value_key} this script needs; value_key is
-#                resolved from mode_params.$mode.<value_key> falling back to
+#                resolved from downscaling.<value_key> in the user config,
+#                falling back to mode_params.$mode.<value_key> then
 #                fixed_values.<value_key> (each entry becomes --<cli_flag>
 #                <value>); n_cores is the one exception, sourced from the
-#                user config instead (see magic-downscaling). cli_flag and
+#                user config only (see magic-downscaling). cli_flag and
 #                path_key/value_key are usually identical but don't have to
 #                be -- this indirection lets a script's flag name differ from
 #                a path's/param's canonical manifest identity without
@@ -82,7 +83,7 @@ steps:
       r_libraries: [PEcAn.utils, PEcAn.settings, furrr, future, tidyverse]
       inputs:  {model_outdir: model_outdir}
       outputs: {ensemble_output_csv: ensemble_output_csv}
-      params:  {outputs_to_extract: outputs_to_extract, management_scenarios: management_scenarios, n_cores: n_cores}
+      params:  {outputs_to_extract: outputs_to_extract, management_scenarios: management_scenarios, n_cores: n_cores, output_prefix: output_prefix}
 
   downscale:
     - name: downscale
@@ -121,8 +122,8 @@ paths:
   # --- Read-only inputs (staged before magic-downscaling runs) ---
   raw_data_dir:            "data_raw"
   data_dir:                "data"
-  ca_fields_gpkg:          "data/ca_fields.gpkg"
-  ca_field_attributes_csv: "data/ca_field_attributes.csv"
+  ca_fields_gpkg:          "data/cadwr_crops_sites.gpkg"
+  ca_field_attributes_csv: "data/cadwr_crops_site_summary.csv"
   ca_counties_gpkg:        "data/ca_counties.gpkg"
   model_outdir:            "output"
   # consolidated parcel geometry; 022 checks every design point against it
@@ -147,6 +148,8 @@ paths:
 fixed_values:
   seed: 42
   ca_albers_crs: "EPSG:3310"
+  # prefix on each scenario's output directory under model_outdir
+  output_prefix: "output_"
   outputs_to_extract:
     - TotSoilCarb
     - AGB

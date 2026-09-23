@@ -51,6 +51,7 @@ outputs_to_extract <- strsplit(args$outputs_to_extract, ",")[[1]]
 
 source(file.path(here::here(), "R", "helper.R"))
 source(file.path(here::here(), "R", "combine_mixed_crops.R"))
+source(file.path(here::here(), "R", "standardize_cadwr_crops.R"))
 no_cores <- if (!is.null(args$n_cores)) args$n_cores else max(future::availableCores() - 1, 1)
 future::plan(future::multicore, workers = no_cores)
 set.seed(42)
@@ -60,7 +61,10 @@ PEcAn.logger::logger.info("***Starting Downscaling and Aggregation***")
 # Load ensemble output
 ensemble_csv <- args$ensemble_output_csv
 timer_read_ensemble <- step_timer()
-ensemble_data <- readr::read_csv(ensemble_csv) |>
+ensemble_data <- readr::read_csv(
+  ensemble_csv,
+  col_types = readr::cols(site_id = readr::col_character())
+) |>
   dplyr::rename(
     ensemble = parameter # parameter is EFI std name for ensemble
   )
@@ -123,7 +127,13 @@ ca_fields <- ca_fields |>
     .groups = "drop"
   )
 
-ca_field_attributes <- readr::read_csv(args$ca_field_attributes_csv)
+# 009 writes the field PFT as dominant_pft
+ca_field_attributes <- readr::read_csv(
+  args$ca_field_attributes_csv,
+  col_types = readr::cols(site_id = readr::col_character())
+) |>
+  dplyr::rename(pft = dominant_pft) |>
+  tidyr::drop_na(pft)
 
 # Pick PFTs that show up in both the ensemble data and the field table
 ensemble_pfts <- sort(unique(ensemble_data$pft))
@@ -139,7 +149,10 @@ if (length(pfts) == 0) {
 # Load site covariates
 covariates_csv <- args$covariates_csv
 timer_read_cov <- step_timer()
-covariates <- readr::read_csv(covariates_csv) |>
+covariates <- readr::read_csv(
+  covariates_csv,
+  col_types = readr::cols(site_id = readr::col_character())
+) |>
   dplyr::select(
     site_id, where(is.numeric),
     -climregion_id
@@ -273,17 +286,20 @@ convert_to_reporting_units <- function(prediction, model_output) {
 # )
 
 
-# Load design points from site_info.csv
-site_info <- readr::read_csv(file.path(pecan_outdir, "site_info.csv"))
+# Load design points from site_info.csv. id is read as character to match the
+# ids in the ensemble output; parcel ids would otherwise be guessed numeric.
+site_info <- readr::read_csv(
+  file.path(pecan_outdir, "site_info.csv"),
+  col_types = readr::cols(id = readr::col_character())
+)
 design_points <- site_info |>
+  # 030 may drop sites whose runs were unusable, so train only on what it wrote
+  dplyr::filter(id %in% ensemble_data$site_id) |>
   dplyr::transmute(
     site_id = id,
     lat = lat,
     lon = lon,
-    pft = dplyr::case_when(
-      site.pft == "annual_crop" ~ "annual crop",
-      TRUE ~ site.pft
-    )
+    pft = collapse_veg_pft(site.pft)
   )
 PEcAn.logger::logger.info("Loaded ", nrow(design_points), " design points from site_info.csv")
 
@@ -334,18 +350,39 @@ all(design_points$site_id %in% covariates$site_id)
 
 # Keep full covariates and perform per-PFT sampling later (dev mode)
 covariates_full <- covariates
+
+# a field with no covariates cannot be predicted, so the target set is the
+# intersection. 009 writes every parcel; 010 drops those that fail raster
+# extraction, so the two differ.
+n_attrs <- nrow(ca_field_attributes)
+ca_field_attributes <- ca_field_attributes |>
+  dplyr::filter(site_id %in% covariates_full$site_id)
+PEcAn.logger::logger.info(
+  "Prediction targets: ", format(nrow(ca_field_attributes), big.mark = ","),
+  " of ", format(n_attrs, big.mark = ","), " fields have covariates"
+)
+
 if (!PRODUCTION) {
   if (!exists(".Random.seed")) set.seed(123)
   PEcAn.logger::logger.info("Development mode: will sample up to 10k prediction sites per PFT")
-  # keep ca_field_attributes consistent with available covariates
-  ca_field_attributes <- ca_field_attributes |>
-    dplyr::filter(site_id %in% covariates_full$site_id)
 }
 
 # Build list of site_ids per PFT from field attributes
 pft_site_ids <- ca_field_attributes |>
   dplyr::filter(pft %in% pfts) |>
   dplyr::distinct(site_id, pft)
+
+# Design points get force-added to each PFT's prediction covariates so the
+# training join works, which means a design point whose design PFT differs from
+# its attribute PFT gets predicted under both and double counts that field.
+# These are the pairs to drop when assembling output.
+dp_not_target <- design_points |>
+  dplyr::select(site_id, pft) |>
+  dplyr::anti_join(pft_site_ids, by = c("site_id", "pft"))
+PEcAn.logger::logger.info(
+  nrow(dp_not_target), " design points predicted outside their attribute PFT; ",
+  "dropped from output"
+)
 
 sites_info <- pft_site_ids |>
   dplyr::group_by(pft) |>
@@ -728,6 +765,7 @@ downscale_preds <- purrr::map(downscale_output_list, get_downscale_preds) |>
     sep = "::",
     remove = TRUE
   ) |>
+  dplyr::anti_join(dp_not_target, by = c("site_id", "pft")) |>
   dplyr::mutate(density_per_ha = convert_to_reporting_units(prediction, model_output)) |>
   dplyr::mutate(total_per_field = density_per_ha * area_ha) |>
   dplyr::select(site_id, scenario, pft, ensemble, density_per_ha, total_per_field, area_ha, county, model_output, -prediction)
@@ -979,7 +1017,8 @@ metadata |>
 # Delta predictions
 if (length(delta_output_records) > 0) {
   delta_dp <- dplyr::bind_rows(delta_output_records, .id = "spec") |>
-    tidyr::separate(col = "spec", into = c("scenario", "pft", "model_output"), sep = "::", remove = TRUE)
+    tidyr::separate(col = "spec", into = c("scenario", "pft", "model_output"), sep = "::", remove = TRUE) |>
+    dplyr::anti_join(dp_not_target, by = c("site_id", "pft"))
   write_output(
     delta_dp,
     file.path(model_outdir, "downscaled_deltas"),

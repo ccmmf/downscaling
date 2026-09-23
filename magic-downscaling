@@ -66,6 +66,10 @@ User config keys:
   downscaling.pecan_output_dir        Source path for PEcAn/SIPNET ensemble output (optional; if set, prepare stages it).
   downscaling.data_layers_dir         Source path for spatial data layers (required for prepare).
   downscaling.anchor_site_locations   Path to anchor site locations CSV (required for prepare).
+  downscaling.management_scenarios    Scenarios this run covers (optional; defaults to the mode's list).
+                                      Must match the output_<scenario>/ dirs under pecan_output_dir.
+                                      Set to a single arm for a historical inventory.
+  downscaling.outputs_to_extract      SIPNET variables to carry through (optional; defaults to the mode's list).
   global.aws_profile                  AWS CLI profile for S3 access in get-demo-data (default: 'magic').
 EOF
 }
@@ -207,35 +211,56 @@ get_val() {
   yq eval ".${key}" "$CONFIG_FILE" 2>/dev/null
 }
 
-# Resolve a list from mode_params with fallback to fixed_values; output as comma-separated string.
+# Resolve a list from user config, then mode_params, then fixed_values; output as
+# comma-separated string. Still has to exist in fixed_values, so a config can
+# retarget a known key but not invent one.
 get_list() {
   local key="$1"
   check_config_key "$MANIFEST" "fixed_values.${key}"
   local items=()
   while IFS= read -r item; do
     [[ -n "$item" ]] && items+=("$item")
-  done < <(yq eval ".mode_params.${mode}.${key}[]" "$MANIFEST" 2>/dev/null)
+  done < <(yq eval ".downscaling.${key}[]" "$CONFIG_FILE" 2>/dev/null)
+  if [[ ${#items[@]} -eq 0 ]]; then
+    while IFS= read -r item; do
+      [[ -n "$item" ]] && items+=("$item")
+    done < <(yq eval ".mode_params.${mode}.${key}[]" "$MANIFEST" 2>/dev/null)
+  fi
   if [[ ${#items[@]} -eq 0 ]]; then
     while IFS= read -r item; do
       [[ -n "$item" ]] && items+=("$item")
     done < <(yq eval ".fixed_values.${key}[]" "$MANIFEST" 2>/dev/null)
   fi
   if [[ ${#items[@]} -eq 0 ]]; then
-    echo "magic-downscaling: key '${key}' has no value in manifest (mode: ${mode})" >&2; exit 1
+    echo "magic-downscaling: key '${key}' has no value in config or manifest (mode: ${mode})" >&2; exit 1
   fi
   local IFS=','
   echo "${items[*]}"
 }
 
-# Read a scalar from mode_params.
+# True when a key is present in a file, even if its value is the empty string.
+# yq returns "" for a set-but-empty key and "null" for a missing one, so testing
+# emptiness would silently replace a deliberate "" with the next default --
+# output_prefix: "" is the case that matters.
+key_is_set() {
+  local file="$1" path="$2" leaf="$3"
+  [[ "$(yq eval "${path} | has(\"${leaf}\")" "$file" 2>/dev/null)" == "true" ]]
+}
+
+# Read a scalar from user config, then mode_params, then fixed_values. Same
+# three sources as get_list -- keys like output_prefix only live in fixed_values.
 get_mode_scalar() {
-  local key="$1" value
-  check_config_key "$MANIFEST" "mode_params.${mode}.${key}"
-  value=$(yq eval ".mode_params.${mode}.${key}" "$MANIFEST" 2>/dev/null)
-  if [[ -z "$value" || "$value" == "null" ]]; then
-    echo "magic-downscaling: key 'mode_params.${mode}.${key}' has no value in manifest" >&2; exit 1
+  local key="$1"
+  if key_is_set "$CONFIG_FILE" ".downscaling" "$key"; then
+    yq eval ".downscaling.${key}" "$CONFIG_FILE" 2>/dev/null; return
   fi
-  echo "$value"
+  if key_is_set "$MANIFEST" ".mode_params.${mode}" "$key"; then
+    yq eval ".mode_params.${mode}.${key}" "$MANIFEST" 2>/dev/null; return
+  fi
+  if key_is_set "$MANIFEST" ".fixed_values" "$key"; then
+    yq eval ".fixed_values.${key}" "$MANIFEST" 2>/dev/null; return
+  fi
+  echo "magic-downscaling: key '${key}' has no value in config or manifest (mode: ${mode})" >&2; exit 1
 }
 
 # --- Load user config ---
@@ -275,6 +300,7 @@ if [[ "$COMMAND" != "get-demo-data" ]]; then
   # --- Resolve mode-specific parameters from manifest ---
   outputs_to_extract=$(get_list "outputs_to_extract") || exit 1
   management_scenarios=$(get_list "management_scenarios") || exit 1
+  output_prefix=$(get_mode_scalar "output_prefix") || exit 1
 
   # --- Settings banner ---
   echo "magic-downscaling: command              : $COMMAND"
@@ -485,8 +511,8 @@ run_prepare() {
     local -a scenario_arr
     IFS=',' read -ra scenario_arr <<< "$management_scenarios"
     for scenario in "${scenario_arr[@]}"; do
-      if [[ ! -d "${pecan_output_dir}/output_${scenario}" ]]; then
-        echo "magic-downscaling: expected scenario directory not found: ${pecan_output_dir}/output_${scenario}" >&2
+      if [[ ! -d "${pecan_output_dir}/${output_prefix}${scenario}" ]]; then
+        echo "magic-downscaling: expected scenario directory not found: ${pecan_output_dir}/${output_prefix}${scenario}" >&2
         echo "magic-downscaling: verify the ensemble has run and pecan_output_dir is correct." >&2
         exit 1
       fi
