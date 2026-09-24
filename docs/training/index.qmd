@@ -1,4 +1,6 @@
-# MAGiC downscaling training
+---
+title: "MAGiC downscaling training"
+---
 
 This is the downscaling half of the MAGiC system. It picks up where
 [magic-ensemble](https://github.com/ccmmf/magic-training) stops: the ensemble workflow
@@ -36,7 +38,7 @@ Command | What it does
 
 ## Data flow
 
-```mermaid
+```{mermaid}
 flowchart LR
   ENS["magic-ensemble\nSIPNET at design points"] --> PREP["prepare"]
   PREP --> EXT["extract"]
