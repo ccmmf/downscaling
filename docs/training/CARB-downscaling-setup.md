@@ -56,4 +56,4 @@ Resource requirements are in the notebook.
 
 **Next:** [Inventory downscaling](downscaling_inventory.qmd).
 
-**Spine:** [training overview](README.md).
+**Spine:** [training overview](index.qmd).
