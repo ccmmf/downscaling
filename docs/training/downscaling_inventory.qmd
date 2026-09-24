@@ -25,8 +25,9 @@ This session takes the output of a `magic-ensemble` inventory run and turns it i
 carbon estimates for every crop field, then aggregates to county and state.
 
 The demo bundle covers four Sacramento-San Joaquin Delta counties (Yolo, Solano,
-Sacramento, Contra Costa) and trains from 99 design points spread across the whole
-state. The full chain runs in about six minutes. Statewide numbers are at the end.
+Sacramento, Contra Costa) and trains from the first 100 points of the statewide design,
+which are space filling on their own. The full chain runs in about ten minutes.
+Statewide numbers are at the end.
 
 ::: {.callout-note}
 ## Scope
@@ -58,7 +59,7 @@ file below and use it for all remaining workflow commands.
 
 The bundle holds three things:
 
-- `modelout/` -- SIPNET output, 99 design points x 10 ensemble members, 2016-2023,
+- `modelout/` -- SIPNET output, 100 design points x 10 ensemble members, 2016-2023,
   under `output_inventory/`
 - `data/` -- field geometry, attributes, covariates and county boundaries for the four
   demo counties, plus covariates for the design points so the model can train
@@ -121,7 +122,7 @@ Everything you are likely to change lives here:
 - fails immediately if a scenario in your config has no matching `output_<scenario>/`
   directory, which is the usual sign the config and the ensemble disagree
 
-About 3 minutes.
+About 3.5 minutes.
 
 ## Extract SIPNET output
 
@@ -240,10 +241,10 @@ data_layers_dir: /path/to/statewide/data_layers
 
 | | Demo (4 counties) | Statewide |
 |---|---|---|
-| target fields | 23,311 | 385,234 |
+| target fields | 22,729 | 385,234 |
 | minimum RAM | 16 GB | 400 GB |
 | cores used | 4 | 8 |
-| download | 1.4 GB | your own ensemble output |
+| download | 1.5 GB | your own ensemble output |
 | run_dir on disk | ~6 GB | >100 GB |
 
 Wall time depends on the machine, so treat the memory and disk figures as the binding

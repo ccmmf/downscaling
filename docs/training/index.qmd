@@ -1,4 +1,6 @@
-# MAGiC downscaling training
+---
+title: "MAGiC downscaling training"
+---
 
 This is the downscaling half of the MAGiC system. It picks up where
 [magic-ensemble](https://github.com/ccmmf/magic-training) stops: the ensemble workflow
@@ -17,7 +19,7 @@ session.
 Topic | Audience | Objectives | Notes
 --|--|--|--
 [Environment setup](CARB-downscaling-setup.md) | Everyone | Conda, AWS, and the CLI's `yq` requirement | Needed before the inventory notebook
-[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo bundle is four Delta counties, runs in about six minutes
+[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo bundle is four Delta counties, runs in about ten minutes
 Scenario downscaling | MAGiC users | Practice-change arms and scenario deltas | Deferred; same four commands with a longer scenario list
 Design point selection | Data managers | How the design points are chosen | Scripts 010-022, upstream of the ensemble and not a CLI command
 
@@ -36,9 +38,9 @@ Command | What it does
 
 ## Data flow
 
-```mermaid
+```{mermaid}
 flowchart LR
-  ENS["magic-ensemble\nSIPNET at design points"] --> PREP["prepare"]
+  ENS["magic-ensemble<br/>SIPNET at design points"] --> PREP["prepare"]
   PREP --> EXT["extract"]
   EXT --> DS["downscale"]
   DS --> AN["analyze"]
