@@ -73,7 +73,7 @@ To set up this workflow to run on your system, follow the following steps.
 **Clone Repository**
 
 ```sh
-git clone git@github.com:ccmmf/downscaling
+git clone https://github.com/ccmmf/downscaling
 ```
 
   - `CCMMF_DIR` should point to the shared CCMMF directory. 
@@ -103,14 +103,14 @@ When enabled, the workflow processes multiple management scenarios in a single r
 
 **Available Management Scenarios:**
 
-| Scenario | Description |
-|----------|-------------|
-| baseline | Conventional management practices |
-| compost | Compost application replacing mineral N fertilizer |
-| reduced_till | Reduced tillage intensity (0.10) |
-| zero_till | No tillage (0.00) |
-| reduced_irrig_drip | Drip irrigation replacing canopy irrigation |
-| stacked | Combined: compost + reduced tillage + drip irrigation |
+| Scenario           | Description                                           |
+| ------------------ | ----------------------------------------------------- |
+| baseline           | Conventional management practices                     |
+| compost            | Compost application replacing mineral N fertilizer    |
+| reduced_till       | Reduced tillage intensity (0.10)                      |
+| zero_till          | No tillage (0.00)                                     |
+| reduced_irrig_drip | Drip irrigation replacing canopy irrigation           |
+| stacked            | Combined: compost + reduced tillage + drip irrigation |
 
 ### 1. Data Preparation
 

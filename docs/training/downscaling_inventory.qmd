@@ -52,6 +52,10 @@ Run all commands below from the downscaling repository root.
 cp demo-data/modelout/demo_config.yaml config.yaml
 ```
 
+The download command reads the S3 profile from `example_user_config.yaml`. The
+second command copies the bundle's configuration to `config.yaml`. Review that
+file below and use it for all remaining workflow commands.
+
 The bundle holds three things:
 
 - `modelout/` -- SIPNET output, 99 design points x 10 ensemble members, 2016-2023,

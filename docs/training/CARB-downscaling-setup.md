@@ -8,7 +8,7 @@ Follow that first. This page covers only what is specific to downscaling.
 ## Clone the repository
 
 ```bash
-git clone https://github.com/ccmmf/downscaling.git
+git clone https://github.com/ccmmf/downscaling
 cd downscaling
 ```
 
@@ -21,24 +21,26 @@ Return to the downscaling repository directory and activate conda before continu
 
 ```bash
 cd /path/to/downscaling
-conda activate <your pecan-all env>
+conda activate ~/.conda/envs/pecan-all/
 export AWS_PROFILE=magic
 ```
 
-## Your config file
+## The configuration file
 
-Copy the commented example and edit that copy, so you can always diff against it. The
-demo bundle ships a filled-in config, so for the training you will not need to write one
-from scratch.
+The downscaling CLI uses a configuration file to control the workflow.
 
-```bash
-cp example_user_config.yaml my-config.yaml
-```
+For the tutorial, the configuration file is provided with the data inputs that will be downloaded
+at the beginning of the [inventory notebook](downscaling_inventory.qmd#fetch-demo-data).
 
-`./magic-downscaling --help` lists every key and its default. The three modes differ in
-scope rather than quality: `production` covers all four variables and all scenarios,
-`dev` and `demo` reduce the design size and variable list, and `demo` also drops to a
-single scenario. A `demo` run exercises the same code path as `production` on less data.
+For your own runs, you can copy and edit `example_user_config.yaml` as a starting point.
+
+`./magic-downscaling --help` lists each configuration key and its default values. 
+
+There are three configuration modes: `demo`, `dev`, and `production` that differ in
+scope : `production` covers all variables and all scenarios,
+`dev` and `demo` reduce the design size and variable list, and `demo` only runs
+a single scenario. 
+A `demo` run exercises the same code path as `production` on less data.
 
 ## Confirm setup
 
