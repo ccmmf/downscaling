@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,9 +12,6 @@
 
 <title>carb-downscaling-setup – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -75,14 +72,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../docs/training/index.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -231,7 +229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Docs</span></a>
+ <span class="menu-text">Training</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -239,8 +237,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Intro to Downscaling</span></a>
+  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Environment Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -263,35 +273,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
       </ul>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Environment Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Downscaling</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -306,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository">Clone the repository</a></li>
   <li><a href="#every-new-shell" id="toc-every-new-shell" class="nav-link" data-scroll-target="#every-new-shell">Every new shell</a></li>
-  <li><a href="#your-config-file" id="toc-your-config-file" class="nav-link" data-scroll-target="#your-config-file">Your config file</a></li>
+  <li><a href="#the-configuration-file" id="toc-the-configuration-file" class="nav-link" data-scroll-target="#the-configuration-file">The configuration file</a></li>
   <li><a href="#confirm-setup" id="toc-confirm-setup" class="nav-link" data-scroll-target="#confirm-setup">Confirm setup</a></li>
   </ul></li>
   </ul>
@@ -348,10 +329,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="environment-setup" class="level1">
 <h1>Environment setup</h1>
-<p>Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in <a href="https://github.com/ccmmf/magic-training/blob/main/CARB-PEcAn-setup.md">CARB PEcAn Environment Setup</a>. Follow that first. This page covers only what is specific to downscaling.</p>
+<p>Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in <a href="https://github.com/ccmmf/magic-training/blob/main/CARB-PEcAn-setup.md">CARB PEcAn Environment Setup</a>. Follow that first; here we are using version 1.18; an existing environment at the same path may be older.</p>
+<p>This page focuses on steps specific to the downscaling workflow.</p>
 <section id="clone-the-repository" class="level2">
 <h2 class="anchored" data-anchor-id="clone-the-repository">Clone the repository</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The rest of the instructions assume that you are working inside of the downscaling repository directory.</p>
 </section>
@@ -359,24 +341,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="every-new-shell">Every new shell</h2>
 <p>Return to the downscaling repository directory and activate conda before continuing.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /path/to/downscaling</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate <span class="op">&lt;</span>your pecan-all env<span class="op">&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ~/.conda/envs/pecan-all/</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>magic</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="your-config-file" class="level2">
-<h2 class="anchored" data-anchor-id="your-config-file">Your config file</h2>
-<p>Copy the commented example and edit that copy, so you can always diff against it. The demo bundle ships a filled-in config, so for the training you will not need to write one from scratch.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> example_user_config.yaml my-config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>./magic-downscaling --help</code> lists every key and its default. The three modes differ in scope rather than quality: <code>production</code> covers all four variables and all scenarios, <code>dev</code> and <code>demo</code> reduce the design size and variable list, and <code>demo</code> also drops to a single scenario. A <code>demo</code> run exercises the same code path as <code>production</code> on less data.</p>
+<section id="the-configuration-file" class="level2">
+<h2 class="anchored" data-anchor-id="the-configuration-file">The configuration file</h2>
+<p>The downscaling CLI uses a configuration file to control the workflow.</p>
+<p>For the tutorial, the configuration file is provided with the data inputs that will be downloaded at the beginning of the <a href="../../docs/training/downscaling_inventory.html#fetch-demo-data">inventory notebook</a>.</p>
+<p>For your own runs, you can copy and edit <code>example_user_config.yaml</code> as a starting point.</p>
+<p><code>./magic-downscaling --help</code> lists each configuration key and its default values.</p>
+<p>There are three configuration modes: <code>demo</code>, <code>dev</code>, and <code>production</code> that differ in scope : <code>production</code> uses the configured variables, scenarios and input scope, <code>dev</code> and <code>demo</code> reduce the design size and variable list, and <code>demo</code> only runs a single scenario. A <code>demo</code> run exercises the same code path as <code>production</code> on less data.</p>
 </section>
 <section id="confirm-setup" class="level2">
 <h2 class="anchored" data-anchor-id="confirm-setup">Confirm setup</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">--help</span>          <span class="co"># CLI runs</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/       <span class="co"># bucket reads</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">--help</span>          <span class="co"># CLI runs</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://carb/data_raw/       <span class="co"># bucket reads</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>If either fails, fix it before starting the inventory notebook.</p>
-<p>The downscale step is heavy and belongs on a compute node rather than a login node. Resource requirements are in the notebook.</p>
+<p>The downscale step requires substantial computing resources and should run on a compute node. Resource requirements are in the notebook.</p>
 <hr>
 <p><strong>Next:</strong> <a href="../../docs/training/downscaling_inventory.html">Inventory downscaling</a>.</p>
-<p><strong>Spine:</strong> <a href="../../docs/training/index.html">training overview</a>.</p>
+<p><strong>Overview:</strong> <a href="../../docs/training/index.html">MAGiC downscaling training</a>.</p>
 
 
 </section>

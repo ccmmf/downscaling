@@ -2,19 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-23">
+<meta name="dcterms.date" content="2026-09-24">
 
 <title>MAGiC downscaling training – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,17 +34,18 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
 <link href="../../docs/training/CARB-downscaling-setup.html" rel="next">
-<link href="../../docs/references.html" rel="prev">
+<link href="../../reports/variable_importance.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -199,7 +197,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Docs</span></a>
+ <span class="menu-text">Training</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -207,8 +205,20 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Intro to Downscaling</span></a>
+  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -227,35 +237,6 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../docs/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Environment Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
       </ul>
@@ -299,7 +280,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 23, 2026</p>
+      <p class="date">September 24, 2026</p>
     </div>
   </div>
   
@@ -311,8 +292,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This is the downscaling half of the MAGiC system. It picks up where <a href="https://github.com/ccmmf/magic-training">magic-ensemble</a> stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.</p>
-<p>Running SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.</p>
+<p>This is the downscaling component of the MAGiC system. It uses output from <a href="https://github.com/ccmmf/magic-training">magic-ensemble</a>: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for fields with the required inputs, then aggregates to county and state.</p>
+<p>The design points reduce the number of SIPNET runs needed and are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.</p>
 <p>Each notebook is a self-study demo to work through beforehand, then discuss in the live session.</p>
 <table class="caption-top table">
 <thead>
@@ -327,14 +308,14 @@ ul.task-list li input[type="checkbox"] {
 <tr class="odd">
 <td><a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a></td>
 <td>Everyone</td>
-<td>Conda, AWS, and the CLI’s <code>yq</code> requirement</td>
+<td>Conda, AWS, and repository setup</td>
 <td>Needed before the inventory notebook</td>
 </tr>
 <tr class="even">
 <td><a href="../../docs/training/downscaling_inventory.html">Inventory downscaling</a></td>
 <td>MAGiC users</td>
 <td>Turn an ensemble run into field, county and state carbon</td>
-<td>Demo bundle is four Delta counties, runs in about ten minutes</td>
+<td>Demo dataset covers four Delta counties</td>
 </tr>
 <tr class="odd">
 <td>Scenario downscaling</td>
@@ -352,7 +333,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 <section id="commands" class="level2">
 <h2 class="anchored" data-anchor-id="commands">Commands</h2>
-<p>Each is one CLI verb. The steps inside are declared in <a href="../../downscaling_manifest.yaml"><code>downscaling_manifest.yaml</code></a>, not hard coded.</p>
+<p>The <code>extract</code>, <code>downscale</code>, and <code>analyze</code> commands run steps defined in <a href="../../downscaling_manifest.yaml"><code>downscaling_manifest.yaml</code></a>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -367,7 +348,7 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td><code>get-demo-data</code></td>
-<td>Downloads and extracts the demo bundle. Run once, before <code>prepare</code>.</td>
+<td>Downloads and extracts the demo data package. Run once, before <code>prepare</code>.</td>
 </tr>
 <tr class="even">
 <td><code>prepare</code></td>
@@ -375,7 +356,7 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td><code>extract</code></td>
-<td>Reads SIPNET NetCDF, reshapes to EFI long format.</td>
+<td>Reads SIPNET NetCDF and writes monthly means in EFI long format.</td>
 </tr>
 <tr class="even">
 <td><code>downscale</code></td>
@@ -822,8 +803,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../docs/references.html" class="pagination-link" aria-label="References">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">References</span>
+      <a href="../../reports/variable_importance.html" class="pagination-link" aria-label="Downscaling Model Evaluation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Model Evaluation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

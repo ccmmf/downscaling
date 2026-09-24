@@ -2,19 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash BV">
 <meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-09-23">
+<meta name="dcterms.date" content="2026-09-24">
 
 <title>Downscaling a MAGiC inventory – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -71,17 +68,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
+<link href="../../docs/workflow_documentation.html" rel="next">
 <link href="../../docs/training/CARB-downscaling-setup.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -235,7 +234,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Docs</span></a>
+ <span class="menu-text">Training</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -243,8 +242,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/intro_to_downscaling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Intro to Downscaling</span></a>
+  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -267,35 +278,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
       </ul>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Environment Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Inventory Downscaling</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -312,10 +294,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#prepare-inputs" id="toc-prepare-inputs" class="nav-link" data-scroll-target="#prepare-inputs">Prepare inputs</a></li>
   <li><a href="#extract-sipnet-output" id="toc-extract-sipnet-output" class="nav-link" data-scroll-target="#extract-sipnet-output">Extract SIPNET output</a></li>
   <li><a href="#downscale-to-fields" id="toc-downscale-to-fields" class="nav-link" data-scroll-target="#downscale-to-fields">Downscale to fields</a></li>
-  <li><a href="#check-before-you-trust-it" id="toc-check-before-you-trust-it" class="nav-link" data-scroll-target="#check-before-you-trust-it">Check before you trust it</a></li>
-  <li><a href="#analyze-the-result" id="toc-analyze-the-result" class="nav-link" data-scroll-target="#analyze-the-result">Analyze the result!</a></li>
-  <li><a href="#the-full-inventory" id="toc-the-full-inventory" class="nav-link" data-scroll-target="#the-full-inventory">The full inventory</a></li>
-  <li><a href="#scenarios" id="toc-scenarios" class="nav-link" data-scroll-target="#scenarios">Scenarios</a></li>
+  <li><a href="#analyze-and-view-results" id="toc-analyze-and-view-results" class="nav-link" data-scroll-target="#analyze-and-view-results">Analyze and view results</a></li>
+  <li><a href="#field-results" id="toc-field-results" class="nav-link" data-scroll-target="#field-results">Field results</a></li>
+  <li><a href="#county-results" id="toc-county-results" class="nav-link" data-scroll-target="#county-results">County results</a></li>
+  <li><a href="#model-checks" id="toc-model-checks" class="nav-link" data-scroll-target="#model-checks">Model checks</a></li>
+  <li><a href="#scaling-beyond-the-demo" id="toc-scaling-beyond-the-demo" class="nav-link" data-scroll-target="#scaling-beyond-the-demo">Scaling beyond the demo</a></li>
   </ul>
 </nav>
     </div>
@@ -342,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 23, 2026</p>
+      <p class="date">September 24, 2026</p>
     </div>
   </div>
   
@@ -354,8 +337,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This session takes the output of a <code>magic-ensemble</code> inventory run and turns it into carbon estimates for every crop field, then aggregates to county and state.</p>
-<p>The demo bundle covers four Sacramento-San Joaquin Delta counties (Yolo, Solano, Sacramento, Contra Costa) and trains from the first 100 points of the statewide design, which are space filling on their own. The full chain runs in about ten minutes. Statewide numbers are at the end.</p>
+<p>This tutorial demonstrates how to downscale output from a PEcAn ensemble run. We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.</p>
+<p>The downscaling step fits Random Forest models to the ensemble output at those sampled fields, then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates. It aggregates the field-level predictions into county and run-scope summaries.</p>
+<p>The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -366,31 +350,166 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The bundle ships data layers for four counties. A statewide run ships all 57 and uses the same four commands – the workflow predicts onto whatever fields the layers contain, so this is a data scope, not a limit of the pipeline.</p>
+<p>The demo dataset includes field data layers for these four Delta counties. Its <code>state_summaries.csv</code> output therefore summarizes the four-county demo extent; <strong>so the demo ‘statewide’ estimates only represent the four-county extent</strong>.</p>
 </div>
 </div>
-<p>For the concepts behind all of this – why design points, how the Random Forest is fit, what the covariates are – see <a href="../../docs/intro_to_downscaling.html">Intro to MAGiC Downscaling</a></p>
+<p><a href="figures/inventory_workflow.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="figures/inventory_workflow.svg" class="img-fluid" alt="After get-demo-data downloads the inputs: 1. prepare stages ensemble output and field data; 2. extract computes monthly means at design points; 3. downscale fits Random Forests per ensemble member, predicts target fields from covariates, repeats for the first month to estimate change, and aggregates by field area; 4. analyze creates diagnostics and maps." width="620"></a></p>
+<p>For each plant functional type (PFT), output variable, and scenario, the workflow fits one forest per ensemble member using the final available month’s values at the design points. It also fits forests for the first month to estimate change over the simulation period.</p>
 <p>This documentation assumes that the steps in <a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a> have been completed. For a new shell, follow its <a href="../../docs/training/CARB-downscaling-setup.html#every-new-shell">Every new shell</a> instructions. Run all commands below from the downscaling repository root.</p>
 <section id="fetch-demo-data" class="level2">
 <h2 class="anchored" data-anchor-id="fetch-demo-data">Fetch demo data</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> get-demo-data <span class="at">--config</span> example_user_config.yaml</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> demo-data/modelout/demo_config.yaml config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The bundle holds three things:</p>
+<p>The data package contains:</p>
 <ul>
 <li><code>modelout/</code> – SIPNET output, 100 design points x 10 ensemble members, 2016-2023, under <code>output_inventory/</code></li>
 <li><code>data/</code> – field geometry, attributes, covariates and county boundaries for the four demo counties, plus covariates for the design points so the model can train</li>
-<li><code>demo_config.yaml</code> – a filled-in config, copied to <code>config.yaml</code> above</li>
 </ul>
+<section id="inspect-the-inputs" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-the-inputs">Inspect the inputs</h3>
+<p>Start with <code>config.yaml</code>: identify the model-output directory, data-layer directory, scenario, output variable, and run directory. In the model-output directory, <code>site_info.csv</code> identifies the design points and <code>output_inventory/out/</code> holds the NetCDF files. In the data layers, <code>site_covariates.csv</code> supplies predictors; <code>cadwr_crops_sites.gpkg</code> and <code>cadwr_crops_site_summary.csv</code> identify target fields.</p>
+<p>For example, the supplied <code>output_inventory/out/ENS-00002-328163/2016.nc</code> contains one location and 2,928 time steps. This excerpt from its NetCDF header shows the soil-carbon variable and its units:</p>
+<pre class="text"><code>dimensions:
+    lon = 1 ;
+    lat = 1 ;
+    time = UNLIMITED ; // (2928 currently)
+variables:
+    double time(time) ;
+        time:units = "days since 2016-01-01 00:00:00" ;
+    double TotSoilCarb(time, lat, lon) ;
+        TotSoilCarb:units = "kg C m-2" ;
+        TotSoilCarb:_FillValue = -999. ;
+        TotSoilCarb:long_name = "Total Soil Carbon" ;</code></pre>
+<p>The preview below reads the covariate table staged by <code>prepare</code>. <code>site_id</code> joins these rows to the model output and field attributes. The numeric columns passed to the fitting routine are shown beneath it; constant columns may be dropped when fitting a PFT.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Five rows from the supplied covariate table.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">site_id</th>
+<th style="text-align: left;">pft</th>
+<th style="text-align: right;">area_ha</th>
+<th style="text-align: right;">ocd</th>
+<th style="text-align: right;">temp</th>
+<th style="text-align: right;">tillage_rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">3.980</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.4724164</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">16.800</td>
+<td style="text-align: right;">348</td>
+<td style="text-align: right;">16.8</td>
+<td style="text-align: right;">0.4573896</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">29.500</td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">0.7121680</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">53</td>
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">0.735</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.4313695</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">79</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">0.810</td>
+<td style="text-align: right;">303</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>area_ha, clay, ocd, twi, temp, precip, srad, vapr, eof_1, eof_2, eof_3, eof_4,
+eof_5, eof_6, eof_7, eof_8, eof_9, eof_10, pft_woody_perennial_crop,
+pft_annual_crop, tillage_rank, tillage_freq, leafon_doy, leafoff_doy,
+leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
+</div>
+</div>
+</section>
+<section id="covariates-and-design-points" class="level3">
+<h3 class="anchored" data-anchor-id="covariates-and-design-points">Covariates and design points</h3>
+<p><code>site_covariates.csv</code> describes the fields where SIPNET was run and the fields where predictions are needed. The workflow joins these data using <code>site_id</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature group</th>
+<th>Columns</th>
+<th>What they describe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Climate</td>
+<td><code>temp</code>, <code>precip</code>, <code>srad</code>, <code>vapr</code></td>
+<td>Multi-year temperature, precipitation, solar radiation and atmospheric moisture summaries</td>
+</tr>
+<tr class="even">
+<td>Soil and terrain</td>
+<td><code>clay</code>, <code>ocd</code>, <code>twi</code></td>
+<td>Clay content, soil organic carbon density and topographic wetness</td>
+</tr>
+<tr class="odd">
+<td>Crop history</td>
+<td><code>eof_*</code></td>
+<td>Principal components summarizing crop sequences across years; preparation retains up to 10 components</td>
+</tr>
+<tr class="even">
+<td>Phenology</td>
+<td><code>leafon_doy</code>, <code>leafoff_doy</code>, <code>leafon_doy_sd</code>, <code>leafoff_doy_sd</code></td>
+<td>Mean green-up and senescence day of year, and their variation across years</td>
+</tr>
+<tr class="odd">
+<td>Tillage</td>
+<td><code>tillage_rank</code>, <code>tillage_freq</code></td>
+<td>Monitored tillage rank and fraction of monitored years with detected tillage</td>
+</tr>
+<tr class="even">
+<td>Irrigation</td>
+<td><code>irr_canopy</code>, <code>irr_flood</code></td>
+<td>Indicators derived from the monitored irrigation categories</td>
+</tr>
+</tbody>
+</table>
+<p>The clustering scripts use the seven climate, soil and terrain features plus the crop-history, phenology and management columns present in the input table. With 10 crop-history components and all eight phenology and management columns, this is 25 clustering features.</p>
+<p>Site selection groups fields separately within annual and woody perennial PFTs, using standardized features and k-means clustering. It selects fields near the cluster centers, then uses farthest point sampling to choose a smaller set that represents the feature space.</p>
+<p>The Random Forest predictor list is selected separately: <code>downscale</code> uses all numeric columns of <code>site_covariates.csv</code> except <code>climregion_id</code>. These are used to fit the Random Forest; <code>site_id</code> is key that joins the model output with the covariates.</p>
+</section>
 </section>
 <section id="explore-cli-layout" class="level2">
 <h2 class="anchored" data-anchor-id="explore-cli-layout">Explore CLI layout</h2>
 <p>Execution is controlled by <code>magic-downscaling</code> and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The commands are defined by the <code>steps</code> section of the workflow manifest:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Key points:</p>
 <ul>
-<li>Each command is a list of steps, each calling one script.</li>
+<li><code>extract</code>, <code>downscale</code>, and <code>analyze</code> are lists of steps, each calling one script.</li>
 <li>All tuning happens through command-line arguments the CLI builds. Scripts never read environment variables for config.</li>
 <li>A step declares <code>inputs</code> (files), <code>outputs</code> (files) and <code>params</code> (everything else) as <code>{cli_flag: value_key}</code> pairs. The key is the literal flag the script expects.</li>
 <li><code>inputs</code> and <code>outputs</code> values must be keys in the manifest’s <code>paths</code> block, all relative to <code>run_dir</code>. That indirection is what lets you move a run without editing a script.</li>
@@ -400,30 +519,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="explore-configuration-file" class="level2">
 <h2 class="anchored" data-anchor-id="explore-configuration-file">Explore configuration file</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Everything you are likely to change lives here:</p>
-<ul>
-<li><code>run_dir</code> – where this run writes</li>
-<li><code>mode</code> – keep <code>production</code>. The other modes subsample: <code>demo</code> drops to one ensemble member and one year, <code>dev</code> to ten sites. The bundle is already small because of its data scope and does not need truncating as well.</li>
-<li><code>management_scenarios</code> – <code>inventory</code>. Must match the <code>output_&lt;scenario&gt;/</code> directory in the bundle.</li>
-<li><code>outputs_to_extract</code> – <code>TotSoilCarb</code></li>
-<li><code>pecan_output_dir</code>, <code>data_layers_dir</code> – where the bundle is</li>
-<li><code>n_cores</code></li>
-</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The supplied configuration uses these values (set <code>n_cores</code> to your allocation):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run_dir</span><span class="kw">:</span><span class="at"> inventory-run</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">aws_profile</span><span class="kw">:</span><span class="at"> magic</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">downscaling</span><span class="kw">:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> production</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> demo-data/modelout</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">anchor_site_locations</span><span class="kw">:</span><span class="at"> data_raw/anchor_site_locations.csv</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Keep <code>mode: production</code> to use all sites, ensemble members, and years in this small four-county dataset. By comparison, <code>demo</code> reads all sites for one member and the final year, while <code>dev</code> reads the first 10 sites and members for the final two years. The <code>inventory</code> scenario matches the downloaded <code>output_inventory/</code> directory. <code>outputs_to_extract</code> limits this walkthrough to <code>TotSoilCarb</code>. <code>run_dir</code> controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set <code>n_cores</code> to your allocated CPUs.</p>
 </section>
 <section id="prepare-inputs" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-inputs">Prepare inputs</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>copies ensemble output and data layers into <code>run_dir</code>, so the run is self-contained and can be archived or moved</li>
 <li>fails immediately if a scenario in your config has no matching <code>output_&lt;scenario&gt;/</code> directory, which is the usual sign the config and the ensemble disagree</li>
 </ul>
-<p>About 3.5 minutes.</p>
 </section>
 <section id="extract-sipnet-output" class="level2">
 <h2 class="anchored" data-anchor-id="extract-sipnet-output">Extract SIPNET output</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>SIPNET writes one NetCDF per site, per member, per year at sub-daily resolution. This reads them all, averages to monthly, and writes one long table in EFI format.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution. The <code>extract</code> step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format. Each value is a monthly mean for one site, ensemble member, scenario and variable. The subsequent RF fits select individual months from this table; they do not pool the monthly time series into one training set.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -449,235 +571,356 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>The row count should be exactly <code>sites x members x months x variables</code>. If it is not, something was dropped and it is worth finding out what before going on.</p>
-<p>Values here are still in SIPNET units, kg C m<sup>-2</sup> for pools. Conversion to Mg C ha<sup>-1</sup> happens in the next step. About 4 minutes.</p>
+<p>For a complete table with one scenario and every combination present, the row count is <code>sites x members x months x variables</code>. Check missing combinations and duplicate keys before interpreting a difference from that count.</p>
+<p>Values here are still in SIPNET units, kg C m<sup>-2</sup> for pools. Conversion to Mg C ha<sup>-1</sup> happens in the next step.</p>
 </section>
 <section id="downscale-to-fields" class="level2">
 <h2 class="anchored" data-anchor-id="downscale-to-fields">Downscale to fields</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For each PFT and carbon pool this:</p>
 <ul>
 <li>takes the design points that ran with that PFT as training data</li>
-<li>fits one Random Forest per ensemble member, covariates to model output</li>
+<li>selects the final available month and fits one Random Forest per ensemble member, to that month’s mean model output</li>
 <li>predicts every field of that PFT, converts to reporting units, multiplies by area</li>
-<li>repeats at the start date so a change over the period can be formed</li>
+<li>repeats for the first month so a change between the two monthly means can be formed</li>
 <li>aggregates to county and state</li>
 </ul>
 <p>Fitting one forest per member is what carries the ensemble’s parameter uncertainty through to the field level instead of collapsing it to a single number.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>Soil carbon by county. The Delta counties sit above Yolo, which is the peat soils showing through.</caption>
+<p>For each ensemble member, soil carbon density is converted to a field total:</p>
+<p><code>total_per_field (Mg C) = density_per_ha (Mg C/ha) × area_ha (ha)</code>.</p>
+<p>Field totals are summed within each county and PFT. County density is the county total divided by represented field area. The mean and standard deviation are then computed across ensemble members.</p>
+<table class="caption-top table">
 <colgroup>
-<col style="width: 19%">
-<col style="width: 30%">
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 7%">
-<col style="width: 20%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">county</th>
-<th style="text-align: left;">pft</th>
-<th style="text-align: right;">fields</th>
-<th style="text-align: right;">Mg C/ha</th>
-<th style="text-align: right;">Gg C</th>
-<th style="text-align: right;">ensemble SD %</th>
+<th>Output column</th>
+<th>Meaning for soil carbon</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td><code>density_per_ha</code></td>
+<td>Field soil carbon density, Mg C/ha</td>
+</tr>
+<tr class="even">
+<td><code>total_per_field</code></td>
+<td>Field soil carbon stock, Mg C</td>
+</tr>
+<tr class="odd">
+<td><code>mean_total_per_county</code></td>
+<td>Mean county stock across members, Mg C; the table below displays Gg C</td>
+</tr>
+<tr class="even">
+<td><code>mean_density_per_ha</code></td>
+<td>Mean across members of area-weighted county density, Mg C/ha</td>
+</tr>
+<tr class="odd">
+<td><code>mean_total_ha</code></td>
+<td>Mean represented field area across members, ha</td>
+</tr>
+<tr class="even">
+<td><code>sd_total_per_county</code></td>
+<td>Across-member SD of county stock, Mg C</td>
+</tr>
+<tr class="odd">
+<td><code>sd_density_per_ha</code></td>
+<td>Across-member SD of county density, Mg C/ha</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="analyze-and-view-results" class="level2">
+<h2 class="anchored" data-anchor-id="analyze-and-view-results">Analyze and view results</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>analyze</code> writes diagnostics and maps to <code>figures/</code>, including county and field maps, variable-importance summaries, and response curves for important predictors.</p>
+</section>
+<section id="field-results" class="level2">
+<h2 class="anchored" data-anchor-id="field-results">Field results</h2>
+<p>To keep the table compact, it shows one example field per county and crop type. Each example is the field closest to its group’s median ensemble-mean density.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>One example field per county and crop type; values summarize 10 ensemble members.</caption>
+<colgroup>
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 18%">
+<col style="width: 16%">
+<col style="width: 14%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">County</th>
+<th style="text-align: left;">Crop type</th>
+<th style="text-align: left;">Area (ha)</th>
+<th style="text-align: left;">Density mean (Mg C/ha)</th>
+<th style="text-align: left;">Density SD (Mg C/ha)</th>
+<th style="text-align: left;">Stock mean (Mg C)</th>
+<th style="text-align: left;">Stock SD (Mg C)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">447413</td>
 <td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">1183</td>
-<td style="text-align: right;">132.0</td>
-<td style="text-align: right;">1700</td>
-<td style="text-align: right;">10</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">120</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">2,500</td>
+<td style="text-align: left;">340</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">4554</td>
-<td style="text-align: right;">122.0</td>
-<td style="text-align: right;">5010</td>
-<td style="text-align: right;">10</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">3547</td>
-<td style="text-align: right;">114.0</td>
-<td style="text-align: right;">5450</td>
-<td style="text-align: right;">11</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">5272</td>
-<td style="text-align: right;">103.0</td>
-<td style="text-align: right;">8170</td>
-<td style="text-align: right;">12</td>
-</tr>
-<tr class="odd">
+<td style="text-align: left;">521158</td>
 <td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">646</td>
-<td style="text-align: right;">80.2</td>
-<td style="text-align: right;">218</td>
-<td style="text-align: right;">18</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">2261</td>
-<td style="text-align: right;">75.3</td>
-<td style="text-align: right;">1650</td>
-<td style="text-align: right;">19</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">7.5</td>
+<td style="text-align: left;">72</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">540</td>
+<td style="text-align: left;">83</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">1838</td>
-<td style="text-align: right;">68.8</td>
-<td style="text-align: right;">1330</td>
-<td style="text-align: right;">17</td>
+<td style="text-align: left;">524694</td>
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">1.6</td>
+<td style="text-align: left;">110</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: left;">170</td>
+<td style="text-align: left;">37</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">308911</td>
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">27</td>
+<td style="text-align: left;">73</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: left;">2,000</td>
+<td style="text-align: left;">570</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">124776</td>
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">110</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: left;">1,300</td>
+<td style="text-align: left;">210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">336173</td>
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">26</td>
+<td style="text-align: left;">65</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">1,700</td>
+<td style="text-align: left;">330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">306719</td>
 <td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">3428</td>
-<td style="text-align: right;">64.0</td>
-<td style="text-align: right;">2610</td>
-<td style="text-align: right;">16</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">99</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: left;">110</td>
+<td style="text-align: left;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">181189</td>
+<td style="text-align: left;">Yolo</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">7.9</td>
+<td style="text-align: left;">61</td>
+<td style="text-align: left;">9.8</td>
+<td style="text-align: left;">480</td>
+<td style="text-align: left;">78</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>About 1.5 minutes.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="figures/demo_field_soc_regional.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown."><img src="figures/demo_field_soc_regional.webp" class="img-fluid figure-img" alt="Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown."></a></p>
+<figcaption>Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="figures/demo_field_soc_woody_regional.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."><img src="figures/demo_field_soc_woody_regional.webp" class="img-fluid figure-img" alt="Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."></a></p>
+<figcaption>Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The table gives exact field examples, while the maps show how ensemble-mean density varies among all predicted fields.</p>
 </section>
-<section id="check-before-you-trust-it" class="level2">
-<h2 class="anchored" data-anchor-id="check-before-you-trust-it">Check before you trust it</h2>
-<p>Two checks decide whether the maps are worth showing anyone.</p>
-<p>A Random Forest cannot extrapolate past its training range, so predictions outside the design points’ range mean a broken join or a unit mismatch rather than a discovery.</p>
-<p>Out-of-bag R<sup>2</sup> says whether the forest learned anything at all:</p>
+<section id="county-results" class="level2">
+<h2 class="anchored" data-anchor-id="county-results">County results</h2>
+<p>County stock is the sum of predicted field stocks within each ensemble member and is then summarized across the 10 members.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="downscaling_inventory_files/figure-html/county-stock-plot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale."><img src="downscaling_inventory_files/figure-html/county-stock-plot-1.png" class="img-fluid figure-img" width="672" alt="Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale."></a></p>
+<figcaption>Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><strong><a href="downloads/four_county_soil_carbon_by_county.csv" download="four_county_soil_carbon_by_county.csv">Download county statistics (CSV)</a></strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
-<caption>Negative means the forest does worse than predicting the training mean.</caption>
+<caption>Total soil carbon stock represented by predicted fields; modeled values use two significant figures.</caption>
 <colgroup>
-<col style="width: 30%">
-<col style="width: 19%">
-<col style="width: 11%">
-<col style="width: 20%">
-<col style="width: 17%">
+<col style="width: 18%">
+<col style="width: 22%">
+<col style="width: 10%">
+<col style="width: 25%">
+<col style="width: 22%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">pft</th>
-<th style="text-align: left;">model_output</th>
-<th style="text-align: right;">members</th>
-<th style="text-align: right;">median OOB R2</th>
-<th style="text-align: right;">members &lt; 0</th>
+<th style="text-align: left;">County</th>
+<th style="text-align: left;">Crop type</th>
+<th style="text-align: left;">Fields</th>
+<th style="text-align: left;">Stock mean (Gg C)</th>
+<th style="text-align: left;">Stock SD (Gg C)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: left;">TotSoilCarb</td>
+<td style="text-align: left;">Contra Costa</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">1,183</td>
+<td style="text-align: left;">1,700</td>
+<td style="text-align: left;">170</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">4,554</td>
+<td style="text-align: left;">5,000</td>
+<td style="text-align: left;">520</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">3,547</td>
+<td style="text-align: left;">5,500</td>
+<td style="text-align: left;">630</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yolo</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">5,272</td>
+<td style="text-align: left;">8,200</td>
+<td style="text-align: left;">1,000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Contra Costa</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">646</td>
+<td style="text-align: left;">220</td>
+<td style="text-align: left;">38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">2,261</td>
+<td style="text-align: left;">1,600</td>
+<td style="text-align: left;">320</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">1,838</td>
+<td style="text-align: left;">1,300</td>
+<td style="text-align: left;">220</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yolo</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">3,428</td>
+<td style="text-align: left;">2,600</td>
+<td style="text-align: left;">410</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>SD describes spread across ensemble members; it is not a confidence interval.</p>
+</section>
+<section id="model-checks" class="level2">
+<h2 class="anchored" data-anchor-id="model-checks">Model checks</h2>
+<p>Use these checks to confirm field coverage and how well the Random Forests reproduce the SIPNET results at the design points.</p>
+<p><strong>Coverage.</strong> This run predicted 22,729 fields. Each field has values from all 10 ensemble members. Compare the range of predicted values with the SIPNET values used for training; values far outside that range need review.</p>
+<p><strong>Model fit.</strong> Out-of-bag (OOB) R<sup>2</sup> measures how well each forest predicts SIPNET values left out during fitting. Higher values are better. Zero is no better than using the average training value, and negative values are worse. This checks the Random Forest, not SIPNET or the inventory against field measurements.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Random Forest fit across the 10 ensemble members.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Crop type</th>
+<th style="text-align: right;">Members</th>
+<th style="text-align: right;">Median OOB R2</th>
+<th style="text-align: right;">Members below zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Annual crop</td>
 <td style="text-align: right;">10</td>
-<td style="text-align: right;">0.411</td>
+<td style="text-align: right;">0.41</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: left;">TotSoilCarb</td>
+<td style="text-align: left;">Woody perennial</td>
 <td style="text-align: right;">10</td>
-<td style="text-align: right;">0.309</td>
+<td style="text-align: right;">0.31</td>
 <td style="text-align: right;">1</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-</section>
-<section id="analyze-the-result" class="level2">
-<h2 class="anchored" data-anchor-id="analyze-the-result">Analyze the result!</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Writes diagnostics and maps to <code>figures/</code>: county and field maps per PFT and variable, ALE and ICE curves for the strongest predictors, and a variable-importance summary. About 1 minute.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="figures/demo_field_soc.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Field-level soil carbon for the four demo counties, as written by analyze. The statewide frame shows where the demo scope sits."><img src="figures/demo_field_soc.webp" class="img-fluid figure-img" alt="Field-level soil carbon for the four demo counties, as written by analyze. The statewide frame shows where the demo scope sits."></a></p>
-<figcaption>Field-level soil carbon for the four demo counties, as written by <code>analyze</code>. The statewide frame shows where the demo scope sits.</figcaption>
+<p><a href="downscaling_inventory_files/figure-html/oob-plot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero."><img src="downscaling_inventory_files/figure-html/oob-plot-1.png" class="img-fluid figure-img" width="672" alt="Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero."></a></p>
+<figcaption>Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>For comparison, the same product from the full 1000-site statewide inventory. This is what a production run delivers; the demo above is the same code on a smaller data scope.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="figures/statewide_field_soc.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Statewide field-level soil carbon, 1000 design points, 385,234 fields."><img src="figures/statewide_field_soc.webp" class="img-fluid figure-img" alt="Statewide field-level soil carbon, 1000 design points, 385,234 fields."></a></p>
-<figcaption>Statewide field-level soil carbon, 1000 design points, 385,234 fields.</figcaption>
-</figure>
-</div>
-</div>
-</div>
+<p>Median OOB R<sup>2</sup> is 0.41 for annual crops and 0.31 for woody perennial crops. One woody-perennial member falls below zero. These scores show how well the Random Forests copy SIPNET at the design points; they do not show whether modeled soil carbon agrees with measurements.</p>
 </section>
-<section id="the-full-inventory" class="level2">
-<h2 class="anchored" data-anchor-id="the-full-inventory">The full inventory</h2>
-<p>Same four commands. What changes is the config and the machine.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">8</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> /path/to/your/magic-ensemble/output</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> /path/to/statewide/data_layers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th>Demo (4 counties)</th>
-<th>Statewide</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>target fields</td>
-<td>22,729</td>
-<td>385,234</td>
-</tr>
-<tr class="even">
-<td>minimum RAM</td>
-<td>16 GB</td>
-<td>400 GB</td>
-</tr>
-<tr class="odd">
-<td>cores used</td>
-<td>4</td>
-<td>8</td>
-</tr>
-<tr class="even">
-<td>download</td>
-<td>1.5 GB</td>
-<td>your own ensemble output</td>
-</tr>
-<tr class="odd">
-<td>run_dir on disk</td>
-<td>~6 GB</td>
-<td>&gt;100 GB</td>
-</tr>
-</tbody>
-</table>
-<p>Wall time depends on the machine, so treat the memory and disk figures as the binding constraints. <code>downscale</code> is the step that sets them: its cost scales with target fields and ensemble members, not with how many design points trained the forest, so a smaller design does not make it cheaper.</p>
-<p>Note <code>prepare</code> copies <code>pecan_output_dir</code> into <code>run_dir</code>, so a statewide run needs room for two copies of the ensemble output.</p>
-</section>
-<section id="scenarios" class="level2">
-<h2 class="anchored" data-anchor-id="scenarios">Scenarios</h2>
-<p>Practice-change scenarios use the same four commands. The difference is that <code>management_scenarios</code> lists several arms, the ensemble output carries one <code>output_&lt;scenario&gt;/</code> directory per arm, and the analysis adds scenario-minus-baseline comparisons; this session covers the inventory only.</p>
+<section id="scaling-beyond-the-demo" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-beyond-the-demo">Scaling beyond the demo</h2>
+<p>The same four commands can be used with a larger inventory. In the configuration, set <code>mode: production</code>, point <code>pecan_output_dir</code> and <code>data_layers_dir</code> to the full input directories using paths relative to the repository, and list the outputs to process. Set <code>n_cores</code> to the CPUs in the compute allocation.</p>
+<p>The verified demo used 10 ensemble members for 2016–2023 and predicted fields in four counties. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
+<p>Treat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The <code>prepare</code> step also copies the input data into <code>run_dir</code>, so the run needs space for both the source data and the staged copy.</p>
 
 
 </section>
@@ -1090,6 +1333,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../../docs/workflow_documentation.html" class="pagination-link" aria-label="Technical Documentation">
+        <span class="nav-page-text">Technical Documentation</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
