@@ -16,7 +16,6 @@ project:
     - reports/downscaling_results.qmd
     - reports/design_point_validation.qmd
     - reports/variable_importance.qmd
-    - docs/intro_to_downscaling.qmd
     - docs/training/downscaling_inventory.qmd
     - docs/training/CARB-downscaling-setup.md
     - docs/training/index.qmd
@@ -54,10 +53,6 @@ website:
             text: Design Point Validation
           - href: reports/variable_importance.qmd
             text: Downscaling Model Evaluation
-      - section: Docs
-        contents:
-          - href: docs/intro_to_downscaling.qmd
-            text: Intro to Downscaling
       - section: Training
         contents:
           - href: docs/training/index.qmd

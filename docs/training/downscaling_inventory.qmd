@@ -19,30 +19,36 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 # same run_dir the demo config uses, resolved from the repo root
 run_dir <- here::here(params$run_dir)
 ds <- file.path(run_dir, "output_downscale")
+
 ```
 
-This tutorial demonstrates how to downscale output from a PEcAn ensemble run. 
+This tutorial demonstrates how to downscale output from a PEcAn ensemble run.
 We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.
 
-The downscaling step fits Random Forest models to the ensemble output at those sampled fields, 
-then predicts carbon stocks and greenhouse gas fluxes for every crop field in the target dataset. 
-It aggregates the field-level predictions into county and statewide inventories.
+The downscaling step fits Random Forest models to the ensemble output at those sampled fields,
+then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates.
+It aggregates the field-level predictions into county and run-scope summaries.
 
-The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. 
-It trains on 99 design points distributed across California and predicts outcomes for fields within those four counties. 
-The full analysis may take five minutes or more, depending on available computing resources.
+The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa.
+The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties.
+All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo.
+Runtime depends on input scope and allocated computing resources.
 
 ::: {.callout-note}
 ## Scope
 
-The demo dataset includes data layers for four counties. A statewide run includes all 57 and uses
-the same four commands -- the workflow predicts onto whatever fields the layers
-contain, so this is a data scope, not a limit of the pipeline.
+The demo dataset includes field data layers for these four Delta counties. Its
+`state_summaries.csv` output therefore summarizes the four-county demo extent; **so the demo
+'statewide' estimates only represent the four-county extent**.
+
 :::
 
-For the concepts behind all of this -- why design points, how the Random Forest is
-fit, what the covariates are -- see
-[Intro to MAGiC Downscaling](../intro_to_downscaling.qmd)
+![](figures/inventory_workflow.svg){fig-alt="After get-demo-data downloads the inputs: 1. prepare stages ensemble output and field data; 2. extract computes monthly means at design points; 3. downscale fits Random Forests per ensemble member, predicts target fields from covariates, repeats for the first month to estimate change, and aggregates by field area; 4. analyze creates diagnostics and maps." width=620}
+
+For each plant functional type (PFT), output variable, and scenario, the workflow
+fits one forest per ensemble member using the final available month's values at
+the design points. It also fits forests for the first month to estimate change
+over the simulation period.
 
 This documentation assumes that the steps in
 [Environment setup](CARB-downscaling-setup.md) have been completed. For a new shell,
@@ -56,17 +62,89 @@ Run all commands below from the downscaling repository root.
 cp demo-data/modelout/demo_config.yaml config.yaml
 ```
 
-The download command reads the S3 profile from `example_user_config.yaml`. The
-second command copies the downloaded configuration to `config.yaml`. Review that
-file below and use it for all remaining workflow commands.
 
 The data package contains:
 
-- `modelout/` -- SIPNET output, 99 design points x 10 ensemble members, 2016-2023,
+- `modelout/` -- SIPNET output, 100 design points x 10 ensemble members, 2016-2023,
   under `output_inventory/`
 - `data/` -- field geometry, attributes, covariates and county boundaries for the four
   demo counties, plus covariates for the design points so the model can train
-- `demo_config.yaml` -- a filled-in config, copied to `config.yaml` above
+
+### Inspect the inputs
+
+Start with `config.yaml`: identify the model-output directory, data-layer directory,
+scenario, output variable, and run directory. In the model-output directory,
+`site_info.csv` identifies the design points and `output_inventory/out/` holds the
+NetCDF files. In the data layers, `site_covariates.csv` supplies predictors;
+`cadwr_crops_sites.gpkg` and `cadwr_crops_site_summary.csv` identify target fields.
+
+For example, the supplied `output_inventory/out/ENS-00002-328163/2016.nc`
+contains one location and 2,928 time steps. This excerpt from its NetCDF header
+shows the soil-carbon variable and its units:
+
+```text
+dimensions:
+    lon = 1 ;
+    lat = 1 ;
+    time = UNLIMITED ; // (2928 currently)
+variables:
+    double time(time) ;
+        time:units = "days since 2016-01-01 00:00:00" ;
+    double TotSoilCarb(time, lat, lon) ;
+        TotSoilCarb:units = "kg C m-2" ;
+        TotSoilCarb:_FillValue = -999. ;
+        TotSoilCarb:long_name = "Total Soil Carbon" ;
+```
+
+The preview below reads the covariate table staged by `prepare`. `site_id` joins
+these rows to the model output and field attributes. The numeric columns passed to the fitting routine
+are shown beneath it; constant columns may be dropped when fitting a PFT.
+
+```{r input-covariates}
+input_covariates <- readr::read_csv(
+    file.path(run_dir, "output_prepare", "site_covariates.csv"),
+    col_types = readr::cols(site_id = readr::col_character()),
+    show_col_types = FALSE
+)
+input_covariates |>
+    select(any_of(c("site_id", "pft", "area_ha", "ocd", "temp", "tillage_rank"))) |>
+    head(5) |>
+    knitr::kable(caption = "Five rows from the supplied covariate table.")
+input_covariates |>
+    select(where(is.numeric), -any_of("climregion_id")) |>
+    names() |>
+    paste(collapse = ", ") |>
+    strwrap(width = 80) |>
+    writeLines()
+```
+
+### Covariates and design points
+
+`site_covariates.csv` describes the fields where SIPNET was run and the fields
+where predictions are needed. The workflow joins these data using `site_id`.
+
+| Feature group | Columns | What they describe |
+| --- | --- | --- |
+| Climate | `temp`, `precip`, `srad`, `vapr` | Multi-year temperature, precipitation, solar radiation and atmospheric moisture summaries |
+| Soil and terrain | `clay`, `ocd`, `twi` | Clay content, soil organic carbon density and topographic wetness |
+| Crop history | `eof_*` | Principal components summarizing crop sequences across years; preparation retains up to 10 components |
+| Phenology | `leafon_doy`, `leafoff_doy`, `leafon_doy_sd`, `leafoff_doy_sd` | Mean green-up and senescence day of year, and their variation across years |
+| Tillage | `tillage_rank`, `tillage_freq` | Monitored tillage rank and fraction of monitored years with detected tillage |
+| Irrigation | `irr_canopy`, `irr_flood` | Indicators derived from the monitored irrigation categories |
+
+The clustering scripts use the seven climate, soil and terrain features plus
+the crop-history, phenology and management columns present in the input table.
+With 10 crop-history components and all eight phenology and management columns,
+this is 25 clustering features.
+
+Site selection groups fields separately within annual and woody perennial PFTs,
+using standardized features and k-means clustering. It selects fields near the
+cluster centers, then uses farthest point sampling to choose a smaller set that
+represents the feature space.
+
+The Random Forest predictor list is selected separately: `downscale` uses all
+numeric columns of `site_covariates.csv` except `climregion_id`. These are used to fit the
+Random Forest; `site_id` is key that joins the model output with the covariates.
 
 ## Explore CLI layout
 
@@ -85,7 +163,7 @@ less downscaling_manifest.yaml
 
 Key points:
 
-- Each command is a list of steps, each calling one script.
+- `extract`, `downscale`, and `analyze` are lists of steps, each calling one script.
 - All tuning happens through command-line arguments the CLI builds. Scripts never read
   environment variables for config.
 - A step declares `inputs` (files), `outputs` (files) and `params` (everything else) as
@@ -102,17 +180,30 @@ Key points:
 less config.yaml
 ```
 
-The main settings are:
+The supplied configuration uses these values (set `n_cores` to your allocation):
 
-- `run_dir` -- where this run writes
-- `mode` -- keep `production`. The other modes subsample: `demo` uses one ensemble
-  member and one year, `dev` to ten sites. The demo dataset is already small because of its
-  data scope and does not need further subsampling.
-- `management_scenarios` -- `inventory`. Must match the `output_<scenario>/` directory
-  in the downloaded data.
-- `outputs_to_extract` -- `TotSoilCarb`
-- `pecan_output_dir`, `data_layers_dir` -- paths to the downloaded model output and data layers
-- `n_cores`
+```yaml
+global:
+  run_dir: inventory-run
+  aws_profile: magic
+downscaling:
+  mode: production
+  management_scenarios: [inventory]
+  outputs_to_extract: [TotSoilCarb]
+  n_cores: 1
+  pecan_output_dir: demo-data/modelout
+  data_layers_dir: demo-data/data
+  anchor_site_locations: data_raw/anchor_site_locations.csv
+```
+
+Keep `mode: production` to use all sites, ensemble members, and years in this
+small four-county dataset. By comparison, `demo` reads all sites for one member
+and the final year, while `dev` reads the first 10 sites and members for the final
+two years.
+The `inventory` scenario matches the downloaded `output_inventory/` directory.
+`outputs_to_extract` limits this walkthrough to `TotSoilCarb`.
+`run_dir` controls where results are written; the two input-directory keys identify
+the downloaded model outputs and data layers. Set `n_cores` to your allocated CPUs.
 
 ## Prepare inputs
 
@@ -125,7 +216,7 @@ The main settings are:
 - fails immediately if a scenario in your config has no matching `output_<scenario>/`
   directory, which is the usual sign the config and the ensemble disagree
 
-About 3 minutes.
+
 
 ## Extract SIPNET output
 
@@ -133,8 +224,11 @@ About 3 minutes.
 ./magic-downscaling extract --verbose --config config.yaml
 ```
 
-SIPNET writes one NetCDF per site, per member, per year at sub-daily resolution. This
-reads them all, averages to monthly, and writes one long table in EFI format.
+The PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution.
+The `extract` step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format.
+Each value is a monthly mean for one site, ensemble member, scenario and variable.
+The subsequent RF fits select individual months from this table; they do not pool
+the monthly time series into one training set.
 
 ```{r extract-summary}
 ens <- vroom::vroom(file.path(run_dir, "output_extract", "ensemble_output.csv"),
@@ -151,11 +245,12 @@ tibble::tibble(
     knitr::kable(caption = "ensemble_output.csv as written by `extract`")
 ```
 
-The row count should be exactly `sites x members x months x variables`. If it is not,
-something was dropped and it is worth finding out what before going on.
+For a complete table with one scenario and every combination present, the row count
+is `sites x members x months x variables`. Check missing combinations and duplicate
+keys before interpreting a difference from that count.
 
 Values here are still in SIPNET units, kg C m^-2^ for pools. Conversion to
-Mg C ha^-1^ happens in the next step. About 4 minutes.
+Mg C ha^-1^ happens in the next step.
 
 ## Downscale to fields
 
@@ -166,13 +261,31 @@ Mg C ha^-1^ happens in the next step. About 4 minutes.
 For each PFT and carbon pool this:
 
 - takes the design points that ran with that PFT as training data
-- fits one Random Forest per ensemble member, covariates to model output
+- selects the final available month and fits one Random Forest per ensemble member,
+  to that month's mean model output
 - predicts every field of that PFT, converts to reporting units, multiplies by area
-- repeats at the start date so a change over the period can be formed
+- repeats for the first month so a change between the two monthly means can be formed
 - aggregates to county and state
 
 Fitting one forest per member is what carries the ensemble's parameter uncertainty
 through to the field level instead of collapsing it to a single number.
+
+For each ensemble member, soil carbon density is converted to a field total:
+
+`total_per_field (Mg C) = density_per_ha (Mg C/ha) × area_ha (ha)`.
+
+Field totals are summed within each county and PFT. County density is the county
+total divided by represented field area. The mean and standard deviation are then
+computed across ensemble members.
+
+| Output column | Meaning for soil carbon |
+| --- | --- |
+| `density_per_ha` | Field soil carbon density, Mg C/ha |
+| `total_per_field` | Field soil carbon stock, Mg C |
+| `mean_total_per_county` | Mean county stock across members, Mg C; the table below displays Gg C |
+| `mean_density_per_ha` | Mean across members of area-weighted county density, Mg C/ha |
+| `mean_total_ha` | Mean represented field area across members, ha |
+| `sd_total_per_county` | Across-member SD of county stock, Mg C |
 
 ```{r county-table}
 readr::read_csv(file.path(ds, "county_aggregated_preds.csv"), show_col_types = FALSE) |>
@@ -184,33 +297,83 @@ readr::read_csv(file.path(ds, "county_aggregated_preds.csv"), show_col_types = F
         `ensemble SD %` = round(100 * sd_total_per_county / mean_total_per_county)
     ) |>
     arrange(pft, desc(`Mg C/ha`)) |>
-    knitr::kable(caption = "Soil carbon by county. The Delta counties sit above Yolo, which is the peat soils showing through.")
+    knitr::kable(caption = "Soil carbon density, total stock, and ensemble spread by county and PFT.")
 ```
 
-About 1.5 minutes.
+
 
 ## Check the predictions
 
-Use these two checks to assess the predictions before presenting the maps.
+Before using the maps, check that the expected fields were predicted and that the
+Random Forests reproduce the SIPNET results reasonably well.
 
-A Random Forest cannot extrapolate past its training range, so predictions outside the
-design points' range mean a broken join or a unit mismatch rather than a discovery.
+**Coverage.** This run predicted 22,729 fields. Each field has values from all 10
+ensemble members, and none are missing. The other 582 fields lacked covariates,
+so the workflow could not predict them. Also compare the range of predicted values
+with the SIPNET values used for training; values far outside that range need review.
 
-Out-of-bag R^2^ measures the forest's predictive performance:
+**Model fit.** Out-of-bag (OOB) R^2^ measures how well each forest predicts SIPNET
+values left out during fitting. Higher values are better. Zero is no better than
+using the average training value, and negative values are worse. This checks the
+Random Forest, not SIPNET or the inventory against field measurements.
 
 ```{r oob}
 f <- list.files(ds, pattern = "^vi_.*by_ensemble.csv$", full.names = TRUE)
-purrr::map_dfr(f, readr::read_csv, show_col_types = FALSE) |>
+oob_data <- purrr::map_dfr(f, readr::read_csv, show_col_types = FALSE) |>
     distinct(pft, model_output, ensemble, oob_r2) |>
+    arrange(model_output, pft, ensemble)
+oob_summary <- oob_data |>
     summarize(
         members = n(),
         `median OOB R2` = round(median(oob_r2), 3),
         `members < 0` = sum(oob_r2 < 0),
         .by = c(pft, model_output)
     ) |>
-    arrange(model_output, pft) |>
-    knitr::kable(caption = "Negative means the forest does worse than predicting the training mean.")
+    arrange(model_output, pft)
+oob_summary |>
+    knitr::kable(caption = "OOB R-squared summary by PFT.")
 ```
+
+```{r oob-plot}
+#| fig-width: 7
+#| fig-height: 4.5
+#| fig-cap: "Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero."
+oob_plot_data <- oob_data |>
+    mutate(pft = recode(
+        pft,
+        "annual crop" = "Annual crop",
+        "woody perennial crop" = "Woody perennial crop"
+    ))
+oob_plot_medians <- oob_plot_data |>
+    summarize(median_oob_r2 = median(oob_r2), .by = pft)
+
+ggplot2::ggplot(oob_plot_data, ggplot2::aes(x = ensemble, y = oob_r2)) +
+    ggplot2::geom_hline(yintercept = 0, color = "gray45", linewidth = 0.5) +
+    ggplot2::geom_hline(
+        data = oob_plot_medians,
+        ggplot2::aes(yintercept = median_oob_r2),
+        color = "#0072B2",
+        linewidth = 0.7,
+        linetype = "dashed"
+    ) +
+    ggplot2::geom_point(color = "#0072B2", size = 2.6) +
+    ggplot2::facet_wrap(ggplot2::vars(pft), ncol = 1) +
+    ggplot2::scale_x_continuous(breaks = seq_len(10)) +
+    ggplot2::labs(
+        x = "Ensemble member",
+        y = expression("OOB " * R^2)
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.minor = ggplot2::element_blank(),
+        strip.text = ggplot2::element_text(face = "bold")
+    )
+```
+
+Median OOB R^2^ is 0.41 for annual crops and 0.31 for woody perennial crops. One
+woody-perennial member falls below zero. These scores show how well the Random
+Forests copy SIPNET at the design points. They do not show whether modeled soil
+carbon agrees with measurements.
 
 ## Analyze the result!
 
@@ -220,52 +383,45 @@ purrr::map_dfr(f, readr::read_csv, show_col_types = FALSE) |>
 
 Writes diagnostics and maps to `figures/`: county and field maps per PFT and variable,
 ALE and ICE curves for the strongest predictors, and a variable-importance summary.
-About 1 minute.
+
 
 ```{r demo-map}
-#| fig-cap: "Field-level soil carbon for the four demo counties, as written by `analyze`. The statewide frame shows where the demo scope sits."
+#| fig-cap: "Annual-crop soil carbon density from the verified four-county demo, as written by `analyze`. Only fields with covariates are represented; the statewide frame locates the demo scope."
 knitr::include_graphics("figures/demo_field_soc.webp")
 ```
 
-For comparison, the same product from the full 1000-site statewide inventory. This is
-what a production run delivers; the demo above is the same code on a smaller data scope.
+For geographic context, the reference below shows annual-crop soil carbon from
+a separate inventory run. It represents fields with available
+covariates; it is not a complete accounting of all California cropland. This
+reference is not regenerated by the four-county walkthrough.
 
 ```{r statewide-ref}
-#| fig-cap: "Statewide field-level soil carbon, 1000 design points, 385,234 fields."
+#| fig-cap: "Provided statewide annual-crop soil carbon reference; covered fields only, not regenerated or numerically validated in this demo run."
 knitr::include_graphics("figures/statewide_field_soc.webp")
 ```
 
 ## The full inventory
 
-Same four commands. What changes is the config and the machine.
+Same four commands. Update these keys under `downscaling` in the configuration
+and allocate resources for the larger input dataset.
 
 ```yaml
 management_scenarios: [inventory]
 outputs_to_extract: [TotSoilCarb]
-n_cores: 8
+n_cores: 1
 pecan_output_dir: /path/to/your/magic-ensemble/output
 data_layers_dir: /path/to/statewide/data_layers
 ```
 
-| | Demo (4 counties) | Statewide |
-|---|---|---|
-| target fields | 23,311 | 385,234 |
-| minimum RAM | 16 GB | 400 GB |
-| cores used | 4 | 8 |
-| download | 1.4 GB | your own ensemble output |
-| run_dir on disk | ~6 GB | >100 GB |
+Both examples estimate soil organic carbon (`TotSoilCarb`) for the `inventory`
+scenario. The demo uses 10 ensemble members for 2016–2023 and predicts fields in
+Yolo, Solano, Sacramento, and Contra Costa counties.
 
-Runtime depends on the available hardware. Use the table above to plan memory and
-disk space. During downscaling, predicting across more target fields or ensemble
-members requires more resources. Reducing the number of training sites alone does
-not reduce the number of field-level predictions.
+The four-county demo completed on a cluster with **1 CPU and 28 GB allocated RAM** in
+under 15 minutes, including download and all four stages. Slurm recorded
+about 1.15 GiB peak resident memory. These measurements apply to the demo;
+statewide requirements depend on the number of fields, variables, and members.
 
-Note `prepare` copies `pecan_output_dir` into `run_dir`, so a statewide run needs room
-for two copies of the ensemble output.
-
-## Scenarios
-
-Practice-change scenarios use the same four commands. The difference is that
-`management_scenarios` lists several scenarios, the ensemble output contains one
-`output_<scenario>/` directory per scenario, and the analysis adds scenario-minus-baseline
-comparisons; this session covers the inventory only.
+Allow disk space for downloaded archives, extracted inputs, and generated outputs.
+`prepare` copies model output and data layers into `run_dir`, so account for both
+the original inputs and those copies.

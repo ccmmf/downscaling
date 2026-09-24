@@ -5,9 +5,9 @@ title: "MAGiC downscaling training"
 This is the downscaling component of the MAGiC system. It uses output from
 [magic-ensemble](https://github.com/ccmmf/magic-training): the ensemble workflow
 runs SIPNET at a set of design points, and this workflow turns that into carbon
-estimates for every crop field in California, then aggregates to county and state.
+estimates for fields with the required inputs, then aggregates to county and state.
 
-Running SIPNET at all 385,234 fields is not affordable. The design points are chosen to
+The design points reduce the number of SIPNET runs needed and are chosen to
 span the state's covariate space, a Random Forest learns covariates to model output at
 those points, and applies it everywhere else. One forest is fit per ensemble member, so
 the ensemble's parameter uncertainty propagates to the field level rather than
@@ -18,21 +18,21 @@ session.
 
 Topic | Audience | Objectives | Notes
 --|--|--|--
-[Environment setup](CARB-downscaling-setup.md) | Everyone | Conda, AWS, and the CLI's `yq` requirement | Needed before the inventory notebook
-[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo dataset covers four Delta counties, runs in about ten minutes
+[Environment setup](CARB-downscaling-setup.md) | Everyone | Conda, AWS, and repository setup | Needed before the inventory notebook
+[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo dataset covers four Delta counties
 Scenario downscaling | MAGiC users | Practice-change arms and scenario deltas | Deferred; same four commands with a longer scenario list
 Design point selection | Data managers | How the design points are chosen | Scripts 010-022, upstream of the ensemble and not a CLI command
 
 ## Commands
 
-Each command runs steps defined in
-[`downscaling_manifest.yaml`](../../downscaling_manifest.yaml), not hard coded.
+The `extract`, `downscale`, and `analyze` commands run steps defined in
+[`downscaling_manifest.yaml`](../../downscaling_manifest.yaml).
 
 Command | What it does
 --|--
 `get-demo-data` | Downloads and extracts the demo data package. Run once, before `prepare`.
 `prepare` | Stages ensemble output and data layers into `run_dir`.
-`extract` | Reads SIPNET NetCDF, reshapes to EFI long format.
+`extract` | Reads SIPNET NetCDF and writes monthly means in EFI long format.
 `downscale` | Random Forest downscaling to all fields, then county and state aggregation.
 `analyze` | Diagnostics, uncertainty, maps.
 

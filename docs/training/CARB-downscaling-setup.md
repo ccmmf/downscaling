@@ -3,7 +3,10 @@
 Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are
 documented in
 [CARB PEcAn Environment Setup](https://github.com/ccmmf/magic-training/blob/main/CARB-PEcAn-setup.md).
-Follow that first. This page covers only what is specific to downscaling.
+Follow that first; here we are using version 1.18; an existing
+environment at the same path may be older.
+
+This page focuses on steps specific to the downscaling workflow.
 
 ## Clone the repository
 
@@ -15,7 +18,7 @@ cd downscaling
 The rest of the instructions assume that you are working inside of the downscaling
 repository directory.
 
-## Every new shell
+## Every time you start a new terminal session
 
 Return to the downscaling repository directory and activate conda before continuing.
 
@@ -37,7 +40,7 @@ For your own runs, you can copy and edit `example_user_config.yaml` as a startin
 `./magic-downscaling --help` lists each configuration key and its default values.
 
 There are three configuration modes: `demo`, `dev`, and `production` that differ in
-scope : `production` covers all variables and all scenarios,
+scope : `production` uses the configured variables, scenarios and input scope,
 `dev` and `demo` reduce the design size and variable list, and `demo` only runs
 a single scenario.
 A `demo` run exercises the same code path as `production` on less data.
