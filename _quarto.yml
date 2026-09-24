@@ -61,6 +61,8 @@ website:
             text: Environment Setup
           - href: docs/training/downscaling_inventory.qmd
             text: Inventory Downscaling
+      - section: Docs
+        contents:
           - href: docs/workflow_documentation.md
             text: Technical Documentation
           - href: docs/mixed_system_prototype.qmd
