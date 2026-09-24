@@ -36,7 +36,7 @@ s3:
 steps:
   # cluster is not a recognized magic-downscaling verb
   # -- this block and scripts/010-022 remain in place,
-  # as documentation and provenance, but is not part of the 
+  # as documentation and provenance, but is not part of the
   # CLI because the set of 1,000 design points and pool of 10,000 candidate design points is stable.
   cluster:
     - name: prepare_covariates
