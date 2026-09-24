@@ -2,8 +2,8 @@
 title: "MAGiC downscaling training"
 ---
 
-This is the downscaling half of the MAGiC system. It picks up where
-[magic-ensemble](https://github.com/ccmmf/magic-training) stops: the ensemble workflow
+This is the downscaling component of the MAGiC system. It uses output from
+[magic-ensemble](https://github.com/ccmmf/magic-training): the ensemble workflow
 runs SIPNET at a set of design points, and this workflow turns that into carbon
 estimates for every crop field in California, then aggregates to county and state.
 
@@ -19,18 +19,18 @@ session.
 Topic | Audience | Objectives | Notes
 --|--|--|--
 [Environment setup](CARB-downscaling-setup.md) | Everyone | Conda, AWS, and the CLI's `yq` requirement | Needed before the inventory notebook
-[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo bundle is four Delta counties, runs in about ten minutes
+[Inventory downscaling](downscaling_inventory.qmd) | MAGiC users | Turn an ensemble run into field, county and state carbon | Demo dataset covers four Delta counties, runs in about ten minutes
 Scenario downscaling | MAGiC users | Practice-change arms and scenario deltas | Deferred; same four commands with a longer scenario list
 Design point selection | Data managers | How the design points are chosen | Scripts 010-022, upstream of the ensemble and not a CLI command
 
 ## Commands
 
-Each is one CLI verb. The steps inside are declared in
+Each command runs steps defined in
 [`downscaling_manifest.yaml`](../../downscaling_manifest.yaml), not hard coded.
 
 Command | What it does
 --|--
-`get-demo-data` | Downloads and extracts the demo bundle. Run once, before `prepare`.
+`get-demo-data` | Downloads and extracts the demo data package. Run once, before `prepare`.
 `prepare` | Stages ensemble output and data layers into `run_dir`.
 `extract` | Reads SIPNET NetCDF, reshapes to EFI long format.
 `downscale` | Random Forest downscaling to all fields, then county and state aggregation.

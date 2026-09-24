@@ -51,11 +51,11 @@ aws s3 ls s3://carb/data_raw/       # bucket reads
 
 If either fails, fix it before starting the inventory notebook.
 
-The downscale step is heavy and belongs on a compute node rather than a login node.
+The downscale step requires substantial computing resources and should run on a compute node.
 Resource requirements are in the notebook.
 
 ---
 
 **Next:** [Inventory downscaling](downscaling_inventory.qmd).
 
-**Spine:** [training overview](index.qmd).
+**Overview:** [MAGiC downscaling training](index.qmd).

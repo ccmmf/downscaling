@@ -21,27 +21,21 @@ run_dir <- here::here(params$run_dir)
 ds <- file.path(run_dir, "output_downscale")
 ```
 
-This session downscales output from a PEcAn ensemble run. In this workflow we have
-used the  `magic-ensemble` CLI to run SIPNET at a representative sample of fields
-from the CADWR Land Use dataset.
+This tutorial demonstrates how to downscale output from a PEcAn ensemble run. 
+We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.
 
-The downscale step takes the ensemble output, fits a 
-Random Forest model to the subset of fields, and then uses that model to predict
-SIPNET outputs for every field in the CADWR Land Use dataset. 
+The downscaling step fits Random Forest models to the ensemble output at those sampled fields, 
+then predicts carbon stocks and greenhouse gas fluxes for every crop field in the target dataset. 
+It aggregates the field-level predictions into county and statewide inventories.
 
-The result is field-level
-carbon, GHG, estimates for every crop field. Once the downscaling is complete, it 
-then aggregates the output to zonal statistics, in this case, county and state SOC and GHG inventories.
-
-The demo bundle covers four Sacramento-San Joaquin Delta counties (Yolo, Solano,
-Sacramento, Contra Costa) and trains from 99 design points spread across the whole
-state. The full analysis may take five or more minutes. 
-
+The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. 
+It trains on 99 design points distributed across California and predicts outcomes for fields within those four counties. 
+The full analysis may take five minutes or more, depending on available computing resources.
 
 ::: {.callout-note}
 ## Scope
 
-The bundle ships data layers for four counties. A statewide run ships all 57 and uses
+The demo dataset includes data layers for four counties. A statewide run includes all 57 and uses
 the same four commands -- the workflow predicts onto whatever fields the layers
 contain, so this is a data scope, not a limit of the pipeline.
 :::
@@ -63,10 +57,10 @@ cp demo-data/modelout/demo_config.yaml config.yaml
 ```
 
 The download command reads the S3 profile from `example_user_config.yaml`. The
-second command copies the bundle's configuration to `config.yaml`. Review that
+second command copies the downloaded configuration to `config.yaml`. Review that
 file below and use it for all remaining workflow commands.
 
-The bundle holds three things:
+The data package contains:
 
 - `modelout/` -- SIPNET output, 99 design points x 10 ensemble members, 2016-2023,
   under `output_inventory/`
@@ -108,16 +102,16 @@ Key points:
 less config.yaml
 ```
 
-Everything you are likely to change lives here:
+The main settings are:
 
 - `run_dir` -- where this run writes
-- `mode` -- keep `production`. The other modes subsample: `demo` drops to one ensemble
-  member and one year, `dev` to ten sites. The bundle is already small because of its
-  data scope and does not need truncating as well.
+- `mode` -- keep `production`. The other modes subsample: `demo` uses one ensemble
+  member and one year, `dev` to ten sites. The demo dataset is already small because of its
+  data scope and does not need further subsampling.
 - `management_scenarios` -- `inventory`. Must match the `output_<scenario>/` directory
-  in the bundle.
+  in the downloaded data.
 - `outputs_to_extract` -- `TotSoilCarb`
-- `pecan_output_dir`, `data_layers_dir` -- where the bundle is
+- `pecan_output_dir`, `data_layers_dir` -- paths to the downloaded model output and data layers
 - `n_cores`
 
 ## Prepare inputs
@@ -195,14 +189,14 @@ readr::read_csv(file.path(ds, "county_aggregated_preds.csv"), show_col_types = F
 
 About 1.5 minutes.
 
-## Check before you trust it
+## Check the predictions
 
-Two checks decide whether the maps are worth showing anyone.
+Use these two checks to assess the predictions before presenting the maps.
 
 A Random Forest cannot extrapolate past its training range, so predictions outside the
 design points' range mean a broken join or a unit mismatch rather than a discovery.
 
-Out-of-bag R^2^ says whether the forest learned anything at all:
+Out-of-bag R^2^ measures the forest's predictive performance:
 
 ```{r oob}
 f <- list.files(ds, pattern = "^vi_.*by_ensemble.csv$", full.names = TRUE)
@@ -261,10 +255,10 @@ data_layers_dir: /path/to/statewide/data_layers
 | download | 1.4 GB | your own ensemble output |
 | run_dir on disk | ~6 GB | >100 GB |
 
-Wall time depends on the machine, so treat the memory and disk figures as the binding
-constraints. `downscale` is the step that sets them: its cost scales with target fields
-and ensemble members, not with how many design points trained the forest, so a smaller
-design does not make it cheaper.
+Runtime depends on the available hardware. Use the table above to plan memory and
+disk space. During downscaling, predicting across more target fields or ensemble
+members requires more resources. Reducing the number of training sites alone does
+not reduce the number of field-level predictions.
 
 Note `prepare` copies `pecan_output_dir` into `run_dir`, so a statewide run needs room
 for two copies of the ensemble output.
@@ -272,6 +266,6 @@ for two copies of the ensemble output.
 ## Scenarios
 
 Practice-change scenarios use the same four commands. The difference is that
-`management_scenarios` lists several arms, the ensemble output carries one
-`output_<scenario>/` directory per arm, and the analysis adds scenario-minus-baseline
+`management_scenarios` lists several scenarios, the ensemble output contains one
+`output_<scenario>/` directory per scenario, and the analysis adds scenario-minus-baseline
 comparisons; this session covers the inventory only.
