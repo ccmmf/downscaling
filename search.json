@@ -954,44 +954,44 @@
     ]
   },
   {
-    "objectID": "docs/training/README.html",
-    "href": "docs/training/README.html",
+    "objectID": "docs/training/index.html",
+    "href": "docs/training/index.html",
     "title": "MAGiC downscaling training",
     "section": "",
-    "text": "This is the downscaling half of the MAGiC system. It picks up where magic-ensemble stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.\nRunning SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.\nEach notebook is a self-study demo to work through beforehand, then discuss in the live session.\n\n\n\nTopic\nAudience\nObjectives\nNotes\n\n\n\n\nEnvironment setup\nEveryone\nConda, AWS, and the CLI’s yq requirement\nNeeded before the inventory notebook\n\n\nInventory downscaling\nMAGiC users\nTurn an ensemble run into field, county and state carbon\nDemo bundle is four Delta counties, runs in about ten minutes\n\n\nScenario downscaling\nMAGiC users\nPractice-change arms and scenario deltas\nDeferred; same four commands with a longer scenario list\n\n\nDesign point selection\nData managers\nHow the design points are chosen\nScripts 010-022, upstream of the ensemble and not a CLI command\n\n\n\n\n\nEach is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.\n\n\n\n\n\n\nflowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]\n\n\n\nFollowing the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers.",
+    "text": "This is the downscaling half of the MAGiC system. It picks up where magic-ensemble stops: the ensemble workflow runs SIPNET at a set of design points, and this workflow turns that into carbon estimates for every crop field in California, then aggregates to county and state.\nRunning SIPNET at all 385,234 fields is not affordable. The design points are chosen to span the state’s covariate space, a Random Forest learns covariates to model output at those points, and applies it everywhere else. One forest is fit per ensemble member, so the ensemble’s parameter uncertainty propagates to the field level rather than collapsing to a single number.\nEach notebook is a self-study demo to work through beforehand, then discuss in the live session.",
     "crumbs": [
       "Training",
       "Overview"
     ]
   },
   {
-    "objectID": "docs/training/README.html#commands",
-    "href": "docs/training/README.html#commands",
+    "objectID": "docs/training/index.html#commands",
+    "href": "docs/training/index.html#commands",
     "title": "MAGiC downscaling training",
-    "section": "",
-    "text": "Each is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.",
+    "section": "Commands",
+    "text": "Commands\nEach is one CLI verb. The steps inside are declared in downscaling_manifest.yaml, not hard coded.\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo bundle. Run once, before prepare.\n\n\nprepare\nStages ensemble output and data layers into run_dir.\n\n\nextract\nReads SIPNET NetCDF, reshapes to EFI long format.\n\n\ndownscale\nRandom Forest downscaling to all fields, then county and state aggregation.\n\n\nanalyze\nDiagnostics, uncertainty, maps.",
     "crumbs": [
       "Training",
       "Overview"
     ]
   },
   {
-    "objectID": "docs/training/README.html#data-flow",
-    "href": "docs/training/README.html#data-flow",
+    "objectID": "docs/training/index.html#data-flow",
+    "href": "docs/training/index.html#data-flow",
     "title": "MAGiC downscaling training",
-    "section": "",
-    "text": "flowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]",
+    "section": "Data flow",
+    "text": "Data flow\n\n\n\n\n\nflowchart LR\n  ENS[\"magic-ensemble\\nSIPNET at design points\"] --&gt; PREP[\"prepare\"]\n  PREP --&gt; EXT[\"extract\"]\n  EXT --&gt; DS[\"downscale\"]\n  DS --&gt; AN[\"analyze\"]",
     "crumbs": [
       "Training",
       "Overview"
     ]
   },
   {
-    "objectID": "docs/training/README.html#audiences",
-    "href": "docs/training/README.html#audiences",
+    "objectID": "docs/training/index.html#audiences",
+    "href": "docs/training/index.html#audiences",
     "title": "MAGiC downscaling training",
-    "section": "",
-    "text": "Following the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers.",
+    "section": "Audiences",
+    "text": "Audiences\nFollowing the same roles as the MAGiC training index:\n\nEveryone – environment setup.\nMAGiC users – running the workflow and reading its output. Assumes the setup notebook is done and you are comfortable on the command line.\nData managers – regenerating the design points or the covariate layers.",
     "crumbs": [
       "Training",
       "Overview"
