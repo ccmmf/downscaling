@@ -29,7 +29,7 @@ The downscaling step fits Random Forest models to the ensemble output at those s
 then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates.
 It aggregates the field-level predictions into county and run-scope summaries.
 
-The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa.
+The demo covers four Sacramento-San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa.
 The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties.
 All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo.
 Runtime depends on input scope and allocated computing resources.
@@ -51,8 +51,9 @@ the design points. It also fits forests for the first month to estimate change
 over the simulation period.
 
 This documentation assumes that the steps in
-[Environment setup](CARB-downscaling-setup.md) have been completed. For a new shell,
-follow its [Every new shell](CARB-downscaling-setup.md#every-new-shell) instructions.
+[Environment setup](CARB-downscaling-setup.md) have been completed. In a new terminal
+session, follow its
+[startup instructions](CARB-downscaling-setup.md#every-time-you-start-a-new-terminal-session).
 Run all commands below from the downscaling repository root.
 
 ## Fetch demo data
@@ -131,6 +132,8 @@ where predictions are needed. The workflow joins these data using `site_id`.
 | Phenology | `leafon_doy`, `leafoff_doy`, `leafon_doy_sd`, `leafoff_doy_sd` | Mean green-up and senescence day of year, and their variation across years |
 | Tillage | `tillage_rank`, `tillage_freq` | Monitored tillage rank and fraction of monitored years with detected tillage |
 | Irrigation | `irr_canopy`, `irr_flood` | Indicators derived from the monitored irrigation categories |
+| Field | `area_ha` | Field area, also used to convert predicted density to a field total |
+| PFT | `pft_annual_crop`, `pft_woody_perennial_crop` | Indicators of the assigned PFT |
 
 The clustering scripts use the seven climate, soil and terrain features plus
 the crop-history, phenology and management columns present in the input table.
@@ -180,7 +183,7 @@ Key points:
 less config.yaml
 ```
 
-The supplied configuration uses these values (set `n_cores` to your allocation):
+The supplied configuration uses these values:
 
 ```yaml
 global:
@@ -190,10 +193,9 @@ downscaling:
   mode: production
   management_scenarios: [inventory]
   outputs_to_extract: [TotSoilCarb]
-  n_cores: 1
+  n_cores: 4
   pecan_output_dir: demo-data/modelout
   data_layers_dir: demo-data/data
-  anchor_site_locations: data_raw/anchor_site_locations.csv
 ```
 
 Keep `mode: production` to use all sites, ensemble members, and years in this
@@ -299,7 +301,7 @@ maps, variable-importance summaries, and response curves for important predictor
 
 ## Field results
 
-The maps show each predicted field’s mean soil carbon density across the 10
+The maps show each predicted field's mean soil carbon density across the 10
 ensemble members.
 
 ```{r field-data, include=FALSE}
@@ -496,7 +498,7 @@ set `mode: production`, point `pecan_output_dir` and `data_layers_dir` to the fu
 input directories using paths relative to the repository, and list the outputs to
 process. Set `n_cores` to the CPUs in the compute allocation.
 
-The four county demo used 10 ensemble members for 2016–2023. With 1 CPU and 28 GB of allocated memory, download and all four
+The four county demo used 10 ensemble members for 2016-2023. With 1 CPU and 28 GB of allocated memory, download and all four
 stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.
 
 Treat these measurements as a starting point. Runtime and storage increase with
