@@ -40,7 +40,7 @@ Command | What it does
 
 ```{mermaid}
 flowchart LR
-  ENS["magic-ensemble\nSIPNET at design points"] --> PREP["prepare"]
+  ENS["magic-ensemble<br/>SIPNET at design points"] --> PREP["prepare"]
   PREP --> EXT["extract"]
   EXT --> DS["downscale"]
   DS --> AN["analyze"]
