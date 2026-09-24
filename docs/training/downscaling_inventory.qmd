@@ -286,30 +286,180 @@ computed across ensemble members.
 | `mean_density_per_ha` | Mean across members of area-weighted county density, Mg C/ha |
 | `mean_total_ha` | Mean represented field area across members, ha |
 | `sd_total_per_county` | Across-member SD of county stock, Mg C |
+| `sd_density_per_ha` | Across-member SD of county density, Mg C/ha |
 
-```{r county-table}
-readr::read_csv(file.path(ds, "county_aggregated_preds.csv"), show_col_types = FALSE) |>
-    filter(model_output == "TotSoilCarb") |>
-    transmute(county, pft,
-        fields = n,
-        `Mg C/ha` = round(mean_density_per_ha, 1),
-        `Gg C` = round(mean_total_per_county / 1000),
-        `ensemble SD %` = round(100 * sd_total_per_county / mean_total_per_county)
-    ) |>
-    arrange(pft, desc(`Mg C/ha`)) |>
-    knitr::kable(caption = "Soil carbon density, total stock, and ensemble spread by county and PFT.")
+## Analyze and view results
+
+```bash
+./magic-downscaling analyze --verbose --config config.yaml
 ```
 
+`analyze` writes diagnostics and maps to `figures/`, including county and field
+maps, variable-importance summaries, and response curves for important predictors.
 
+## Field results
 
-## Check the predictions
+To keep the table compact, it shows one example field per county and crop type.
+Each example is the field closest to its group’s median ensemble-mean density.
 
-Before using the maps, check that the expected fields were predicted and that the
-Random Forests reproduce the SIPNET results reasonably well.
+```{r field-results}
+field_predictions <- readr::read_csv(
+    file.path(ds, "downscaled_preds.csv"),
+    col_types = readr::cols(site_id = readr::col_character()),
+    show_col_types = FALSE
+)
+
+field_results <- field_predictions |>
+    filter(scenario == "inventory", model_output == "TotSoilCarb") |>
+    summarize(
+        county = first(county),
+        crop_type = first(pft),
+        area_ha = first(area_ha),
+        density_mean = mean(density_per_ha),
+        density_sd = sd(density_per_ha),
+        stock_mean = mean(total_per_field),
+        stock_sd = sd(total_per_field),
+        .by = site_id
+    )
+
+example_fields <- field_results |>
+    mutate(
+        median_density = median(density_mean),
+        distance_from_median = abs(density_mean - median_density),
+        .by = c(county, crop_type)
+    ) |>
+    arrange(county, crop_type, distance_from_median, site_id) |>
+    group_by(county, crop_type) |>
+    slice_head(n = 1) |>
+    ungroup()
+
+format_significant <- function(x) {
+    vapply(
+        x,
+        function(value) {
+            format(
+                signif(value, 2),
+                big.mark = ",",
+                scientific = FALSE,
+                trim = TRUE
+            )
+        },
+        character(1)
+    )
+}
+
+example_fields |>
+    transmute(
+        `Field` = site_id,
+        `County` = county,
+        `Crop type` = recode(
+            crop_type,
+            "annual crop" = "Annual crop",
+            "woody perennial crop" = "Woody perennial"
+        ),
+        `Area (ha)` = format_significant(area_ha),
+        `Density mean (Mg C/ha)` = format_significant(density_mean),
+        `Density SD (Mg C/ha)` = format_significant(density_sd),
+        `Stock mean (Mg C)` = format_significant(stock_mean),
+        `Stock SD (Mg C)` = format_significant(stock_sd)
+    ) |>
+    knitr::kable(
+        caption = "One example field per county and crop type; values summarize 10 ensemble members."
+    )
+```
+
+```{r annual-field-map}
+#| fig-cap: "Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown."
+knitr::include_graphics("figures/demo_field_soc_regional.webp")
+```
+
+```{r woody-field-map}
+#| fig-cap: "Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."
+knitr::include_graphics("figures/demo_field_soc_woody_regional.webp")
+```
+
+The table gives exact field examples, while the maps show how ensemble-mean
+density varies among all predicted fields.
+
+## County results
+
+County stock is the sum of predicted field stocks within each ensemble member
+and is then summarized across the 10 members.
+
+```{r county-results, include=FALSE}
+county_results <- field_predictions |>
+    filter(scenario == "inventory", model_output == "TotSoilCarb") |>
+    summarize(
+        total_Mg_C = sum(total_per_field),
+        field_count = n_distinct(site_id),
+        .by = c(scenario, model_output, pft, county, ensemble)
+    ) |>
+    summarize(
+        field_count = first(field_count),
+        stock_mean_Gg_C = mean(total_Mg_C) / 1000,
+        stock_sd_Gg_C = sd(total_Mg_C) / 1000,
+        .by = c(scenario, model_output, pft, county)
+    ) |>
+    mutate(crop_type = recode(
+        pft,
+        "annual crop" = "Annual crop",
+        "woody perennial crop" = "Woody perennial"
+    )) |>
+    arrange(crop_type, county)
+```
+
+```{r county-stock-plot}
+#| fig-width: 7
+#| fig-height: 5.5
+#| fig-cap: "Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale."
+ggplot2::ggplot(
+    county_results,
+    ggplot2::aes(x = county, y = stock_mean_Gg_C)
+) +
+    ggplot2::geom_errorbar(
+        ggplot2::aes(
+            ymin = pmax(0, stock_mean_Gg_C - stock_sd_Gg_C),
+            ymax = stock_mean_Gg_C + stock_sd_Gg_C
+        ),
+        width = 0.15,
+        color = "gray35"
+    ) +
+    ggplot2::geom_point(color = "#0072B2", size = 2.8) +
+    ggplot2::facet_wrap(ggplot2::vars(crop_type), ncol = 1) +
+    ggplot2::scale_y_continuous(labels = scales::label_comma()) +
+    ggplot2::labs(x = NULL, y = "Soil carbon stock (Gg C)") +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(
+        panel.grid.minor = ggplot2::element_blank(),
+        strip.text = ggplot2::element_text(face = "bold")
+    )
+```
+
+**[Download county statistics (CSV)](downloads/four_county_soil_carbon_by_county.csv){download="four_county_soil_carbon_by_county.csv"}**
+
+```{r county-table}
+county_results |>
+    transmute(
+        `County` = county,
+        `Crop type` = crop_type,
+        `Fields` = format(field_count, big.mark = ",", scientific = FALSE),
+        `Stock mean (Gg C)` = format_significant(stock_mean_Gg_C),
+        `Stock SD (Gg C)` = format_significant(stock_sd_Gg_C)
+    ) |>
+    knitr::kable(
+        caption = "Total soil carbon stock represented by predicted fields; modeled values use two significant figures."
+    )
+```
+
+SD describes spread across ensemble members; it is not a confidence interval.
+
+## Model checks
+
+Use these checks to confirm field coverage and how well the Random Forests
+reproduce the SIPNET results at the design points.
 
 **Coverage.** This run predicted 22,729 fields. Each field has values from all 10
-ensemble members, and none are missing. The other 582 fields lacked covariates,
-so the workflow could not predict them. Also compare the range of predicted values
+ensemble members. Compare the range of predicted values
 with the SIPNET values used for training; values far outside that range need review.
 
 **Model fit.** Out-of-bag (OOB) R^2^ measures how well each forest predicts SIPNET
@@ -325,13 +475,23 @@ oob_data <- purrr::map_dfr(f, readr::read_csv, show_col_types = FALSE) |>
 oob_summary <- oob_data |>
     summarize(
         members = n(),
-        `median OOB R2` = round(median(oob_r2), 3),
-        `members < 0` = sum(oob_r2 < 0),
+        median_oob_r2 = signif(median(oob_r2), 2),
+        members_below_zero = sum(oob_r2 < 0),
         .by = c(pft, model_output)
     ) |>
     arrange(model_output, pft)
 oob_summary |>
-    knitr::kable(caption = "OOB R-squared summary by PFT.")
+    transmute(
+        `Crop type` = recode(
+            pft,
+            "annual crop" = "Annual crop",
+            "woody perennial crop" = "Woody perennial"
+        ),
+        `Members` = members,
+        `Median OOB R2` = median_oob_r2,
+        `Members below zero` = members_below_zero
+    ) |>
+    knitr::kable(caption = "Random Forest fit across the 10 ensemble members.")
 ```
 
 ```{r oob-plot}
@@ -372,56 +532,20 @@ ggplot2::ggplot(oob_plot_data, ggplot2::aes(x = ensemble, y = oob_r2)) +
 
 Median OOB R^2^ is 0.41 for annual crops and 0.31 for woody perennial crops. One
 woody-perennial member falls below zero. These scores show how well the Random
-Forests copy SIPNET at the design points. They do not show whether modeled soil
+Forests copy SIPNET at the design points; they do not show whether modeled soil
 carbon agrees with measurements.
 
-## Analyze the result!
+## Scaling beyond the demo
 
-```bash
-./magic-downscaling analyze --verbose --config config.yaml
-```
+The same four commands can be used with a larger inventory. In the configuration,
+set `mode: production`, point `pecan_output_dir` and `data_layers_dir` to the full
+input directories using paths relative to the repository, and list the outputs to
+process. Set `n_cores` to the CPUs in the compute allocation.
 
-Writes diagnostics and maps to `figures/`: county and field maps per PFT and variable,
-ALE and ICE curves for the strongest predictors, and a variable-importance summary.
+The four county demo used 10 ensemble members for 2016–2023. With 1 CPU and 28 GB of allocated memory, download and all four
+stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.
 
-
-```{r demo-map}
-#| fig-cap: "Annual-crop soil carbon density from the verified four-county demo, as written by `analyze`. Only fields with covariates are represented; the statewide frame locates the demo scope."
-knitr::include_graphics("figures/demo_field_soc.webp")
-```
-
-For geographic context, the reference below shows annual-crop soil carbon from
-a separate inventory run. It represents fields with available
-covariates; it is not a complete accounting of all California cropland. This
-reference is not regenerated by the four-county walkthrough.
-
-```{r statewide-ref}
-#| fig-cap: "Provided statewide annual-crop soil carbon reference; covered fields only, not regenerated or numerically validated in this demo run."
-knitr::include_graphics("figures/statewide_field_soc.webp")
-```
-
-## The full inventory
-
-Same four commands. Update these keys under `downscaling` in the configuration
-and allocate resources for the larger input dataset.
-
-```yaml
-management_scenarios: [inventory]
-outputs_to_extract: [TotSoilCarb]
-n_cores: 1
-pecan_output_dir: /path/to/your/magic-ensemble/output
-data_layers_dir: /path/to/statewide/data_layers
-```
-
-Both examples estimate soil organic carbon (`TotSoilCarb`) for the `inventory`
-scenario. The demo uses 10 ensemble members for 2016–2023 and predicts fields in
-Yolo, Solano, Sacramento, and Contra Costa counties.
-
-The four-county demo completed on a cluster with **1 CPU and 28 GB allocated RAM** in
-under 15 minutes, including download and all four stages. Slurm recorded
-about 1.15 GiB peak resident memory. These measurements apply to the demo;
-statewide requirements depend on the number of fields, variables, and members.
-
-Allow disk space for downloaded archives, extracted inputs, and generated outputs.
-`prepare` copies model output and data layers into `run_dir`, so account for both
-the original inputs and those copies.
+Treat these measurements as a starting point. Runtime and storage increase with
+the numbers of fields, ensemble members, variables, and scenarios. The `prepare`
+step also copies the input data into `run_dir`, so the run needs space for both
+the source data and the staged copy.
