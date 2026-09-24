@@ -30,13 +30,14 @@
 s3:
   bucket: "carb"
   key_prefix: "data_raw"
-  scenarios_artifact: "ccmmf_phase_3_scenarios_v2_n2o_ch4_demo.tgz"
-  data_layers_artifact: "ccmmf_downscaling_data_layers.tgz"
+  scenarios_artifact: "ccmmf_downscaling_inventory_demo.tgz"
+  data_layers_artifact: "ccmmf_downscaling_inventory_layers.tgz"
 
 steps:
-  # cluster is intentionally disconnected from magic-downscaling (not a
-  # recognized CLI verb) -- this block and scripts/010-022 remain in place,
-  # but nothing currently dispatches to them.
+  # cluster is not a recognized magic-downscaling verb
+  # -- this block and scripts/010-022 remain in place,
+  # as documentation and provenance, but is not part of the
+  # CLI because the set of 1,000 design points and pool of 10,000 candidate design points is stable.
   cluster:
     - name: prepare_covariates
       script: "scripts/010_prepare_covariates.R"

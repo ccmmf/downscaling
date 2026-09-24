@@ -1,0 +1,18 @@
+// Regenerate from the repository root:
+// dot -Tsvg docs/training/figures/inventory_workflow.dot -o docs/training/figures/inventory_workflow.svg
+digraph inventory_workflow {
+  graph [rankdir=TB, bgcolor="white", pad=0.2, ranksep=0.3];
+  node [shape=box, style="rounded,filled", fontname="Arial", fontsize=14,
+        color="#456579", fillcolor="#F0F5F8", fontcolor="#183447",
+        margin="0.22,0.16", penwidth=1.2, width=5.6];
+  edge [color="#456579", penwidth=1.4, arrowsize=0.8];
+
+  inputs [label="Demo inputs: get-demo-data\nSIPNET ensemble output + field data layers",
+          fillcolor="#EDF5E9", color="#52734A"];
+  prepare [label=<<B>1. prepare</B><BR/>Stage ensemble output, field covariates<BR/>and spatial layers in the run directory>];
+  extract [label=<<B>2. extract</B><BR/>Convert SIPNET output at design points<BR/>to monthly means for each ensemble member>];
+  downscale [label=<<B>3. downscale</B><BR/><BR/>Fit Random Forests using design-point covariates<BR/>and final-month output, one per ensemble member<BR/>&#8595;<BR/>Predict soil carbon using target-field covariates<BR/>&#8595;<BR/>Repeat for the first month to estimate change<BR/>&#8595;<BR/>Use field area to aggregate county and run totals>];
+  analyze [label=<<B>4. analyze</B><BR/>Create diagnostics, variable-importance summaries<BR/>and field and county maps>];
+
+  inputs -> prepare -> extract -> downscale -> analyze;
+}

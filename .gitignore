@@ -45,3 +45,9 @@ figures/
 
 ########## Demo data cache ##########
 demo-data/
+
+**/*.quarto_ipynb
+inventory-run/
+
+# training notebook ships its own figures
+!docs/training/figures/

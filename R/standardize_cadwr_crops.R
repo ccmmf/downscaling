@@ -66,7 +66,6 @@ load_landiq_pft_map <- function(path) {
 #' @param veg_pft character vector of run vegetation PFTs
 #' @return character vector of downscaling PFTs
 # TODO have this read from existing or user-provided PFT mapping file
-# TODO have this read from existing or user-provided PFT mapping file
 collapse_veg_pft <- function(veg_pft) {
   out <- dplyr::case_when(
     veg_pft == "woody_perennial" ~ "woody perennial crop",
