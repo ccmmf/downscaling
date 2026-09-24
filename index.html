@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.35">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,6 +12,9 @@
 
 <title>MAGiC Downscaling</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -71,15 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./reports/atlas_overview.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -252,6 +254,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
@@ -285,10 +298,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#downscaling-and-aggregation-workflow" id="toc-downscaling-and-aggregation-workflow" class="nav-link active" data-scroll-target="#downscaling-and-aggregation-workflow">Downscaling And Aggregation Workflow</a>
   <ul class="collapse">
   <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
-  <li><a href="#quick-start-demo-workflow" id="toc-quick-start-demo-workflow" class="nav-link" data-scroll-target="#quick-start-demo-workflow">Quick start: demo workflow</a></li>
-  <li><a href="#commands" id="toc-commands" class="nav-link" data-scroll-target="#commands">Commands</a></li>
-  <li><a href="#full-technical-background" id="toc-full-technical-background" class="nav-link" data-scroll-target="#full-technical-background">Full technical background</a></li>
+  <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick start</a>
+  <ul class="collapse">
+  <li><a href="#run-sequence" id="toc-run-sequence" class="nav-link" data-scroll-target="#run-sequence">Run Sequence</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -329,89 +342,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="downscaling-and-aggregation-workflow" class="level1">
 <h1>Downscaling And Aggregation Workflow</h1>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This proof of concept is untested and subject to change. Interpret results as illustrative.</p>
+</div>
+</div>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level. It’s driven by <code>magic-downscaling</code>, a CLI that invokes the numbered R scripts in <code>scripts/</code> with explicit flags, controlled through a user YAML config file (see <code>example_user_config.yaml</code>) — that’s the file you edit to point the workflow at your own data and switch between demo/dev/production modes. Key components:</p>
+<p>This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level.</p>
+<p>Key components:</p>
 <ul>
 <li>Environmental covariates (ERA5, SoilGrids, TWI)</li>
 <li>Design point selection via k-means</li>
-<li>SIPNET simulations at design points [run externally, via <code>magic-ensemble</code>]</li>
+<li>SIPNET simulations at design points [done externally]</li>
 <li>Random Forest downscaling to all fields</li>
-<li>County-level aggregation and diagnostic plots</li>
+<li>County-level aggregation</li>
 </ul>
+<p>Configuration: see <code>000-config.R</code> for paths, variables, and parallel settings.</p>
 </section>
-<section id="prerequisites" class="level2">
-<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
-<ul>
-<li>The most recent <code>pecan-all</code> conda environment.</li>
-<li>If running <code>get-demo-data</code>, AWS credentials configured under a profile named <code>magic</code>.</li>
-</ul>
-</section>
-<section id="quick-start-demo-workflow" class="level2">
-<h2 class="anchored" data-anchor-id="quick-start-demo-workflow">Quick start: demo workflow</h2>
-<p>The demo runs the full pipeline — <code>get-demo-data</code> through <code>analyze</code> — against a small, pre-packaged dataset, driven by the checked-in <code>example_user_config.yaml</code> (<code>downscaling.mode: demo</code>).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span>
+<section id="quick-start" class="level2">
+<h2 class="anchored" data-anchor-id="quick-start">Quick start</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load modules (geo cluster example)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load R/4.4.0 gdal proj geos sqlite udunits quarto</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Activate your pecan-all conda environment first, e.g.:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate pecan-all-1.16</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Point to the shared CCMMF directory (or set in .Renviron)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CCMMF_DIR</span><span class="op">=</span>/projectnb/dietzelab/ccmmf      <span class="co"># or $HOME/ccmmf-dev</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> get-demo-data <span class="at">--config</span> example_user_config.yaml   <span class="co"># downloads demo-data/ (gitignored cache)</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare       <span class="at">--config</span> example_user_config.yaml   <span class="co"># stages demo-data/ into the run_dir</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract       <span class="at">--config</span> example_user_config.yaml   <span class="co"># reads SIPNET output, reshapes to EFI format</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale     <span class="at">--config</span> example_user_config.yaml   <span class="co"># Random Forest downscaling + county aggregation</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze       <span class="at">--config</span> example_user_config.yaml   <span class="co"># diagnostics, uncertainty, plots</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Outputs go under <code>global.run_dir</code>, except demo downloads (<code>./demo-data/</code>) and generated figures (repository <code>figures/</code>). Each command prints its own progress; run any command with <code>--verbose</code> to also echo the underlying <code>Rscript</code> invocations. <code>example_user_config.yaml</code> is commented with what each key does — copy it as the starting point for a real config, updating:</p>
-<ul>
-<li><code>downscaling.mode</code> — set to <code>production</code></li>
-<li><code>downscaling.pecan_output_dir</code> — your PEcAn/SIPNET ensemble output</li>
-<li><code>downscaling.data_layers_dir</code> — your spatial data layers</li>
-<li><code>downscaling.anchor_site_locations</code> — your anchor site locations CSV</li>
-</ul>
-<p>Run <code>./magic-downscaling --help</code> at any time for the authoritative, current list of commands and config keys.</p>
-</section>
-<section id="commands" class="level2">
-<h2 class="anchored" data-anchor-id="commands">Commands</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 54%">
-<col style="width: 45%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Command</th>
-<th>What it does</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>get-demo-data</code></td>
-<td>Downloads and extracts the demo data bundle to <code>./demo-data/</code> (relative to your invocation directory). Run once, before <code>prepare</code>.</td>
-</tr>
-<tr class="even">
-<td><code>prepare</code></td>
-<td>Stages ensemble output and spatial data layers into <code>global.run_dir</code>. Run after <code>magic-ensemble run-ensembles</code>, before <code>extract</code>.</td>
-</tr>
-<tr class="odd">
-<td><code>extract</code></td>
-<td>Reads SIPNET output, reshapes to EFI format, aggregates by scenario.</td>
-</tr>
-<tr class="even">
-<td><code>downscale</code></td>
-<td>Random Forest downscaling to all LandIQ fields; aggregates to county.</td>
-</tr>
-<tr class="odd">
-<td><code>analyze</code></td>
-<td>Diagnostic summaries, uncertainty quantification, plots.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="full-technical-background" class="level2">
-<h2 class="anchored" data-anchor-id="full-technical-background">Full technical background</h2>
-<p>For the underlying science and data flow (covariate sources, model details, aggregation methodology), see the <a href="./docs/workflow_documentation.html#sec-tech-doc">Technical Documentation</a>. Note that document predates the <code>magic-downscaling</code> CLI and describes the workflow in terms of running the numbered scripts directly — for how to actually run the pipeline, use this README and <code>./magic-downscaling --help</code>.</p>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ccmmf/downscaling.git</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> downscaling</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Restore exact packages for this workflow</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-e</span> <span class="st">'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv"); renv::restore()'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="run-sequence" class="level3">
+<h3 class="anchored" data-anchor-id="run-sequence">Run Sequence</h3>
+<p>See full details about how to set up and run the workflows in the <a href="./docs/workflow_documentation.html#sec-tech-doc">Technical Documentation</a>.</p>
+<p>The workflow runs as numbered scripts in three stages: data preparation and design-point selection (<code>009</code>..<code>022</code>), SIPNET output extraction (<code>030</code>..<code>031</code>), and downscaling with aggregation and figures (<code>040</code>..<code>043</code>). The Technical Documentation linked above lists the full command sequence with the inputs and outputs of each step.</p>
 
 
+</section>
 </section>
 </section>
 
@@ -489,7 +465,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/ccmmf\.github\.io\/downscaling\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

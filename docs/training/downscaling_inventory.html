@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.35">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,6 +12,9 @@
 
 <title>Downscaling a MAGiC inventory – MAGiC Downscaling</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,15 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../docs/training/CARB-downscaling-setup.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -258,6 +260,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Inventory Downscaling</span></a>
   </div>
 </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
@@ -339,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>This tutorial demonstrates how to downscale output from a PEcAn ensemble run. We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.</p>
 <p>The downscaling step fits Random Forest models to the ensemble output at those sampled fields, then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates. It aggregates the field-level predictions into county and run-scope summaries.</p>
-<p>The demo covers four Sacramento–San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.</p>
+<p>The demo covers four Sacramento-San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -355,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><a href="figures/inventory_workflow.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="figures/inventory_workflow.svg" class="img-fluid" alt="After get-demo-data downloads the inputs: 1. prepare stages ensemble output and field data; 2. extract computes monthly means at design points; 3. downscale fits Random Forests per ensemble member, predicts target fields from covariates, repeats for the first month to estimate change, and aggregates by field area; 4. analyze creates diagnostics and maps." width="620"></a></p>
 <p>For each plant functional type (PFT), output variable, and scenario, the workflow fits one forest per ensemble member using the final available month’s values at the design points. It also fits forests for the first month to estimate change over the simulation period.</p>
-<p>This documentation assumes that the steps in <a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a> have been completed. For a new shell, follow its <a href="../../docs/training/CARB-downscaling-setup.html#every-new-shell">Every new shell</a> instructions. Run all commands below from the downscaling repository root.</p>
+<p>This documentation assumes that the steps in <a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a> have been completed. In a new terminal session, follow its <a href="../../docs/training/CARB-downscaling-setup.html#every-time-you-start-a-new-terminal-session">startup instructions</a>. Run all commands below from the downscaling repository root.</p>
 <section id="fetch-demo-data" class="level2">
 <h2 class="anchored" data-anchor-id="fetch-demo-data">Fetch demo data</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> get-demo-data <span class="at">--config</span> example_user_config.yaml</span>
@@ -494,6 +507,16 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <td><code>irr_canopy</code>, <code>irr_flood</code></td>
 <td>Indicators derived from the monitored irrigation categories</td>
 </tr>
+<tr class="odd">
+<td>Field</td>
+<td><code>area_ha</code></td>
+<td>Field area, also used to convert predicted density to a field total</td>
+</tr>
+<tr class="even">
+<td>PFT</td>
+<td><code>pft_annual_crop</code>, <code>pft_woody_perennial_crop</code></td>
+<td>Indicators of the assigned PFT</td>
+</tr>
 </tbody>
 </table>
 <p>The clustering scripts use the seven climate, soil and terrain features plus the crop-history, phenology and management columns present in the input table. With 10 crop-history components and all eight phenology and management columns, this is 25 clustering features.</p>
@@ -520,7 +543,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <section id="explore-configuration-file" class="level2">
 <h2 class="anchored" data-anchor-id="explore-configuration-file">Explore configuration file</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The supplied configuration uses these values (set <code>n_cores</code> to your allocation):</p>
+<p>The supplied configuration uses these values:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global</span><span class="kw">:</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run_dir</span><span class="kw">:</span><span class="at"> inventory-run</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">aws_profile</span><span class="kw">:</span><span class="at"> magic</span></span>
@@ -528,10 +551,9 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> production</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">4</span></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> demo-data/modelout</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">anchor_site_locations</span><span class="kw">:</span><span class="at"> data_raw/anchor_site_locations.csv</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Keep <code>mode: production</code> to use all sites, ensemble members, and years in this small four-county dataset. By comparison, <code>demo</code> reads all sites for one member and the final year, while <code>dev</code> reads the first 10 sites and members for the final two years. The <code>inventory</code> scenario matches the downloaded <code>output_inventory/</code> directory. <code>outputs_to_extract</code> limits this walkthrough to <code>TotSoilCarb</code>. <code>run_dir</code> controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set <code>n_cores</code> to your allocated CPUs.</p>
 </section>
 <section id="prepare-inputs" class="level2">
@@ -807,7 +829,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <section id="scaling-beyond-the-demo" class="level2">
 <h2 class="anchored" data-anchor-id="scaling-beyond-the-demo">Scaling beyond the demo</h2>
 <p>The same four commands can be used with a larger inventory. In the configuration, set <code>mode: production</code>, point <code>pecan_output_dir</code> and <code>data_layers_dir</code> to the full input directories using paths relative to the repository, and list the outputs to process. Set <code>n_cores</code> to the CPUs in the compute allocation.</p>
-<p>The four county demo used 10 ensemble members for 2016–2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
+<p>The four county demo used 10 ensemble members for 2016-2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
 <p>Treat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The <code>prepare</code> step also copies the input data into <code>run_dir</code>, so the run needs space for both the source data and the staged copy.</p>
 
 
