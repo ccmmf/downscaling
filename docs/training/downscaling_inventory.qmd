@@ -21,13 +21,22 @@ run_dir <- here::here(params$run_dir)
 ds <- file.path(run_dir, "output_downscale")
 ```
 
-This session takes the output of a `magic-ensemble` inventory run and turns it into
-carbon estimates for every crop field, then aggregates to county and state.
+This session downscales output from a PEcAn ensemble run. In this workflow we have
+used the  `magic-ensemble` CLI to run SIPNET at a representative sample of fields
+from the CADWR Land Use dataset.
+
+The downscale step takes the ensemble output, fits a 
+Random Forest model to the subset of fields, and then uses that model to predict
+SIPNET outputs for every field in the CADWR Land Use dataset. 
+
+The result is field-level
+carbon, GHG, estimates for every crop field. Once the downscaling is complete, it 
+then aggregates the output to zonal statistics, in this case, county and state SOC and GHG inventories.
 
 The demo bundle covers four Sacramento-San Joaquin Delta counties (Yolo, Solano,
-Sacramento, Contra Costa) and trains from the first 100 points of the statewide design,
-which are space filling on their own. The full chain runs in about ten minutes.
-Statewide numbers are at the end.
+Sacramento, Contra Costa) and trains from 99 design points spread across the whole
+state. The full analysis may take five or more minutes. 
+
 
 ::: {.callout-note}
 ## Scope
@@ -59,7 +68,7 @@ file below and use it for all remaining workflow commands.
 
 The bundle holds three things:
 
-- `modelout/` -- SIPNET output, 100 design points x 10 ensemble members, 2016-2023,
+- `modelout/` -- SIPNET output, 99 design points x 10 ensemble members, 2016-2023,
   under `output_inventory/`
 - `data/` -- field geometry, attributes, covariates and county boundaries for the four
   demo counties, plus covariates for the design points so the model can train
@@ -122,7 +131,7 @@ Everything you are likely to change lives here:
 - fails immediately if a scenario in your config has no matching `output_<scenario>/`
   directory, which is the usual sign the config and the ensemble disagree
 
-About 3.5 minutes.
+About 3 minutes.
 
 ## Extract SIPNET output
 
@@ -135,16 +144,17 @@ reads them all, averages to monthly, and writes one long table in EFI format.
 
 ```{r extract-summary}
 ens <- vroom::vroom(file.path(run_dir, "output_extract", "ensemble_output.csv"),
-                    col_types = readr::cols(site_id = readr::col_character()),
-                    progress = FALSE)
+    col_types = readr::cols(site_id = readr::col_character()),
+    progress = FALSE
+)
 tibble::tibble(
-  rows = format(nrow(ens), big.mark = ","),
-  sites = dplyr::n_distinct(ens$site_id),
-  members = dplyr::n_distinct(ens$parameter),
-  months = dplyr::n_distinct(ens$datetime),
-  variables = paste(sort(unique(ens$variable)), collapse = ", ")
+    rows = format(nrow(ens), big.mark = ","),
+    sites = dplyr::n_distinct(ens$site_id),
+    members = dplyr::n_distinct(ens$parameter),
+    months = dplyr::n_distinct(ens$datetime),
+    variables = paste(sort(unique(ens$variable)), collapse = ", ")
 ) |>
-  knitr::kable(caption = "ensemble_output.csv as written by `extract`")
+    knitr::kable(caption = "ensemble_output.csv as written by `extract`")
 ```
 
 The row count should be exactly `sites x members x months x variables`. If it is not,
@@ -172,13 +182,15 @@ through to the field level instead of collapsing it to a single number.
 
 ```{r county-table}
 readr::read_csv(file.path(ds, "county_aggregated_preds.csv"), show_col_types = FALSE) |>
-  filter(model_output == "TotSoilCarb") |>
-  transmute(county, pft, fields = n,
-            `Mg C/ha` = round(mean_density_per_ha, 1),
-            `Gg C` = round(mean_total_per_county / 1000),
-            `ensemble SD %` = round(100 * sd_total_per_county / mean_total_per_county)) |>
-  arrange(pft, desc(`Mg C/ha`)) |>
-  knitr::kable(caption = "Soil carbon by county. The Delta counties sit above Yolo, which is the peat soils showing through.")
+    filter(model_output == "TotSoilCarb") |>
+    transmute(county, pft,
+        fields = n,
+        `Mg C/ha` = round(mean_density_per_ha, 1),
+        `Gg C` = round(mean_total_per_county / 1000),
+        `ensemble SD %` = round(100 * sd_total_per_county / mean_total_per_county)
+    ) |>
+    arrange(pft, desc(`Mg C/ha`)) |>
+    knitr::kable(caption = "Soil carbon by county. The Delta counties sit above Yolo, which is the peat soils showing through.")
 ```
 
 About 1.5 minutes.
@@ -195,13 +207,15 @@ Out-of-bag R^2^ says whether the forest learned anything at all:
 ```{r oob}
 f <- list.files(ds, pattern = "^vi_.*by_ensemble.csv$", full.names = TRUE)
 purrr::map_dfr(f, readr::read_csv, show_col_types = FALSE) |>
-  distinct(pft, model_output, ensemble, oob_r2) |>
-  summarize(members = n(),
-            `median OOB R2` = round(median(oob_r2), 3),
-            `members < 0` = sum(oob_r2 < 0),
-            .by = c(pft, model_output)) |>
-  arrange(model_output, pft) |>
-  knitr::kable(caption = "Negative means the forest does worse than predicting the training mean.")
+    distinct(pft, model_output, ensemble, oob_r2) |>
+    summarize(
+        members = n(),
+        `median OOB R2` = round(median(oob_r2), 3),
+        `members < 0` = sum(oob_r2 < 0),
+        .by = c(pft, model_output)
+    ) |>
+    arrange(model_output, pft) |>
+    knitr::kable(caption = "Negative means the forest does worse than predicting the training mean.")
 ```
 
 ## Analyze the result!
@@ -241,10 +255,10 @@ data_layers_dir: /path/to/statewide/data_layers
 
 | | Demo (4 counties) | Statewide |
 |---|---|---|
-| target fields | 22,729 | 385,234 |
+| target fields | 23,311 | 385,234 |
 | minimum RAM | 16 GB | 400 GB |
 | cores used | 4 | 8 |
-| download | 1.5 GB | your own ensemble output |
+| download | 1.4 GB | your own ensemble output |
 | run_dir on disk | ~6 GB | >100 GB |
 
 Wall time depends on the machine, so treat the memory and disk figures as the binding
