@@ -639,118 +639,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </section>
 <section id="field-results" class="level2">
 <h2 class="anchored" data-anchor-id="field-results">Field results</h2>
-<p>To keep the table compact, it shows one example field per county and crop type. Each example is the field closest to its group’s median ensemble-mean density.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<caption>One example field per county and crop type; values summarize 10 ensemble members.</caption>
-<colgroup>
-<col style="width: 5%">
-<col style="width: 10%">
-<col style="width: 12%">
-<col style="width: 8%">
-<col style="width: 18%">
-<col style="width: 16%">
-<col style="width: 14%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Field</th>
-<th style="text-align: left;">County</th>
-<th style="text-align: left;">Crop type</th>
-<th style="text-align: left;">Area (ha)</th>
-<th style="text-align: left;">Density mean (Mg C/ha)</th>
-<th style="text-align: left;">Density SD (Mg C/ha)</th>
-<th style="text-align: left;">Stock mean (Mg C)</th>
-<th style="text-align: left;">Stock SD (Mg C)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">447413</td>
-<td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">Annual crop</td>
-<td style="text-align: left;">20</td>
-<td style="text-align: left;">120</td>
-<td style="text-align: left;">17</td>
-<td style="text-align: left;">2,500</td>
-<td style="text-align: left;">340</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">521158</td>
-<td style="text-align: left;">Contra Costa</td>
-<td style="text-align: left;">Woody perennial</td>
-<td style="text-align: left;">7.5</td>
-<td style="text-align: left;">72</td>
-<td style="text-align: left;">11</td>
-<td style="text-align: left;">540</td>
-<td style="text-align: left;">83</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">524694</td>
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">Annual crop</td>
-<td style="text-align: left;">1.6</td>
-<td style="text-align: left;">110</td>
-<td style="text-align: left;">23</td>
-<td style="text-align: left;">170</td>
-<td style="text-align: left;">37</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">308911</td>
-<td style="text-align: left;">Sacramento</td>
-<td style="text-align: left;">Woody perennial</td>
-<td style="text-align: left;">27</td>
-<td style="text-align: left;">73</td>
-<td style="text-align: left;">21</td>
-<td style="text-align: left;">2,000</td>
-<td style="text-align: left;">570</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">124776</td>
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">Annual crop</td>
-<td style="text-align: left;">12</td>
-<td style="text-align: left;">110</td>
-<td style="text-align: left;">17</td>
-<td style="text-align: left;">1,300</td>
-<td style="text-align: left;">210</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">336173</td>
-<td style="text-align: left;">Solano</td>
-<td style="text-align: left;">Woody perennial</td>
-<td style="text-align: left;">26</td>
-<td style="text-align: left;">65</td>
-<td style="text-align: left;">13</td>
-<td style="text-align: left;">1,700</td>
-<td style="text-align: left;">330</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">306719</td>
-<td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">Annual crop</td>
-<td style="text-align: left;">1.1</td>
-<td style="text-align: left;">99</td>
-<td style="text-align: left;">13</td>
-<td style="text-align: left;">110</td>
-<td style="text-align: left;">15</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">181189</td>
-<td style="text-align: left;">Yolo</td>
-<td style="text-align: left;">Woody perennial</td>
-<td style="text-align: left;">7.9</td>
-<td style="text-align: left;">61</td>
-<td style="text-align: left;">9.8</td>
-<td style="text-align: left;">480</td>
-<td style="text-align: left;">78</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p>The maps show each predicted field’s mean soil carbon density across the 10 ensemble members.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -771,7 +660,6 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </div>
 </div>
 </div>
-<p>The table gives exact field examples, while the maps show how ensemble-mean density varies among all predicted fields.</p>
 </section>
 <section id="county-results" class="level2">
 <h2 class="anchored" data-anchor-id="county-results">County results</h2>
@@ -919,7 +807,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <section id="scaling-beyond-the-demo" class="level2">
 <h2 class="anchored" data-anchor-id="scaling-beyond-the-demo">Scaling beyond the demo</h2>
 <p>The same four commands can be used with a larger inventory. In the configuration, set <code>mode: production</code>, point <code>pecan_output_dir</code> and <code>data_layers_dir</code> to the full input directories using paths relative to the repository, and list the outputs to process. Set <code>n_cores</code> to the CPUs in the compute allocation.</p>
-<p>The verified demo used 10 ensemble members for 2016–2023 and predicted fields in four counties. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
+<p>The four county demo used 10 ensemble members for 2016–2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
 <p>Treat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The <code>prepare</code> step also copies the input data into <code>run_dir</code>, so the run needs space for both the source data and the staged copy.</p>
 
 
