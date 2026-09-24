@@ -34,12 +34,12 @@ at the beginning of the [inventory notebook](downscaling_inventory.qmd#fetch-dem
 
 For your own runs, you can copy and edit `example_user_config.yaml` as a starting point.
 
-`./magic-downscaling --help` lists each configuration key and its default values. 
+`./magic-downscaling --help` lists each configuration key and its default values.
 
 There are three configuration modes: `demo`, `dev`, and `production` that differ in
 scope : `production` covers all variables and all scenarios,
 `dev` and `demo` reduce the design size and variable list, and `demo` only runs
-a single scenario. 
+a single scenario.
 A `demo` run exercises the same code path as `production` on less data.
 
 ## Confirm setup
