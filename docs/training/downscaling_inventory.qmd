@@ -299,73 +299,15 @@ maps, variable-importance summaries, and response curves for important predictor
 
 ## Field results
 
-To keep the table compact, it shows one example field per county and crop type.
-Each example is the field closest to its group’s median ensemble-mean density.
+The maps show each predicted field’s mean soil carbon density across the 10
+ensemble members.
 
-```{r field-results}
+```{r field-data, include=FALSE}
 field_predictions <- readr::read_csv(
     file.path(ds, "downscaled_preds.csv"),
     col_types = readr::cols(site_id = readr::col_character()),
     show_col_types = FALSE
 )
-
-field_results <- field_predictions |>
-    filter(scenario == "inventory", model_output == "TotSoilCarb") |>
-    summarize(
-        county = first(county),
-        crop_type = first(pft),
-        area_ha = first(area_ha),
-        density_mean = mean(density_per_ha),
-        density_sd = sd(density_per_ha),
-        stock_mean = mean(total_per_field),
-        stock_sd = sd(total_per_field),
-        .by = site_id
-    )
-
-example_fields <- field_results |>
-    mutate(
-        median_density = median(density_mean),
-        distance_from_median = abs(density_mean - median_density),
-        .by = c(county, crop_type)
-    ) |>
-    arrange(county, crop_type, distance_from_median, site_id) |>
-    group_by(county, crop_type) |>
-    slice_head(n = 1) |>
-    ungroup()
-
-format_significant <- function(x) {
-    vapply(
-        x,
-        function(value) {
-            format(
-                signif(value, 2),
-                big.mark = ",",
-                scientific = FALSE,
-                trim = TRUE
-            )
-        },
-        character(1)
-    )
-}
-
-example_fields |>
-    transmute(
-        `Field` = site_id,
-        `County` = county,
-        `Crop type` = recode(
-            crop_type,
-            "annual crop" = "Annual crop",
-            "woody perennial crop" = "Woody perennial"
-        ),
-        `Area (ha)` = format_significant(area_ha),
-        `Density mean (Mg C/ha)` = format_significant(density_mean),
-        `Density SD (Mg C/ha)` = format_significant(density_sd),
-        `Stock mean (Mg C)` = format_significant(stock_mean),
-        `Stock SD (Mg C)` = format_significant(stock_sd)
-    ) |>
-    knitr::kable(
-        caption = "One example field per county and crop type; values summarize 10 ensemble members."
-    )
 ```
 
 ```{r annual-field-map}
@@ -377,9 +319,6 @@ knitr::include_graphics("figures/demo_field_soc_regional.webp")
 #| fig-cap: "Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."
 knitr::include_graphics("figures/demo_field_soc_woody_regional.webp")
 ```
-
-The table gives exact field examples, while the maps show how ensemble-mean
-density varies among all predicted fields.
 
 ## County results
 
@@ -406,6 +345,21 @@ county_results <- field_predictions |>
         "woody perennial crop" = "Woody perennial"
     )) |>
     arrange(crop_type, county)
+
+format_significant <- function(x) {
+    vapply(
+        x,
+        function(value) {
+            format(
+                signif(value, 2),
+                big.mark = ",",
+                scientific = FALSE,
+                trim = TRUE
+            )
+        },
+        character(1)
+    )
+}
 ```
 
 ```{r county-stock-plot}
