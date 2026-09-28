@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta name="robots" content="noindex,nofollow">
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
@@ -8,9 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-09-27">
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-09-28">
 
-<title>2024–2045 Scenarios – MAGiC Downscaling</title>
+<title>Future Management and Climate Scenarios – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../docs/training/index.html" rel="next">
-<link href="../reports/atlas_biomass.html" rel="prev">
+<link href="../reports/design_point_validation.html" rel="next">
+<link href="../reports/downscaling_results.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -46,6 +46,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -86,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/scenarios.html">Scenarios</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/scenarios.html">Future Scenarios</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -121,16 +124,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/carb_review.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">CARB Review Draft</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Inventory</span></a>
+ <span class="menu-text">Map Atlas</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -139,13 +136,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Results and Summary Tables</span></a>
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -157,32 +148,67 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GHG</span></a>
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Biomass</span></a>
+ <span class="menu-text">Aboveground Biomass</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Scenarios</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
+ <span class="menu-text">Reports</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Point Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/training/index.html" class="sidebar-item-text sidebar-link">
@@ -205,23 +231,23 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Methods and data locations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Workflow Documentation</span></a>
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../scope.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scope, Units, and Data Locations</span></a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -242,22 +268,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#execution-and-comparison-support" id="toc-execution-and-comparison-support" class="nav-link" data-scroll-target="#execution-and-comparison-support">Execution and comparison support</a></li>
-  <li><a href="#soil-carbon-response" id="toc-soil-carbon-response" class="nav-link" data-scroll-target="#soil-carbon-response">Soil carbon response</a></li>
+  <li><a href="#statewide-soil-carbon-response" id="toc-statewide-soil-carbon-response" class="nav-link active" data-scroll-target="#statewide-soil-carbon-response">Statewide soil-carbon response</a></li>
+  <li><a href="#contrasts-against-the-reference" id="toc-contrasts-against-the-reference" class="nav-link" data-scroll-target="#contrasts-against-the-reference">Contrasts against the reference</a></li>
   <li><a href="#annual-model-defined-n2o-n" id="toc-annual-model-defined-n2o-n" class="nav-link" data-scroll-target="#annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</a></li>
-  <li><a href="#bounded-methane-evidence" id="toc-bounded-methane-evidence" class="nav-link" data-scroll-target="#bounded-methane-evidence">Bounded methane evidence</a></li>
-  <li><a href="#result-locations" id="toc-result-locations" class="nav-link" data-scroll-target="#result-locations">Result locations</a></li>
+  <li><a href="#gas-reporting-boundary" id="toc-gas-reporting-boundary" class="nav-link" data-scroll-target="#gas-reporting-boundary">Gas-reporting boundary</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/scenarios.html">Future Scenarios</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">2024–2045 Scenarios</h1>
-<p class="subtitle lead">Management, climate-model, and emissions-pathway comparisons</p>
+<h1 class="title">Future Management and Climate Scenarios</h1>
+<p class="subtitle lead">Soil Carbon and Annual Nitrous-Oxide Results, 2024–2045</p>
 </div>
 
 
@@ -265,16 +289,17 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
              <p>David LeBauer </p>
+             <p>Akash B V </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 27, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -286,9 +311,13 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>The four configurations isolate a management comparison, a climate-model comparison, and an emissions-pathway comparison against the same reference definition. Results cover January 2024 through December 2045.</p>
+<p>The future analysis compares four configurations through December 2045. The reference uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to the reference.</p>
+<div id="tbl-future-configurations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-future-configurations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Future configurations used in the scenario analysis.
+</figcaption>
+<div aria-describedby="tbl-future-configurations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
 <col style="width: 20%">
@@ -303,193 +332,135 @@ ul.task-list li input[type="checkbox"] {
 <th>Management</th>
 <th>Climate model</th>
 <th>Pathway</th>
-<th>Comparison with reference</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Reference</strong></td>
-<td>BAU</td>
-<td>CESM2</td>
-<td>SSP370</td>
-<td>Baseline for the three contrasts</td>
-</tr>
-<tr class="even">
-<td><strong>Management</strong></td>
-<td>NBS</td>
-<td>CESM2</td>
-<td>SSP370</td>
-<td>NBS minus BAU</td>
-</tr>
-<tr class="odd">
-<td><strong>Model</strong></td>
-<td>BAU</td>
-<td>MPI-ESM1-2-HR</td>
-<td>SSP370</td>
-<td>MPI minus CESM2</td>
-</tr>
-<tr class="even">
-<td><strong>Pathway</strong></td>
-<td>BAU</td>
-<td>CESM2</td>
-<td>SSP585</td>
-<td>SSP585 minus SSP370</td>
-</tr>
-</tbody>
-</table>
-<p>Here, BAU and NBS are management-input definitions. They are not labels for the historical inventory or the separate paired practice change effects analysis.</p>
-</section>
-<section id="execution-and-comparison-support" class="level2">
-<h2 class="anchored" data-anchor-id="execution-and-comparison-support">Execution and comparison support</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Configuration</th>
-<th style="text-align: right;">Successful simulations</th>
-<th style="text-align: right;">Explicit failures</th>
-<th style="text-align: right;">Total</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Reference</td>
-<td style="text-align: right;">19,254</td>
-<td style="text-align: right;">381</td>
-<td style="text-align: right;">19,635</td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Reference configuration</td>
 </tr>
 <tr class="even">
 <td>Management</td>
-<td style="text-align: right;">19,229</td>
-<td style="text-align: right;">406</td>
-<td style="text-align: right;">19,635</td>
+<td>NBS</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Management comparison</td>
 </tr>
 <tr class="odd">
-<td>Model</td>
-<td style="text-align: right;">19,258</td>
-<td style="text-align: right;">377</td>
-<td style="text-align: right;">19,635</td>
+<td>Climate model</td>
+<td>BAU</td>
+<td>MPI-ESM1-2-HR</td>
+<td>SSP370</td>
+<td>Climate-model sensitivity</td>
 </tr>
 <tr class="even">
 <td>Pathway</td>
-<td style="text-align: right;">19,257</td>
-<td style="text-align: right;">378</td>
-<td style="text-align: right;">19,635</td>
-</tr>
-<tr class="odd">
-<td><strong>All configurations</strong></td>
-<td style="text-align: right;"><strong>76,998</strong></td>
-<td style="text-align: right;"><strong>1,542</strong></td>
-<td style="text-align: right;"><strong>78,540</strong></td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP585</td>
+<td>Emissions-pathway sensitivity</td>
 </tr>
 </tbody>
 </table>
-<p>Each completed arm contains 30,818,720 prediction rows and the same number of endpoint-difference rows: 385,234 fields × 20 original member IDs × four variables. Failed site/member pairs were not imputed.</p>
+</div>
+</figure>
+</div>
+<section id="statewide-soil-carbon-response" class="level2">
+<h2 class="anchored" data-anchor-id="statewide-soil-carbon-response">Statewide soil-carbon response</h2>
+<div id="fig-scenario-soc-statewide" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway configurations">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-soc-statewide.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Statewide soil-carbon response for the four future configurations. Points show ensemble means and bars show empirical member p05–p95."><img src="assets/carb-results/scenario-soc-statewide.png" class="img-fluid figure-img" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway configurations"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Statewide soil-carbon response for the four future configurations. Points show ensemble means and bars show empirical member p05–p95.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-soc-response" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Statewide December 2045 minus January 2024 soil-carbon stock response, Tg C.
+</figcaption>
+<div aria-describedby="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 27%">
-<col style="width: 36%">
-<col style="width: 36%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Contrast</th>
-<th style="text-align: right;">Common successful site/member pairs</th>
-<th style="text-align: right;">Pairs excluded from the comparison</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Management minus reference</td>
-<td style="text-align: right;">19,115</td>
-<td style="text-align: right;">520</td>
-</tr>
-<tr class="even">
-<td>Model minus reference</td>
-<td style="text-align: right;">19,252</td>
-<td style="text-align: right;">383</td>
-</tr>
-<tr class="odd">
-<td>Pathway minus reference</td>
-<td style="text-align: right;">19,252</td>
-<td style="text-align: right;">383</td>
-</tr>
-</tbody>
-</table>
-<p>The common-support manifests preserve original member identity. The arms were fitted independently, so common support does not mean the downscaling fits themselves were matched-pair refits.</p>
-</section>
-<section id="soil-carbon-response" class="level2">
-<h2 class="anchored" data-anchor-id="soil-carbon-response">Soil carbon response</h2>
-<p>Soil carbon response is the December 2045 monthly mean minus the January 2024 monthly mean. A negative value indicates lower modeled soil carbon at the end of the window; it is not an annual rate. The summaries first aggregate field stocks within each original member and then describe the distribution across the 20 members.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 17%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Configuration</th>
-<th style="text-align: right;">Mean change (Tg C)</th>
-<th style="text-align: right;">Member p05 (Tg C)</th>
-<th style="text-align: right;">Member p95 (Tg C)</th>
-<th style="text-align: right;">Mean change (Mg C / ha)</th>
-<th style="text-align: right;">Members below / above zero</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">p05</th>
+<th style="text-align: right;">p95</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Reference</td>
 <td style="text-align: right;">-45.33</td>
-<td style="text-align: right;">-98.26</td>
-<td style="text-align: right;">17.87</td>
-<td style="text-align: right;">-13.01</td>
-<td style="text-align: right;">16 / 4</td>
+<td style="text-align: right;">-98.30</td>
+<td style="text-align: right;">17.90</td>
 </tr>
 <tr class="even">
 <td>Management</td>
 <td style="text-align: right;">-43.77</td>
 <td style="text-align: right;">-97.21</td>
 <td style="text-align: right;">20.86</td>
-<td style="text-align: right;">-12.56</td>
-<td style="text-align: right;">16 / 4</td>
 </tr>
 <tr class="odd">
-<td>Model</td>
+<td>Climate model</td>
 <td style="text-align: right;">-45.74</td>
-<td style="text-align: right;">-95.55</td>
-<td style="text-align: right;">15.98</td>
-<td style="text-align: right;">-13.12</td>
-<td style="text-align: right;">17 / 3</td>
+<td style="text-align: right;">-95.60</td>
+<td style="text-align: right;">15.96</td>
 </tr>
 <tr class="even">
 <td>Pathway</td>
 <td style="text-align: right;">-49.04</td>
-<td style="text-align: right;">-101.24</td>
-<td style="text-align: right;">11.96</td>
-<td style="text-align: right;">-14.07</td>
-<td style="text-align: right;">17 / 3</td>
+<td style="text-align: right;">-100.55</td>
+<td style="text-align: right;">12.00</td>
 </tr>
 </tbody>
 </table>
-<p>The p05 and p95 values describe empirical spread across the original members, not observational confidence intervals.</p>
+</div>
+</figure>
+</div>
+<p>All four ensemble means are negative, indicating modeled soil-carbon stock loss over the period. The ensemble ranges are parameter-member spread, not observational confidence intervals.</p>
+</section>
+<section id="contrasts-against-the-reference" class="level2">
+<h2 class="anchored" data-anchor-id="contrasts-against-the-reference">Contrasts against the reference</h2>
+<div id="fig-scenario-soc-contrasts" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-soc-contrasts.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: County soil-carbon response contrasts against the reference configuration. The three panels share a signed color scale."><img src="assets/carb-results/scenario-soc-contrasts.png" class="img-fluid figure-img" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: County soil-carbon response contrasts against the reference configuration. The three panels share a signed color scale.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-soc-contrasts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Statewide soil-carbon response contrasts, Tg C. Contrasts are calculated within original ensemble-member identity before summarization.
+</figcaption>
+<div aria-describedby="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 15%">
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 21%">
+<col style="width: 16%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 16%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Contrast</th>
-<th style="text-align: right;">Mean contrast (Tg C)</th>
-<th style="text-align: right;">Member p05 (Tg C)</th>
-<th style="text-align: right;">Member p95 (Tg C)</th>
-<th style="text-align: right;">Mean contrast (Mg C / ha)</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">p05</th>
+<th style="text-align: right;">p95</th>
+<th>Interpretation</th>
 </tr>
 </thead>
 <tbody>
@@ -498,61 +469,84 @@ ul.task-list li input[type="checkbox"] {
 <td style="text-align: right;">1.55</td>
 <td style="text-align: right;">-1.81</td>
 <td style="text-align: right;">3.86</td>
-<td style="text-align: right;">0.45</td>
+<td>Less modeled stock loss on average</td>
 </tr>
 <tr class="even">
-<td>Model minus reference</td>
+<td>Climate model minus reference</td>
 <td style="text-align: right;">-0.41</td>
 <td style="text-align: right;">-5.06</td>
 <td style="text-align: right;">3.84</td>
-<td style="text-align: right;">-0.12</td>
+<td>Similar statewide mean, with regional differences</td>
 </tr>
 <tr class="odd">
 <td>Pathway minus reference</td>
 <td style="text-align: right;">-3.71</td>
 <td style="text-align: right;">-6.16</td>
 <td style="text-align: right;">-1.31</td>
-<td style="text-align: right;">-1.07</td>
+<td>Greater modeled stock loss</td>
 </tr>
 </tbody>
 </table>
-<p>The management contrast is positive on average even though the management and reference arms both have negative mean statewide stock changes. This means the NBS configuration retains more modeled soil carbon than BAU over the window; it does not mean statewide stocks increase relative to January 2024.</p>
+</div>
+</figure>
+</div>
+<p>The positive management contrast does not mean that statewide soil carbon increases. It means that the management configuration loses less soil carbon than the reference on average. The county maps show where each contrast contributes to the statewide result.</p>
 </section>
 <section id="annual-model-defined-n2o-n" class="level2">
 <h2 class="anchored" data-anchor-id="annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</h2>
-<p>The annual series integrates model-defined N<sub>2</sub>O-N over each calendar year before downscaling. Native units are kg N and kg N ha<sup>-1</sup> per calendar year. The available audited series covers the reference and management configurations; the model and pathway annual gas series are not included. Molecular N<sub>2</sub>O values can be derived with 44/28, but no CO<sub>2</sub>-equivalent balance is calculated here.</p>
+<div id="fig-scenario-n2o-annual" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management configurations from 2024 to 2045">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-n2o-annual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Annual model-defined N2O-N for the reference and management configurations. Lines show ensemble means; ribbons show empirical member p05–p95."><img src="assets/carb-results/scenario-n2o-annual.png" class="img-fluid figure-img" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management configurations from 2024 to 2045"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Annual model-defined N<sub>2</sub>O-N for the reference and management configurations. Lines show ensemble means; ribbons show empirical member p05–p95.
+</figcaption>
+</figure>
+</div>
+<p>Annual N<sub>2</sub>O-N is integrated over each calendar year and reported as native nitrogen mass per represented hectare. This differs from the historical inventory’s annualized endpoint rate.</p>
+<div id="fig-scenario-n2o-contrast" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-n2o-contrast.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Management-minus-reference annual N2O-N. Differences are calculated within original ensemble-member identity."><img src="assets/carb-results/scenario-n2o-contrast.png" class="img-fluid figure-img" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Management-minus-reference annual N<sub>2</sub>O-N. Differences are calculated within original ensemble-member identity.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-annual-n2o" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<sup>-1</sup>.
+</figcaption>
+<div aria-describedby="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">Year</th>
-<th style="text-align: right;">Reference (kg N / ha)</th>
-<th style="text-align: right;">Management (kg N / ha)</th>
-<th style="text-align: right;">Management - reference (kg N / ha)</th>
+<th style="text-align: right;">Reference</th>
+<th style="text-align: right;">Management</th>
+<th style="text-align: right;">Management minus reference</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">2024</td>
-<td style="text-align: right;">23.70</td>
-<td style="text-align: right;">23.84</td>
+<td style="text-align: right;">23.71</td>
+<td style="text-align: right;">23.85</td>
 <td style="text-align: right;">0.14</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2030</td>
-<td style="text-align: right;">22.12</td>
-<td style="text-align: right;">22.46</td>
+<td style="text-align: right;">22.13</td>
+<td style="text-align: right;">22.47</td>
 <td style="text-align: right;">0.34</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2035</td>
-<td style="text-align: right;">21.50</td>
-<td style="text-align: right;">22.29</td>
+<td style="text-align: right;">21.54</td>
+<td style="text-align: right;">22.33</td>
 <td style="text-align: right;">0.79</td>
 </tr>
 <tr class="even">
@@ -563,28 +557,20 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2045</td>
-<td style="text-align: right;">20.95</td>
+<td style="text-align: right;">20.94</td>
 <td style="text-align: right;">22.06</td>
 <td style="text-align: right;">1.11</td>
 </tr>
 </tbody>
 </table>
-<p>A positive contrast means higher modeled N<sub>2</sub>O-N under management than reference.</p>
+</div>
+</figure>
+</div>
+<p>The management mean is higher than the reference in most years, but the matched-member spread commonly crosses zero. These modeled differences do not establish an observed causal management effect.</p>
 </section>
-<section id="bounded-methane-evidence" class="level2">
-<h2 class="anchored" data-anchor-id="bounded-methane-evidence">Bounded methane evidence</h2>
-<p>The current methane evidence is a deliberately bounded diagnostic: one reference simulation (<code>ENS-00005-130284</code>), segment 004, integrated from March 5 through October 3, 2028. The result is 0.01036 kg CH<sub>4</sub>-C ha<sup>-1</sup>, or 0.01382 kg CH<sub>4</sub> ha<sup>-1</sup>. It is neither a statewide estimate nor a recurring annual series, and there is no paired management effect in this diagnostic.</p>
-<p>The original scenario gas endpoint outputs are annualized January 2024 and December 2045 monthly mean rates. They should not be interpreted as integrated annual or cumulative emissions. Completed statewide annual and cumulative CH<sub>4</sub> accounting remains follow-up work.</p>
-</section>
-<section id="result-locations" class="level2">
-<h2 class="anchored" data-anchor-id="result-locations">Result locations</h2>
-<p>Result files and figures are not committed to this documentation repository. The authoritative scenario products remain on Delta:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/</code></pre>
-<p>The four downscaled field-output directories are:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/downscaling/{reference,management,model,pathway}/outputs/</code></pre>
-<p>The audited annual reference and management gas products are under:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/results/production/{reference,management}/</code></pre>
-<p>See <a href="../scope.html">scope, units, and data locations</a> for interpretation boundaries and the historical inventory location.</p>
+<section id="gas-reporting-boundary" class="level2">
+<h2 class="anchored" data-anchor-id="gas-reporting-boundary">Gas-reporting boundary</h2>
+<p>Annual native-N accounting is available for the reference and management configurations. Corrected statewide methane and complete annual gas series for the climate-model and pathway configurations are not shown. Soil-carbon stock changes and the available gas results are therefore reported separately rather than combined into an incomplete CO<sub>2</sub>-equivalent balance.</p>
 
 
 </section>
@@ -992,17 +978,49 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/atlas_biomass.html" class="pagination-link" aria-label="Biomass">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Biomass</span>
+      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Downscaling Results">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Results</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../docs/training/index.html" class="pagination-link" aria-label="Overview">
-        <span class="nav-page-text">Overview</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reports/design_point_validation.html" class="pagination-link" aria-label="Design Point Validation">
+        <span class="nav-page-text">Design Point Validation</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

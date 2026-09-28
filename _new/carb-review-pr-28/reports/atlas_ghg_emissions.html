@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta name="robots" content="noindex,nofollow">
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-27">
+<meta name="dcterms.date" content="2026-09-28">
 
-<title>GHG Inventory – MAGiC Downscaling</title>
+<title>GHG Emissions Atlas – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -46,6 +46,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -86,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Inventory</a></li><li class="breadcrumb-item"><a href="../reports/atlas_ghg_emissions.html">GHG</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_ghg_emissions.html">GHG Emissions (N₂O &amp; CH₄)</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -121,16 +124,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/carb_review.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">CARB Review Draft</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Inventory</span></a>
+ <span class="menu-text">Map Atlas</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -139,13 +136,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Results and Summary Tables</span></a>
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -157,32 +148,67 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">GHG</span></a>
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Biomass</span></a>
+ <span class="menu-text">Aboveground Biomass</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scenarios</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
+ <span class="menu-text">Reports</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Point Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/training/index.html" class="sidebar-item-text sidebar-link">
@@ -205,23 +231,23 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Methods and data locations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Workflow Documentation</span></a>
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../scope.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scope, Units, and Data Locations</span></a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -242,19 +268,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#december-2023-statewide-n2o-endpoint-rates" id="toc-december-2023-statewide-n2o-endpoint-rates" class="nav-link active" data-scroll-target="#december-2023-statewide-n2o-endpoint-rates">December 2023 statewide N<sub>2</sub>O endpoint rates</a></li>
-  <li><a href="#december-2023-statewide-ch4-endpoint-rates" id="toc-december-2023-statewide-ch4-endpoint-rates" class="nav-link" data-scroll-target="#december-2023-statewide-ch4-endpoint-rates">December 2023 statewide CH<sub>4</sub> endpoint rates</a></li>
-  <li><a href="#result-files-and-figures" id="toc-result-files-and-figures" class="nav-link" data-scroll-target="#result-files-and-figures">Result files and figures</a></li>
+  <li><a href="#nitrous-oxide-endpoint-rates" id="toc-nitrous-oxide-endpoint-rates" class="nav-link active" data-scroll-target="#nitrous-oxide-endpoint-rates">Nitrous-oxide endpoint rates</a></li>
+  <li><a href="#change-in-endpoint-rate-20162023" id="toc-change-in-endpoint-rate-20162023" class="nav-link" data-scroll-target="#change-in-endpoint-rate-20162023">Change in endpoint rate, 2016–2023</a></li>
+  <li><a href="#methane-and-complete-gas-accounting" id="toc-methane-and-complete-gas-accounting" class="nav-link" data-scroll-target="#methane-and-complete-gas-accounting">Methane and complete gas accounting</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Inventory</a></li><li class="breadcrumb-item"><a href="../reports/atlas_ghg_emissions.html">GHG</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_ghg_emissions.html">GHG Emissions (N₂O &amp; CH₄)</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">GHG Inventory</h1>
-<p class="subtitle lead">Nitrous oxide and methane endpoint rates</p>
+<h1 class="title">GHG Emissions Atlas</h1>
+<p class="subtitle lead">Historical Nitrous-Oxide Results and Gas-Accounting Scope</p>
 </div>
 
 
@@ -262,8 +288,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
              <p>Akash B V </p>
           </div>
   </div>
@@ -271,7 +298,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 27, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -283,93 +310,39 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>N<sub>2</sub>O and CH<sub>4</sub> fluxes complement the carbon-stock inventory. The reported inventory values are annualized December 2023 mean flux rates; they are not integrated annual emissions.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>The historical inventory reports nitrous-oxide and methane outputs as annualized December endpoint rates. These rates describe the model state at the endpoint; they are not calendar-year integrals or cumulative emissions over 2016–2023.</p>
+<section id="nitrous-oxide-endpoint-rates" class="level2">
+<h2 class="anchored" data-anchor-id="nitrous-oxide-endpoint-rates">Nitrous-oxide endpoint rates</h2>
+<div id="fig-inventory-n2o-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen rates for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-n2o-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-n2o-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: December 2023 annualized N2O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year."><img src="assets/carb-results/inventory-n2o-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen rates for annual and woody perennial crops"></a>
 </div>
-<div class="callout-title-container flex-fill">
-Warning
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-n2o-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: December 2023 annualized N<sub>2</sub>O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year.
+</figcaption>
+</figure>
 </div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Source values use N mass for N<sub>2</sub>O and C mass for CH<sub>4</sub>. Maps convert to gas mass using 44/28 and 16/12, respectively. Temporal changes in endpoint rates are not cumulative avoided emissions.</p>
-</div>
-</div>
-<section id="december-2023-statewide-n2o-endpoint-rates" class="level2">
-<h2 class="anchored" data-anchor-id="december-2023-statewide-n2o-endpoint-rates">December 2023 statewide N<sub>2</sub>O endpoint rates</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 26%">
-<col style="width: 26%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Crop class</th>
-<th style="text-align: right;">Fields</th>
-<th style="text-align: right;">Ensemble mean (kg N yr<sup>-1</sup>)</th>
-<th style="text-align: right;">Ensemble SD (kg N yr<sup>-1</sup>)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Annual crop</td>
-<td style="text-align: right;">169,587</td>
-<td style="text-align: right;">9.25 × 10<sup>6</sup></td>
-<td style="text-align: right;">8.28 × 10<sup>6</sup></td>
-</tr>
-<tr class="even">
-<td>Woody perennial crop</td>
-<td style="text-align: right;">215,647</td>
-<td style="text-align: right;">9.06 × 10<sup>6</sup></td>
-<td style="text-align: right;">7.99 × 10<sup>6</sup></td>
-</tr>
-</tbody>
-</table>
+<p>County totals reflect both the modeled per-hectare rate and the represented agricultural area. The annual and woody crop classes have similar ensemble-mean totals at the December 2023 endpoint, but the spatial distributions differ.</p>
 </section>
-<section id="december-2023-statewide-ch4-endpoint-rates" class="level2">
-<h2 class="anchored" data-anchor-id="december-2023-statewide-ch4-endpoint-rates">December 2023 statewide CH<sub>4</sub> endpoint rates</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 26%">
-<col style="width: 26%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Crop class</th>
-<th style="text-align: right;">Fields</th>
-<th style="text-align: right;">Ensemble mean (kg C yr<sup>-1</sup>)</th>
-<th style="text-align: right;">Ensemble SD (kg C yr<sup>-1</sup>)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Annual crop</td>
-<td style="text-align: right;">169,587</td>
-<td style="text-align: right;">3.66 × 10<sup>4</sup></td>
-<td style="text-align: right;">1.33 × 10<sup>5</sup></td>
-</tr>
-<tr class="even">
-<td>Woody perennial crop</td>
-<td style="text-align: right;">215,647</td>
-<td style="text-align: right;">2.44 × 10<sup>4</sup></td>
-<td style="text-align: right;">1.01 × 10<sup>5</sup></td>
-</tr>
-</tbody>
-</table>
-<p>Means and SDs are calculated after summing fields within each original member. <a href="https://ccmmf.github.io/calibration/reports/statewide_effects.html">Practice change effects</a> are reported separately from this inventory. No net CO<sub>2</sub>-equivalent practice benefit is estimated here.</p>
+<section id="change-in-endpoint-rate-20162023" class="level2">
+<h2 class="anchored" data-anchor-id="change-in-endpoint-rate-20162023">Change in endpoint rate, 2016–2023</h2>
+<div id="fig-inventory-n2o-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing change in annualized nitrous-oxide nitrogen rate from 2016 to 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-n2o-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-n2o-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Change in the annualized N2O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023."><img src="assets/carb-results/inventory-n2o-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing change in annualized nitrous-oxide nitrogen rate from 2016 to 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-n2o-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Change in the annualized N<sub>2</sub>O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023.
+</figcaption>
+</figure>
+</div>
+<p>Most represented counties show a higher modeled annualized endpoint rate in December 2023 than in January 2016. This is a change between two endpoint rates; it is not the total nitrogen emitted during the intervening years.</p>
 </section>
-<section id="result-files-and-figures" class="level2">
-<h2 class="anchored" data-anchor-id="result-files-and-figures">Result files and figures</h2>
-<p>The authoritative county totals, field densities, endpoint differences, and maps remain under:</p>
-<pre class="text"><code>/project/60007/dlebauer/inventory-downscaling-20260922/production/output_downscale/
-/project/60007/dlebauer/inventory-downscaling-20260922/production/figures/</code></pre>
-<p>See <a href="../scope.html">scope, units, and data locations</a> for coverage and interpretation boundaries.</p>
+<section id="methane-and-complete-gas-accounting" class="level2">
+<h2 class="anchored" data-anchor-id="methane-and-complete-gas-accounting">Methane and complete gas accounting</h2>
+<p>Historical methane endpoint estimates are small relative to ensemble variability and do not support a useful spatial map. For the future configurations, corrected statewide methane and complete annual gas series are not presented. The scenario report therefore shows annual native-N accounting for the reference and management configurations without combining it with soil-carbon stock changes or converting it to a partial CO<sub>2</sub>-equivalent total.</p>
+<p>See <a href="../reports/scenarios.html">Future Management and Climate Scenarios</a> for the annual N<sub>2</sub>O-N results.</p>
 
 
 </section>
@@ -782,12 +755,44 @@ Warning
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reports/atlas_biomass.html" class="pagination-link" aria-label="Biomass">
-        <span class="nav-page-text">Biomass</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reports/atlas_biomass.html" class="pagination-link" aria-label="Aboveground Biomass">
+        <span class="nav-page-text">Aboveground Biomass</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

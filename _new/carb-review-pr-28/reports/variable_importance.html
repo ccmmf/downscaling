@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta name="robots" content="noindex,nofollow">
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-09-27">
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-09-28">
 
-<title>Scope, Units, and Data Locations – MAGiC Downscaling</title>
+<title>Downscaling Model Evaluation – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -26,26 +25,29 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./docs/references.html" rel="next">
-<link href="./docs/workflow_documentation.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../docs/training/index.html" rel="next">
+<link href="../reports/design_point_validation.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -73,6 +75,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -86,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./docs/workflow_documentation.html">Methods and data locations</a></li><li class="breadcrumb-item"><a href="./scope.html">Scope, Units, and Data Locations</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/variable_importance.html">Downscaling Model Evaluation</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -101,7 +105,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">MAGiC Downscaling</a> 
+      <a href="../">MAGiC Downscaling</a> 
         <div class="sidebar-tools-main">
     <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
     <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
@@ -117,20 +121,14 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Home</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./reports/carb_review.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">CARB Review Draft</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Inventory</span></a>
+ <span class="menu-text">Map Atlas</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -138,46 +136,40 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Overview</span></a>
+  <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Results and Summary Tables</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Soil Carbon</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GHG</span></a>
+  <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Biomass</span></a>
+  <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aboveground Biomass</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./reports/scenarios.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scenarios</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
+ <span class="menu-text">Reports</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -185,20 +177,26 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/training/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Environment Setup</span></a>
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Downscaling</span></a>
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Point Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
   </div>
 </li>
       </ul>
@@ -206,7 +204,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Methods and data locations</span></a>
+ <span class="menu-text">Training</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -214,19 +212,48 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Workflow Documentation</span></a>
+  <a href="../docs/training/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./scope.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Scope, Units, and Data Locations</span></a>
+  <a href="../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment Setup</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/references.html" class="sidebar-item-text sidebar-link">
+  <a href="../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inventory Downscaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Technical Documentation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -242,21 +269,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#analytical-scope" id="toc-analytical-scope" class="nav-link active" data-scroll-target="#analytical-scope">Analytical scope</a></li>
-  <li><a href="#variables-estimands-and-units" id="toc-variables-estimands-and-units" class="nav-link" data-scroll-target="#variables-estimands-and-units">Variables, estimands, and units</a></li>
-  <li><a href="#ensemble-identity-and-comparison-support" id="toc-ensemble-identity-and-comparison-support" class="nav-link" data-scroll-target="#ensemble-identity-and-comparison-support">Ensemble identity and comparison support</a></li>
-  <li><a href="#input-and-interpretation-boundaries" id="toc-input-and-interpretation-boundaries" class="nav-link" data-scroll-target="#input-and-interpretation-boundaries">Input and interpretation boundaries</a></li>
-  <li><a href="#authoritative-result-locations" id="toc-authoritative-result-locations" class="nav-link" data-scroll-target="#authoritative-result-locations">Authoritative result locations</a></li>
-  <li><a href="#verification-summary" id="toc-verification-summary" class="nav-link" data-scroll-target="#verification-summary">Verification summary</a></li>
+  <li><a href="#out-of-bag-performance" id="toc-out-of-bag-performance" class="nav-link active" data-scroll-target="#out-of-bag-performance">Out-of-Bag Performance</a></li>
+  <li><a href="#variable-importance" id="toc-variable-importance" class="nav-link" data-scroll-target="#variable-importance">Variable Importance</a>
+  <ul class="collapse">
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  </ul></li>
+  <li><a href="#predictor-collinearity" id="toc-predictor-collinearity" class="nav-link" data-scroll-target="#predictor-collinearity">Predictor Collinearity</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./docs/workflow_documentation.html">Methods and data locations</a></li><li class="breadcrumb-item"><a href="./scope.html">Scope, Units, and Data Locations</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/variable_importance.html">Downscaling Model Evaluation</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Scope, Units, and Data Locations</h1>
+<h1 class="title">Downscaling Model Evaluation</h1>
+<p class="subtitle lead">Out-of-Bag Performance, Variable Importance, and Predictor Collinearity</p>
 </div>
 
 
@@ -266,14 +294,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>David LeBauer </p>
+             <p>Akash B V </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 27, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -285,142 +313,224 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="analytical-scope" class="level2">
-<h2 class="anchored" data-anchor-id="analytical-scope">Analytical scope</h2>
-<p>This package keeps three analytical products distinct.</p>
+<p>This page summarizes model diagnostics for the Random Forest downscaling models used to predict SIPNET outputs from 100 anchor sites to approximately 132,000 annual cropland fields. For ecological interpretation of predictor effects (ALE/ICE plots), see the <a href="../reports/atlas_model_drivers.html">Model Drivers</a> page.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Validation Status
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
+</div>
+</div>
+<section id="out-of-bag-performance" class="level2">
+<h2 class="anchored" data-anchor-id="out-of-bag-performance">Out-of-Bag Performance</h2>
+<p>Out-of-bag (OOB) R² measures how well each Random Forest predicts held-out training sites. It is computed separately for each of 20 ensemble members; the table shows the median and interquartile range. OOB R² is a conservative estimate of spatial predictive accuracy because it uses only the approximately one-third of training sites not included in each bootstrap sample (each bootstrap draws n with replacement from n, leaving ~37% out-of-bag).</p>
 <table class="caption-top table">
+<caption>Downscaling model performance summary. Values from 20-member ensemble Random Forests trained at 100 annual crop anchor sites.</caption>
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Product</th>
-<th>Spatial and temporal scope</th>
-<th>Primary comparison</th>
+<th>Variable</th>
+<th>Median OOB R²</th>
+<th>IQR</th>
+<th>Top 2 Predictors</th>
+<th>Assessment</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Historical inventory</td>
-<td>385,234 covered fields; county and state summaries; January 2016–December 2023</td>
-<td>December 2023 endpoint and December 2023 minus January 2016 change under recorded historical inputs</td>
+<td>N<sub>2</sub>O Flux</td>
+<td>0.52</td>
+<td>0.38–0.72</td>
+<td>vapr, temp</td>
+<td>Best spatial model</td>
 </tr>
 <tr class="even">
-<td>Practice change effects</td>
-<td>99 paired calibration design sites; 2016–2023; one fixed parameterization</td>
-<td>Practice minus control within the calibration analysis</td>
+<td>TotSoilCarb</td>
+<td>0.34</td>
+<td>0.26–0.41</td>
+<td>ocd, vapr</td>
+<td>Moderate</td>
 </tr>
 <tr class="odd">
-<td>Future scenarios</td>
-<td>385,234 covered fields; January 2024–December 2045; 20 original member identities</td>
-<td>Management, climate-model, and pathway configurations relative to the reference configuration</td>
+<td>AGB</td>
+<td>0.09</td>
+<td>-0.04–0.52</td>
+<td>precip, vapr</td>
+<td>Poor – high variance across ensembles</td>
+</tr>
+<tr class="even">
+<td>CH<sub>4</sub> Flux</td>
+<td>-0.15</td>
+<td>-0.17 to -0.13</td>
+<td><em>none meaningful</em></td>
+<td>No spatial signal (near-zero baseline)</td>
 </tr>
 </tbody>
 </table>
-<p>The inventory and scenario deliveries cover 3,485,601.6801 ha. Another 9,679 classified crop fields, representing 41,260.9767 ha, were excluded because required covariates were absent. The reported values are therefore covered-area results, not complete California totals.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>CH<sub>4</sub> Model Has No Predictive Skill
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Non-flooded annual croplands produce negligible CH<sub>4</sub> in SIPNET because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. The statewide baseline is approximately 14,000 kg CH<sub>4</sub> yr⁻¹ – effectively zero. With no spatial variation in the training data, the Random Forest cannot distinguish signal from noise. The negative R² confirms the model performs worse than predicting the mean. CH<sub>4</sub> importance rankings and ALE/ICE plots reflect noise, not ecology. Meaningful CH<sub>4</sub> fluxes are expected when rice paddies are included in future model runs.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>AGB Model Quality
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The AGB model’s wide IQR (-0.04 to 0.52) across ensembles means some ensemble members have no spatial predictive power while others are moderate. This inconsistency should be considered when interpreting AGB spatial maps. The low and variable R² likely reflects the fact that annual crop AGB at the modeled time point is small (post-harvest residue) and may not vary systematically with the environmental covariates used here.</p>
+</div>
+</div>
 </section>
-<section id="variables-estimands-and-units" class="level2">
-<h2 class="anchored" data-anchor-id="variables-estimands-and-units">Variables, estimands, and units</h2>
+<section id="variable-importance" class="level2">
+<h2 class="anchored" data-anchor-id="variable-importance">Variable Importance</h2>
+<p>Variable importance is measured as the increase in mean squared error (MSE) when each predictor is randomly permuted while all others are held constant. Higher values indicate the model depends more on that variable for accurate predictions. Importance is summarized as the median across 20 ensemble members; error bars in the figure show the IQR.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../figures/variable_importance_summary.png" class="lightbox" data-gallery="varimp" title="Variable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members."><img src="../figures/variable_importance_summary.png" class="img-fluid figure-img" style="width:100.0%" alt="Variable importance dotchart for TotSoilCarb, AGB, N2O, and CH4 showing ocd and vapr as top soil carbon predictors, vapr and temp as top N2O predictors"></a></p>
+<figcaption>Variable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members.</figcaption>
+</figure>
+</div>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
+<caption>Top 4 predictors by median increase in MSE for each variable. N<sub>2</sub>O and CH<sub>4</sub> importance values are near-zero in absolute terms due to the scale of the response; relative rankings are meaningful for N<sub>2</sub>O but not for CH<sub>4</sub>.</caption>
 <thead>
 <tr class="header">
-<th>Result</th>
-<th>Native quantity and unit</th>
-<th>Time basis</th>
-<th>Interpretation</th>
+<th style="text-align: center;">Rank</th>
+<th>TotSoilCarb</th>
+<th>AGB</th>
+<th>N<sub>2</sub>O Flux</th>
+<th>CH<sub>4</sub> Flux</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Inventory TotSoilCarb</td>
-<td>Mg C; Mg C ha<sup>-1</sup></td>
-<td>January 2016 and December 2023 monthly means</td>
-<td>Carbon stock; endpoint difference is not an annual rate or a causal practice effect</td>
+<td style="text-align: center;">1</td>
+<td>ocd (18.4)</td>
+<td>precip (9.7)</td>
+<td>vapr</td>
+<td><em>all near 0</em></td>
 </tr>
 <tr class="even">
-<td>Inventory AGB</td>
-<td>Mg C; Mg C ha<sup>-1</sup></td>
-<td>January 2016 and December 2023 monthly means</td>
-<td>Standing aboveground biomass carbon, not dry biomass or harvested yield</td>
+<td style="text-align: center;">2</td>
+<td>vapr (12.8)</td>
+<td>vapr (8.7)</td>
+<td>temp</td>
+<td><em>all near 0</em></td>
 </tr>
 <tr class="odd">
-<td>Inventory N<sub>2</sub>O flux</td>
-<td>kg N yr<sup>-1</sup>; kg N ha<sup>-1</sup> yr<sup>-1</sup></td>
-<td>Annualized monthly endpoint rate</td>
-<td>Source tables retain N mass; maps use N<sub>2</sub>O mass after multiplying by 44/28; not integrated annual emissions</td>
+<td style="text-align: center;">3</td>
+<td>temp (12.0)</td>
+<td>ocd (7.9)</td>
+<td>precip</td>
+<td><em>all near 0</em></td>
 </tr>
 <tr class="even">
-<td>Inventory CH<sub>4</sub> flux</td>
-<td>kg C yr<sup>-1</sup>; kg C ha<sup>-1</sup> yr<sup>-1</sup></td>
-<td>Annualized monthly endpoint rate</td>
-<td>Source tables retain C mass; maps use CH<sub>4</sub> mass after multiplying by 16/12; not integrated annual emissions</td>
-</tr>
-<tr class="odd">
-<td>Scenario soil carbon</td>
-<td>Mg C, Tg C, and Mg C ha<sup>-1</sup></td>
-<td>December 2045 monthly mean minus January 2024 monthly mean</td>
-<td>Stock response over the full window; not an annual SOC series</td>
-</tr>
-<tr class="even">
-<td>Scenario annual N</td>
-<td>kg N and kg N ha<sup>-1</sup> per calendar year</td>
-<td>Monthly model-defined N<sub>2</sub>O-N integrated within each year</td>
-<td>Audited statewide series currently covers reference and management only</td>
-</tr>
-<tr class="odd">
-<td>Bounded scenario CH<sub>4</sub></td>
-<td>kg CH<sub>4</sub>-C ha<sup>-1</sup> and kg CH<sub>4</sub> ha<sup>-1</sup></td>
-<td>One site/member crop window in 2028</td>
-<td>Scale diagnostic only; not statewide or a recurring annual series</td>
+<td style="text-align: center;">4</td>
+<td>precip (6.9)</td>
+<td>temp (7.4)</td>
+<td>srad</td>
+<td><em>all near 0</em></td>
 </tr>
 </tbody>
 </table>
-<p>No combined CO<sub>2</sub>-equivalent balance is reported. The available member p05 and p95 values describe empirical spread across the 20 original members; they are not observational confidence intervals or complete uncertainty bounds.</p>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
+<p><strong>Soil carbon</strong> is most strongly driven by existing organic carbon density (ocd), which is both a predictor and correlated with the output. This reflects the well-known positive feedback between soil organic matter and further C retention – SOM persistence is controlled by environmental and biological interactions rather than molecular recalcitrance alone (Schmidt et al.&nbsp;2011, Nature). Climate variables (vapr, temp) rank second and third, capturing the temperature-driven decomposition gradient across California.</p>
+<p><strong>N<sub>2</sub>O flux</strong> is driven by climate variables (vapr, temp, precip), consistent with the well-established temperature and moisture sensitivity of soil nitrification and denitrification processes (Butterbach-Bahl et al.&nbsp;2013, Philosophical Transactions of the Royal Society B). The dominance of vapor pressure likely reflects its strong correlation with temperature (r = 0.86); together they capture the north-south climate gradient that controls soil moisture availability for N-cycling microbes.</p>
+<p><strong>AGB</strong> shows precipitation and vapor pressure as top predictors, consistent with water availability limiting annual crop productivity in California’s Mediterranean climate. However, the low and variable R² means these relationships are not reliably captured.</p>
+<p><strong>CH<sub>4</sub> flux</strong> shows no meaningful importance for any predictor, confirming the training data contains no spatial signal for the model to learn.</p>
 </section>
-<section id="ensemble-identity-and-comparison-support" class="level2">
-<h2 class="anchored" data-anchor-id="ensemble-identity-and-comparison-support">Ensemble identity and comparison support</h2>
-<p>Inventory fields are summed within each original ensemble member before state or county means and SDs are calculated. This preserves the dependence among fields generated from the same member.</p>
-<p>The four scenario arms retain the same 20 member identifiers but have different successful site/member masks. Contrasts use the original member identity and common successful support: 19,115 pairs for management minus reference and 19,252 pairs for each of model minus reference and pathway minus reference. Because the arms were fitted independently, these are not matched-pair downscaling refits.</p>
 </section>
-<section id="input-and-interpretation-boundaries" class="level2">
-<h2 class="anchored" data-anchor-id="input-and-interpretation-boundaries">Input and interpretation boundaries</h2>
+<section id="predictor-collinearity" class="level2">
+<h2 class="anchored" data-anchor-id="predictor-collinearity">Predictor Collinearity</h2>
+<p>The environmental predictors are correlated due to California’s climate gradients. High collinearity does not bias Random Forest predictions, but it does affect the interpretability of individual predictor importance: when two predictors are correlated, their importance is split between them, and their individual rankings become unstable. This is why we use ALE plots (which handle correlated predictors correctly) rather than Partial Dependence Plots for ecological interpretation.</p>
+<table class="caption-top table">
+<caption>Pairwise Pearson correlations among the seven environmental predictors with |r| &gt; 0.30. Computed from 377,807 cropland fields (all crop types) in the CADWR dataset. Values are similar for the approximately 132,000 annual cropland subset because the correlations reflect California’s climate geography, not crop type.</caption>
+<thead>
+<tr class="header">
+<th>Predictor Pair</th>
+<th>Pearson r</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>temp – vapr</td>
+<td>+0.86</td>
+<td>Strong</td>
+</tr>
+<tr class="even">
+<td>precip – srad</td>
+<td>-0.86</td>
+<td>Strong</td>
+</tr>
+<tr class="odd">
+<td>srad – vapr</td>
+<td>+0.58</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>temp – precip</td>
+<td>-0.56</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>ocd – vapr</td>
+<td>-0.55</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>temp – srad</td>
+<td>+0.54</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>precip – vapr</td>
+<td>-0.52</td>
+<td>Moderate</td>
+</tr>
+<tr class="even">
+<td>ocd – srad</td>
+<td>-0.53</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>ocd – precip</td>
+<td>+0.49</td>
+<td>Moderate</td>
+</tr>
+</tbody>
+</table>
+<p>The two strongest correlations – temp/vapr and precip/srad – reflect California’s dominant climate gradients:</p>
 <ul>
-<li>The frozen historical ensemble remains conditional on the recorded management inputs. An upstream planting parcel-assignment issue is unresolved; repairing missing dates does not establish that every date was assigned to the correct parcel.</li>
-<li>The full inventory pipeline passed row-count, key, finiteness, endpoint, and field-to-county-to-state reconciliation checks. Those checks establish computational consistency, not agreement with observations.</li>
-<li>Original scenario gas outputs are January 2024 and December 2045 annualized endpoint rates. Only the reference and management annual native-N series has been assembled and audited for this draft.</li>
-<li>The bounded CH<sub>4</sub> result cannot be extrapolated to fields, counties, the state, other members, or other years.</li>
-<li>Practice change effects are reported in <a href="https://github.com/ccmmf/calibration/pull/6">calibration PR #6</a> and its <a href="https://ccmmf.github.io/calibration/reports/statewide_effects.html">rendered report</a>. They are not statewide downscaled adoption benefits.</li>
+<li><strong>Temperature and vapor pressure</strong> (r = 0.86): Both increase from north to south along the Central Valley. This means the downscaling model cannot fully distinguish whether soil carbon losses or N<sub>2</sub>O increases in warmer areas are driven by temperature per se or by the correlated increase in atmospheric moisture demand.</li>
+<li><strong>Precipitation and solar radiation</strong> (r = -0.86): Wetter areas (north coast, Sierra foothills) receive less direct solar radiation. This inverse relationship reflects the basic climate physics of cloud cover and California’s coastal-inland gradient.</li>
 </ul>
-</section>
-<section id="authoritative-result-locations" class="level2">
-<h2 class="anchored" data-anchor-id="authoritative-result-locations">Authoritative result locations</h2>
-<p>Result CSVs, figures, model objects, and validation records are not copied into this documentation repository.</p>
-<p>Historical inventory products remain on NCSA storage at:</p>
-<pre class="text"><code>/project/60007/dlebauer/inventory-downscaling-20260922/production/</code></pre>
-<p>The inventory state, county, and field summaries are under:</p>
-<pre class="text"><code>/project/60007/dlebauer/inventory-downscaling-20260922/production/output_downscale/</code></pre>
-<p>Inventory figures are under:</p>
-<pre class="text"><code>/project/60007/dlebauer/inventory-downscaling-20260922/production/figures/</code></pre>
-<p>Scenario products remain on Delta at:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/</code></pre>
-<p>The scenario field summaries are under:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/downscaling/{reference,management,model,pathway}/outputs/</code></pre>
-<p>The audited annual reference and management gas products are under:</p>
-<pre class="text"><code>/work/hdd/bgat/dlebauer/projections-20260925/results/production/{reference,management}/</code></pre>
-<p>These storage locations, rather than GitHub copies, are authoritative for result files. A portable archive can be prepared separately if reviewers need access without NCSA or Delta credentials.</p>
-</section>
-<section id="verification-summary" class="level2">
-<h2 class="anchored" data-anchor-id="verification-summary">Verification summary</h2>
-<p>Historical inventory validation accounted for 1,000 sites, 20 members, 7,680,000 monthly records, 385,234 predicted fields, and 30,818,720 rows in each field-level endpoint product. County and state totals reconciled with field area-weighted values at 1e-10 relative tolerance.</p>
-<p>Scenario delivery validation recorded 76,998 successful simulations and 1,542 explicit failures. Each of the four downscaled configurations contains 30,818,720 prediction rows and 30,818,720 endpoint-difference rows.</p>
+<p>These collinearities are an inherent feature of California’s climate geography, not a modeling artifact. They should be kept in mind when interpreting individual predictor effects in the <a href="../reports/atlas_model_drivers.html">Model Drivers</a> plots.</p>
 
 
 </section>
@@ -828,17 +938,49 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./docs/workflow_documentation.html" class="pagination-link" aria-label="Workflow Documentation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Workflow Documentation</span>
+      <a href="../reports/design_point_validation.html" class="pagination-link" aria-label="Design Point Validation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Design Point Validation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./docs/references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../docs/training/index.html" class="pagination-link" aria-label="Overview">
+        <span class="nav-page-text">Overview</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

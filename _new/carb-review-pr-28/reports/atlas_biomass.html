@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta name="robots" content="noindex,nofollow">
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-27">
+<meta name="dcterms.date" content="2026-09-28">
 
-<title>Biomass Inventory – MAGiC Downscaling</title>
+<title>Biomass Atlas – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,7 +33,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../reports/scenarios.html" rel="next">
+<link href="../reports/atlas_model_drivers.html" rel="next">
 <link href="../reports/atlas_ghg_emissions.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -46,6 +46,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -86,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Inventory</a></li><li class="breadcrumb-item"><a href="../reports/atlas_biomass.html">Biomass</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_biomass.html">Aboveground Biomass</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -121,16 +124,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/carb_review.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">CARB Review Draft</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Inventory</span></a>
+ <span class="menu-text">Map Atlas</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -139,13 +136,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Inventory Overview</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Results and Summary Tables</span></a>
+ <span class="menu-text">Overview &amp; Key Findings</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -157,32 +148,67 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">GHG</span></a>
+ <span class="menu-text">GHG Emissions (N₂O &amp; CH₄)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Biomass</span></a>
+ <span class="menu-text">Aboveground Biomass</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scenarios</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Training</span></a>
+ <span class="menu-text">Reports</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Point Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/training/index.html" class="sidebar-item-text sidebar-link">
@@ -205,23 +231,23 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Methods and data locations</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Workflow Documentation</span></a>
+ <span class="menu-text">Technical Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../scope.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Scope, Units, and Data Locations</span></a>
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -242,18 +268,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#december-2023-statewide-totals" id="toc-december-2023-statewide-totals" class="nav-link active" data-scroll-target="#december-2023-statewide-totals">December 2023 statewide totals</a></li>
-  <li><a href="#result-files-and-figures" id="toc-result-files-and-figures" class="nav-link" data-scroll-target="#result-files-and-figures">Result files and figures</a></li>
+  <li><a href="#county-aboveground-biomass" id="toc-county-aboveground-biomass" class="nav-link active" data-scroll-target="#county-aboveground-biomass">County aboveground biomass</a></li>
+  <li><a href="#field-biomass-density" id="toc-field-biomass-density" class="nav-link" data-scroll-target="#field-biomass-density">Field biomass density</a></li>
+  <li><a href="#biomass-change-20162023" id="toc-biomass-change-20162023" class="nav-link" data-scroll-target="#biomass-change-20162023">Biomass change, 2016–2023</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Inventory</a></li><li class="breadcrumb-item"><a href="../reports/atlas_biomass.html">Biomass</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_biomass.html">Aboveground Biomass</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Biomass Inventory</h1>
-<p class="subtitle lead">Aboveground biomass carbon for annual and woody crops</p>
+<h1 class="title">Biomass Atlas</h1>
+<p class="subtitle lead">Historical Aboveground Biomass, 2016–2023</p>
 </div>
 
 
@@ -261,8 +288,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
              <p>Akash B V </p>
           </div>
   </div>
@@ -270,7 +298,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 27, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -282,41 +310,48 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Aboveground biomass (AGB) represents the carbon mass of living plant material above the soil surface. For annual crops, AGB is a snapshot of standing biomass at the modeled time point. It is not harvested yield or dry biomass. Seasonal harvest and woody structure affect this quantity differently, so the two crop classes are reported separately.</p>
-<section id="december-2023-statewide-totals" class="level2">
-<h2 class="anchored" data-anchor-id="december-2023-statewide-totals">December 2023 statewide totals</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Crop class</th>
-<th style="text-align: right;">Fields</th>
-<th style="text-align: right;">Ensemble mean (Mg C)</th>
-<th style="text-align: right;">Ensemble SD (Mg C)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Annual crop</td>
-<td style="text-align: right;">169,587</td>
-<td style="text-align: right;">4.64 × 10<sup>3</sup></td>
-<td style="text-align: right;">5.91 × 10<sup>3</sup></td>
-</tr>
-<tr class="even">
-<td>Woody perennial crop</td>
-<td style="text-align: right;">215,647</td>
-<td style="text-align: right;">1.15 × 10<sup>6</sup></td>
-<td style="text-align: right;">3.15 × 10<sup>5</sup></td>
-</tr>
-</tbody>
-</table>
-<p>Means and SDs are calculated after summing field stocks within each original ensemble member. December 2023 minus January 2016 describes the inventory trajectory, not a management-practice effect.</p>
+<p>Aboveground biomass is the modeled carbon stock in living plant material above the soil surface. December values are endpoint snapshots rather than annual production totals. Annual-crop biomass is small at the endpoint because harvest removes much of the standing crop; woody perennial crops retain substantially more biomass.</p>
+<section id="county-aboveground-biomass" class="level2">
+<h2 class="anchored" data-anchor-id="county-aboveground-biomass">County aboveground biomass</h2>
+<div id="fig-inventory-biomass-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.
+</figcaption>
+</figure>
+</div>
+<p>Woody perennial biomass is concentrated in the Central Valley and other orchard-producing regions. Annual-crop endpoint totals are much smaller and should be interpreted as standing biomass at the December endpoint, not annual harvested production.</p>
 </section>
-<section id="result-files-and-figures" class="level2">
-<h2 class="anchored" data-anchor-id="result-files-and-figures">Result files and figures</h2>
-<p>The authoritative county totals, field densities, endpoint differences, and maps remain under:</p>
-<pre class="text"><code>/project/60007/dlebauer/inventory-downscaling-20260922/production/output_downscale/
-/project/60007/dlebauer/inventory-downscaling-20260922/production/figures/</code></pre>
-<p>See <a href="../scope.html">scope, units, and data locations</a> for coverage and interpretation boundaries.</p>
+<section id="field-biomass-density" class="level2">
+<h2 class="anchored" data-anchor-id="field-biomass-density">Field biomass density</h2>
+<div id="fig-inventory-biomass-field" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-field.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-field.webp" class="img-fluid figure-img" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops.
+</figcaption>
+</figure>
+</div>
+<p>The field maps separate per-hectare modeled biomass from the amount of agricultural area within a county. Woody perennial fields have higher endpoint densities than annual-crop fields across most represented regions.</p>
+</section>
+<section id="biomass-change-20162023" class="level2">
+<h2 class="anchored" data-anchor-id="biomass-change-20162023">Biomass change, 2016–2023</h2>
+<div id="fig-inventory-biomass-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint."><img src="assets/carb-results/inventory-biomass-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint.
+</figcaption>
+</figure>
+</div>
+<p>The historical endpoint comparison is predominantly negative, particularly for woody perennial crops in parts of the Central Valley. These changes describe modeled endpoint stocks and should not be interpreted as harvested yield or cumulative production.</p>
 
 
 </section>
@@ -724,17 +759,49 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link" aria-label="GHG">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GHG</span>
+      <a href="../reports/atlas_ghg_emissions.html" class="pagination-link" aria-label="GHG Emissions (N₂O &amp; CH₄)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GHG Emissions (N₂O &amp; CH₄)</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reports/scenarios.html" class="pagination-link" aria-label="Scenarios">
-        <span class="nav-page-text">Scenarios</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reports/atlas_model_drivers.html" class="pagination-link" aria-label="Model Drivers">
+        <span class="nav-page-text">Model Drivers</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
