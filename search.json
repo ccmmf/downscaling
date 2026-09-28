@@ -1,5 +1,126 @@
 [
   {
+    "objectID": "docs/mixed_system_prototype.html",
+    "href": "docs/mixed_system_prototype.html",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "",
+    "text": "This document presents a prototype workflow for modeling croplands with multiple crops (“mixed cropping systems”).",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#challenge",
+    "href": "docs/mixed_system_prototype.html#challenge",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Challenge",
+    "text": "Challenge\nCARB identifies multiple practices from the Healthy Soils Program (https://www.cdfa.ca.gov/oars/healthysoils/) that rely on mixed cropping systems—such as hedgerows, orchard ground cover, windbreaks, riparian buffers, intercropping, and cover-crop mixtures (CARB, 2022 and Appendix Table 3).\nIt is important to be able to represent scenarios that contain multiple crops at the same time. The challenge is that SIPNET simulates only one Plant Functional Type (PFT) - a standard approach used in many land surface, biogeochemistry, and crop models.",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#approach",
+    "href": "docs/mixed_system_prototype.html#approach",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Approach",
+    "text": "Approach\n\nContext\nHere we consider methods of simulating cropping systems where two ecophysiologically distinct PFTs are present at the same time. These include woody buffers and orchards with ground cover. Here, ecophysiologically distinct means that the two PFTs have different growth forms (woody vs herbaceous) and/or phenology (perennial vs annual).\nWe do not consider mixtures of plant species that are similar enough to represent as a single PFT, including cover crop mixtures and agroforestry. We note that the approach described below could be applied to these practices, and this will be considered if the additional complexity can be justified by potential reduction in uncertainty.\nWe also do not consider practices in which different crops are planted in sequence. These include crop rotations, cover crops, and land use change. These scenarios can be represented as sequential model runs that change PFTs while maintaining a continuously evolving system state.\n\n\nAlgorithm\nThe general approach for combining multiple PFTs into an aggregate estimate of carbon pool size (and later, GHG fluxes) is to:\n\nRun SIPNET separately for each PFT.\nCombine the model outputs from the individual PFT.\n\nTechnical details of these steps are described in more detail below.\n\nInitial Conditions Generation (IC)\n\nRun once for each PFT at each site.\nMeteorology and soil initial conditions:\n\nUse the same meteorological driver data (ERA5 ensemble).\nUse the same soil texture and soil organic carbon.\n\nSettings File:\n\nFor each mixed site, create a separate configuration file for each PFT; append -PFT to the site ID.\n\nFor herbaceous crops:\n\nAnnual herbaceous: assume start with bare ground (zero biomass).\nPerennial herbaceous: start as bare ground run; consider methods for estimating initial biomass in later iterations.\n\nFor woody crops:\n\nGenerate initial conditions.\n\n\n\n\nModel Execution\n\nExecute PEcAn SIPNET model independently for each PFT and site combination.\n\nUse ensemble methods to propagate uncertainty and variance in model parameters, meteorological drivers and initial conditions.\n\nFollowing PEcAn convention, netCDFs will be in out/ENS-{ensemble_number}-{site_id}-{pft}.\n\n\n\nPost-processing Outputs\n\nCombine outputs: For each mixed site, combine model outputs using one of the approaches defined below.\nStandardize Results: Outputs are formatted into ensemble files (combined_ensemble_output.csv) for downstream analysis and visualization.\n\n\n\nDownscaling and Analysis\n\nDownscaling:\n\nApply machine learning models trained separately for each PFT to downscale outputs.\nCombine downscaled outputs using one of the methods described below.\n\nAnalysis:\n\nCalibrate using site level mixtures.\nValidate against downscaled outputs.\n\n\n\n\n\nMixture Methods\nThese formulas are implemented in combine_mixed_crops(). This function expects additive quantities per unit area (stocks or flux totals already integrated over a defined time step.\n\nTwo Cases for Mixed Cropping Systems: Discrete and Overlap\nIn a mixed cropping system, we define \\(f_{woody}\\) and \\(f_{annual}\\) as the percent contribution of a crop or plant functional type to ecosystem dynamics. This contribution is not “canopy cover” since that changes over time. Think of this as “percent of a monoculture”. This method will build on SIPNET’s single PFT design - the outputs from two separate single PFT runs simulate will be combined.\n\n\n\nTable 1: Methods for combining two plant functional types (PFTs) in mixed cropping systems.\n\n\n\n\n\n\n\n\n\n\n\nExample System\nScenario\nMethod\nEqn.\n\n\n\n\nAnnual Crops + Woody Hedgerow\nDiscrete\nWeighted Average\n1\n\n\nOrchard + Ground Cover\nOverlap\nIncremental\n2\n\n\n\n\n\n\nNotation\nWe define the following values:\n\n\\(X\\) is the carbon stock (AGB or SOC).\nFor a finite time interval \\(\\Delta t\\) starting at \\(t_0\\) (the start of the simulation) the change is \\(\\Delta X_{\\Delta t} = X(t_0 + \\Delta t) - X(t_0)\\).\n\\(f_{woody}\\) and \\(f_{annual}\\) are the fractional contributions of each PFT to ecosystem dynamics. In the case of the discrete method, these represent cover and sum to 1. In the overlap case, \\(f_{woody} = 1\\) and \\(f_{annual} &lt; 1\\).\n\n\n\nScenario 1: Discrete (Weighted)\nFor the Discrete case, we use a Weighted Average approach (Equation 1).\nThe Discrete case refers to mixed systems where the two different crops do not overlap. This covers two key scenarios: 1) each PFT occupies a distinct zones such as an annual crop with woody hedgerows or 2) a mixture of annuals. In this annual mixture case, the approach assumes that the plants do not overlap - even though this is not the case, it is a reasonable simplification. In the discrete case, the field scale ecosystem dynamics are approximated by weighting SIPNET outputs by the fractional area of each crop type within a field: \\[\nX_{\\textrm{site}} = f_{\\textrm{woody}}\\cdot X_{\\textrm{woody}} + f_{\\textrm{annual}}\\cdot X_{\\textrm{annual}}\n\\tag{1}\\]\n\n\nScenario 2: Overlap\nFor the Overlap case, we use an Incremental approach (Equation 2).\nThis scenario applies when a ground cover is added to an existing orchard orchard. We set \\(f_\\textrm{woody} = 1\\), reflecting the assumption that the addition of ground cover does not reduce the contribution of the woody species to ecosystem dynamics. Lowering this fraction below 1 at the moment of planting would represent an unrealistic scenario in which adding ground cover also reduced standing orchard biomass and associated impact of the woody species on ecosystem function. When woody biomass removal occurs, it is represented as a distinct harvest event.\nThe contribution of the ground cover is added incrementally to the system. The parameter \\(f_\\text{annual}\\) represents the “ecosystem impact factor” - the fraction of a monoculture’s influence on ecosystem functioning that the ground cover contributes to this mixed system.\nThis factor is always less than 1 (\\(f_\\textrm{annual} &lt; 1\\)), as it accounts for both the percent of area covered by the ground cover and the reduction in its ecosystem impact due to competition for light and other resources.\nThus, when ground cover is added, it is treated as an addition to the ecosystem, and the orchard (woody monoculture) is assumed to remain unchanged.\n\\[\nX_\\textrm{site} = X_\\textrm{woody} + f_\\textrm{annual}\\cdot\\Delta X_\\textrm{annual}\n\\tag{2}\\]",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#demonstration",
+    "href": "docs/mixed_system_prototype.html#demonstration",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Demonstration",
+    "text": "Demonstration\nHere we illustrate this approach using the orchard + ground cover and annual crop + hedgerows scenarios.\nWe consider a set of mixtures used in the examples and figures below (Table 2); the percent columns indicate the fractional contribution of each Plant Functional Type (PFT).\n\n\n\nTable 2: Set of mixture scenarios used for demonstration.\n\n\n\n\n\n\n\n\n\n\n\nScenario\nWoody (%)\nAnnual (%)\nMethod\n\n\n\n\n100% woody perennial\n100\n0\nmonoculture\n\n\n100% annual herbaceous\n0\n100\nmonoculture\n\n\nOrchard + 25% herbaceous ground cover\n100\n25\noverlap\n\n\nOrchard + 50% herbaceous ground cover\n100\n50\noverlap\n\n\nAnnual crop + 25% woody hedgerows\n25\n75\ndiscrete\n\n\nAnnual crop + 50% woody hedgerows\n50\n50\ndiscrete",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#illustrative-examples",
+    "href": "docs/mixed_system_prototype.html#illustrative-examples",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Illustrative Examples",
+    "text": "Illustrative Examples\n\nRun Configuration\nThese runs use SIPNET grass and temperate deciduous PFT parameterizations to represent annual and perennial woody crops, respectively.\nThese simulations were run from 2016 through 2024 across 10 sites, with an ensemble size of 20.",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#mixed-system-dataset",
+    "href": "docs/mixed_system_prototype.html#mixed-system-dataset",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Mixed-system dataset",
+    "text": "Mixed-system dataset\nThe combined_ensemble_output.csv file contains the combined outputs for different scenarios (discrete, overlap).",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#county-comparisons-on-woody-sites-downscaled",
+    "href": "docs/mixed_system_prototype.html#county-comparisons-on-woody-sites-downscaled",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "County Comparisons on Woody Sites (Downscaled)",
+    "text": "County Comparisons on Woody Sites (Downscaled)\nThis section compares three treatment scenarios on the same set of woody sites using the downscaled outputs:\n\n100% woody (baseline)\n100% woody + 50% annual (overlap)\n100% annual (counterfactual on woody sites)\n\nSelecting Representative Sites\nNext we select representative sites based on their productivity. We use AGB in the 100% woody scenario as an indicator of productivity. We select sites that are near the 15th, 50th, and 85th percentiles of AGB and categorize them as low, medium, and high productivity.\n\nSummary Statistics\n\n\n\nCarbon Pool Sizes For Different Mixture Types\nWhat we expect to see here:\n\nDiscrete mixtures: Carbon pools scale approximately as the fractional (area) weighted average of the two monocultures.\nOverlap mixtures: Pools are dominated by the woody monoculture plus a modest incremental contribution from the annual component. \n\n\n\nEffect Size (Final Year AGB and SOC Compared to Annual Monoculture)\nThese plots show the change in carbon pool sizes for each mixture compared to the annual monoculture baselines. Because we are considering the healthy soils practice of adding a woody component like a hedgerow to an annual cropping system, we use annual monoculture as the point of comparison.",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#effect-on-county-level-carbon-stocks",
+    "href": "docs/mixed_system_prototype.html#effect-on-county-level-carbon-stocks",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Effect on County Level Carbon Stocks",
+    "text": "Effect on County Level Carbon Stocks\nHere we present county-level maps showing the impact of adding 50% ground cover to orchards on carbon stocks and densities. Positive values indicate an increase relative to woody-only.\nThese maps are generated from the downscaled outputs presented on the Downscaling Results page.\n\nChange in Carbon Stocks (Tg):\n\n\n\n\nChange in Carbon Density (Mg/ha):",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#other-approaches-considered",
+    "href": "docs/mixed_system_prototype.html#other-approaches-considered",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Other Approaches Considered",
+    "text": "Other Approaches Considered\nWe evaluated several alternative approaches for representing mixed cropping systems:\n\nFractional coverage approach (mosaic / tiling) Each PFT is simulated separately and then combined by fractional area weighting (Li & Arora, 2011). This is the “Discrete” method described above (Equation 1).\nComposite PFT approach A new parameter set is defined to represent the mixture as a single “composite” PFT (e.g., DayCent: Parton et al., 1998).\n\nVegetation demography approach Individual or cohort based models explicitly represent competition for light and resources among PFTs, as well as disturbance and successional dynamics (Fisher et al., 2018).\n\nLimitations:\n\nComposite PFTs: By lumping mixture components into a single parameterization prevents explicit evaluation of the incremental contribution of individual PFTs - it would be harder to compare an orchard monoculture to an orchard+ground cover system. It can also bias estimates of pools and fluxes relative to the weighted mixture model (Li & Arora, 2011).\nFractional weighting: While more realistic, this approach requires careful treatment of long-lived pools (e.g., soil organic carbon, woody biomass). If the PFTs share a common soil, raw stocks cannot be summed without double-counting; instead, \\(\\Delta\\) stocks relative to a common baseline (or shared-pool formulations) should be aggregated - as is done in the “Overlap” method above (Equation 2).\nDemography models provide mechanistic representation of competition but impose higher computational costs and require additional data and parameterizations (Fisher et al., 2018; Fisher & Koven, 2020).",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#references",
+    "href": "docs/mixed_system_prototype.html#references",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "References",
+    "text": "References\nCARB (2022). Draft 2022 Scoping Plan for Achieving Carbon Neutrality. https://ww2.arb.ca.gov/sites/default/files/2022-09/2022-draft-sp-appendix-b-draft-ea-recirc.pdf\nFisher and Koven, 2020. Perspectives on the future of land surface models and the challenges of representing complex terrestrial systems. JAMES 12, e2018MS001453. https://doi.org/10.1029/2018MS001453\nFisher et al., 2018. Vegetation demographics in Earth system models: a review of progress and priorities. Global Change Biol. 24, 35–54. https://doi.org/10.1111/gcb.13910\nLi, R., Arora, V.K., 2011. Effect of mosaic representation of vegetation in land surface schemes on simulated energy and carbon balances. https://doi.org/10.5194/bgd-8-5849-2011",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
+    "objectID": "docs/mixed_system_prototype.html#appendix",
+    "href": "docs/mixed_system_prototype.html#appendix",
+    "title": "Mixed-System Prototype (Two-PFT Aggregation)",
+    "section": "Appendix",
+    "text": "Appendix\n\nHealthy Soils Practices and Model Representation\n\n\n\nTable 3: Healthy Soils Program practices, model representation, and priority for implementation in SIPNET.\n\n\n\n\n\n\n\n\n\n\n\n\nAgronomic Practice\nModel Representation\nExpected GHG Impact on State GHG Inventory\nExpected Adoption (CARB 2022 Scoping Plan)\nPriority\n\n\n\n\nCover Crops\nPlanting/harvest like commodity; PFT/mixture params.\nHigh\nHigh\nHigh\n\n\nNon-Crop Carbon Amendments (manure/compost)\nAdd surface C & organic N (low C:N litter analog).\nHigh\nHigh\nHigh\n\n\nN Fertilization\nIncrease soil inorganic N pools.\nHigh\nHigh\nHigh\n\n\nTransition to Certified Organic\nComposite of shifts (fertility, amendments, tillage).\nHigh\nHigh\nHigh\n\n\nNo-till / Reduced till\nLower decomposition pulses (freq & magnitude).\nHigh\nMedium\nHigh\n\n\nPolycultures / Mixtures\nIndependent PFT runs; combine by fractional contribution.\nMedium\nMedium\nMedium\n\n\n(Water management placeholder)\nIncrease soil water content.\nHigh\n\n\n\n\nAnnual → Perennial\nChange PFT; partial biomass retained.\nHigh\nLow\nLow\n\n\nAgroforestry / Woody Buffers\nIndependent woody runs; spatial aggregation.\nHigh\nLow\nLow",
+    "crumbs": [
+      "Docs",
+      "Mixed System Prototype"
+    ]
+  },
+  {
     "objectID": "docs/workflow_documentation.html",
     "href": "docs/workflow_documentation.html",
     "title": "Technical Documentation",
@@ -88,6 +209,605 @@
     ]
   },
   {
+    "objectID": "docs/training/CARB-downscaling-setup.html",
+    "href": "docs/training/CARB-downscaling-setup.html",
+    "title": "Environment setup",
+    "section": "",
+    "text": "Conda, the AWS CLI and the S3 profile are set up once for all of MAGiC, and are documented in CARB PEcAn Environment Setup. Follow that first; here we are using version 1.18; an existing environment at the same path may be older.\nThis page focuses on steps specific to the downscaling workflow.\n\n\ngit clone https://github.com/ccmmf/downscaling\ncd downscaling\nThe rest of the instructions assume that you are working inside of the downscaling repository directory.\n\n\n\nReturn to the downscaling repository directory and activate conda before continuing.\ncd /path/to/downscaling\nconda activate ~/.conda/envs/pecan-all/\nexport AWS_PROFILE=magic\n\n\n\nThe downscaling CLI uses a configuration file to control the workflow.\nFor the tutorial, the configuration file is provided with the data inputs that will be downloaded at the beginning of the inventory notebook.\nFor your own runs, you can copy and edit example_user_config.yaml as a starting point.\n./magic-downscaling --help lists each configuration key and its default values.\nThere are three configuration modes: demo, dev, and production that differ in scope : production uses the configured variables, scenarios and input scope, dev and demo reduce the design size and variable list, and demo only runs a single scenario. A demo run exercises the same code path as production on less data.\n\n\n\n./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step requires substantial computing resources and should run on a compute node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.\nOverview: MAGiC downscaling training.",
+    "crumbs": [
+      "Training",
+      "Environment Setup"
+    ]
+  },
+  {
+    "objectID": "docs/training/CARB-downscaling-setup.html#clone-the-repository",
+    "href": "docs/training/CARB-downscaling-setup.html#clone-the-repository",
+    "title": "Environment setup",
+    "section": "",
+    "text": "git clone https://github.com/ccmmf/downscaling\ncd downscaling\nThe rest of the instructions assume that you are working inside of the downscaling repository directory.",
+    "crumbs": [
+      "Training",
+      "Environment Setup"
+    ]
+  },
+  {
+    "objectID": "docs/training/CARB-downscaling-setup.html#every-time-you-start-a-new-terminal-session",
+    "href": "docs/training/CARB-downscaling-setup.html#every-time-you-start-a-new-terminal-session",
+    "title": "Environment setup",
+    "section": "",
+    "text": "Return to the downscaling repository directory and activate conda before continuing.\ncd /path/to/downscaling\nconda activate ~/.conda/envs/pecan-all/\nexport AWS_PROFILE=magic",
+    "crumbs": [
+      "Training",
+      "Environment Setup"
+    ]
+  },
+  {
+    "objectID": "docs/training/CARB-downscaling-setup.html#the-configuration-file",
+    "href": "docs/training/CARB-downscaling-setup.html#the-configuration-file",
+    "title": "Environment setup",
+    "section": "",
+    "text": "The downscaling CLI uses a configuration file to control the workflow.\nFor the tutorial, the configuration file is provided with the data inputs that will be downloaded at the beginning of the inventory notebook.\nFor your own runs, you can copy and edit example_user_config.yaml as a starting point.\n./magic-downscaling --help lists each configuration key and its default values.\nThere are three configuration modes: demo, dev, and production that differ in scope : production uses the configured variables, scenarios and input scope, dev and demo reduce the design size and variable list, and demo only runs a single scenario. A demo run exercises the same code path as production on less data.",
+    "crumbs": [
+      "Training",
+      "Environment Setup"
+    ]
+  },
+  {
+    "objectID": "docs/training/CARB-downscaling-setup.html#confirm-setup",
+    "href": "docs/training/CARB-downscaling-setup.html#confirm-setup",
+    "title": "Environment setup",
+    "section": "",
+    "text": "./magic-downscaling --help          # CLI runs\naws s3 ls s3://carb/data_raw/       # bucket reads\nIf either fails, fix it before starting the inventory notebook.\nThe downscale step requires substantial computing resources and should run on a compute node. Resource requirements are in the notebook.\n\nNext: Inventory downscaling.\nOverview: MAGiC downscaling training.",
+    "crumbs": [
+      "Training",
+      "Environment Setup"
+    ]
+  },
+  {
+    "objectID": "reports/variable_importance.html",
+    "href": "reports/variable_importance.html",
+    "title": "Downscaling Model Evaluation",
+    "section": "",
+    "text": "This page summarizes model diagnostics for the Random Forest downscaling models used to predict SIPNET outputs from 100 anchor sites to approximately 132,000 annual cropland fields. For ecological interpretation of predictor effects (ALE/ICE plots), see the Model Drivers page.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Downscaling Model Evaluation"
+    ]
+  },
+  {
+    "objectID": "reports/variable_importance.html#out-of-bag-performance",
+    "href": "reports/variable_importance.html#out-of-bag-performance",
+    "title": "Downscaling Model Evaluation",
+    "section": "Out-of-Bag Performance",
+    "text": "Out-of-Bag Performance\nOut-of-bag (OOB) R² measures how well each Random Forest predicts held-out training sites. It is computed separately for each of 20 ensemble members; the table shows the median and interquartile range. OOB R² is a conservative estimate of spatial predictive accuracy because it uses only the approximately one-third of training sites not included in each bootstrap sample (each bootstrap draws n with replacement from n, leaving ~37% out-of-bag).\n\nDownscaling model performance summary. Values from 20-member ensemble Random Forests trained at 100 annual crop anchor sites.\n\n\n\n\n\n\n\n\n\nVariable\nMedian OOB R²\nIQR\nTop 2 Predictors\nAssessment\n\n\n\n\nN2O Flux\n0.52\n0.38–0.72\nvapr, temp\nBest spatial model\n\n\nTotSoilCarb\n0.34\n0.26–0.41\nocd, vapr\nModerate\n\n\nAGB\n0.09\n-0.04–0.52\nprecip, vapr\nPoor – high variance across ensembles\n\n\nCH4 Flux\n-0.15\n-0.17 to -0.13\nnone meaningful\nNo spatial signal (near-zero baseline)\n\n\n\n\n\n\n\n\n\nImportantCH4 Model Has No Predictive Skill\n\n\n\nNon-flooded annual croplands produce negligible CH4 in SIPNET because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. The statewide baseline is approximately 14,000 kg CH4 yr⁻¹ – effectively zero. With no spatial variation in the training data, the Random Forest cannot distinguish signal from noise. The negative R² confirms the model performs worse than predicting the mean. CH4 importance rankings and ALE/ICE plots reflect noise, not ecology. Meaningful CH4 fluxes are expected when rice paddies are included in future model runs.\n\n\n\n\n\n\n\n\nWarningAGB Model Quality\n\n\n\nThe AGB model’s wide IQR (-0.04 to 0.52) across ensembles means some ensemble members have no spatial predictive power while others are moderate. This inconsistency should be considered when interpreting AGB spatial maps. The low and variable R² likely reflects the fact that annual crop AGB at the modeled time point is small (post-harvest residue) and may not vary systematically with the environmental covariates used here.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Downscaling Model Evaluation"
+    ]
+  },
+  {
+    "objectID": "reports/variable_importance.html#variable-importance",
+    "href": "reports/variable_importance.html#variable-importance",
+    "title": "Downscaling Model Evaluation",
+    "section": "Variable Importance",
+    "text": "Variable Importance\nVariable importance is measured as the increase in mean squared error (MSE) when each predictor is randomly permuted while all others are held constant. Higher values indicate the model depends more on that variable for accurate predictions. Importance is summarized as the median across 20 ensemble members; error bars in the figure show the IQR.\n\n\n\nVariable importance across all four response variables. Points are median increase in MSE when each predictor is permuted; horizontal bars show IQR across 20 ensemble members.\n\n\n\nTop 4 predictors by median increase in MSE for each variable. N2O and CH4 importance values are near-zero in absolute terms due to the scale of the response; relative rankings are meaningful for N2O but not for CH4.\n\n\nRank\nTotSoilCarb\nAGB\nN2O Flux\nCH4 Flux\n\n\n\n\n1\nocd (18.4)\nprecip (9.7)\nvapr\nall near 0\n\n\n2\nvapr (12.8)\nvapr (8.7)\ntemp\nall near 0\n\n\n3\ntemp (12.0)\nocd (7.9)\nprecip\nall near 0\n\n\n4\nprecip (6.9)\ntemp (7.4)\nsrad\nall near 0\n\n\n\n\nInterpretation\nSoil carbon is most strongly driven by existing organic carbon density (ocd), which is both a predictor and correlated with the output. This reflects the well-known positive feedback between soil organic matter and further C retention – SOM persistence is controlled by environmental and biological interactions rather than molecular recalcitrance alone (Schmidt et al. 2011, Nature). Climate variables (vapr, temp) rank second and third, capturing the temperature-driven decomposition gradient across California.\nN2O flux is driven by climate variables (vapr, temp, precip), consistent with the well-established temperature and moisture sensitivity of soil nitrification and denitrification processes (Butterbach-Bahl et al. 2013, Philosophical Transactions of the Royal Society B). The dominance of vapor pressure likely reflects its strong correlation with temperature (r = 0.86); together they capture the north-south climate gradient that controls soil moisture availability for N-cycling microbes.\nAGB shows precipitation and vapor pressure as top predictors, consistent with water availability limiting annual crop productivity in California’s Mediterranean climate. However, the low and variable R² means these relationships are not reliably captured.\nCH4 flux shows no meaningful importance for any predictor, confirming the training data contains no spatial signal for the model to learn.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Downscaling Model Evaluation"
+    ]
+  },
+  {
+    "objectID": "reports/variable_importance.html#predictor-collinearity",
+    "href": "reports/variable_importance.html#predictor-collinearity",
+    "title": "Downscaling Model Evaluation",
+    "section": "Predictor Collinearity",
+    "text": "Predictor Collinearity\nThe environmental predictors are correlated due to California’s climate gradients. High collinearity does not bias Random Forest predictions, but it does affect the interpretability of individual predictor importance: when two predictors are correlated, their importance is split between them, and their individual rankings become unstable. This is why we use ALE plots (which handle correlated predictors correctly) rather than Partial Dependence Plots for ecological interpretation.\n\nPairwise Pearson correlations among the seven environmental predictors with |r| &gt; 0.30. Computed from 377,807 cropland fields (all crop types) in the CADWR dataset. Values are similar for the approximately 132,000 annual cropland subset because the correlations reflect California’s climate geography, not crop type.\n\n\nPredictor Pair\nPearson r\nSeverity\n\n\n\n\ntemp – vapr\n+0.86\nStrong\n\n\nprecip – srad\n-0.86\nStrong\n\n\nsrad – vapr\n+0.58\nModerate\n\n\ntemp – precip\n-0.56\nModerate\n\n\nocd – vapr\n-0.55\nModerate\n\n\ntemp – srad\n+0.54\nModerate\n\n\nprecip – vapr\n-0.52\nModerate\n\n\nocd – srad\n-0.53\nModerate\n\n\nocd – precip\n+0.49\nModerate\n\n\n\nThe two strongest correlations – temp/vapr and precip/srad – reflect California’s dominant climate gradients:\n\nTemperature and vapor pressure (r = 0.86): Both increase from north to south along the Central Valley. This means the downscaling model cannot fully distinguish whether soil carbon losses or N2O increases in warmer areas are driven by temperature per se or by the correlated increase in atmospheric moisture demand.\nPrecipitation and solar radiation (r = -0.86): Wetter areas (north coast, Sierra foothills) receive less direct solar radiation. This inverse relationship reflects the basic climate physics of cloud cover and California’s coastal-inland gradient.\n\nThese collinearities are an inherent feature of California’s climate geography, not a modeling artifact. They should be kept in mind when interpreting individual predictor effects in the Model Drivers plots.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Downscaling Model Evaluation"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html",
+    "href": "reports/scenarios.html",
+    "title": "Scenario-Based Analysis",
+    "section": "",
+    "text": "The scenario-based analysis compares four scenarios through December 2045. The reference uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to the reference.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#statewide-soil-carbon-response",
+    "href": "reports/scenarios.html#statewide-soil-carbon-response",
+    "title": "Scenario-Based Analysis",
+    "section": "Statewide soil-carbon response",
+    "text": "Statewide soil-carbon response\n\n\n\n\n\n\nFigure 1: Statewide soil-carbon response for the four scenarios. Points show ensemble means and bars show empirical member p05–p95.\n\n\n\n\n\n\nTable 2: Statewide December 2045 minus January 2024 soil-carbon stock response, Tg C.\n\n\n\n\n\nScenario\nMean\np05\np95\n\n\n\n\nReference\n-45.33\n-98.30\n17.90\n\n\nManagement\n-43.77\n-97.21\n20.86\n\n\nClimate model\n-45.74\n-95.60\n15.96\n\n\nPathway\n-49.04\n-100.55\n12.00\n\n\n\n\n\n\nAll four ensemble means are negative, indicating modeled soil-carbon stock loss over the period. The ensemble ranges are parameter-member spread, not observational confidence intervals.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#contrasts-against-the-reference",
+    "href": "reports/scenarios.html#contrasts-against-the-reference",
+    "title": "Scenario-Based Analysis",
+    "section": "Contrasts against the reference",
+    "text": "Contrasts against the reference\n\n\n\n\n\n\nFigure 2: County soil-carbon response contrasts against the reference scenario. The three panels share a signed color scale.\n\n\n\n\n\n\nTable 3: Statewide soil-carbon response contrasts, Tg C. Contrasts are calculated within original ensemble-member identity before summarization.\n\n\n\n\n\n\n\n\n\n\n\n\nContrast\nMean\np05\np95\nInterpretation\n\n\n\n\nManagement minus reference\n1.55\n-1.81\n3.86\nLess modeled stock loss on average\n\n\nClimate model minus reference\n-0.41\n-5.06\n3.84\nSimilar statewide mean, with regional differences\n\n\nPathway minus reference\n-3.71\n-6.16\n-1.31\nGreater modeled stock loss\n\n\n\n\n\n\nThe positive management contrast does not mean that statewide soil carbon increases. It means that the management scenario loses less soil carbon than the reference on average. The county maps show where each contrast contributes to the statewide result.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#annual-model-defined-n2o-n",
+    "href": "reports/scenarios.html#annual-model-defined-n2o-n",
+    "title": "Scenario-Based Analysis",
+    "section": "Annual model-defined N2O-N",
+    "text": "Annual model-defined N2O-N\n\n\n\n\n\n\nFigure 3: Annual model-defined N2O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95.\n\n\n\nAnnual N2O-N is integrated over each calendar year and reported as native nitrogen mass per represented hectare. This differs from the historical inventory’s annualized endpoint rate.\n\n\n\n\n\n\nFigure 4: Management-minus-reference annual N2O-N. Differences are calculated within original ensemble-member identity.\n\n\n\n\n\n\nTable 4: Selected annual N2O-N means, kg N ha-1 yr-1.\n\n\n\n\n\nYear\nReference\nManagement\nManagement minus reference\n\n\n\n\n2024\n23.71\n23.85\n0.14\n\n\n2030\n22.13\n22.47\n0.34\n\n\n2035\n21.54\n22.33\n0.79\n\n\n2040\n15.06\n15.54\n0.48\n\n\n2045\n20.94\n22.06\n1.11\n\n\n\n\n\n\nThe management mean is higher than the reference in most years, but the matched-member spread commonly crosses zero. These modeled differences do not establish an observed causal management effect.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#gas-reporting-boundary",
+    "href": "reports/scenarios.html#gas-reporting-boundary",
+    "title": "Scenario-Based Analysis",
+    "section": "Gas-reporting boundary",
+    "text": "Gas-reporting boundary\nAnnual native-N accounting is available for the reference and management scenarios. Corrected statewide methane and complete annual gas series for the climate-model and pathway scenarios are not shown. Soil-carbon stock changes and the available gas results are therefore reported separately rather than combined into an incomplete CO2-equivalent balance.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html",
+    "href": "reports/atlas_model_drivers.html",
+    "title": "Model Drivers",
+    "section": "",
+    "text": "The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at 100 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal which environmental factors drive the spatial variation seen in the maps. See Scenario-Based Analysis for the scenario definitions.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#model-performance-overview",
+    "href": "reports/atlas_model_drivers.html#model-performance-overview",
+    "title": "Model Drivers",
+    "section": "Model Performance Overview",
+    "text": "Model Performance Overview\nBefore interpreting predictor effects, it is important to understand how well each Random Forest model captures spatial variation. Out-of-bag (OOB) R² measures predictive accuracy on held-out training sites.\n\n\n\nVariable importance across all four response variables. Importance is measured as the median increase in MSE when each predictor is permuted, with IQR across 20 ensemble members.\n\n\n\nDownscaling model performance by response variable. R² is the median across 20 ensemble members.\n\n\n\n\n\n\n\n\n\nVariable\nMedian OOB R²\nIQR\nTop Predictors\nAssessment\n\n\n\n\nN2O Flux\n0.52\n0.38–0.72\nvapr, temp\nBest spatial model\n\n\nTotSoilCarb\n0.34\n0.26–0.41\nocd, vapr\nModerate\n\n\nAGB\n0.09\n-0.04–0.52\nprecip, vapr\nPoor – high variance across ensembles\n\n\nCH4 Flux\n-0.15\n-0.17–-0.13\nnone meaningful\nNo spatial signal (near-zero baseline)\n\n\n\n\n\n\n\n\n\nNoteInterpreting CH4 Model Quality\n\n\n\nNon-flooded annual croplands produce near-zero CH4 fluxes in SIPNET (approximately 10⁻¹⁴ kg m⁻² at the modeled sites) because methanogenesis requires sustained anaerobic conditions (continuous flooding) that do not occur under standard irrigation. With essentially no spatial variation in the training data, the Random Forest has no signal to learn – the negative OOB R² (-0.15) confirms the model performs worse than a constant mean. The CH4 ALE/ICE plots below reflect noise, not ecology.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#environmental-predictors",
+    "href": "reports/atlas_model_drivers.html#environmental-predictors",
+    "title": "Model Drivers",
+    "section": "Environmental Predictors",
+    "text": "Environmental Predictors\nThe downscaling model uses eight predictors (seven environmental covariates plus field area):\n\nCovariates used in the Random Forest downscaling model.\n\n\n\n\n\n\n\n\n\nVariable\nDescription\nSource\nUnits\nEcological Role\n\n\n\n\nclay\nClay content\nSoilGrids\n%\nSoil texture controls water holding capacity and physical protection of organic matter\n\n\nocd\nOrganic carbon density\nSoilGrids\nhg/m3\nExisting soil organic matter – both a predictor and correlated with the output\n\n\ntwi\nTopographic wetness index\nSRTM-derived\n-\nTopographic position controls water accumulation and drainage\n\n\ntemp\nMean annual temperature\nERA5\n°C\nTemperature drives decomposition rates and plant productivity\n\n\nprecip\nMean annual precipitation\nERA5\nmm/yr\nMoisture availability for plant growth and microbial activity\n\n\nsrad\nSolar radiation\nERA5\nJ/m²\nEnergy input for photosynthesis\n\n\nvapr\nVapor pressure\nERA5\nkPa\nAtmospheric moisture – strongly correlated with temperature (r = 0.86)\n\n\narea_ha\nField area\nCADWR\nha\nStructural covariate capturing field-size effects on model predictions",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#ale-and-ice-diagnostic-plots",
+    "href": "reports/atlas_model_drivers.html#ale-and-ice-diagnostic-plots",
+    "title": "Model Drivers",
+    "section": "ALE and ICE Diagnostic Plots",
+    "text": "ALE and ICE Diagnostic Plots\nALE (Accumulated Local Effects) plots show the average marginal effect of each predictor on the model output across its range. Steeper slopes indicate stronger influence.\nICE (Individual Conditional Expectation) plots show how each individual anchor site responds to changes in a predictor while holding all others constant. When ICE lines diverge, it indicates interaction effects – the predictor’s influence depends on other site characteristics.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#total-soil-carbon-totsoilcarb",
+    "href": "reports/atlas_model_drivers.html#total-soil-carbon-totsoilcarb",
+    "title": "Model Drivers",
+    "section": "Total Soil Carbon (TotSoilCarb)",
+    "text": "Total Soil Carbon (TotSoilCarb)\n\nALE – Top PredictorsICE – Top Predictors\n\n\n\n\n\n\n\n\nTotSoilCarb ALE – Predictor 1\n\n\n\n\n\n\n\nTotSoilCarb ALE – Predictor 2\n\n\n\n\n\nHigher organic carbon density (ocd) –&gt; higher soil carbon: sites with more existing organic matter retain more carbon through the simulation. Vapor pressure (vapr) shows a negative relationship – higher vapr (warmer, more humid conditions) correlates with lower soil carbon, consistent with faster decomposition at higher temperatures (vapr and temp are highly correlated, r = 0.86).\n\n\n\n\n\n\n\n\nTotSoilCarb ICE – Predictor 1\n\n\n\n\n\n\n\nTotSoilCarb ICE – Predictor 2\n\n\n\n\n\nICE lines that move broadly in parallel indicate the predictor has a consistent effect across different site types. Diverging lines would indicate interactions with other environmental gradients.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#aboveground-biomass-agb",
+    "href": "reports/atlas_model_drivers.html#aboveground-biomass-agb",
+    "title": "Model Drivers",
+    "section": "Aboveground Biomass (AGB)",
+    "text": "Aboveground Biomass (AGB)\n\nALE – Top PredictorsICE – Top Predictors\n\n\n\n\n\n\n\n\nAGB ALE – Predictor 1\n\n\n\n\n\n\n\nAGB ALE – Predictor 2\n\n\n\n\n\nPrecipitation (precip) and vapor pressure (vapr) are the top drivers of AGB variation, though this model has low explanatory power (median OOB R² = 0.09). Higher precipitation –&gt; more water availability –&gt; more growth. Vapor pressure is strongly correlated with temperature (r = 0.86); its negative relationship with AGB likely reflects faster turnover under warmer conditions rather than a direct moisture effect. The wide IQR (-0.04 to 0.52) across ensembles indicates the spatial pattern is not reliable.\n\n\n\n\n\n\n\n\nAGB ICE – Predictor 1\n\n\n\n\n\n\n\nAGB ICE – Predictor 2",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#n2o-flux",
+    "href": "reports/atlas_model_drivers.html#n2o-flux",
+    "title": "Model Drivers",
+    "section": "N2O Flux",
+    "text": "N2O Flux\n\nALE – Top PredictorsICE – Top Predictors\n\n\n\n\n\n\n\n\nN2O ALE – Predictor 1\n\n\n\n\n\n\n\nN2O ALE – Predictor 2\n\n\n\n\n\nVapor pressure (vapr) and mean annual temperature (temp) are the top predictors of spatial variation in N2O flux (OOB R² = 0.52, our best spatial model). Higher vapr and temperature are associated with greater N2O emissions, consistent with warmer conditions promoting nitrification and denitrification. These two predictors are highly correlated (r = 0.86), reflecting California’s north-south climate gradient.\n\n\n\n\n\n\n\n\nN2O ICE – Predictor 1\n\n\n\n\n\n\n\nN2O ICE – Predictor 2",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#ch4-flux",
+    "href": "reports/atlas_model_drivers.html#ch4-flux",
+    "title": "Model Drivers",
+    "section": "CH4 Flux",
+    "text": "CH4 Flux\n\nALE – Top PredictorsICE – Top Predictors\n\n\n\n\n\n\n\n\nCH4 ALE – Predictor 1\n\n\n\n\n\n\n\nCH4 ALE – Predictor 2\n\n\n\n\n\n\n\n\n\n\n\nWarningLow Model Quality\n\n\n\nThe CH4 downscaling model has negative OOB R² (-0.15), indicating it has no predictive skill for spatial variation. Non-flooded annual croplands produce near-zero CH4 fluxes (raw SIPNET output on the order of 10⁻¹⁴ kg m⁻²; statewide downscaled total roughly 13,600 kg CH4 yr⁻¹) because methanogenesis requires sustained soil saturation that does not occur under standard irrigation, leaving the Random Forest with no spatial signal to learn. The top “predictors” (area_ha, clay) carry no ecological meaning here – they reflect noise fitting. Interpret these plots accordingly.\n\n\n\n\n\n\n\n\n\n\nCH4 ICE – Predictor 1\n\n\n\n\n\n\n\nCH4 ICE – Predictor 2",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "reports/atlas_model_drivers.html#why-these-drivers-matter",
+    "href": "reports/atlas_model_drivers.html#why-these-drivers-matter",
+    "title": "Model Drivers",
+    "section": "Why These Drivers Matter",
+    "text": "Why These Drivers Matter\nUnderstanding what drives spatial variation is essential for targeting conservation practices:\n\nIf soil type dominates (clay, ocd) – practice benefits are site-specific, and adoption should prioritize fields with responsive soil types.\nIf climate dominates (temp, vapr, precip) – practice effects vary with regional climate, suggesting geographic targeting based on climate zones.\nIf the practice effect is uniform regardless of drivers – broad-scale adoption is efficient because benefits are not geographically restricted.\n\nThe field- and county-level maps in the Historical Inventory Results show which pattern applies for each variable and crop class.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Model Drivers"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level. It’s driven by magic-downscaling, a CLI that invokes the numbered R scripts in scripts/ with explicit flags, controlled through a user YAML config file (see example_user_config.yaml) — that’s the file you edit to point the workflow at your own data and switch between demo/dev/production modes. Key components:\n\nEnvironmental covariates (ERA5, SoilGrids, TWI)\nDesign point selection via k-means\nSIPNET simulations at design points [run externally, via magic-ensemble]\nRandom Forest downscaling to all fields\nCounty-level aggregation and diagnostic plots\n\n\n\n\n\nThe most recent pecan-all conda environment.\nIf running get-demo-data, AWS credentials configured under a profile named magic.\n\n\n\n\nThe demo runs the full pipeline — get-demo-data through analyze — against a small, pre-packaged dataset, driven by the checked-in example_user_config.yaml (downscaling.mode: demo).\ngit clone https://github.com/ccmmf/downscaling.git\ncd downscaling\n\n# Activate your pecan-all conda environment first, e.g.:\nconda activate pecan-all-1.16\n\n./magic-downscaling get-demo-data --config example_user_config.yaml   # downloads demo-data/ (gitignored cache)\n./magic-downscaling prepare       --config example_user_config.yaml   # stages demo-data/ into the run_dir\n./magic-downscaling extract       --config example_user_config.yaml   # reads SIPNET output, reshapes to EFI format\n./magic-downscaling downscale     --config example_user_config.yaml   # Random Forest downscaling + county aggregation\n./magic-downscaling analyze       --config example_user_config.yaml   # diagnostics, uncertainty, plots\nOutputs go under global.run_dir, except demo downloads (./demo-data/) and generated figures (repository figures/). Each command prints its own progress; run any command with --verbose to also echo the underlying Rscript invocations. example_user_config.yaml is commented with what each key does — copy it as the starting point for a real config, updating:\n\ndownscaling.mode — set to production\ndownscaling.pecan_output_dir — your PEcAn/SIPNET ensemble output\ndownscaling.data_layers_dir — your spatial data layers\ndownscaling.anchor_site_locations — your anchor site locations CSV\n\nRun ./magic-downscaling --help at any time for the authoritative, current list of commands and config keys.\n\n\n\n\n\n\n\n\n\n\nCommand\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo data bundle to ./demo-data/ (relative to your invocation directory). Run once, before prepare.\n\n\nprepare\nStages ensemble output and spatial data layers into global.run_dir. Run after magic-ensemble run-ensembles, before extract.\n\n\nextract\nReads SIPNET output, reshapes to EFI format, aggregates by scenario.\n\n\ndownscale\nRandom Forest downscaling to all LandIQ fields; aggregates to county.\n\n\nanalyze\nDiagnostic summaries, uncertainty quantification, plots.\n\n\n\n\n\n\nFor the underlying science and data flow (covariate sources, model details, aggregation methodology), see the Technical Documentation. Note that document predates the magic-downscaling CLI and describes the workflow in terms of running the numbered scripts directly — for how to actually run the pipeline, use this README and ./magic-downscaling --help.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "This workflow estimates carbon pools (SOC and AGB) for California crop fields and aggregates to the county level. It’s driven by magic-downscaling, a CLI that invokes the numbered R scripts in scripts/ with explicit flags, controlled through a user YAML config file (see example_user_config.yaml) — that’s the file you edit to point the workflow at your own data and switch between demo/dev/production modes. Key components:\n\nEnvironmental covariates (ERA5, SoilGrids, TWI)\nDesign point selection via k-means\nSIPNET simulations at design points [run externally, via magic-ensemble]\nRandom Forest downscaling to all fields\nCounty-level aggregation and diagnostic plots",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#prerequisites",
+    "href": "index.html#prerequisites",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "The most recent pecan-all conda environment.\nIf running get-demo-data, AWS credentials configured under a profile named magic.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#quick-start-demo-workflow",
+    "href": "index.html#quick-start-demo-workflow",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "The demo runs the full pipeline — get-demo-data through analyze — against a small, pre-packaged dataset, driven by the checked-in example_user_config.yaml (downscaling.mode: demo).\ngit clone https://github.com/ccmmf/downscaling.git\ncd downscaling\n\n# Activate your pecan-all conda environment first, e.g.:\nconda activate pecan-all-1.16\n\n./magic-downscaling get-demo-data --config example_user_config.yaml   # downloads demo-data/ (gitignored cache)\n./magic-downscaling prepare       --config example_user_config.yaml   # stages demo-data/ into the run_dir\n./magic-downscaling extract       --config example_user_config.yaml   # reads SIPNET output, reshapes to EFI format\n./magic-downscaling downscale     --config example_user_config.yaml   # Random Forest downscaling + county aggregation\n./magic-downscaling analyze       --config example_user_config.yaml   # diagnostics, uncertainty, plots\nOutputs go under global.run_dir, except demo downloads (./demo-data/) and generated figures (repository figures/). Each command prints its own progress; run any command with --verbose to also echo the underlying Rscript invocations. example_user_config.yaml is commented with what each key does — copy it as the starting point for a real config, updating:\n\ndownscaling.mode — set to production\ndownscaling.pecan_output_dir — your PEcAn/SIPNET ensemble output\ndownscaling.data_layers_dir — your spatial data layers\ndownscaling.anchor_site_locations — your anchor site locations CSV\n\nRun ./magic-downscaling --help at any time for the authoritative, current list of commands and config keys.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#commands",
+    "href": "index.html#commands",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "Command\nWhat it does\n\n\n\n\nget-demo-data\nDownloads and extracts the demo data bundle to ./demo-data/ (relative to your invocation directory). Run once, before prepare.\n\n\nprepare\nStages ensemble output and spatial data layers into global.run_dir. Run after magic-ensemble run-ensembles, before extract.\n\n\nextract\nReads SIPNET output, reshapes to EFI format, aggregates by scenario.\n\n\ndownscale\nRandom Forest downscaling to all LandIQ fields; aggregates to county.\n\n\nanalyze\nDiagnostic summaries, uncertainty quantification, plots.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#full-technical-background",
+    "href": "index.html#full-technical-background",
+    "title": "Downscaling And Aggregation Workflow",
+    "section": "",
+    "text": "For the underlying science and data flow (covariate sources, model details, aggregation methodology), see the Technical Documentation. Note that document predates the magic-downscaling CLI and describes the workflow in terms of running the numbered scripts directly — for how to actually run the pipeline, use this README and ./magic-downscaling --help.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html",
+    "href": "reports/downscaling_results.html",
+    "title": "Historical Inventory Results",
+    "section": "",
+    "text": "The historical inventory describes modeled conditions for California agricultural fields under recorded inputs from January 2016 through December 2023. Results summarize the agricultural fields represented in the downscaling dataset; they are not totals for all California land. County maps show modeled totals over represented fields, while field maps show area-normalized values.\nThese are model-derived results. The model has been minimally tested against site level observations and syntheses of available research.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#historical-inventory-summary",
+    "href": "reports/downscaling_results.html#historical-inventory-summary",
+    "title": "Historical Inventory Results",
+    "section": "Historical inventory summary",
+    "text": "Historical inventory summary\nThe inventory covers annual crops and woody perennial crops under recorded historical inputs. Stock values are December 2023 monthly means. Nitrous-oxide and methane values are December 2023 annualized endpoint rates, not emissions integrated over 2016–2023.\n\n\n\nTable 1: Ensemble mean with standard deviation in parentheses. Totals apply to represented agricultural fields, not all California land.\n\n\n\n\n\n\n\n\n\n\n\nOutcome\nAnnual crops\nWoody perennial crops\nUnit and basis\n\n\n\n\nSoil carbon\n113.22 (17.42)\n87.93 (16.56)\nTg C, December 2023 stock\n\n\nAboveground biomass\n4.64 (5.91)\n1,147.70 (314.60)\nGg C, December 2023 stock\n\n\nN2O-N\n9.25 (8.28)\n9.06 (7.99)\nGg N yr-1, annualized endpoint rate\n\n\nCH4-C\n0.0366 (0.1329)\n0.0244 (0.1012)\nGg C yr-1, annualized endpoint rate\n\n\n\n\n\n\nSoil carbon is the largest reported carbon pool. County totals reflect both the modeled stock density and the agricultural area represented within each county; field-density maps separate the per-hectare pattern from area. Woody perennial crops contain much more standing aboveground biomass than annual crops at the December endpoint.\nThe inventory maps indicate net soil-carbon declines over much of the represented area from 2016 to 2023. These changes are stock differences between endpoint monthly means. They are not annualized sequestration rates.\nNitrous-oxide results are reported in native nitrogen units. The maps show annualized December 2023 rates and changes in that endpoint rate. They should not be added directly to soil-carbon stock changes.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#spatial-context",
+    "href": "reports/downscaling_results.html#spatial-context",
+    "title": "Historical Inventory Results",
+    "section": "Spatial context",
+    "text": "Spatial context\n\n\n\n\n\n\nFigure 1: Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis.\n\n\n\nAnnual crops and woody perennial crops are presented separately because their carbon stocks, biomass, and spatial distributions differ substantially.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#soil-carbon",
+    "href": "reports/downscaling_results.html#soil-carbon",
+    "title": "Historical Inventory Results",
+    "section": "Soil carbon",
+    "text": "Soil carbon\nSoil carbon is reported as a stock. County maps sum modeled stocks across represented fields; field maps report carbon density per hectare. Historical changes compare January 2016 and December 2023 monthly means.\n\nCounty soil-carbon stocks\n\n\n\n\n\n\nFigure 2: December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area.\n\n\n\nThe largest county totals occur where substantial represented agricultural area coincides with moderate or high modeled stock density. The annual and woody maps use the same units but should be interpreted separately because the crop classes occupy different fields.\n\n\nField soil-carbon density\n\n\n\n\n\n\nFigure 3: December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area.\n\n\n\nField density reveals spatial variation that is obscured by county totals. Northern and coastal agricultural regions generally show higher modeled density than many southern and interior fields, although variation occurs within each crop class.\n\n\nSoil-carbon change, 2016–2023\n\n\n\n\n\n\nFigure 4: County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss.\n\n\n\nModeled soil-carbon stocks decline across much of the represented area over the historical period. The largest negative county changes occur in agricultural regions with substantial represented area. These values are endpoint stock differences in Gg C, not annualized rates or atmospheric removals.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#nitrous-oxide-and-gas-accounting-scope",
+    "href": "reports/downscaling_results.html#nitrous-oxide-and-gas-accounting-scope",
+    "title": "Historical Inventory Results",
+    "section": "Nitrous oxide and gas-accounting scope",
+    "text": "Nitrous oxide and gas-accounting scope\nThe historical inventory reports nitrous-oxide and methane outputs as annualized December endpoint rates. These rates describe the model state at the endpoint; they are not calendar-year integrals or cumulative emissions over 2016–2023.\n\nNitrous-oxide endpoint rates\n\n\n\n\n\n\nFigure 5: December 2023 annualized N2O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year.\n\n\n\nCounty totals reflect both the modeled per-hectare rate and the represented agricultural area. The annual and woody crop classes have similar ensemble-mean totals at the December 2023 endpoint, but the spatial distributions differ.\n\n\nChange in endpoint rate, 2016–2023\n\n\n\n\n\n\nFigure 6: Change in the annualized N2O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023.\n\n\n\nMost represented counties show a higher modeled annualized endpoint rate in December 2023 than in January 2016. This is a change between two endpoint rates; it is not the total nitrogen emitted during the intervening years.\n\n\nMethane and complete gas accounting\nHistorical methane endpoint estimates are small relative to ensemble variability and do not support a useful spatial map. Complete annual gas series are not presented, so gas results are not combined with soil-carbon stock changes or converted to a partial CO2-equivalent total.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#aboveground-biomass",
+    "href": "reports/downscaling_results.html#aboveground-biomass",
+    "title": "Historical Inventory Results",
+    "section": "Aboveground biomass",
+    "text": "Aboveground biomass\nAboveground biomass is the modeled carbon stock in living plant material above the soil surface. December values are endpoint snapshots rather than annual production totals. Annual-crop biomass is small at the endpoint because harvest removes much of the standing crop; woody perennial crops retain substantially more biomass.\n\nCounty aboveground biomass\n\n\n\n\n\n\nFigure 7: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.\n\n\n\nWoody perennial biomass is concentrated in the Central Valley and other orchard-producing regions. Annual-crop endpoint totals are much smaller and should be interpreted as standing biomass at the December endpoint, not annual harvested production.\n\n\nField biomass density\n\n\n\n\n\n\nFigure 8: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops.\n\n\n\nThe field maps separate per-hectare modeled biomass from the amount of agricultural area within a county. Woody perennial fields have higher endpoint densities than annual-crop fields across most represented regions.\n\n\nBiomass change, 2016–2023\n\n\n\n\n\n\nFigure 9: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint.\n\n\n\nThe historical endpoint comparison is predominantly negative, particularly for woody perennial crops in parts of the Central Valley. These changes describe modeled endpoint stocks and should not be interpreted as harvested yield or cumulative production.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/downscaling_results.html#interpretation",
+    "href": "reports/downscaling_results.html#interpretation",
+    "title": "Historical Inventory Results",
+    "section": "Interpretation",
+    "text": "Interpretation\nEnsemble ranges describe variation among parameter ensemble members; they are not observational confidence intervals. Soil-carbon stocks and changes are reported separately from gas fluxes, and native carbon or nitrogen units are retained where complete CO2-equivalent accounting is not available.\nSee Scenario-Based Analysis for the 2024–2045 management and climate comparisons.",
+    "crumbs": [
+      "Results",
+      "Historical Inventory"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html",
+    "href": "reports/design_point_validation.html",
+    "title": "Design Point Validation",
+    "section": "",
+    "text": "This report validates feature-space coverage of the selected design points relative to the statewide population. It does not determine the optimal number of SIPNET design points. The 1,000-site design evaluated here is selected from the 10,000-site candidate pool for demonstration.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#overview",
+    "href": "reports/design_point_validation.html#overview",
+    "title": "Design Point Validation",
+    "section": "Overview",
+    "text": "Overview\nDesign points are the field locations where SIPNET is run; a Random Forest then downscales those outputs to every cropland field in the CADWR LandIQ Crop Map. 020_cluster_sites.R clusters the population per plant functional type and keeps one representative per cluster as a 10,000-site candidate pool, 021_subsample_design_points.R draws the design from that pool by farthest point sampling, and 022_validate_design_points.R writes the tables and figures below. Coverage matters because the Random Forest predicts reliably only within the range of conditions the design spans, so gaps in covariate coverage become extrapolation.\nClustering uses seed 42 (020_cluster_sites.R).",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#pft-allocation",
+    "href": "reports/design_point_validation.html#pft-allocation",
+    "title": "Design Point Validation",
+    "section": "PFT allocation",
+    "text": "PFT allocation\nPopulation and design counts and area share per PFT.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#feature-space-coverage-mssd-scaled",
+    "href": "reports/design_point_validation.html#feature-space-coverage-mssd-scaled",
+    "title": "Design Point Validation",
+    "section": "Feature space coverage (MSSD, scaled)",
+    "text": "Feature space coverage (MSSD, scaled)\nMean squared shortest distance from each population field to its nearest design point in scaled feature space. Lower is better coverage.",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#cluster-balance-gini-of-cluster-sizes",
+    "href": "reports/design_point_validation.html#cluster-balance-gini-of-cluster-sizes",
+    "title": "Design Point Validation",
+    "section": "Cluster balance (Gini of cluster sizes)",
+    "text": "Cluster balance (Gini of cluster sizes)",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#anchor-recovery",
+    "href": "reports/design_point_validation.html#anchor-recovery",
+    "title": "Design Point Validation",
+    "section": "Anchor recovery",
+    "text": "Anchor recovery",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "reports/design_point_validation.html#figures",
+    "href": "reports/design_point_validation.html#figures",
+    "title": "Design Point Validation",
+    "section": "Figures",
+    "text": "Figures\n\n\n\n\nVariable importance (eta-squared)\n\n\n\n\n\nDesign points on California cropland\n\n\n\n\n\nNearest-neighbor distances\n\n\n\n\n\nCDF overlay (annual crop)\n\n\n\n\n\nPCA scatter (annual crop)\n\n\n\n\n\nSorted cluster sizes (annual crop)\n\n\n\n\n\nCDF overlay (woody perennial crop)\n\n\n\n\n\nPCA scatter (woody perennial crop)\n\n\n\n\n\nSorted cluster sizes (woody perennial crop)",
+    "crumbs": [
+      "Methods and Evaluation",
+      "Design Point Validation"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html",
+    "href": "docs/training/downscaling_inventory.html",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "",
+    "text": "This tutorial demonstrates how to downscale output from a PEcAn ensemble run. We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.\nThe downscaling step fits Random Forest models to the ensemble output at those sampled fields, then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates. It aggregates the field-level predictions into county and run-scope summaries.\nThe demo covers four Sacramento-San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.\nFor each plant functional type (PFT), output variable, and scenario, the workflow fits one forest per ensemble member using the final available month’s values at the design points. It also fits forests for the first month to estimate change over the simulation period.\nThis documentation assumes that the steps in Environment setup have been completed. In a new terminal session, follow its startup instructions. Run all commands below from the downscaling repository root.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#fetch-demo-data",
+    "href": "docs/training/downscaling_inventory.html#fetch-demo-data",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Fetch demo data",
+    "text": "Fetch demo data\n./magic-downscaling get-demo-data --config example_user_config.yaml\ncp demo-data/modelout/demo_config.yaml config.yaml\nThe data package contains:\n\nmodelout/ – SIPNET output, 100 design points x 10 ensemble members, 2016-2023, under output_inventory/\ndata/ – field geometry, attributes, covariates and county boundaries for the four demo counties, plus covariates for the design points so the model can train\n\n\nInspect the inputs\nStart with config.yaml: identify the model-output directory, data-layer directory, scenario, output variable, and run directory. In the model-output directory, site_info.csv identifies the design points and output_inventory/out/ holds the NetCDF files. In the data layers, site_covariates.csv supplies predictors; cadwr_crops_sites.gpkg and cadwr_crops_site_summary.csv identify target fields.\nFor example, the supplied output_inventory/out/ENS-00002-328163/2016.nc contains one location and 2,928 time steps. This excerpt from its NetCDF header shows the soil-carbon variable and its units:\ndimensions:\n    lon = 1 ;\n    lat = 1 ;\n    time = UNLIMITED ; // (2928 currently)\nvariables:\n    double time(time) ;\n        time:units = \"days since 2016-01-01 00:00:00\" ;\n    double TotSoilCarb(time, lat, lon) ;\n        TotSoilCarb:units = \"kg C m-2\" ;\n        TotSoilCarb:_FillValue = -999. ;\n        TotSoilCarb:long_name = \"Total Soil Carbon\" ;\nThe preview below reads the covariate table staged by prepare. site_id joins these rows to the model output and field attributes. The numeric columns passed to the fitting routine are shown beneath it; constant columns may be dropped when fitting a PFT.\n\n\nCovariates and design points\nsite_covariates.csv describes the fields where SIPNET was run and the fields where predictions are needed. The workflow joins these data using site_id.\n\n\n\n\n\n\n\n\nFeature group\nColumns\nWhat they describe\n\n\n\n\nClimate\ntemp, precip, srad, vapr\nMulti-year temperature, precipitation, solar radiation and atmospheric moisture summaries\n\n\nSoil and terrain\nclay, ocd, twi\nClay content, soil organic carbon density and topographic wetness\n\n\nCrop history\neof_*\nPrincipal components summarizing crop sequences across years; preparation retains up to 10 components\n\n\nPhenology\nleafon_doy, leafoff_doy, leafon_doy_sd, leafoff_doy_sd\nMean green-up and senescence day of year, and their variation across years\n\n\nTillage\ntillage_rank, tillage_freq\nMonitored tillage rank and fraction of monitored years with detected tillage\n\n\nIrrigation\nirr_canopy, irr_flood\nIndicators derived from the monitored irrigation categories\n\n\nField\narea_ha\nField area, also used to convert predicted density to a field total\n\n\nPFT\npft_annual_crop, pft_woody_perennial_crop\nIndicators of the assigned PFT\n\n\n\nThe clustering scripts use the seven climate, soil and terrain features plus the crop-history, phenology and management columns present in the input table. With 10 crop-history components and all eight phenology and management columns, this is 25 clustering features.\nSite selection groups fields separately within annual and woody perennial PFTs, using standardized features and k-means clustering. It selects fields near the cluster centers, then uses farthest point sampling to choose a smaller set that represents the feature space.\nThe Random Forest predictor list is selected separately: downscale uses all numeric columns of site_covariates.csv except climregion_id. These are used to fit the Random Forest; site_id is key that joins the model output with the covariates.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#explore-cli-layout",
+    "href": "docs/training/downscaling_inventory.html#explore-cli-layout",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Explore CLI layout",
+    "text": "Explore CLI layout\nExecution is controlled by magic-downscaling and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.\n./magic-downscaling -h\nThe commands correspond to the workflow steps described below.\nKey points:\n\nextract, downscale, and analyze are lists of steps, each calling one script.\nAll tuning happens through command-line arguments the CLI builds. Scripts never read environment variables for config.\nA step declares inputs (files), outputs (files) and params (everything else) as {cli_flag: value_key} pairs. The key is the literal flag the script expects.\ninputs and outputs values must be keys in the manifest’s paths block, all relative to run_dir. That indirection is what lets you move a run without editing a script.\nparams resolve from your config first, then mode_params, then fixed_values.\n--verbose reports the exact call issued for each step.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#explore-configuration-file",
+    "href": "docs/training/downscaling_inventory.html#explore-configuration-file",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Explore configuration file",
+    "text": "Explore configuration file\nless config.yaml\nThe supplied configuration uses these values:\nglobal:\n  run_dir: inventory-run\n  aws_profile: magic\ndownscaling:\n  mode: production\n  management_scenarios: [inventory]\n  outputs_to_extract: [TotSoilCarb]\n  n_cores: 4\n  pecan_output_dir: demo-data/modelout\n  data_layers_dir: demo-data/data\nKeep mode: production to use all sites, ensemble members, and years in this small four-county dataset. By comparison, demo reads all sites for one member and the final year, while dev reads the first 10 sites and members for the final two years. The inventory scenario matches the downloaded output_inventory/ directory. outputs_to_extract limits this walkthrough to TotSoilCarb. run_dir controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set n_cores to your allocated CPUs.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#prepare-inputs",
+    "href": "docs/training/downscaling_inventory.html#prepare-inputs",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Prepare inputs",
+    "text": "Prepare inputs\n./magic-downscaling prepare --verbose --config config.yaml\n\ncopies ensemble output and data layers into run_dir, so the run is self-contained and can be archived or moved\nfails immediately if a scenario in your config has no matching output_&lt;scenario&gt;/ directory, which is the usual sign the config and the ensemble disagree",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#extract-sipnet-output",
+    "href": "docs/training/downscaling_inventory.html#extract-sipnet-output",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Extract SIPNET output",
+    "text": "Extract SIPNET output\n./magic-downscaling extract --verbose --config config.yaml\nThe PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution. The extract step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format. Each value is a monthly mean for one site, ensemble member, scenario and variable. The subsequent RF fits select individual months from this table; they do not pool the monthly time series into one training set.\nFor a complete table with one scenario and every combination present, the row count is sites x members x months x variables. Check missing combinations and duplicate keys before interpreting a difference from that count.\nValues here are still in SIPNET units, kg C m-2 for pools. Conversion to Mg C ha-1 happens in the next step.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#downscale-to-fields",
+    "href": "docs/training/downscaling_inventory.html#downscale-to-fields",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Downscale to fields",
+    "text": "Downscale to fields\n./magic-downscaling downscale --verbose --config config.yaml\nFor each PFT and carbon pool this:\n\ntakes the design points that ran with that PFT as training data\nselects the final available month and fits one Random Forest per ensemble member, to that month’s mean model output\npredicts every field of that PFT, converts to reporting units, multiplies by area\nrepeats for the first month so a change between the two monthly means can be formed\naggregates to county and state\n\nFitting one forest per member is what carries the ensemble’s parameter uncertainty through to the field level instead of collapsing it to a single number.\nFor each ensemble member, soil carbon density is converted to a field total:\ntotal_per_field (Mg C) = density_per_ha (Mg C/ha) × area_ha (ha).\nField totals are summed within each county and PFT. County density is the county total divided by represented field area. The mean and standard deviation are then computed across ensemble members.\n\n\n\n\n\n\n\nOutput column\nMeaning for soil carbon\n\n\n\n\ndensity_per_ha\nField soil carbon density, Mg C/ha\n\n\ntotal_per_field\nField soil carbon stock, Mg C\n\n\nmean_total_per_county\nMean county stock across members, Mg C; the table below displays Gg C\n\n\nmean_density_per_ha\nMean across members of area-weighted county density, Mg C/ha\n\n\nmean_total_ha\nMean represented field area across members, ha\n\n\nsd_total_per_county\nAcross-member SD of county stock, Mg C\n\n\nsd_density_per_ha\nAcross-member SD of county density, Mg C/ha",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#analyze-and-view-results",
+    "href": "docs/training/downscaling_inventory.html#analyze-and-view-results",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Analyze and view results",
+    "text": "Analyze and view results\n./magic-downscaling analyze --verbose --config config.yaml\nanalyze writes diagnostics and maps to figures/, including county and field maps, variable-importance summaries, and response curves for important predictors.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#field-results",
+    "href": "docs/training/downscaling_inventory.html#field-results",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Field results",
+    "text": "Field results\nThe maps show each predicted field’s mean soil carbon density across the 10 ensemble members.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#county-results",
+    "href": "docs/training/downscaling_inventory.html#county-results",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "County results",
+    "text": "County results\nCounty stock is the sum of predicted field stocks within each ensemble member and is then summarized across the 10 members.\nDownload county statistics (CSV)\nSD describes spread across ensemble members; it is not a confidence interval.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#model-checks",
+    "href": "docs/training/downscaling_inventory.html#model-checks",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Model checks",
+    "text": "Model checks\nUse these checks to confirm field coverage and how well the Random Forests reproduce the SIPNET results at the design points.\nCoverage. This run predicted 22,729 fields. Each field has values from all 10 ensemble members. Compare the range of predicted values with the SIPNET values used for training; values far outside that range need review.\nModel fit. Out-of-bag (OOB) R2 measures how well each forest predicts SIPNET values left out during fitting. Higher values are better. Zero is no better than using the average training value, and negative values are worse. This checks the Random Forest, not SIPNET or the inventory against field measurements.\nMedian OOB R2 is 0.41 for annual crops and 0.31 for woody perennial crops. One woody-perennial member falls below zero. These scores show how well the Random Forests copy SIPNET at the design points; they do not show whether modeled soil carbon agrees with measurements.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
+    "objectID": "docs/training/downscaling_inventory.html#scaling-beyond-the-demo",
+    "href": "docs/training/downscaling_inventory.html#scaling-beyond-the-demo",
+    "title": "Downscaling a MAGiC inventory",
+    "section": "Scaling beyond the demo",
+    "text": "Scaling beyond the demo\nThe same four commands can be used with a larger inventory. In the configuration, set mode: production, point pecan_output_dir and data_layers_dir to the full input directories using paths relative to the repository, and list the outputs to process. Set n_cores to the CPUs in the compute allocation.\nThe four county demo used 10 ensemble members for 2016-2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.\nTreat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The prepare step also copies the input data into run_dir, so the run needs space for both the source data and the staged copy.",
+    "crumbs": [
+      "Training",
+      "Inventory Downscaling"
+    ]
+  },
+  {
     "objectID": "docs/training/index.html",
     "href": "docs/training/index.html",
     "title": "MAGiC downscaling training",
@@ -132,135 +852,14 @@
     ]
   },
   {
-    "objectID": "docs/training/downscaling_inventory.html",
-    "href": "docs/training/downscaling_inventory.html",
-    "title": "Downscaling a MAGiC inventory",
+    "objectID": "docs/references.html",
+    "href": "docs/references.html",
+    "title": "References",
     "section": "",
-    "text": "This tutorial demonstrates how to downscale output from a PEcAn ensemble run. We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.\nThe downscaling step fits Random Forest models to the ensemble output at those sampled fields, then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates. It aggregates the field-level predictions into county and run-scope summaries.\nThe demo covers four Sacramento-San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.\nFor each plant functional type (PFT), output variable, and scenario, the workflow fits one forest per ensemble member using the final available month’s values at the design points. It also fits forests for the first month to estimate change over the simulation period.\nThis documentation assumes that the steps in Environment setup have been completed. In a new terminal session, follow its startup instructions. Run all commands below from the downscaling repository root.",
+    "text": "References\nEFI Standards\nDietze, Michael C., R. Quinn Thomas, Jody Peters, Carl Boettiger, Gerbrand Koren, Alexey N. Shiklomanov, and Jaime Ashander. 2023. “A Community Convention for Ecological Forecasting: Output Files and Metadata Version 1.0.” Ecosphere 14 (11): e4686. https://doi.org/10.1002/ecs2.4686.\nCADWR LandIQ Crop Map\nCalifornia Department of Water Resources. (2018). Statewide Crop Mapping—California Natural Resources Agency Open Data. Retrieved “Oct 14, 2024” from https://data.cnra.ca.gov/dataset/statewide-crop-mapping.\nCalAdapt\nLyons, Andrew and R Development Core Team. 2025. “Caladaptr: Tools for the Cal-Adapt API in R.” Manual. https://ucanr-igis.github.io/caladaptr.\nSoilGrids250m\nHengl, T. et al. 2017. “SoilGrids250m: Global Gridded Soil Information Based on Machine Learning.” PLoS ONE 12(2): e0169748. https://doi.org/10.1371/journal.pone.0169748\nERA5 Climate Data\nHersbach, H. et al. 2020. “The ERA5 Global Reanalysis.” Quarterly Journal of the Royal Meteorological Society 146: 1999–2049. https://doi.org/10.1002/qj.3803\nCalAdapt Climate Zones CalAdapt. 2024. “Climate Zones.” Accessed October 14, 2024. https://cal-adapt.org/tools/climate-zones/.\nSIPNET\nBraswell, Bobby H., William J. Sacks, Ernst Linder, and David S. Schimel. 2005. “Estimating Diurnal to Annual Ecosystem Parameters by Synthesis of a Carbon Flux Model with Eddy Covariance Net Ecosystem Exchange Observations.” Global Change Biology 11 (2): 335–55. https://doi.org/10.1111/j.1365-2486.2005.00897.x.\nSacks, William J., David S. Schimel, Russell K. Monson, and Bobby H. Braswell. 2006. “Model‐data Synthesis of Diurnal and Seasonal CO2 Fluxes at Niwot Ridge, Colorado.” Global Change Biology 12 (2): 240–59. https://doi.org/10.1111/j.1365-2486.2005.01059.x.\nRandom Forest\nLiaw, Andy, and Matthew Wiener. 2002. “Classification and Regression by randomForest.” R News 2 (3): 18–22. https://CRAN.R-project.org/doc/Rnews/.\nFeature Space Coverage Sampling\nWadoux, Alexandre M. J-C., Dick J. Brus, and Gerard B. M. Heuvelink. 2019. “Sampling Design Optimization for Soil Mapping with Random Forest.” Geoderma 355: 113913. https://doi.org/10.1016/j.geoderma.2019.113913\nBrus, Dick J. 2019. “Sampling for Digital Soil Mapping: A Tutorial Supported by R Scripts.” Geoderma 338: 464–480. https://doi.org/10.1016/j.geoderma.2018.07.036\nk-means Clustering\nArthur, David, and Sergei Vassilvitskii. 2007. “k-means++: The Advantages of Careful Seeding.” In Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms, 1027–1035.\nFarthest Point Sampling\nPronzato, Luc, and Werner G. Müller. 2012. “Design of Computer Experiments: Space Filling and Beyond.” Statistics and Computing 22 (3): 681–701. https://doi.org/10.1007/s11222-011-9242-3\nNormalized Difference Tillage Index\nZheng, Baojuan, James B. Campbell, and Kirsten M. de Beurs. 2012. “Remote Sensing of Crop Residue Cover Using Multi-Temporal Landsat Imagery.” Remote Sensing of Environment 117: 177–183. https://doi.org/10.1016/j.rse.2011.09.016",
     "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#fetch-demo-data",
-    "href": "docs/training/downscaling_inventory.html#fetch-demo-data",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Fetch demo data",
-    "text": "Fetch demo data\n./magic-downscaling get-demo-data --config example_user_config.yaml\ncp demo-data/modelout/demo_config.yaml config.yaml\nThe data package contains:\n\nmodelout/ – SIPNET output, 100 design points x 10 ensemble members, 2016-2023, under output_inventory/\ndata/ – field geometry, attributes, covariates and county boundaries for the four demo counties, plus covariates for the design points so the model can train\n\n\nInspect the inputs\nStart with config.yaml: identify the model-output directory, data-layer directory, scenario, output variable, and run directory. In the model-output directory, site_info.csv identifies the design points and output_inventory/out/ holds the NetCDF files. In the data layers, site_covariates.csv supplies predictors; cadwr_crops_sites.gpkg and cadwr_crops_site_summary.csv identify target fields.\nFor example, the supplied output_inventory/out/ENS-00002-328163/2016.nc contains one location and 2,928 time steps. This excerpt from its NetCDF header shows the soil-carbon variable and its units:\ndimensions:\n    lon = 1 ;\n    lat = 1 ;\n    time = UNLIMITED ; // (2928 currently)\nvariables:\n    double time(time) ;\n        time:units = \"days since 2016-01-01 00:00:00\" ;\n    double TotSoilCarb(time, lat, lon) ;\n        TotSoilCarb:units = \"kg C m-2\" ;\n        TotSoilCarb:_FillValue = -999. ;\n        TotSoilCarb:long_name = \"Total Soil Carbon\" ;\nThe preview below reads the covariate table staged by prepare. site_id joins these rows to the model output and field attributes. The numeric columns passed to the fitting routine are shown beneath it; constant columns may be dropped when fitting a PFT.\n\n\n\nFive rows from the supplied covariate table.\n\n\nsite_id\npft\narea_ha\nocd\ntemp\ntillage_rank\n\n\n\n\n10\nannual crop\n3.980\n345\n17.2\n0.4724164\n\n\n12\nannual crop\n16.800\n348\n16.8\n0.4573896\n\n\n14\nannual crop\n29.500\n286\n15.0\n0.7121680\n\n\n53\nwoody perennial crop\n0.735\n393\n17.2\n0.4313695\n\n\n79\nannual crop\n0.810\n303\n17.2\n0.0000000\n\n\n\n\n\narea_ha, clay, ocd, twi, temp, precip, srad, vapr, eof_1, eof_2, eof_3, eof_4,\neof_5, eof_6, eof_7, eof_8, eof_9, eof_10, pft_woody_perennial_crop,\npft_annual_crop, tillage_rank, tillage_freq, leafon_doy, leafoff_doy,\nleafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood\n\n\n\n\nCovariates and design points\nsite_covariates.csv describes the fields where SIPNET was run and the fields where predictions are needed. The workflow joins these data using site_id.\n\n\n\n\n\n\n\n\nFeature group\nColumns\nWhat they describe\n\n\n\n\nClimate\ntemp, precip, srad, vapr\nMulti-year temperature, precipitation, solar radiation and atmospheric moisture summaries\n\n\nSoil and terrain\nclay, ocd, twi\nClay content, soil organic carbon density and topographic wetness\n\n\nCrop history\neof_*\nPrincipal components summarizing crop sequences across years; preparation retains up to 10 components\n\n\nPhenology\nleafon_doy, leafoff_doy, leafon_doy_sd, leafoff_doy_sd\nMean green-up and senescence day of year, and their variation across years\n\n\nTillage\ntillage_rank, tillage_freq\nMonitored tillage rank and fraction of monitored years with detected tillage\n\n\nIrrigation\nirr_canopy, irr_flood\nIndicators derived from the monitored irrigation categories\n\n\nField\narea_ha\nField area, also used to convert predicted density to a field total\n\n\nPFT\npft_annual_crop, pft_woody_perennial_crop\nIndicators of the assigned PFT\n\n\n\nThe clustering scripts use the seven climate, soil and terrain features plus the crop-history, phenology and management columns present in the input table. With 10 crop-history components and all eight phenology and management columns, this is 25 clustering features.\nSite selection groups fields separately within annual and woody perennial PFTs, using standardized features and k-means clustering. It selects fields near the cluster centers, then uses farthest point sampling to choose a smaller set that represents the feature space.\nThe Random Forest predictor list is selected separately: downscale uses all numeric columns of site_covariates.csv except climregion_id. These are used to fit the Random Forest; site_id is key that joins the model output with the covariates.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#explore-cli-layout",
-    "href": "docs/training/downscaling_inventory.html#explore-cli-layout",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Explore CLI layout",
-    "text": "Explore CLI layout\nExecution is controlled by magic-downscaling and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.\n./magic-downscaling -h\nThe commands correspond to the workflow steps described below.\nKey points:\n\nextract, downscale, and analyze are lists of steps, each calling one script.\nAll tuning happens through command-line arguments the CLI builds. Scripts never read environment variables for config.\nA step declares inputs (files), outputs (files) and params (everything else) as {cli_flag: value_key} pairs. The key is the literal flag the script expects.\ninputs and outputs values must be keys in the manifest’s paths block, all relative to run_dir. That indirection is what lets you move a run without editing a script.\nparams resolve from your config first, then mode_params, then fixed_values.\n--verbose reports the exact call issued for each step.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#explore-configuration-file",
-    "href": "docs/training/downscaling_inventory.html#explore-configuration-file",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Explore configuration file",
-    "text": "Explore configuration file\nless config.yaml\nThe supplied configuration uses these values:\nglobal:\n  run_dir: inventory-run\n  aws_profile: magic\ndownscaling:\n  mode: production\n  management_scenarios: [inventory]\n  outputs_to_extract: [TotSoilCarb]\n  n_cores: 4\n  pecan_output_dir: demo-data/modelout\n  data_layers_dir: demo-data/data\nKeep mode: production to use all sites, ensemble members, and years in this small four-county dataset. By comparison, demo reads all sites for one member and the final year, while dev reads the first 10 sites and members for the final two years. The inventory scenario matches the downloaded output_inventory/ directory. outputs_to_extract limits this walkthrough to TotSoilCarb. run_dir controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set n_cores to your allocated CPUs.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#prepare-inputs",
-    "href": "docs/training/downscaling_inventory.html#prepare-inputs",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Prepare inputs",
-    "text": "Prepare inputs\n./magic-downscaling prepare --verbose --config config.yaml\n\ncopies ensemble output and data layers into run_dir, so the run is self-contained and can be archived or moved\nfails immediately if a scenario in your config has no matching output_&lt;scenario&gt;/ directory, which is the usual sign the config and the ensemble disagree",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#extract-sipnet-output",
-    "href": "docs/training/downscaling_inventory.html#extract-sipnet-output",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Extract SIPNET output",
-    "text": "Extract SIPNET output\n./magic-downscaling extract --verbose --config config.yaml\nThe PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution. The extract step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format. Each value is a monthly mean for one site, ensemble member, scenario and variable. The subsequent RF fits select individual months from this table; they do not pool the monthly time series into one training set.\n\n\n\nensemble_output.csv as written by extract\n\n\nrows\nsites\nmembers\nmonths\nvariables\n\n\n\n\n96,000\n100\n10\n96\nTotSoilCarb\n\n\n\n\n\nFor a complete table with one scenario and every combination present, the row count is sites x members x months x variables. Check missing combinations and duplicate keys before interpreting a difference from that count.\nValues here are still in SIPNET units, kg C m-2 for pools. Conversion to Mg C ha-1 happens in the next step.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#downscale-to-fields",
-    "href": "docs/training/downscaling_inventory.html#downscale-to-fields",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Downscale to fields",
-    "text": "Downscale to fields\n./magic-downscaling downscale --verbose --config config.yaml\nFor each PFT and carbon pool this:\n\ntakes the design points that ran with that PFT as training data\nselects the final available month and fits one Random Forest per ensemble member, to that month’s mean model output\npredicts every field of that PFT, converts to reporting units, multiplies by area\nrepeats for the first month so a change between the two monthly means can be formed\naggregates to county and state\n\nFitting one forest per member is what carries the ensemble’s parameter uncertainty through to the field level instead of collapsing it to a single number.\nFor each ensemble member, soil carbon density is converted to a field total:\ntotal_per_field (Mg C) = density_per_ha (Mg C/ha) × area_ha (ha).\nField totals are summed within each county and PFT. County density is the county total divided by represented field area. The mean and standard deviation are then computed across ensemble members.\n\n\n\n\n\n\n\nOutput column\nMeaning for soil carbon\n\n\n\n\ndensity_per_ha\nField soil carbon density, Mg C/ha\n\n\ntotal_per_field\nField soil carbon stock, Mg C\n\n\nmean_total_per_county\nMean county stock across members, Mg C; the table below displays Gg C\n\n\nmean_density_per_ha\nMean across members of area-weighted county density, Mg C/ha\n\n\nmean_total_ha\nMean represented field area across members, ha\n\n\nsd_total_per_county\nAcross-member SD of county stock, Mg C\n\n\nsd_density_per_ha\nAcross-member SD of county density, Mg C/ha",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#analyze-and-view-results",
-    "href": "docs/training/downscaling_inventory.html#analyze-and-view-results",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Analyze and view results",
-    "text": "Analyze and view results\n./magic-downscaling analyze --verbose --config config.yaml\nanalyze writes diagnostics and maps to figures/, including county and field maps, variable-importance summaries, and response curves for important predictors.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#field-results",
-    "href": "docs/training/downscaling_inventory.html#field-results",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Field results",
-    "text": "Field results\nThe maps show each predicted field’s mean soil carbon density across the 10 ensemble members.\n\n\n\n\n\nEnsemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown.\n\n\n\n\n\n\n\n\n\nEnsemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#county-results",
-    "href": "docs/training/downscaling_inventory.html#county-results",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "County results",
-    "text": "County results\nCounty stock is the sum of predicted field stocks within each ensemble member and is then summarized across the 10 members.\n\n\n\n\n\nPoints are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale.\n\n\n\n\nDownload county statistics (CSV)\n\n\n\nTotal soil carbon stock represented by predicted fields; modeled values use two significant figures.\n\n\n\n\n\n\n\n\n\nCounty\nCrop type\nFields\nStock mean (Gg C)\nStock SD (Gg C)\n\n\n\n\nContra Costa\nAnnual crop\n1,183\n1,700\n170\n\n\nSacramento\nAnnual crop\n4,554\n5,000\n520\n\n\nSolano\nAnnual crop\n3,547\n5,500\n630\n\n\nYolo\nAnnual crop\n5,272\n8,200\n1,000\n\n\nContra Costa\nWoody perennial\n646\n220\n38\n\n\nSacramento\nWoody perennial\n2,261\n1,600\n320\n\n\nSolano\nWoody perennial\n1,838\n1,300\n220\n\n\nYolo\nWoody perennial\n3,428\n2,600\n410\n\n\n\n\n\nSD describes spread across ensemble members; it is not a confidence interval.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#model-checks",
-    "href": "docs/training/downscaling_inventory.html#model-checks",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Model checks",
-    "text": "Model checks\nUse these checks to confirm field coverage and how well the Random Forests reproduce the SIPNET results at the design points.\nCoverage. This run predicted 22,729 fields. Each field has values from all 10 ensemble members. Compare the range of predicted values with the SIPNET values used for training; values far outside that range need review.\nModel fit. Out-of-bag (OOB) R2 measures how well each forest predicts SIPNET values left out during fitting. Higher values are better. Zero is no better than using the average training value, and negative values are worse. This checks the Random Forest, not SIPNET or the inventory against field measurements.\n\n\n\nRandom Forest fit across the 10 ensemble members.\n\n\nCrop type\nMembers\nMedian OOB R2\nMembers below zero\n\n\n\n\nAnnual crop\n10\n0.41\n0\n\n\nWoody perennial\n10\n0.31\n1\n\n\n\n\n\n\n\n\n\n\nEach point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero.\n\n\n\n\nMedian OOB R2 is 0.41 for annual crops and 0.31 for woody perennial crops. One woody-perennial member falls below zero. These scores show how well the Random Forests copy SIPNET at the design points; they do not show whether modeled soil carbon agrees with measurements.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
-    ]
-  },
-  {
-    "objectID": "docs/training/downscaling_inventory.html#scaling-beyond-the-demo",
-    "href": "docs/training/downscaling_inventory.html#scaling-beyond-the-demo",
-    "title": "Downscaling a MAGiC inventory",
-    "section": "Scaling beyond the demo",
-    "text": "Scaling beyond the demo\nThe same four commands can be used with a larger inventory. In the configuration, set mode: production, point pecan_output_dir and data_layers_dir to the full input directories using paths relative to the repository, and list the outputs to process. Set n_cores to the CPUs in the compute allocation.\nThe four county demo used 10 ensemble members for 2016-2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.\nTreat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The prepare step also copies the input data into run_dir, so the run needs space for both the source data and the staged copy.",
-    "crumbs": [
-      "Training",
-      "Inventory Downscaling"
+      "Docs",
+      "References"
     ]
   }
 ]
