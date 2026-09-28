@@ -25,8 +25,8 @@ Design point selection | Data managers | How the design points are chosen | Scri
 
 ## Commands
 
-The `extract`, `downscale`, and `analyze` commands run steps defined in
-[`downscaling_manifest.yaml`](../../downscaling_manifest.yaml).
+The `extract`, `downscale`, and `analyze` commands run the corresponding
+workflow steps.
 
 Command | What it does
 --|--
