@@ -10,7 +10,7 @@
 <meta name="author" content="Akash B V">
 <meta name="dcterms.date" content="2026-09-28">
 
-<title>Design Point Validation – MAGiC Downscaling</title>
+<title>Future Management and Climate Scenarios – MAGiC Downscaling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../reports/variable_importance.html" rel="next">
-<link href="../reports/scenarios.html" rel="prev">
+<link href="../reports/design_point_validation.html" rel="next">
+<link href="../reports/downscaling_results.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -76,8 +76,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -91,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/design_point_validation.html">Design Point Validation</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/scenarios.html">Future Scenarios</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -184,13 +182,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Future Scenarios</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
 </li>
@@ -270,23 +268,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#pft-allocation" id="toc-pft-allocation" class="nav-link" data-scroll-target="#pft-allocation">PFT allocation</a></li>
-  <li><a href="#feature-space-coverage-mssd-scaled" id="toc-feature-space-coverage-mssd-scaled" class="nav-link" data-scroll-target="#feature-space-coverage-mssd-scaled">Feature space coverage (MSSD, scaled)</a></li>
-  <li><a href="#cluster-balance-gini-of-cluster-sizes" id="toc-cluster-balance-gini-of-cluster-sizes" class="nav-link" data-scroll-target="#cluster-balance-gini-of-cluster-sizes">Cluster balance (Gini of cluster sizes)</a></li>
-  <li><a href="#anchor-recovery" id="toc-anchor-recovery" class="nav-link" data-scroll-target="#anchor-recovery">Anchor recovery</a></li>
-  <li><a href="#monitoring-layer-coverage" id="toc-monitoring-layer-coverage" class="nav-link" data-scroll-target="#monitoring-layer-coverage">Monitoring layer coverage</a></li>
-  <li><a href="#climate-region-coverage" id="toc-climate-region-coverage" class="nav-link" data-scroll-target="#climate-region-coverage">Climate region coverage</a></li>
-  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a></li>
+  <li><a href="#statewide-soil-carbon-response" id="toc-statewide-soil-carbon-response" class="nav-link active" data-scroll-target="#statewide-soil-carbon-response">Statewide soil-carbon response</a></li>
+  <li><a href="#contrasts-against-the-reference" id="toc-contrasts-against-the-reference" class="nav-link" data-scroll-target="#contrasts-against-the-reference">Contrasts against the reference</a></li>
+  <li><a href="#annual-model-defined-n2o-n" id="toc-annual-model-defined-n2o-n" class="nav-link" data-scroll-target="#annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</a></li>
+  <li><a href="#gas-reporting-boundary" id="toc-gas-reporting-boundary" class="nav-link" data-scroll-target="#gas-reporting-boundary">Gas-reporting boundary</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/design_point_validation.html">Design Point Validation</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Reports</a></li><li class="breadcrumb-item"><a href="../reports/scenarios.html">Future Scenarios</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Design Point Validation</h1>
+<h1 class="title">Future Management and Climate Scenarios</h1>
+<p class="subtitle lead">Soil Carbon and Annual Nitrous-Oxide Results, 2024–2045</p>
 </div>
 
 
@@ -316,385 +311,266 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This report validates feature-space coverage of the selected design points relative to the statewide population. It does not determine the optimal number of SIPNET design points. The 1,000-site design evaluated here is selected from the 10,000-site candidate pool for demonstration. <!-- TODO update after the optimal number of design points is determined by github.com/ccmmf/organization#192 --></p>
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>Design points are the field locations where SIPNET is run; a Random Forest then downscales those outputs to every cropland field in the CADWR LandIQ Crop Map. <code>020_cluster_sites.R</code> clusters the population per plant functional type and keeps one representative per cluster as a 10,000-site candidate pool, <code>021_subsample_design_points.R</code> draws the design from that pool by farthest point sampling, and <code>022_validate_design_points.R</code> writes the tables and figures below. Coverage matters because the Random Forest predicts reliably only within the range of conditions the design spans, so gaps in covariate coverage become extrapolation.</p>
-<p>Clustering uses seed 42 (<code>020_cluster_sites.R</code>).</p>
-</section>
-<section id="pft-allocation" class="level2">
-<h2 class="anchored" data-anchor-id="pft-allocation">PFT allocation</h2>
-<p>Population and design counts and area share per PFT.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<p>The future analysis compares four configurations through December 2045. The reference uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to the reference.</p>
+<div id="tbl-future-configurations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-future-configurations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Future configurations used in the scenario analysis.
+</figcaption>
+<div aria-describedby="tbl-future-configurations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
 <colgroup>
-<col style="width: 26%">
-<col style="width: 8%">
-<col style="width: 11%">
-<col style="width: 12%">
-<col style="width: 16%">
-<col style="width: 11%">
-<col style="width: 13%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">pft</th>
-<th style="text-align: right;">n_pop</th>
-<th style="text-align: right;">area_pop</th>
-<th style="text-align: right;">pct_pop_n</th>
-<th style="text-align: right;">pct_pop_area</th>
-<th style="text-align: right;">n_design</th>
-<th style="text-align: right;">pct_design</th>
+<th>Configuration</th>
+<th>Management</th>
+<th>Climate model</th>
+<th>Pathway</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">215647</td>
-<td style="text-align: right;">1683351</td>
-<td style="text-align: right;">56</td>
-<td style="text-align: right;">48.3</td>
-<td style="text-align: right;">483</td>
-<td style="text-align: right;">48.3</td>
+<td>Reference</td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Reference configuration</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">169587</td>
-<td style="text-align: right;">1802267</td>
-<td style="text-align: right;">44</td>
-<td style="text-align: right;">51.7</td>
-<td style="text-align: right;">517</td>
-<td style="text-align: right;">51.7</td>
+<td>Management</td>
+<td>NBS</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Management comparison</td>
+</tr>
+<tr class="odd">
+<td>Climate model</td>
+<td>BAU</td>
+<td>MPI-ESM1-2-HR</td>
+<td>SSP370</td>
+<td>Climate-model sensitivity</td>
+</tr>
+<tr class="even">
+<td>Pathway</td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP585</td>
+<td>Emissions-pathway sensitivity</td>
 </tr>
 </tbody>
 </table>
 </div>
+</figure>
 </div>
-</section>
-<section id="feature-space-coverage-mssd-scaled" class="level2">
-<h2 class="anchored" data-anchor-id="feature-space-coverage-mssd-scaled">Feature space coverage (MSSD, scaled)</h2>
-<p>Mean squared shortest distance from each population field to its nearest design point in scaled feature space. Lower is better coverage.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<section id="statewide-soil-carbon-response" class="level2">
+<h2 class="anchored" data-anchor-id="statewide-soil-carbon-response">Statewide soil-carbon response</h2>
+<div id="fig-scenario-soc-statewide" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway configurations">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-soc-statewide.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Statewide soil-carbon response for the four future configurations. Points show ensemble means and bars show empirical member p05–p95."><img src="assets/carb-results/scenario-soc-statewide.png" class="img-fluid figure-img" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway configurations"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Statewide soil-carbon response for the four future configurations. Points show ensemble means and bars show empirical member p05–p95.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-soc-response" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Statewide December 2045 minus January 2024 soil-carbon stock response, Tg C.
+</figcaption>
+<div aria-describedby="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: left;">pft</th>
-<th style="text-align: right;">n_pop</th>
-<th style="text-align: right;">n_design</th>
-<th style="text-align: right;">mssd</th>
+<th>Configuration</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">p05</th>
+<th style="text-align: right;">p95</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">169587</td>
-<td style="text-align: right;">517</td>
-<td style="text-align: right;">10.6549</td>
+<td>Reference</td>
+<td style="text-align: right;">-45.33</td>
+<td style="text-align: right;">-98.30</td>
+<td style="text-align: right;">17.90</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">215647</td>
-<td style="text-align: right;">483</td>
-<td style="text-align: right;">10.4718</td>
+<td>Management</td>
+<td style="text-align: right;">-43.77</td>
+<td style="text-align: right;">-97.21</td>
+<td style="text-align: right;">20.86</td>
+</tr>
+<tr class="odd">
+<td>Climate model</td>
+<td style="text-align: right;">-45.74</td>
+<td style="text-align: right;">-95.60</td>
+<td style="text-align: right;">15.96</td>
+</tr>
+<tr class="even">
+<td>Pathway</td>
+<td style="text-align: right;">-49.04</td>
+<td style="text-align: right;">-100.55</td>
+<td style="text-align: right;">12.00</td>
 </tr>
 </tbody>
 </table>
 </div>
+</figure>
 </div>
+<p>All four ensemble means are negative, indicating modeled soil-carbon stock loss over the period. The ensemble ranges are parameter-member spread, not observational confidence intervals.</p>
 </section>
-<section id="cluster-balance-gini-of-cluster-sizes" class="level2">
-<h2 class="anchored" data-anchor-id="cluster-balance-gini-of-cluster-sizes">Cluster balance (Gini of cluster sizes)</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<section id="contrasts-against-the-reference" class="level2">
+<h2 class="anchored" data-anchor-id="contrasts-against-the-reference">Contrasts against the reference</h2>
+<div id="fig-scenario-soc-contrasts" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-soc-contrasts.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: County soil-carbon response contrasts against the reference configuration. The three panels share a signed color scale."><img src="assets/carb-results/scenario-soc-contrasts.png" class="img-fluid figure-img" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: County soil-carbon response contrasts against the reference configuration. The three panels share a signed color scale.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-soc-contrasts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Statewide soil-carbon response contrasts, Tg C. Contrasts are calculated within original ensemble-member identity before summarization.
+</figcaption>
+<div aria-describedby="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
 <colgroup>
-<col style="width: 30%">
 <col style="width: 16%">
-<col style="width: 13%">
-<col style="width: 17%">
-<col style="width: 13%">
-<col style="width: 8%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 16%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">pft</th>
-<th style="text-align: right;">n_clusters</th>
-<th style="text-align: right;">min_size</th>
-<th style="text-align: right;">median_size</th>
-<th style="text-align: right;">max_size</th>
-<th style="text-align: right;">gini</th>
+<th>Contrast</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">p05</th>
+<th style="text-align: right;">p95</th>
+<th>Interpretation</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">annual crop</td>
-<td style="text-align: right;">5171</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">25</td>
-<td style="text-align: right;">335</td>
-<td style="text-align: right;">0.436</td>
+<td>Management minus reference</td>
+<td style="text-align: right;">1.55</td>
+<td style="text-align: right;">-1.81</td>
+<td style="text-align: right;">3.86</td>
+<td>Less modeled stock loss on average</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">woody perennial crop</td>
-<td style="text-align: right;">4829</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">32</td>
-<td style="text-align: right;">387</td>
-<td style="text-align: right;">0.460</td>
+<td>Climate model minus reference</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">-5.06</td>
+<td style="text-align: right;">3.84</td>
+<td>Similar statewide mean, with regional differences</td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="anchor-recovery" class="level2">
-<h2 class="anchored" data-anchor-id="anchor-recovery">Anchor recovery</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: right;">n_anchors</th>
-<th style="text-align: right;">in_design</th>
-<th style="text-align: right;">missing</th>
-</tr>
-</thead>
-<tbody>
 <tr class="odd">
-<td style="text-align: right;">27</td>
-<td style="text-align: right;">27</td>
-<td style="text-align: right;">0</td>
+<td>Pathway minus reference</td>
+<td style="text-align: right;">-3.71</td>
+<td style="text-align: right;">-6.16</td>
+<td style="text-align: right;">-1.31</td>
+<td>Greater modeled stock loss</td>
 </tr>
 </tbody>
 </table>
 </div>
+</figure>
 </div>
+<p>The positive management contrast does not mean that statewide soil carbon increases. It means that the management configuration loses less soil carbon than the reference on average. The county maps show where each contrast contributes to the statewide result.</p>
 </section>
-<section id="monitoring-layer-coverage" class="level2">
-<h2 class="anchored" data-anchor-id="monitoring-layer-coverage">Monitoring layer coverage</h2>
-<p>Share of the population and of the design carrying each management and phenology feature.</p>
+<section id="annual-model-defined-n2o-n" class="level2">
+<h2 class="anchored" data-anchor-id="annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</h2>
+<div id="fig-scenario-n2o-annual" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management configurations from 2024 to 2045">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-n2o-annual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Annual model-defined N2O-N for the reference and management configurations. Lines show ensemble means; ribbons show empirical member p05–p95."><img src="assets/carb-results/scenario-n2o-annual.png" class="img-fluid figure-img" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management configurations from 2024 to 2045"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Annual model-defined N<sub>2</sub>O-N for the reference and management configurations. Lines show ensemble means; ribbons show empirical member p05–p95.
+</figcaption>
+</figure>
+</div>
+<p>Annual N<sub>2</sub>O-N is integrated over each calendar year and reported as native nitrogen mass per represented hectare. This differs from the historical inventory’s annualized endpoint rate.</p>
+<div id="fig-scenario-n2o-contrast" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-n2o-contrast.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Management-minus-reference annual N2O-N. Differences are calculated within original ensemble-member identity."><img src="assets/carb-results/scenario-n2o-contrast.png" class="img-fluid figure-img" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Management-minus-reference annual N<sub>2</sub>O-N. Differences are calculated within original ensemble-member identity.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-annual-n2o" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<sup>-1</sup>.
+</figcaption>
+<div aria-describedby="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: left;">feature</th>
-<th style="text-align: right;">pop_n</th>
-<th style="text-align: right;">pop_pct</th>
-<th style="text-align: right;">design_n</th>
-<th style="text-align: right;">design_pct</th>
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Reference</th>
+<th style="text-align: right;">Management</th>
+<th style="text-align: right;">Management minus reference</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">tillage_rank</td>
-<td style="text-align: right;">289392</td>
-<td style="text-align: right;">75.1</td>
-<td style="text-align: right;">766</td>
-<td style="text-align: right;">76.6</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">23.71</td>
+<td style="text-align: right;">23.85</td>
+<td style="text-align: right;">0.14</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">tillage_freq</td>
-<td style="text-align: right;">289780</td>
-<td style="text-align: right;">75.2</td>
-<td style="text-align: right;">773</td>
-<td style="text-align: right;">77.3</td>
+<td style="text-align: right;">2030</td>
+<td style="text-align: right;">22.13</td>
+<td style="text-align: right;">22.47</td>
+<td style="text-align: right;">0.34</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">leafon_doy</td>
-<td style="text-align: right;">385234</td>
-<td style="text-align: right;">100.0</td>
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">2035</td>
+<td style="text-align: right;">21.54</td>
+<td style="text-align: right;">22.33</td>
+<td style="text-align: right;">0.79</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">leafoff_doy</td>
-<td style="text-align: right;">385234</td>
-<td style="text-align: right;">100.0</td>
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">2040</td>
+<td style="text-align: right;">15.06</td>
+<td style="text-align: right;">15.54</td>
+<td style="text-align: right;">0.48</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">leafon_doy_sd</td>
-<td style="text-align: right;">385234</td>
-<td style="text-align: right;">100.0</td>
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">100.0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">leafoff_doy_sd</td>
-<td style="text-align: right;">385234</td>
-<td style="text-align: right;">100.0</td>
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">100.0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">irr_canopy</td>
-<td style="text-align: right;">346937</td>
-<td style="text-align: right;">90.1</td>
-<td style="text-align: right;">709</td>
-<td style="text-align: right;">70.9</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">irr_flood</td>
-<td style="text-align: right;">26872</td>
-<td style="text-align: right;">7.0</td>
-<td style="text-align: right;">188</td>
-<td style="text-align: right;">18.8</td>
+<td style="text-align: right;">2045</td>
+<td style="text-align: right;">20.94</td>
+<td style="text-align: right;">22.06</td>
+<td style="text-align: right;">1.11</td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
+<p>The management mean is higher than the reference in most years, but the matched-member spread commonly crosses zero. These modeled differences do not establish an observed causal management effect.</p>
 </section>
-<section id="climate-region-coverage" class="level2">
-<h2 class="anchored" data-anchor-id="climate-region-coverage">Climate region coverage</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: right;">climregion_id</th>
-<th style="text-align: right;">n_pop</th>
-<th style="text-align: right;">pct_pop</th>
-<th style="text-align: right;">n_design</th>
-<th style="text-align: right;">pct_design</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">20607</td>
-<td style="text-align: right;">5.3</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: right;">5.9</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">15033</td>
-<td style="text-align: right;">3.9</td>
-<td style="text-align: right;">124</td>
-<td style="text-align: right;">12.4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">136802</td>
-<td style="text-align: right;">35.5</td>
-<td style="text-align: right;">263</td>
-<td style="text-align: right;">26.3</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">3536</td>
-<td style="text-align: right;">0.9</td>
-<td style="text-align: right;">22</td>
-<td style="text-align: right;">2.2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">10454</td>
-<td style="text-align: right;">2.7</td>
-<td style="text-align: right;">33</td>
-<td style="text-align: right;">3.3</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">4626</td>
-<td style="text-align: right;">1.2</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">2.0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">50600</td>
-<td style="text-align: right;">13.1</td>
-<td style="text-align: right;">125</td>
-<td style="text-align: right;">12.5</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">29636</td>
-<td style="text-align: right;">7.7</td>
-<td style="text-align: right;">83</td>
-<td style="text-align: right;">8.3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">6351</td>
-<td style="text-align: right;">1.6</td>
-<td style="text-align: right;">33</td>
-<td style="text-align: right;">3.3</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">1692</td>
-<td style="text-align: right;">0.4</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: right;">1.3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">105897</td>
-<td style="text-align: right;">27.5</td>
-<td style="text-align: right;">225</td>
-<td style="text-align: right;">22.5</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="figures" class="level2">
-<h2 class="anchored" data-anchor-id="figures">Figures</h2>
-<!-- two PFTs (annual crop, woody perennial crop); add figure blocks if a third PFT is introduced -->
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/cluster_variable_importance.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Variable importance (eta-squared)"><img src="../figures/cluster_variable_importance.svg" class="img-fluid figure-img" alt="Variable importance (eta-squared)"></a></p>
-<figcaption>Variable importance (eta-squared)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/design_points.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Design points on California cropland"><img src="../figures/design_points.webp" class="img-fluid figure-img" alt="Design points on California cropland"></a></p>
-<figcaption>Design points on California cropland</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/nn_distance.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Nearest-neighbor distances"><img src="../figures/nn_distance.svg" class="img-fluid figure-img" alt="Nearest-neighbor distances"></a></p>
-<figcaption>Nearest-neighbor distances</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/cdf_overlay_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="CDF overlay (annual crop)"><img src="../figures/cdf_overlay_annual_crop.webp" class="img-fluid figure-img" alt="CDF overlay (annual crop)"></a></p>
-<figcaption>CDF overlay (annual crop)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/pca_scatter_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="PCA scatter (annual crop)"><img src="../figures/pca_scatter_annual_crop.webp" class="img-fluid figure-img" alt="PCA scatter (annual crop)"></a></p>
-<figcaption>PCA scatter (annual crop)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/cluster_sizes_annual_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Sorted cluster sizes (annual crop)"><img src="../figures/cluster_sizes_annual_crop.webp" class="img-fluid figure-img" alt="Sorted cluster sizes (annual crop)"></a></p>
-<figcaption>Sorted cluster sizes (annual crop)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/cdf_overlay_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="CDF overlay (woody perennial crop)"><img src="../figures/cdf_overlay_woody_perennial_crop.webp" class="img-fluid figure-img" alt="CDF overlay (woody perennial crop)"></a></p>
-<figcaption>CDF overlay (woody perennial crop)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/pca_scatter_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="PCA scatter (woody perennial crop)"><img src="../figures/pca_scatter_woody_perennial_crop.webp" class="img-fluid figure-img" alt="PCA scatter (woody perennial crop)"></a></p>
-<figcaption>PCA scatter (woody perennial crop)</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/cluster_sizes_woody_perennial_crop.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Sorted cluster sizes (woody perennial crop)"><img src="../figures/cluster_sizes_woody_perennial_crop.webp" class="img-fluid figure-img" alt="Sorted cluster sizes (woody perennial crop)"></a></p>
-<figcaption>Sorted cluster sizes (woody perennial crop)</figcaption>
-</figure>
-</div>
+<section id="gas-reporting-boundary" class="level2">
+<h2 class="anchored" data-anchor-id="gas-reporting-boundary">Gas-reporting boundary</h2>
+<p>Annual native-N accounting is available for the reference and management configurations. Corrected statewide methane and complete annual gas series for the climate-model and pathway configurations are not shown. Soil-carbon stock changes and the available gas results are therefore reported separately rather than combined into an incomplete CO<sub>2</sub>-equivalent balance.</p>
 
 
 </section>
@@ -1102,13 +978,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/scenarios.html" class="pagination-link" aria-label="Future Scenarios">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Future Scenarios</span>
+      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Downscaling Results">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Downscaling Results</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reports/variable_importance.html" class="pagination-link" aria-label="Downscaling Model Evaluation">
-        <span class="nav-page-text">Downscaling Model Evaluation</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reports/design_point_validation.html" class="pagination-link" aria-label="Design Point Validation">
+        <span class="nav-page-text">Design Point Validation</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

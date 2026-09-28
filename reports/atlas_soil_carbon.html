@@ -2,18 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-24">
+<meta name="dcterms.date" content="2026-09-28">
 
 <title>Soil Carbon Atlas – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -39,14 +37,15 @@ ul.task-list li input[type="checkbox"] {
 <link href="../reports/atlas_overview.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -183,6 +182,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
@@ -263,27 +268,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#county-level-total-soil-carbon" id="toc-county-level-total-soil-carbon" class="nav-link active" data-scroll-target="#county-level-total-soil-carbon">County-Level Total Soil Carbon</a>
-  <ul class="collapse">
-  <li><a href="#combined-view-baseline-scenario-differences" id="toc-combined-view-baseline-scenario-differences" class="nav-link" data-scroll-target="#combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</a></li>
-  <li><a href="#all-scenarios-side-by-side" id="toc-all-scenarios-side-by-side" class="nav-link" data-scroll-target="#all-scenarios-side-by-side">All Scenarios Side-by-Side</a></li>
-  <li><a href="#individual-scenario-maps" id="toc-individual-scenario-maps" class="nav-link" data-scroll-target="#individual-scenario-maps">Individual Scenario Maps</a></li>
-  </ul></li>
-  <li><a href="#county-level-difference-maps-scenario---baseline" id="toc-county-level-difference-maps-scenario---baseline" class="nav-link" data-scroll-target="#county-level-difference-maps-scenario---baseline">County-Level Difference Maps (Scenario - Baseline)</a>
-  <ul class="collapse">
-  <li><a href="#all-scenarios-compared" id="toc-all-scenarios-compared" class="nav-link" data-scroll-target="#all-scenarios-compared">All Scenarios Compared</a></li>
-  <li><a href="#individual-difference-maps" id="toc-individual-difference-maps" class="nav-link" data-scroll-target="#individual-difference-maps">Individual Difference Maps</a></li>
-  </ul></li>
-  <li><a href="#field-level-soil-carbon-density" id="toc-field-level-soil-carbon-density" class="nav-link" data-scroll-target="#field-level-soil-carbon-density">Field-Level Soil Carbon Density</a>
-  <ul class="collapse">
-  <li><a href="#all-scenarios-side-by-side-1" id="toc-all-scenarios-side-by-side-1" class="nav-link" data-scroll-target="#all-scenarios-side-by-side-1">All Scenarios Side-by-Side</a></li>
-  <li><a href="#individual-scenario-maps-1" id="toc-individual-scenario-maps-1" class="nav-link" data-scroll-target="#individual-scenario-maps-1">Individual Scenario Maps</a></li>
-  </ul></li>
-  <li><a href="#field-level-soil-carbon-differences" id="toc-field-level-soil-carbon-differences" class="nav-link" data-scroll-target="#field-level-soil-carbon-differences">Field-Level Soil Carbon Differences</a>
-  <ul class="collapse">
-  <li><a href="#all-scenarios-compared-1" id="toc-all-scenarios-compared-1" class="nav-link" data-scroll-target="#all-scenarios-compared-1">All Scenarios Compared</a></li>
-  <li><a href="#individual-difference-maps-1" id="toc-individual-difference-maps-1" class="nav-link" data-scroll-target="#individual-difference-maps-1">Individual Difference Maps</a></li>
-  </ul></li>
+  <li><a href="#county-soil-carbon-stocks" id="toc-county-soil-carbon-stocks" class="nav-link active" data-scroll-target="#county-soil-carbon-stocks">County soil-carbon stocks</a></li>
+  <li><a href="#field-soil-carbon-density" id="toc-field-soil-carbon-density" class="nav-link" data-scroll-target="#field-soil-carbon-density">Field soil-carbon density</a></li>
+  <li><a href="#soil-carbon-change-20162023" id="toc-soil-carbon-change-20162023" class="nav-link" data-scroll-target="#soil-carbon-change-20162023">Soil-carbon change, 2016–2023</a></li>
   </ul>
 </nav>
     </div>
@@ -293,7 +280,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_soil_carbon.html">Soil Carbon</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Soil Carbon Atlas</h1>
-<p class="subtitle lead">Total Soil Carbon Stocks and Density Across Management Scenarios</p>
+<p class="subtitle lead">Historical Stocks and Changes, 2016–2023</p>
 </div>
 
 
@@ -301,8 +288,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
              <p>Akash B V </p>
           </div>
   </div>
@@ -310,7 +298,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 24, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -322,349 +310,51 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Soil carbon is the primary metric for climate change mitigation in agriculture. Higher soil carbon stocks indicate more atmospheric CO<sub>2</sub> sequestered into persistent soil organic matter pools. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>Soil carbon is reported as a stock. County maps sum modeled stocks across represented fields; field maps report carbon density per hectare. Historical changes compare January 2016 and December 2023 monthly means.</p>
+<section id="county-soil-carbon-stocks" class="level2">
+<h2 class="anchored" data-anchor-id="county-soil-carbon-stocks">County soil-carbon stocks</h2>
+<div id="fig-inventory-soc-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area."><img src="assets/carb-results/inventory-soc-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops"></a>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Validation Status
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
-</div>
-</div>
-<section id="county-level-total-soil-carbon" class="level2">
-<h2 class="anchored" data-anchor-id="county-level-total-soil-carbon">County-Level Total Soil Carbon</h2>
-<p>County maps show the <strong>total mass</strong> of soil carbon (Gg C) summed across all annual cropland fields in each county. Central Valley counties (Kern, Fresno, Tulare, San Joaquin) dominate because they contain the most cropland area – not necessarily because of higher per-hectare soil carbon.</p>
-<section id="combined-view-baseline-scenario-differences" class="level3">
-<h3 class="anchored" data-anchor-id="combined-view-baseline-scenario-differences">Combined View: Baseline + Scenario Differences</h3>
-<p>The most powerful comparison view. The first panel shows <strong>absolute baseline</strong> soil carbon stocks. Panels 2–6 show each scenario’s <strong>difference from baseline</strong> (positive values indicate increases, negative values indicate decreases).</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="lightbox" data-gallery="mixed" title="Baseline absolute + scenario differences for soil carbon"><img src="../figures/mixed_county_annual_crop_TotSoilCarb_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Combined view showing baseline soil carbon alongside scenario differences for each county"></a></p>
-<figcaption>Baseline absolute + scenario differences for soil carbon</figcaption>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area.
+</figcaption>
 </figure>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Interpretation
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>All management scenarios increase county-level soil carbon relative to baseline. Compost (+12.2%) and stacked (+16.6%) show the strongest gains. Tillage reductions produce small but positive effects: reduced till (+0.2%) and zero till (+0.4%). Drip irrigation (+3.3%) provides moderate gains. The largest absolute increases occur in high-acreage Central Valley counties (Kern, Fresno, Tulare) where even modest per-hectare increases translate to large county totals.</p>
-</div>
-</div>
+<p>The largest county totals occur where substantial represented agricultural area coincides with moderate or high modeled stock density. The annual and woody maps use the same units but should be interpreted separately because the crop classes occupy different fields.</p>
 </section>
-<section id="all-scenarios-side-by-side" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side">All Scenarios Side-by-Side</h3>
-<p>All six scenarios on a consistent color scale for direct visual comparison.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="lightbox" data-gallery="county-facet" title="All scenarios – county total soil carbon"><img src="../figures/facet_county_annual_crop_TotSoilCarb_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing county-level total soil carbon for all six management scenarios on a consistent scale"></a></p>
-<figcaption>All scenarios – county total soil carbon</figcaption>
+<section id="field-soil-carbon-density" class="level2">
+<h2 class="anchored" data-anchor-id="field-soil-carbon-density">Field soil-carbon density</h2>
+<div id="fig-inventory-soc-field" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-field.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area."><img src="assets/carb-results/inventory-soc-field.webp" class="img-fluid figure-img" alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area.
+</figcaption>
 </figure>
 </div>
+<p>Field density reveals spatial variation that is obscured by county totals. Northern and coastal agricultural regions generally show higher modeled density than many southern and interior fields, although variation occurs within each crop class.</p>
 </section>
-<section id="individual-scenario-maps" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-scenario-maps">Individual Scenario Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Baseline"><img src="../figures/county_baseline_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Baseline</figcaption>
+<section id="soil-carbon-change-20162023" class="level2">
+<h2 class="anchored" data-anchor-id="soil-carbon-change-20162023">Soil-carbon change, 2016–2023</h2>
+<div id="fig-inventory-soc-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss."><img src="assets/carb-results/inventory-soc-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss.
+</figcaption>
 </figure>
 </div>
-<p>Baseline agricultural practices. This is the reference against which all management scenarios are compared.</p>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Compost"><img src="../figures/county_compost_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Compost scenario county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Compost</figcaption>
-</figure>
-</div>
-<p>Compost application directly adds organic carbon to soil. Expected to show the strongest per-practice effect on soil carbon because it physically increases C inputs beyond what crops alone provide.</p>
-</div>
-<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Reduced Till"><img src="../figures/county_reduced_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Reduced Till</figcaption>
-</figure>
-</div>
-<p>Reduced tillage preserves soil aggregates, slowing decomposition of protected organic matter. The effect is through reduced C loss rather than increased C inputs.</p>
-</div>
-<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Zero Till"><img src="../figures/county_zero_till_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Zero Till</figcaption>
-</figure>
-</div>
-<p>No mechanical soil disturbance. Surface residue builds a mulch layer over time. Soil carbon effects in the literature are debated – some studies show vertical redistribution rather than net gain.</p>
-</div>
-<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Drip Irrigation"><img src="../figures/county_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Drip Irrigation</figcaption>
-</figure>
-</div>
-<p>Conversion from flood/sprinkler to drip irrigation. Soil carbon gain likely mediated through altered moisture regimes affecting decomposition rates and root growth.</p>
-</div>
-<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="lightbox" data-gallery="county-stock" title="County total soil carbon – Stacked"><img src="../figures/county_stacked_annual_crop_TotSoilCarb_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked scenario county total soil carbon map"></a></p>
-<figcaption>County total soil carbon – Stacked</figcaption>
-</figure>
-</div>
-<p>All practices combined. Represents maximum adoption.</p>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="county-level-difference-maps-scenario---baseline" class="level2">
-<h2 class="anchored" data-anchor-id="county-level-difference-maps-scenario---baseline">County-Level Difference Maps (Scenario - Baseline)</h2>
-<p>These maps directly answer: <strong>“Does this practice increase or decrease soil carbon compared to current management?”</strong></p>
-<p>Positive differences indicate increases in soil carbon (climate benefit); negative differences indicate decreases.</p>
-<section id="all-scenarios-compared" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios-compared">All Scenarios Compared</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff-facet" title="All scenario differences from baseline – county total soil carbon"><img src="../figures/facet_diff_county_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted difference maps showing soil carbon changes from baseline for five management scenarios"></a></p>
-<figcaption>All scenario differences from baseline – county total soil carbon</figcaption>
-</figure>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Interpretation
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>All scenarios show soil carbon gains relative to baseline. Compost (+12.2%), drip irrigation (+3.3%), and stacked (+16.6%) show the clearest gains. Reduced tillage (+0.2%) and zero tillage (+0.4%) show small positive effects consistent with reduced soil disturbance preserving organic matter. The spatial pattern of gains broadly follows cropland area – the largest absolute gains occur where there is the most cropland to respond.</p>
-</div>
-</div>
-</section>
-<section id="individual-difference-maps" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-difference-maps">Individual Difference Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline soil carbon difference map"></a></p>
-<figcaption>Soil carbon difference – Compost vs Baseline</figcaption>
-</figure>
-</div>
-<p>Compost increases soil carbon substantially across the Central Valley. The effect is driven by direct organic matter addition. Statewide total increases from 112.3 to 125.9 Tg C (+12.2%). This magnitude is broadly consistent with field studies of compost application in California: Ryals and Silver (2013, Ecological Applications) reported SOC increases of approximately 0.5–1.0 Mg C ha⁻¹ in the top 10 cm over 3 years following a single compost application to California grasslands. Our modeled gains reflect repeated annual application over 8 years to croplands, so a larger cumulative effect is expected.</p>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline soil carbon difference map"></a></p>
-<figcaption>Soil carbon difference – Reduced Till vs Baseline</figcaption>
-</figure>
-</div>
-<p>Small positive gain in soil carbon (+0.2% statewide, +0.14 Mg C ha⁻¹). Reduced tillage preserves soil aggregates and slows decomposition of physically protected organic matter. The modest magnitude over 8 years is consistent with the Six et al.&nbsp;(2004, Oecologia) meta-analysis, which found that no-till SOC benefits are small in the first decade, particularly in dry climates, and become more pronounced after 10+ years as soils approach a new equilibrium.</p>
-</div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline soil carbon difference map"></a></p>
-<figcaption>Soil carbon difference – Zero Till vs Baseline</figcaption>
-</figure>
-</div>
-<p>Small positive gain in soil carbon (+0.4% statewide, +0.25 Mg C ha⁻¹). Zero till eliminates mechanical soil disturbance entirely, preserving aggregate structure and surface residue. The gain is slightly larger than reduced till, consistent with the greater degree of soil disturbance reduction. The magnitude is at the lower end of literature values for the first decade of adoption (Six et al.&nbsp;2004, Oecologia), which is expected given that SOC accumulation under no-till is a slow process that accelerates after initial soil structure recovery.</p>
-</div>
-<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Drip Irrigation vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline soil carbon difference map"></a></p>
-<figcaption>Soil carbon difference – Drip Irrigation vs Baseline</figcaption>
-</figure>
-</div>
-<p>Moderate gains (+3.3% statewide). Conversion from flood/sprinkler to drip irrigation alters soil moisture dynamics, potentially reducing decomposition rates in the upper soil profile by maintaining lower and more consistent soil moisture.</p>
-</div>
-<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="county-diff" title="Soil carbon difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline soil carbon difference map"></a></p>
-<figcaption>Soil carbon difference – Stacked vs Baseline</figcaption>
-</figure>
-</div>
-<p>Strongest combined gain (+16.6%), exceeding compost alone, with consistent increases across all counties. The stacked scenario combines compost’s direct C input with tillage reduction and drip irrigation’s moisture regulation. The super-additive effect (+16.6% vs.&nbsp;compost’s +12.2%) suggests practice interactions where reduced tillage and altered moisture regimes enhance the retention of compost-derived organic matter.</p>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="field-level-soil-carbon-density" class="level2">
-<h2 class="anchored" data-anchor-id="field-level-soil-carbon-density">Field-Level Soil Carbon Density</h2>
-<p>Field density maps show <strong>per-hectare</strong> soil carbon (Mg C ha⁻¹) at each of ~132,000 individual agricultural fields. This isolates the per-area effect from county cropland area, revealing how <strong>soil type, climate, and topography</strong> drive spatial variation.</p>
-<section id="all-scenarios-side-by-side-1" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side-1">All Scenarios Side-by-Side</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="lightbox" data-gallery="field-facet" title="All scenarios – field-level soil carbon density"><img src="../figures/facet_field_annual_crop_TotSoilCarb_density_comparison.webp" class="img-fluid figure-img" alt="Faceted map showing field-level soil carbon density for all six scenarios"></a></p>
-<figcaption>All scenarios – field-level soil carbon density</figcaption>
-</figure>
-</div>
-</section>
-<section id="individual-scenario-maps-1" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-scenario-maps-1">Individual Scenario Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-6" role="tab" aria-controls="tabset-3-6" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Baseline"><img src="../figures/field_baseline_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Baseline</figcaption>
-</figure>
-</div>
-<p>Spatial variation reflects underlying environmental gradients: soil clay content, organic carbon density, temperature, and moisture. Sacramento Valley (north) tends to show higher per-hectare SOC than San Joaquin Valley (south), consistent with cooler temperatures slowing decomposition.</p>
-</div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Compost"><img src="../figures/field_compost_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Compost</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Reduced Till"><img src="../figures/field_reduced_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Reduced Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Zero Till"><img src="../figures/field_zero_till_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Zero Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Drip Irrigation"><img src="../figures/field_reduced_irrig_drip_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Drip Irrigation</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-6-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="lightbox" data-gallery="field-density" title="Field soil carbon density – Stacked"><img src="../figures/field_stacked_annual_crop_TotSoilCarb_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level soil carbon density map"></a></p>
-<figcaption>Field soil carbon density – Stacked</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="field-level-soil-carbon-differences" class="level2">
-<h2 class="anchored" data-anchor-id="field-level-soil-carbon-differences">Field-Level Soil Carbon Differences</h2>
-<p>Field-level difference maps reveal <strong>where</strong> practices have the greatest per-hectare impact, independent of county cropland area. These are the most spatially informative maps in the atlas.</p>
-<section id="all-scenarios-compared-1" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios-compared-1">All Scenarios Compared</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff-facet" title="All scenario differences – field soil carbon density"><img src="../figures/facet_diff_field_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level difference maps for soil carbon density across management scenarios"></a></p>
-<figcaption>All scenario differences – field soil carbon density</figcaption>
-</figure>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Interpretation
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Compost and stacked scenarios show relatively uniform increases across nearly all fields, indicating the practice effect is <strong>geographically consistent</strong> – compost increases soil carbon regardless of local soil or climate conditions. Tillage scenarios (reduced till, zero till) show small but uniformly positive differences, confirming that the SOC benefit of reduced soil disturbance, while modest, is not restricted to specific regions or soil types.</p>
-</div>
-</div>
-</section>
-<section id="individual-difference-maps-1" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-difference-maps-1">Individual Difference Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-5" role="tab" aria-controls="tabset-4-5" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Compost vs Baseline"><img src="../figures/diff_field_compost_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for compost vs baseline"></a></p>
-<figcaption>Field soil carbon difference – Compost vs Baseline</figcaption>
-</figure>
-</div>
-<p>Near-uniform increases across all fields. The compost effect on soil carbon is driven primarily by the practice itself (direct organic matter input) rather than by site-specific soil or climate conditions.</p>
-</div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Reduced Till vs Baseline"><img src="../figures/diff_field_reduced_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for reduced till vs baseline"></a></p>
-<figcaption>Field soil carbon difference – Reduced Till vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Zero Till vs Baseline"><img src="../figures/diff_field_zero_till_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for zero till vs baseline"></a></p>
-<figcaption>Field soil carbon difference – Zero Till vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Drip Irrigation vs Baseline"><img src="../figures/diff_field_reduced_irrig_drip_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for drip irrigation vs baseline"></a></p>
-<figcaption>Field soil carbon difference – Drip Irrigation vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-4-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="lightbox" data-gallery="field-diff" title="Field soil carbon difference – Stacked vs Baseline"><img src="../figures/diff_field_stacked_annual_crop_TotSoilCarb_vs_baseline.webp" class="img-fluid figure-img" alt="Field-level difference in soil carbon density for stacked vs baseline"></a></p>
-<figcaption>Field soil carbon difference – Stacked vs Baseline</figcaption>
-</figure>
-</div>
-<p>Largest per-hectare gains. The uniform spatial pattern indicates the combined practices work consistently across California’s diverse agricultural environments.</p>
-</div>
-</div>
-</div>
+<p>Modeled soil-carbon stocks decline across much of the represented area over the historical period. The largest negative county changes occur in agricultural regions with substantial represented area. These values are endpoint stock differences in Gg C, not annualized rates or atmospheric removals.</p>
+<p>For the future comparison, see <a href="../reports/scenarios.html">Future Management and Climate Scenarios</a>.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

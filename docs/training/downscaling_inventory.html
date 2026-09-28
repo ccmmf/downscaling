@@ -2,19 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akash BV">
 <meta name="author" content="David LeBauer">
-<meta name="dcterms.date" content="2026-09-24">
+<meta name="dcterms.date" content="2026-09-28">
 
 <title>Downscaling a MAGiC inventory – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -75,14 +72,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../docs/training/CARB-downscaling-setup.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -221,6 +219,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
@@ -338,7 +342,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 24, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -528,8 +532,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 <h2 class="anchored" data-anchor-id="explore-cli-layout">Explore CLI layout</h2>
 <p>Execution is controlled by <code>magic-downscaling</code> and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The commands are defined by the <code>steps</code> section of the workflow manifest:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The commands correspond to the workflow steps described below.</p>
 <p>Key points:</p>
 <ul>
 <li><code>extract</code>, <code>downscale</code>, and <code>analyze</code> are lists of steps, each calling one script.</li>
@@ -542,23 +545,23 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </section>
 <section id="explore-configuration-file" class="level2">
 <h2 class="anchored" data-anchor-id="explore-configuration-file">Explore configuration file</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The supplied configuration uses these values:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global</span><span class="kw">:</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run_dir</span><span class="kw">:</span><span class="at"> inventory-run</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">aws_profile</span><span class="kw">:</span><span class="at"> magic</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">downscaling</span><span class="kw">:</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> production</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">4</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> demo-data/modelout</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run_dir</span><span class="kw">:</span><span class="at"> inventory-run</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">aws_profile</span><span class="kw">:</span><span class="at"> magic</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">downscaling</span><span class="kw">:</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> production</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">4</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> demo-data/modelout</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Keep <code>mode: production</code> to use all sites, ensemble members, and years in this small four-county dataset. By comparison, <code>demo</code> reads all sites for one member and the final year, while <code>dev</code> reads the first 10 sites and members for the final two years. The <code>inventory</code> scenario matches the downloaded <code>output_inventory/</code> directory. <code>outputs_to_extract</code> limits this walkthrough to <code>TotSoilCarb</code>. <code>run_dir</code> controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set <code>n_cores</code> to your allocated CPUs.</p>
 </section>
 <section id="prepare-inputs" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-inputs">Prepare inputs</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>copies ensemble output and data layers into <code>run_dir</code>, so the run is self-contained and can be archived or moved</li>
 <li>fails immediately if a scenario in your config has no matching <code>output_&lt;scenario&gt;/</code> directory, which is the usual sign the config and the ensemble disagree</li>
@@ -566,7 +569,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </section>
 <section id="extract-sipnet-output" class="level2">
 <h2 class="anchored" data-anchor-id="extract-sipnet-output">Extract SIPNET output</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution. The <code>extract</code> step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format. Each value is a monthly mean for one site, ensemble member, scenario and variable. The subsequent RF fits select individual months from this table; they do not pool the monthly time series into one training set.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -598,7 +601,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </section>
 <section id="downscale-to-fields" class="level2">
 <h2 class="anchored" data-anchor-id="downscale-to-fields">Downscale to fields</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For each PFT and carbon pool this:</p>
 <ul>
 <li>takes the design points that ran with that PFT as training data</li>
@@ -656,7 +659,7 @@ leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
 </section>
 <section id="analyze-and-view-results" class="level2">
 <h2 class="anchored" data-anchor-id="analyze-and-view-results">Analyze and view results</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>analyze</code> writes diagnostics and maps to <code>figures/</code>, including county and field maps, variable-importance summaries, and response curves for important predictors.</p>
 </section>
 <section id="field-results" class="level2">

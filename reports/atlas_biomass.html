@@ -2,18 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-24">
+<meta name="dcterms.date" content="2026-09-28">
 
 <title>Biomass Atlas – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -39,14 +37,15 @@ ul.task-list li input[type="checkbox"] {
 <link href="../reports/atlas_ghg_emissions.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -183,6 +182,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
@@ -263,18 +268,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#county-level-aboveground-biomass" id="toc-county-level-aboveground-biomass" class="nav-link active" data-scroll-target="#county-level-aboveground-biomass">County-Level Aboveground Biomass</a>
-  <ul class="collapse">
-  <li><a href="#mixed-comparison-baseline-scenario-differences" id="toc-mixed-comparison-baseline-scenario-differences" class="nav-link" data-scroll-target="#mixed-comparison-baseline-scenario-differences">Mixed Comparison: Baseline + Scenario Differences</a></li>
-  <li><a href="#all-scenarios-side-by-side" id="toc-all-scenarios-side-by-side" class="nav-link" data-scroll-target="#all-scenarios-side-by-side">All Scenarios Side-by-Side</a></li>
-  <li><a href="#individual-agb-scenarios" id="toc-individual-agb-scenarios" class="nav-link" data-scroll-target="#individual-agb-scenarios">Individual AGB Scenarios</a></li>
-  <li><a href="#individual-agb-difference-maps" id="toc-individual-agb-difference-maps" class="nav-link" data-scroll-target="#individual-agb-difference-maps">Individual AGB Difference Maps</a></li>
-  </ul></li>
-  <li><a href="#field-level-agb-density" id="toc-field-level-agb-density" class="nav-link" data-scroll-target="#field-level-agb-density">Field-Level AGB Density</a>
-  <ul class="collapse">
-  <li><a href="#all-scenarios" id="toc-all-scenarios" class="nav-link" data-scroll-target="#all-scenarios">All Scenarios</a></li>
-  <li><a href="#individual-field-agb-maps" id="toc-individual-field-agb-maps" class="nav-link" data-scroll-target="#individual-field-agb-maps">Individual Field AGB Maps</a></li>
-  </ul></li>
+  <li><a href="#county-aboveground-biomass" id="toc-county-aboveground-biomass" class="nav-link active" data-scroll-target="#county-aboveground-biomass">County aboveground biomass</a></li>
+  <li><a href="#field-biomass-density" id="toc-field-biomass-density" class="nav-link" data-scroll-target="#field-biomass-density">Field biomass density</a></li>
+  <li><a href="#biomass-change-20162023" id="toc-biomass-change-20162023" class="nav-link" data-scroll-target="#biomass-change-20162023">Biomass change, 2016–2023</a></li>
   </ul>
 </nav>
     </div>
@@ -284,7 +280,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_biomass.html">Aboveground Biomass</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Biomass Atlas</h1>
-<p class="subtitle lead">Aboveground Biomass Under Management Scenarios</p>
+<p class="subtitle lead">Historical Aboveground Biomass, 2016–2023</p>
 </div>
 
 
@@ -292,8 +288,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
              <p>Akash B V </p>
           </div>
   </div>
@@ -301,7 +298,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 24, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -313,258 +310,50 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Aboveground biomass (AGB) represents the total mass of living plant material above the soil surface – stems, leaves, and reproductive structures. For annual crops, AGB is a snapshot of standing biomass at the modeled time point. Because these are harvested crops, end-of-season AGB values are typically small. See the <a href="../reports/atlas_overview.html#tbl-scenario-def">Scenario Definition Table</a> for practice parameters and simulation details.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>Aboveground biomass is the modeled carbon stock in living plant material above the soil surface. December values are endpoint snapshots rather than annual production totals. Annual-crop biomass is small at the endpoint because harvest removes much of the standing crop; woody perennial crops retain substantially more biomass.</p>
+<section id="county-aboveground-biomass" class="level2">
+<h2 class="anchored" data-anchor-id="county-aboveground-biomass">County aboveground biomass</h2>
+<div id="fig-inventory-biomass-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops"></a>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Validation Status
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Context for AGB values
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>AGB in annual croplands reflects biomass remaining after harvest. Statewide totals are very small (~40 Mg total across all fields) compared to soil carbon pools (~112 Tg C). For tillage and compost scenarios, AGB differences from baseline are effectively zero (0.0%), confirming that these management practices do not alter crop standing biomass in SIPNET. Drip irrigation and stacked scenarios show a -18.6% AGB reduction, reflecting altered water availability affecting end-of-season residue. AGB is most useful as an indicator of crop productivity differences and residue availability for soil carbon cycling.</p>
-</div>
-</div>
-<section id="county-level-aboveground-biomass" class="level2">
-<h2 class="anchored" data-anchor-id="county-level-aboveground-biomass">County-Level Aboveground Biomass</h2>
-<section id="mixed-comparison-baseline-scenario-differences" class="level3">
-<h3 class="anchored" data-anchor-id="mixed-comparison-baseline-scenario-differences">Mixed Comparison: Baseline + Scenario Differences</h3>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp" class="lightbox" data-gallery="agb-mixed" title="Baseline absolute + scenario differences for AGB"><img src="../figures/mixed_county_annual_crop_AGB_baseline_plus_diffs.webp" class="img-fluid figure-img" alt="Mixed comparison showing baseline AGB alongside scenario differences"></a></p>
-<figcaption>Baseline absolute + scenario differences for AGB</figcaption>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.
+</figcaption>
 </figure>
 </div>
+<p>Woody perennial biomass is concentrated in the Central Valley and other orchard-producing regions. Annual-crop endpoint totals are much smaller and should be interpreted as standing biomass at the December endpoint, not annual harvested production.</p>
 </section>
-<section id="all-scenarios-side-by-side" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios-side-by-side">All Scenarios Side-by-Side</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">All Scenarios (Absolute)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">All Differences from Baseline</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_county_annual_crop_AGB_stock_comparison.webp" class="lightbox" data-gallery="agb-county" title="Faceted county AGB – all scenarios"><img src="../figures/facet_county_annual_crop_AGB_stock_comparison.webp" class="img-fluid figure-img" alt="Faceted county-level AGB maps for all scenarios"></a></p>
-<figcaption>Faceted county AGB – all scenarios</figcaption>
+<section id="field-biomass-density" class="level2">
+<h2 class="anchored" data-anchor-id="field-biomass-density">Field biomass density</h2>
+<div id="fig-inventory-biomass-field" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-field.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-field.webp" class="img-fluid figure-img" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops.
+</figcaption>
 </figure>
 </div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_diff_county_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-county-diff" title="Faceted county AGB differences"><img src="../figures/facet_diff_county_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted county-level AGB difference maps"></a></p>
-<figcaption>Faceted county AGB differences</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
+<p>The field maps separate per-hectare modeled biomass from the amount of agricultural area within a county. Woody perennial fields have higher endpoint densities than annual-crop fields across most represented regions.</p>
 </section>
-<section id="individual-agb-scenarios" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-agb-scenarios">Individual AGB Scenarios</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-6" role="tab" aria-controls="tabset-2-6" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_baseline_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Baseline"><img src="../figures/county_baseline_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Baseline county total AGB map"></a></p>
-<figcaption>County AGB – Baseline</figcaption>
+<section id="biomass-change-20162023" class="level2">
+<h2 class="anchored" data-anchor-id="biomass-change-20162023">Biomass change, 2016–2023</h2>
+<div id="fig-inventory-biomass-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint."><img src="assets/carb-results/inventory-biomass-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint.
+</figcaption>
 </figure>
 </div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_compost_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Compost"><img src="../figures/county_compost_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Compost county total AGB map"></a></p>
-<figcaption>County AGB – Compost</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_reduced_till_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Reduced Till"><img src="../figures/county_reduced_till_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Reduced till county total AGB map"></a></p>
-<figcaption>County AGB – Reduced Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_zero_till_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Zero Till"><img src="../figures/county_zero_till_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Zero till county total AGB map"></a></p>
-<figcaption>County AGB – Zero Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_reduced_irrig_drip_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Drip Irrigation"><img src="../figures/county_reduced_irrig_drip_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Drip irrigation county total AGB map"></a></p>
-<figcaption>County AGB – Drip Irrigation</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-2-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-6-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/county_stacked_annual_crop_AGB_carbon_stock.webp" class="lightbox" data-gallery="agb-stock" title="County AGB – Stacked"><img src="../figures/county_stacked_annual_crop_AGB_carbon_stock.webp" class="img-fluid figure-img" alt="Stacked county total AGB map"></a></p>
-<figcaption>County AGB – Stacked</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="individual-agb-difference-maps" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-agb-difference-maps">Individual AGB Difference Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_compost_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Compost vs Baseline"><img src="../figures/diff_county_compost_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Compost minus baseline AGB difference map"></a></p>
-<figcaption>AGB difference – Compost vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_reduced_till_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Reduced Till vs Baseline"><img src="../figures/diff_county_reduced_till_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Reduced till minus baseline AGB difference map"></a></p>
-<figcaption>AGB difference – Reduced Till vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_zero_till_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Zero Till vs Baseline"><img src="../figures/diff_county_zero_till_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Zero till minus baseline AGB difference map"></a></p>
-<figcaption>AGB difference – Zero Till vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_reduced_irrig_drip_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Drip Irrig. vs Baseline"><img src="../figures/diff_county_reduced_irrig_drip_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Drip irrigation minus baseline AGB difference map"></a></p>
-<figcaption>AGB difference – Drip Irrig. vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/diff_county_stacked_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-diff" title="AGB difference – Stacked vs Baseline"><img src="../figures/diff_county_stacked_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Stacked minus baseline AGB difference map"></a></p>
-<figcaption>AGB difference – Stacked vs Baseline</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="field-level-agb-density" class="level2">
-<h2 class="anchored" data-anchor-id="field-level-agb-density">Field-Level AGB Density</h2>
-<section id="all-scenarios" class="level3">
-<h3 class="anchored" data-anchor-id="all-scenarios">All Scenarios</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">All Scenarios (Density)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">All Differences from Baseline</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_field_annual_crop_AGB_density_comparison.webp" class="lightbox" data-gallery="agb-field" title="Faceted field AGB density – all scenarios"><img src="../figures/facet_field_annual_crop_AGB_density_comparison.webp" class="img-fluid figure-img" alt="Faceted field-level AGB density maps"></a></p>
-<figcaption>Faceted field AGB density – all scenarios</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/facet_diff_field_annual_crop_AGB_vs_baseline.webp" class="lightbox" data-gallery="agb-field-diff" title="Faceted field AGB differences"><img src="../figures/facet_diff_field_annual_crop_AGB_vs_baseline.webp" class="img-fluid figure-img" alt="Faceted field-level AGB difference maps"></a></p>
-<figcaption>Faceted field AGB differences</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="individual-field-agb-maps" class="level3 tabset">
-<h3 class="tabset anchored" data-anchor-id="individual-field-agb-maps">Individual Field AGB Maps</h3>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Baseline</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Compost</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false" href="">Reduced Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-4" role="tab" aria-controls="tabset-5-4" aria-selected="false" href="">Zero Till</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-5" role="tab" aria-controls="tabset-5-5" aria-selected="false" href="">Drip Irrigation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-6" role="tab" aria-controls="tabset-5-6" aria-selected="false" href="">Stacked</a></li></ul>
-<div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_baseline_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Baseline"><img src="../figures/field_baseline_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Baseline field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Baseline</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_compost_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Compost"><img src="../figures/field_compost_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Compost field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Compost</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_reduced_till_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Reduced Till"><img src="../figures/field_reduced_till_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Reduced till field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Reduced Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_zero_till_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Zero Till"><img src="../figures/field_zero_till_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Zero till field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Zero Till</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-5-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-5-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_reduced_irrig_drip_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Drip Irrigation"><img src="../figures/field_reduced_irrig_drip_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Drip irrigation field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Drip Irrigation</figcaption>
-</figure>
-</div>
-</div>
-<div id="tabset-5-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-6-tab">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="../figures/field_stacked_annual_crop_AGB_carbon_density.webp" class="lightbox" data-gallery="agb-field-density" title="Field AGB density – Stacked"><img src="../figures/field_stacked_annual_crop_AGB_carbon_density.webp" class="img-fluid figure-img" alt="Stacked field-level AGB density map"></a></p>
-<figcaption>Field AGB density – Stacked</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
+<p>The historical endpoint comparison is predominantly negative, particularly for woody perennial crops in parts of the Central Valley. These changes describe modeled endpoint stocks and should not be interpreted as harvested yield or cumulative production.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

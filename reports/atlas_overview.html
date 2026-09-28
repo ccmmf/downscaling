@@ -2,18 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-24">
+<meta name="dcterms.date" content="2026-09-28">
 
 <title>Downscaling Map Atlas – MAGiC Downscaling</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -39,14 +37,18 @@ ul.task-list li input[type="checkbox"] {
 <link href="../index.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-bb881345090ea9d735c503b8cda1d0b3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -74,38 +76,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
-<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -211,6 +182,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Future Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Design Point Validation</span></a>
   </div>
@@ -291,18 +268,9 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#summary-of-key-findings" id="toc-summary-of-key-findings" class="nav-link active" data-scroll-target="#summary-of-key-findings">Summary of Key Findings</a>
-  <ul class="collapse">
-  <li><a href="#scenario-comparison" id="toc-scenario-comparison" class="nav-link" data-scroll-target="#scenario-comparison">Scenario Comparison</a></li>
-  <li><a href="#statewide-absolute-magnitudes" id="toc-statewide-absolute-magnitudes" class="nav-link" data-scroll-target="#statewide-absolute-magnitudes">Statewide Absolute Magnitudes</a></li>
-  <li><a href="#tbl-co2e" id="toc-tbl-co2e" class="nav-link" data-scroll-target="#tbl-co2e">CO<sub>2</sub>-Equivalent Summary</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways</a></li>
-  </ul></li>
-  <li><a href="#how-to-use-this-atlas" id="toc-how-to-use-this-atlas" class="nav-link" data-scroll-target="#how-to-use-this-atlas">How to Use This Atlas</a></li>
-  <li><a href="#methods-overview" id="toc-methods-overview" class="nav-link" data-scroll-target="#methods-overview">Methods Overview</a>
-  <ul class="collapse">
-  <li><a href="#scenario-definition" id="toc-scenario-definition" class="nav-link" data-scroll-target="#scenario-definition">Scenario Definition</a></li>
-  </ul></li>
+  <li><a href="#historical-inventory" id="toc-historical-inventory" class="nav-link active" data-scroll-target="#historical-inventory">Historical inventory</a></li>
+  <li><a href="#future-configurations" id="toc-future-configurations" class="nav-link" data-scroll-target="#future-configurations">Future configurations</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   </ul>
 </nav>
     </div>
@@ -312,7 +280,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Map Atlas</a></li><li class="breadcrumb-item"><a href="../reports/atlas_overview.html">Overview &amp; Key Findings</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Downscaling Map Atlas</h1>
-<p class="subtitle lead">Statewide Carbon and GHG Projections Under Agricultural Management Scenarios</p>
+<p class="subtitle lead">California Agricultural Carbon and Greenhouse Gas Results</p>
 </div>
 
 
@@ -320,8 +288,9 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Authors</div>
     <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
              <p>Akash B V </p>
           </div>
   </div>
@@ -329,7 +298,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 24, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -341,326 +310,97 @@ window.Quarto = {
 </header>
 
 
-<section id="summary-of-key-findings" class="level2">
-<h2 class="anchored" data-anchor-id="summary-of-key-findings">Summary of Key Findings</h2>
-<p>This atlas presents statewide projections of soil carbon storage and greenhouse gas emissions under six agricultural management scenarios for California’s annual croplands (~132,000 fields across 57 counties). Results are produced by the SIPNET ecosystem model at representative anchor sites and downscaled via Random Forest to all cropland fields.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>This atlas presents two related sets of model results for California agriculture: a historical inventory for 2016–2023 and four future configurations for 2024–2045. The inventory describes modeled conditions under recorded historical inputs. The future configurations compare management, climate-model, and emissions-pathway assumptions.</p>
+<div id="fig-inventory-context" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Map of California showing annual-crop and woody-perennial field locations represented in the downscaling analysis">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-spatial-context.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis."><img src="assets/carb-results/inventory-spatial-context.webp" class="img-fluid figure-img" alt="Map of California showing annual-crop and woody-perennial field locations represented in the downscaling analysis"></a>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Validation Status
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis.
+</figcaption>
+</figure>
 </div>
-</div>
-<div class="callout-body-container callout-body">
-<p>These results are from a proof-of-concept modeling framework that has not been validated against field observations. Interpret all values as illustrative projections, not empirical estimates.</p>
-</div>
-</div>
-<section id="scenario-comparison" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-comparison">Scenario Comparison</h3>
-<table class="caption-top table">
-<caption>Percent change from baseline across all California annual croplands (ensemble mean, n = 20). <sup>a</sup> CH<sub>4</sub> fluxes are effectively zero for non-flooded annual crops. Methanogenesis requires continuous flooding (e.g., rice paddies), which is not included in this analysis. Percentage changes from a near-zero baseline are misleading and are omitted.</caption>
-<thead>
-<tr class="header">
-<th>Scenario</th>
-<th style="text-align: center;">Soil Carbon</th>
-<th style="text-align: center;">N<sub>2</sub>O Emissions</th>
-<th style="text-align: center;">CH<sub>4</sub> Emissions<sup>a</sup></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Compost</strong></td>
-<td style="text-align: center;">+12.2%</td>
-<td style="text-align: center;">-39.5%</td>
-<td style="text-align: center;">n/a</td>
-</tr>
-<tr class="even">
-<td><strong>Reduced Till</strong></td>
-<td style="text-align: center;">+0.2%</td>
-<td style="text-align: center;">+0.1%</td>
-<td style="text-align: center;">n/a</td>
-</tr>
-<tr class="odd">
-<td><strong>Zero Till</strong></td>
-<td style="text-align: center;">+0.4%</td>
-<td style="text-align: center;">+0.5%</td>
-<td style="text-align: center;">n/a</td>
-</tr>
-<tr class="even">
-<td><strong>Drip Irrigation</strong></td>
-<td style="text-align: center;">+3.3%</td>
-<td style="text-align: center;">+12.0%</td>
-<td style="text-align: center;">n/a</td>
-</tr>
-<tr class="odd">
-<td><strong>Stacked (all)</strong></td>
-<td style="text-align: center;">+16.6%</td>
-<td style="text-align: center;">-27.3%</td>
-<td style="text-align: center;">n/a</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="statewide-absolute-magnitudes" class="level3">
-<h3 class="anchored" data-anchor-id="statewide-absolute-magnitudes">Statewide Absolute Magnitudes</h3>
-<table class="caption-top table">
-<caption>Statewide totals across 1.86 million hectares of annual cropland (57 counties, ~132,000 fields). SOC is end-of-simulation stock (2024) at 30 cm depth. N<sub>2</sub>O and CH<sub>4</sub> are annual emission rates in gas mass units. Values are ensemble means (n = 20).</caption>
-<colgroup>
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 11%">
-<col style="width: 17%">
-<col style="width: 13%">
-<col style="width: 21%">
-<col style="width: 11%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Variable</th>
-<th style="text-align: center;">Baseline</th>
-<th style="text-align: center;">Compost</th>
-<th style="text-align: center;">Reduced Till</th>
-<th style="text-align: center;">Zero Till</th>
-<th style="text-align: center;">Drip Irrigation</th>
-<th style="text-align: center;">Stacked</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>SOC (Tg C)</strong></td>
-<td style="text-align: center;">112.3</td>
-<td style="text-align: center;">125.9</td>
-<td style="text-align: center;">112.5</td>
-<td style="text-align: center;">112.7</td>
-<td style="text-align: center;">115.9</td>
-<td style="text-align: center;">130.9</td>
-</tr>
-<tr class="even">
-<td><strong>N<sub>2</sub>O (Gg N<sub>2</sub>O yr⁻¹)</strong></td>
-<td style="text-align: center;">12.91</td>
-<td style="text-align: center;">7.81</td>
-<td style="text-align: center;">12.92</td>
-<td style="text-align: center;">12.98</td>
-<td style="text-align: center;">14.46</td>
-<td style="text-align: center;">9.39</td>
-</tr>
-<tr class="odd">
-<td><strong>CH<sub>4</sub> (Gg CH<sub>4</sub> yr⁻¹)</strong></td>
-<td style="text-align: center;">0.014</td>
-<td style="text-align: center;">0.015</td>
-<td style="text-align: center;">0.013</td>
-<td style="text-align: center;">0.013</td>
-<td style="text-align: center;">0.014</td>
-<td style="text-align: center;">0.017</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="tbl-co2e" class="level3">
-<h3 class="anchored" data-anchor-id="tbl-co2e">CO<sub>2</sub>-Equivalent Summary</h3>
-<table class="caption-top table">
-<caption>Net CO<sub>2</sub>-equivalent impact of each practice relative to baseline, using GWP<sub>100</sub> AR4 values (CH<sub>4</sub> = 25, N<sub>2</sub>O = 298; IPCC 2007, WG1 Table 2.14). Negative values indicate a net climate benefit (reduced atmospheric forcing). SOC change annualized over the 8-year simulation period (2016–2024) and converted to CO<sub>2</sub> mass (C <span class="math inline">\(\times\)</span> 44/12). N<sub>2</sub>O and CH<sub>4</sub> are annual flux deltas from baseline. CH<sub>4</sub> contributions are ~0 Gg CO<sub>2</sub>e yr⁻¹ in all scenarios – negligible for non-flooded annual crops. Note: CO<sub>2</sub>e values represent maximum technical potential assuming full adoption across all modeled cropland; realized outcomes will depend on adoption rates and SOC saturation dynamics.</caption>
-<colgroup>
-<col style="width: 26%">
-<col style="width: 18%">
-<col style="width: 18%">
-<col style="width: 18%">
-<col style="width: 18%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scenario</th>
-<th style="text-align: center;">SOC (Gg CO<sub>2</sub>e yr⁻¹)</th>
-<th style="text-align: center;">N<sub>2</sub>O (Gg CO<sub>2</sub>e yr⁻¹)</th>
-<th style="text-align: center;">CH<sub>4</sub> (Gg CO<sub>2</sub>e yr⁻¹)</th>
-<th style="text-align: center;"><strong>Net (Gg CO<sub>2</sub>e yr⁻¹)</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Compost</strong></td>
-<td style="text-align: center;">-6,256</td>
-<td style="text-align: center;">-1,521</td>
-<td style="text-align: center;">~0</td>
-<td style="text-align: center;"><strong>-7,777</strong></td>
-</tr>
-<tr class="even">
-<td><strong>Reduced Till</strong></td>
-<td style="text-align: center;">-119</td>
-<td style="text-align: center;">+3</td>
-<td style="text-align: center;">~0</td>
-<td style="text-align: center;"><strong>-115</strong></td>
-</tr>
-<tr class="odd">
-<td><strong>Zero Till</strong></td>
-<td style="text-align: center;">-211</td>
-<td style="text-align: center;">+21</td>
-<td style="text-align: center;">~0</td>
-<td style="text-align: center;"><strong>-191</strong></td>
-</tr>
-<tr class="even">
-<td><strong>Drip Irrigation</strong></td>
-<td style="text-align: center;">-1,675</td>
-<td style="text-align: center;">+460</td>
-<td style="text-align: center;">~0</td>
-<td style="text-align: center;"><strong>-1,215</strong></td>
-</tr>
-<tr class="odd">
-<td><strong>Stacked (all)</strong></td>
-<td style="text-align: center;">-8,563</td>
-<td style="text-align: center;">-1,050</td>
-<td style="text-align: center;">~0</td>
-<td style="text-align: center;"><strong>-9,613</strong></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="key-takeaways" class="level3">
-<h3 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h3>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Key Takeaways
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li><strong>Compost and stacked practices deliver the largest net climate benefits</strong> (-7,777 and -9,613 Gg CO<sub>2</sub>e yr⁻¹ respectively). Both increase soil carbon and reduce N<sub>2</sub>O simultaneously.</li>
-<li><strong>Drip irrigation provides a moderate net benefit</strong> (-1,215 Gg CO<sub>2</sub>e yr⁻¹). SOC gains outweigh N<sub>2</sub>O increases.</li>
-<li><strong>Tillage reduction shows small but positive SOC gains.</strong> Zero till (+0.4% SOC, -191 Gg CO<sub>2</sub>e yr⁻¹) and reduced till (+0.2% SOC, -115 Gg CO<sub>2</sub>e yr⁻¹) both show modest net climate benefits. These small gains are consistent with the 8-year simulation period; meta-analyses indicate no-till SOC benefits become significant after &gt;10 years of adoption (Six et al.&nbsp;2004, Oecologia).</li>
-<li><strong>CH<sub>4</sub> is negligible</strong> for non-flooded annual croplands (~0 Gg CO<sub>2</sub>e yr⁻¹ in every scenario). CH<sub>4</sub> will become meaningful when rice paddies are included in future model runs.</li>
-<li><strong>N<sub>2</sub>O is a critical trade-off variable.</strong> Drip irrigation increases N<sub>2</sub>O (+12.0%) despite SOC benefits, reinforcing the need for multi-variable reporting. Compost reduces N<sub>2</sub>O (-39.5%), amplifying its SOC co-benefit.</li>
-</ol>
-</div>
-</div>
-</section>
-</section>
-<section id="how-to-use-this-atlas" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-use-this-atlas">How to Use This Atlas</h2>
-<p>Navigate using the sidebar or the links below. Each page is organized with <strong>tabsets</strong> for switching between scenarios and <strong>click-to-zoom</strong> on all figures.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Page</th>
-<th>What It Shows</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="../reports/atlas_soil_carbon.html">Soil Carbon Atlas</a></td>
-<td>County-total and field-density maps for Total Soil Carbon across all scenarios, with difference maps</td>
-</tr>
-<tr class="even">
-<td><a href="../reports/atlas_ghg_emissions.html">GHG Emissions Atlas</a></td>
-<td>N<sub>2</sub>O and CH<sub>4</sub> emission maps – the critical trade-off analysis</td>
-</tr>
-<tr class="odd">
-<td><a href="../reports/atlas_biomass.html">Biomass Atlas</a></td>
-<td>Aboveground biomass maps (end-of-year annual crop standing biomass)</td>
-</tr>
-<tr class="even">
-<td><a href="../reports/atlas_model_drivers.html">Model Drivers</a></td>
-<td>What environmental factors drive the spatial patterns? ALE/ICE diagnostics</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="methods-overview" class="level2">
-<h2 class="anchored" data-anchor-id="methods-overview">Methods Overview</h2>
-<pre><code>SIPNET (anchor sites)  --&gt;  Random Forest  --&gt;  Field predictions  --&gt;  County aggregation  --&gt;  Maps
-     100 sites               8 predictors      ~132,000 fields        57 counties
-     per scenario           (soil, climate,
-                             topography, area)</code></pre>
-<p><strong>Scenarios</strong> are based on NRCS conservation practice standards:</p>
+<p>Results summarize the agricultural fields represented in the downscaling dataset; they are not totals for all California land. County maps show modeled totals over represented fields, while field maps show area-normalized values.</p>
+<section id="historical-inventory" class="level2">
+<h2 class="anchored" data-anchor-id="historical-inventory">Historical inventory</h2>
+<p>The historical inventory covers January 2016 through December 2023. It reports soil-carbon and aboveground-biomass stocks, together with annualized endpoint rates for nitrous oxide and methane. Stock changes compare the January 2016 and December 2023 monthly means. Gas endpoint rates should not be interpreted as emissions integrated across the full inventory period.</p>
+<p>The inventory pages separate annual crops and woody perennial crops because their carbon stocks, biomass, and spatial distributions differ substantially:</p>
 <ul>
-<li><strong>Baseline</strong> – Current farming practices (reference)</li>
-<li><strong>Compost</strong> – Organic amendment application (NRCS CPS 808)</li>
-<li><strong>Reduced Till</strong> – Reduced tillage intensity (NRCS CPS 345)</li>
-<li><strong>Zero Till</strong> – No-till farming (NRCS CPS 329)</li>
-<li><strong>Drip Irrigation</strong> – Conversion from flood/sprinkler to drip (water conservation + GHG reduction)</li>
-<li><strong>Stacked</strong> – All practices applied simultaneously</li>
+<li><a href="../reports/atlas_soil_carbon.html">Soil Carbon</a> shows county stocks, field densities, and 2016–2023 stock changes.</li>
+<li><a href="../reports/atlas_ghg_emissions.html">GHG Emissions</a> shows the strongest supported nitrous-oxide patterns and explains the current gas-reporting boundary.</li>
+<li><a href="../reports/atlas_biomass.html">Aboveground Biomass</a> shows endpoint stocks, field densities, and historical changes.</li>
+<li><a href="../reports/downscaling_results.html">Downscaling Results</a> provides concise inventory and scenario summaries.</li>
 </ul>
-<section id="scenario-definition" class="level3">
-<h3 class="anchored" data-anchor-id="scenario-definition">Scenario Definition</h3>
+</section>
+<section id="future-configurations" class="level2">
+<h2 class="anchored" data-anchor-id="future-configurations">Future configurations</h2>
+<p>The future analysis holds three dimensions separate: management, climate model, and emissions pathway. The reference configuration uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to that reference.</p>
 <div id="tbl-scenario-def" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-scenario-def-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Scenario parameters based on NRCS conservation practice standards. Simulation period: 2016–2024. Soil depth: 30 cm.
+Table&nbsp;1: Four future configurations used for the 2024–2045 analysis.
 </figcaption>
 <div aria-describedby="tbl-scenario-def-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 22%">
-<col style="width: 42%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Scenario</th>
-<th>NRCS CPS</th>
-<th>Description</th>
-<th>Key Parameter Changes</th>
+<th>Configuration</th>
+<th>Management</th>
+<th>Climate model</th>
+<th>Pathway</th>
+<th>Comparison with reference</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Baseline</td>
-<td>–</td>
-<td>Current conventional practices</td>
-<td>Conventional tillage (STIR ~70), synthetic N (200 kg N ha⁻¹), sprinkler irrigation (540 mm season⁻¹)</td>
+<td>Reference</td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Reference</td>
 </tr>
 <tr class="even">
-<td>Compost</td>
-<td>CPS 808 (CA-NRCS ICPS; national CPS 336)</td>
-<td>Organic amendment application</td>
-<td>4.7 dry tons ac⁻¹ compost (C:N = 16), replaces synthetic N</td>
+<td>Management</td>
+<td>NBS</td>
+<td>CESM2</td>
+<td>SSP370</td>
+<td>Management change</td>
 </tr>
 <tr class="odd">
-<td>Reduced Till</td>
-<td>CPS 345</td>
-<td>Reduced soil disturbance</td>
-<td>STIR ~20, &gt;30% surface residue maintained</td>
+<td>Climate model</td>
+<td>BAU</td>
+<td>MPI-ESM1-2-HR</td>
+<td>SSP370</td>
+<td>Climate-model sensitivity</td>
 </tr>
 <tr class="even">
-<td>Zero Till</td>
-<td>CPS 329</td>
-<td>No mechanical disturbance</td>
-<td>STIR ≤ 20, 100% residue retained</td>
-</tr>
-<tr class="odd">
-<td>Drip Irrigation</td>
-<td>CPS 441/449</td>
-<td>Microirrigation system + water management</td>
-<td>Sub-canopy drip, 320 mm season⁻¹ (40% reduction from baseline)</td>
-</tr>
-<tr class="even">
-<td>Stacked</td>
-<td>808 + 345 + 449</td>
-<td>Combined practices</td>
-<td>Compost + reduced till + drip irrigation</td>
+<td>Pathway</td>
+<td>BAU</td>
+<td>CESM2</td>
+<td>SSP585</td>
+<td>Emissions-pathway sensitivity</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p><strong>Simulation period:</strong> 2016–2024. Soil carbon values are end-of-simulation cumulative stocks at 30 cm depth. GHG fluxes (N<sub>2</sub>O, CH<sub>4</sub>) are annual emission rates.</p>
-<p><strong>Model outputs:</strong></p>
-<ul>
-<li><strong>TotSoilCarb</strong> – Total soil organic carbon to 30 cm depth (Mg C ha⁻¹ field density; Gg C county totals)</li>
-<li><strong>AGB</strong> – Aboveground biomass (Mg C ha⁻¹ field density; Gg C county totals)</li>
-<li><strong>N<sub>2</sub>O flux</strong> – Nitrous oxide emissions (kg N<sub>2</sub>O ha⁻¹ yr⁻¹ field density; Gg N<sub>2</sub>O yr⁻¹ county totals)</li>
-<li><strong>CH<sub>4</sub> flux</strong> – Methane emissions (kg CH<sub>4</sub> ha⁻¹ yr⁻¹ field density; Gg CH<sub>4</sub> yr⁻¹ county totals)</li>
-</ul>
-
-
+<p>The <a href="../reports/scenarios.html">Future Management and Climate Scenarios</a> page presents statewide soil-carbon responses, county contrasts against the reference, and annual model-defined N<sub>2</sub>O-N for the reference and management configurations.</p>
 </section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<p>These are model-derived results. The model has been minimally tested against site level observations and syntheses of available research.</p>
+<p>Ensemble ranges describe variation among parameter ensemble members; they are not observational confidence intervals. Scenario contrasts retain original member identity before summarization. Soil-carbon stocks and changes are reported separately from gas fluxes, and native carbon or nitrogen units are retained where complete CO<sub>2</sub>-equivalent accounting is not available.</p>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -1077,6 +817,38 @@ Table&nbsp;1: Scenario parameters based on NRCS conservation practice standards.
   </div>
 </nav>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
