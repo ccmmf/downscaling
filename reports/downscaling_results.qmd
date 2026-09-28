@@ -1,6 +1,6 @@
 ---
-title: "California Agricultural Carbon and Greenhouse Gas Results"
-subtitle: "Historical Inventory and Future Scenarios"
+title: "Historical Inventory Results"
+subtitle: "California Agricultural Carbon and Greenhouse Gas Results, 2016–2023"
 date: today
 format:
   html:
@@ -9,7 +9,9 @@ format:
 lightbox: true
 ---
 
-This report summarizes the historical downscaling inventory and the future management and climate configurations. The historical inventory describes modeled conditions from January 2016 through December 2023. The scenario analysis compares four configurations from January 2024 through December 2045.
+The historical inventory describes modeled conditions for California agricultural fields under recorded inputs from January 2016 through December 2023. Results summarize the agricultural fields represented in the downscaling dataset; they are not totals for all California land. County maps show modeled totals over represented fields, while field maps show area-normalized values.
+
+These are model-derived results. The model has been minimally tested against site level observations and syntheses of available research.
 
 ## Historical inventory summary
 
@@ -30,27 +32,78 @@ The inventory maps indicate net soil-carbon declines over much of the represente
 
 Nitrous-oxide results are reported in native nitrogen units. The maps show annualized December 2023 rates and changes in that endpoint rate. They should not be added directly to soil-carbon stock changes.
 
-## Future scenario summary
+## Spatial context
 
-All four future configurations have a negative mean statewide soil-carbon response between January 2024 and December 2045. The management configuration has a mean response 1.55 Tg C higher than the reference, indicating less modeled stock loss rather than a net statewide stock gain. The SSP585 configuration has a mean response 3.71 Tg C lower than the reference.
+![Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis.](assets/carb-results/inventory-spatial-context.webp){#fig-inventory-context .lightbox fig-alt="Map of California showing annual-crop and woody-perennial field locations represented in the downscaling analysis"}
 
-| Configuration | Mean SOC response | Member p05–p95 | Unit |
-|---|---:|---:|---|
-| Reference: BAU / CESM2 / SSP370 | -45.33 | -98.30 to 17.90 | Tg C |
-| Management: NBS / CESM2 / SSP370 | -43.77 | -97.21 to 20.86 | Tg C |
-| Climate model: BAU / MPI-ESM1-2-HR / SSP370 | -45.74 | -95.60 to 15.96 | Tg C |
-| Pathway: BAU / CESM2 / SSP585 | -49.04 | -100.55 to 12.00 | Tg C |
+Annual crops and woody perennial crops are presented separately because their carbon stocks, biomass, and spatial distributions differ substantially.
 
-: December 2045 monthly-mean SOC minus January 2024 monthly-mean SOC. The p05–p95 range is empirical ensemble-member spread. {#tbl-scenario-summary}
+## Soil carbon
 
-Annual model-defined N~2~O-N is available for the reference and management configurations. The management mean is slightly higher than the reference in most years, although the matched-member spread commonly crosses zero. See [Future Management and Climate Scenarios](scenarios.qmd) for the full time series and county SOC contrasts.
+Soil carbon is reported as a stock. County maps sum modeled stocks across represented fields; field maps report carbon density per hectare. Historical changes compare January 2016 and December 2023 monthly means.
 
-## Explore the results
+### County soil-carbon stocks
 
-| Page | Content |
-|---|---|
-| [Map Atlas Overview](atlas_overview.qmd) | Scope, configuration definitions, and interpretation |
-| [Soil Carbon](atlas_soil_carbon.qmd) | County stocks, field densities, and historical change |
-| [GHG Emissions](atlas_ghg_emissions.qmd) | Historical N~2~O-N patterns and gas-reporting boundary |
-| [Aboveground Biomass](atlas_biomass.qmd) | County and field biomass results |
-| [Future Scenarios](scenarios.qmd) | Statewide SOC, county contrasts, and annual N~2~O-N |
+![December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area.](assets/carb-results/inventory-soc-county.webp){#fig-inventory-soc-county .lightbox fig-alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops"}
+
+The largest county totals occur where substantial represented agricultural area coincides with moderate or high modeled stock density. The annual and woody maps use the same units but should be interpreted separately because the crop classes occupy different fields.
+
+### Field soil-carbon density
+
+![December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area.](assets/carb-results/inventory-soc-field.webp){#fig-inventory-soc-field .lightbox fig-alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops"}
+
+Field density reveals spatial variation that is obscured by county totals. Northern and coastal agricultural regions generally show higher modeled density than many southern and interior fields, although variation occurs within each crop class.
+
+### Soil-carbon change, 2016–2023
+
+![County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss.](assets/carb-results/inventory-soc-change.webp){#fig-inventory-soc-change .lightbox fig-alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023"}
+
+Modeled soil-carbon stocks decline across much of the represented area over the historical period. The largest negative county changes occur in agricultural regions with substantial represented area. These values are endpoint stock differences in Gg C, not annualized rates or atmospheric removals.
+
+## Nitrous oxide and gas-accounting scope
+
+The historical inventory reports nitrous-oxide and methane outputs as annualized December endpoint rates. These rates describe the model state at the endpoint; they are not calendar-year integrals or cumulative emissions over 2016–2023.
+
+### Nitrous-oxide endpoint rates
+
+![December 2023 annualized N~2~O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year.](assets/carb-results/inventory-n2o-county.webp){#fig-inventory-n2o-county .lightbox fig-alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen rates for annual and woody perennial crops"}
+
+County totals reflect both the modeled per-hectare rate and the represented agricultural area. The annual and woody crop classes have similar ensemble-mean totals at the December 2023 endpoint, but the spatial distributions differ.
+
+### Change in endpoint rate, 2016–2023
+
+![Change in the annualized N~2~O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023.](assets/carb-results/inventory-n2o-change.webp){#fig-inventory-n2o-change .lightbox fig-alt="Paired California county maps showing change in annualized nitrous-oxide nitrogen rate from 2016 to 2023"}
+
+Most represented counties show a higher modeled annualized endpoint rate in December 2023 than in January 2016. This is a change between two endpoint rates; it is not the total nitrogen emitted during the intervening years.
+
+### Methane and complete gas accounting
+
+Historical methane endpoint estimates are small relative to ensemble variability and do not support a useful spatial map. Complete annual gas series are not presented, so gas results are not combined with soil-carbon stock changes or converted to a partial CO~2~-equivalent total.
+
+## Aboveground biomass
+
+Aboveground biomass is the modeled carbon stock in living plant material above the soil surface. December values are endpoint snapshots rather than annual production totals. Annual-crop biomass is small at the endpoint because harvest removes much of the standing crop; woody perennial crops retain substantially more biomass.
+
+### County aboveground biomass
+
+![December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.](assets/carb-results/inventory-biomass-county.webp){#fig-inventory-biomass-county .lightbox fig-alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops"}
+
+Woody perennial biomass is concentrated in the Central Valley and other orchard-producing regions. Annual-crop endpoint totals are much smaller and should be interpreted as standing biomass at the December endpoint, not annual harvested production.
+
+### Field biomass density
+
+![December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops.](assets/carb-results/inventory-biomass-field.webp){#fig-inventory-biomass-field .lightbox fig-alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops"}
+
+The field maps separate per-hectare modeled biomass from the amount of agricultural area within a county. Woody perennial fields have higher endpoint densities than annual-crop fields across most represented regions.
+
+### Biomass change, 2016–2023
+
+![County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint.](assets/carb-results/inventory-biomass-change.webp){#fig-inventory-biomass-change .lightbox fig-alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023"}
+
+The historical endpoint comparison is predominantly negative, particularly for woody perennial crops in parts of the Central Valley. These changes describe modeled endpoint stocks and should not be interpreted as harvested yield or cumulative production.
+
+## Interpretation
+
+Ensemble ranges describe variation among parameter ensemble members; they are not observational confidence intervals. Soil-carbon stocks and changes are reported separately from gas fluxes, and native carbon or nitrogen units are retained where complete CO~2~-equivalent accounting is not available.
+
+See [Scenario-Based Analysis](scenarios.qmd) for the 2024–2045 management and climate comparisons.

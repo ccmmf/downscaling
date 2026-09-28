@@ -8,10 +8,6 @@ project:
   render:
     # Explicit pages to render
     - index.qmd # renders README
-    - reports/atlas_overview.qmd
-    - reports/atlas_soil_carbon.qmd
-    - reports/atlas_ghg_emissions.qmd
-    - reports/atlas_biomass.qmd
     - reports/atlas_model_drivers.qmd
     - reports/downscaling_results.qmd
     - reports/scenarios.qmd
@@ -34,24 +30,16 @@ website:
     contents:
       - href: index.qmd
         text: Home
-      - section: "Map Atlas"
-        contents:
-          - href: reports/atlas_overview.qmd
-            text: Overview & Key Findings
-          - href: reports/atlas_soil_carbon.qmd
-            text: Soil Carbon
-          - href: reports/atlas_ghg_emissions.qmd
-            text: "GHG Emissions (N\u2082O & CH\u2084)"
-          - href: reports/atlas_biomass.qmd
-            text: Aboveground Biomass
-          - href: reports/atlas_model_drivers.qmd
-            text: Model Drivers
-      - section: Reports
+      - section: Results
         contents:
           - href: reports/downscaling_results.qmd
-            text: Downscaling Results
+            text: Historical Inventory
           - href: reports/scenarios.qmd
-            text: Future Scenarios
+            text: Scenario-Based Analysis
+      - section: "Methods and Evaluation"
+        contents:
+          - href: reports/atlas_model_drivers.qmd
+            text: Model Drivers
           - href: reports/design_point_validation.qmd
             text: Design Point Validation
           - href: reports/variable_importance.qmd
