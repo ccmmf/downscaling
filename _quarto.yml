@@ -33,7 +33,7 @@ website:
       - section: Results
         contents:
           - href: reports/downscaling_results.qmd
-            text: Historical Inventory
+            text: Inventory Results
           - href: reports/scenarios.qmd
             text: Scenario-Based Analysis
       - section: "Methods and Evaluation"
