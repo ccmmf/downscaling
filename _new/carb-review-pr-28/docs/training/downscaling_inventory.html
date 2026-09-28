@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta name="robots" content="noindex,nofollow">
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Akash BV">
+<meta name="author" content="David LeBauer">
+<meta name="dcterms.date" content="2026-09-27">
+
+<title>Downscaling a MAGiC inventory – MAGiC Downscaling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../docs/workflow_documentation.html" rel="next">
+<link href="../../docs/training/CARB-downscaling-setup.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/training/index.html">Training</a></li><li class="breadcrumb-item"><a href="../../docs/training/downscaling_inventory.html">Inventory Downscaling</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">MAGiC Downscaling</a> 
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/carb_review.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CARB Review Draft</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Inventory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/atlas_overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inventory Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Results and Summary Tables</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/atlas_soil_carbon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Soil Carbon</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/atlas_ghg_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GHG</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/atlas_biomass.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Biomass</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scenarios</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Inventory Downscaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Methods and data locations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workflow Documentation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scope, Units, and Data Locations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#fetch-demo-data" id="toc-fetch-demo-data" class="nav-link active" data-scroll-target="#fetch-demo-data">Fetch demo data</a></li>
+  <li><a href="#explore-cli-layout" id="toc-explore-cli-layout" class="nav-link" data-scroll-target="#explore-cli-layout">Explore CLI layout</a></li>
+  <li><a href="#explore-configuration-file" id="toc-explore-configuration-file" class="nav-link" data-scroll-target="#explore-configuration-file">Explore configuration file</a></li>
+  <li><a href="#prepare-inputs" id="toc-prepare-inputs" class="nav-link" data-scroll-target="#prepare-inputs">Prepare inputs</a></li>
+  <li><a href="#extract-sipnet-output" id="toc-extract-sipnet-output" class="nav-link" data-scroll-target="#extract-sipnet-output">Extract SIPNET output</a></li>
+  <li><a href="#downscale-to-fields" id="toc-downscale-to-fields" class="nav-link" data-scroll-target="#downscale-to-fields">Downscale to fields</a></li>
+  <li><a href="#analyze-and-view-results" id="toc-analyze-and-view-results" class="nav-link" data-scroll-target="#analyze-and-view-results">Analyze and view results</a></li>
+  <li><a href="#field-results" id="toc-field-results" class="nav-link" data-scroll-target="#field-results">Field results</a></li>
+  <li><a href="#county-results" id="toc-county-results" class="nav-link" data-scroll-target="#county-results">County results</a></li>
+  <li><a href="#model-checks" id="toc-model-checks" class="nav-link" data-scroll-target="#model-checks">Model checks</a></li>
+  <li><a href="#scaling-beyond-the-demo" id="toc-scaling-beyond-the-demo" class="nav-link" data-scroll-target="#scaling-beyond-the-demo">Scaling beyond the demo</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/training/index.html">Training</a></li><li class="breadcrumb-item"><a href="../../docs/training/downscaling_inventory.html">Inventory Downscaling</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Downscaling a MAGiC inventory</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Akash BV </p>
+             <p>David LeBauer </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 27, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This tutorial demonstrates how to downscale output from a PEcAn ensemble run. We used the magic-ensemble CLI to run SIPNET at a representative sample of fields from the CADWR Land Use dataset.</p>
+<p>The downscaling step fits Random Forest models to the ensemble output at those sampled fields, then predicts carbon stocks and greenhouse gas fluxes for target fields with the required covariates. It aggregates the field-level predictions into county and run-scope summaries.</p>
+<p>The demo covers four Sacramento-San Joaquin Delta counties: Yolo, Solano, Sacramento, and Contra Costa. The demo inputs contain output for 100 design points distributed across California; the workflow uses these outputs to predict outcomes for fields within those four counties. All 100 sites and 10 ensemble members have 96 monthly soil-carbon values in the verified demo. Runtime depends on input scope and allocated computing resources.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Scope
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The demo dataset includes field data layers for these four Delta counties. Its <code>state_summaries.csv</code> output therefore summarizes the four-county demo extent; <strong>so the demo ‘statewide’ estimates only represent the four-county extent</strong>.</p>
+</div>
+</div>
+<p><a href="figures/inventory_workflow.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="figures/inventory_workflow.svg" class="img-fluid" alt="After get-demo-data downloads the inputs: 1. prepare stages ensemble output and field data; 2. extract computes monthly means at design points; 3. downscale fits Random Forests per ensemble member, predicts target fields from covariates, repeats for the first month to estimate change, and aggregates by field area; 4. analyze creates diagnostics and maps." width="620"></a></p>
+<p>For each plant functional type (PFT), output variable, and scenario, the workflow fits one forest per ensemble member using the final available month’s values at the design points. It also fits forests for the first month to estimate change over the simulation period.</p>
+<p>This documentation assumes that the steps in <a href="../../docs/training/CARB-downscaling-setup.html">Environment setup</a> have been completed. In a new terminal session, follow its <a href="../../docs/training/CARB-downscaling-setup.html#every-time-you-start-a-new-terminal-session">startup instructions</a>. Run all commands below from the downscaling repository root.</p>
+<section id="fetch-demo-data" class="level2">
+<h2 class="anchored" data-anchor-id="fetch-demo-data">Fetch demo data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> get-demo-data <span class="at">--config</span> example_user_config.yaml</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> demo-data/modelout/demo_config.yaml config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The data package contains:</p>
+<ul>
+<li><code>modelout/</code> – SIPNET output, 100 design points x 10 ensemble members, 2016-2023, under <code>output_inventory/</code></li>
+<li><code>data/</code> – field geometry, attributes, covariates and county boundaries for the four demo counties, plus covariates for the design points so the model can train</li>
+</ul>
+<section id="inspect-the-inputs" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-the-inputs">Inspect the inputs</h3>
+<p>Start with <code>config.yaml</code>: identify the model-output directory, data-layer directory, scenario, output variable, and run directory. In the model-output directory, <code>site_info.csv</code> identifies the design points and <code>output_inventory/out/</code> holds the NetCDF files. In the data layers, <code>site_covariates.csv</code> supplies predictors; <code>cadwr_crops_sites.gpkg</code> and <code>cadwr_crops_site_summary.csv</code> identify target fields.</p>
+<p>For example, the supplied <code>output_inventory/out/ENS-00002-328163/2016.nc</code> contains one location and 2,928 time steps. This excerpt from its NetCDF header shows the soil-carbon variable and its units:</p>
+<pre class="text"><code>dimensions:
+    lon = 1 ;
+    lat = 1 ;
+    time = UNLIMITED ; // (2928 currently)
+variables:
+    double time(time) ;
+        time:units = "days since 2016-01-01 00:00:00" ;
+    double TotSoilCarb(time, lat, lon) ;
+        TotSoilCarb:units = "kg C m-2" ;
+        TotSoilCarb:_FillValue = -999. ;
+        TotSoilCarb:long_name = "Total Soil Carbon" ;</code></pre>
+<p>The preview below reads the covariate table staged by <code>prepare</code>. <code>site_id</code> joins these rows to the model output and field attributes. The numeric columns passed to the fitting routine are shown beneath it; constant columns may be dropped when fitting a PFT.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Five rows from the supplied covariate table.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">site_id</th>
+<th style="text-align: left;">pft</th>
+<th style="text-align: right;">area_ha</th>
+<th style="text-align: right;">ocd</th>
+<th style="text-align: right;">temp</th>
+<th style="text-align: right;">tillage_rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">3.980</td>
+<td style="text-align: right;">345</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.4724164</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">12</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">16.800</td>
+<td style="text-align: right;">348</td>
+<td style="text-align: right;">16.8</td>
+<td style="text-align: right;">0.4573896</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">29.500</td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">0.7121680</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">53</td>
+<td style="text-align: left;">woody perennial crop</td>
+<td style="text-align: right;">0.735</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.4313695</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">79</td>
+<td style="text-align: left;">annual crop</td>
+<td style="text-align: right;">0.810</td>
+<td style="text-align: right;">303</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>area_ha, clay, ocd, twi, temp, precip, srad, vapr, eof_1, eof_2, eof_3, eof_4,
+eof_5, eof_6, eof_7, eof_8, eof_9, eof_10, pft_woody_perennial_crop,
+pft_annual_crop, tillage_rank, tillage_freq, leafon_doy, leafoff_doy,
+leafon_doy_sd, leafoff_doy_sd, irr_canopy, irr_flood</code></pre>
+</div>
+</div>
+</section>
+<section id="covariates-and-design-points" class="level3">
+<h3 class="anchored" data-anchor-id="covariates-and-design-points">Covariates and design points</h3>
+<p><code>site_covariates.csv</code> describes the fields where SIPNET was run and the fields where predictions are needed. The workflow joins these data using <code>site_id</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature group</th>
+<th>Columns</th>
+<th>What they describe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Climate</td>
+<td><code>temp</code>, <code>precip</code>, <code>srad</code>, <code>vapr</code></td>
+<td>Multi-year temperature, precipitation, solar radiation and atmospheric moisture summaries</td>
+</tr>
+<tr class="even">
+<td>Soil and terrain</td>
+<td><code>clay</code>, <code>ocd</code>, <code>twi</code></td>
+<td>Clay content, soil organic carbon density and topographic wetness</td>
+</tr>
+<tr class="odd">
+<td>Crop history</td>
+<td><code>eof_*</code></td>
+<td>Principal components summarizing crop sequences across years; preparation retains up to 10 components</td>
+</tr>
+<tr class="even">
+<td>Phenology</td>
+<td><code>leafon_doy</code>, <code>leafoff_doy</code>, <code>leafon_doy_sd</code>, <code>leafoff_doy_sd</code></td>
+<td>Mean green-up and senescence day of year, and their variation across years</td>
+</tr>
+<tr class="odd">
+<td>Tillage</td>
+<td><code>tillage_rank</code>, <code>tillage_freq</code></td>
+<td>Monitored tillage rank and fraction of monitored years with detected tillage</td>
+</tr>
+<tr class="even">
+<td>Irrigation</td>
+<td><code>irr_canopy</code>, <code>irr_flood</code></td>
+<td>Indicators derived from the monitored irrigation categories</td>
+</tr>
+<tr class="odd">
+<td>Field</td>
+<td><code>area_ha</code></td>
+<td>Field area, also used to convert predicted density to a field total</td>
+</tr>
+<tr class="even">
+<td>PFT</td>
+<td><code>pft_annual_crop</code>, <code>pft_woody_perennial_crop</code></td>
+<td>Indicators of the assigned PFT</td>
+</tr>
+</tbody>
+</table>
+<p>The clustering scripts use the seven climate, soil and terrain features plus the crop-history, phenology and management columns present in the input table. With 10 crop-history components and all eight phenology and management columns, this is 25 clustering features.</p>
+<p>Site selection groups fields separately within annual and woody perennial PFTs, using standardized features and k-means clustering. It selects fields near the cluster centers, then uses farthest point sampling to choose a smaller set that represents the feature space.</p>
+<p>The Random Forest predictor list is selected separately: <code>downscale</code> uses all numeric columns of <code>site_covariates.csv</code> except <code>climregion_id</code>. These are used to fit the Random Forest; <code>site_id</code> is key that joins the model output with the covariates.</p>
+</section>
+</section>
+<section id="explore-cli-layout" class="level2">
+<h2 class="anchored" data-anchor-id="explore-cli-layout">Explore CLI layout</h2>
+<p>Execution is controlled by <code>magic-downscaling</code> and proceeds in four stages: staging inputs, extracting model output, downscaling, and analysis.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The commands are defined by the <code>steps</code> section of the workflow manifest:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> downscaling_manifest.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Key points:</p>
+<ul>
+<li><code>extract</code>, <code>downscale</code>, and <code>analyze</code> are lists of steps, each calling one script.</li>
+<li>All tuning happens through command-line arguments the CLI builds. Scripts never read environment variables for config.</li>
+<li>A step declares <code>inputs</code> (files), <code>outputs</code> (files) and <code>params</code> (everything else) as <code>{cli_flag: value_key}</code> pairs. The key is the literal flag the script expects.</li>
+<li><code>inputs</code> and <code>outputs</code> values must be keys in the manifest’s <code>paths</code> block, all relative to <code>run_dir</code>. That indirection is what lets you move a run without editing a script.</li>
+<li><code>params</code> resolve from your config first, then <code>mode_params</code>, then <code>fixed_values</code>.</li>
+<li><code>--verbose</code> reports the exact call issued for each step.</li>
+</ul>
+</section>
+<section id="explore-configuration-file" class="level2">
+<h2 class="anchored" data-anchor-id="explore-configuration-file">Explore configuration file</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The supplied configuration uses these values:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">global</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run_dir</span><span class="kw">:</span><span class="at"> inventory-run</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">aws_profile</span><span class="kw">:</span><span class="at"> magic</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">downscaling</span><span class="kw">:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> production</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">management_scenarios</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">inventory</span><span class="kw">]</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">outputs_to_extract</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">TotSoilCarb</span><span class="kw">]</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_cores</span><span class="kw">:</span><span class="at"> </span><span class="dv">4</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pecan_output_dir</span><span class="kw">:</span><span class="at"> demo-data/modelout</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">data_layers_dir</span><span class="kw">:</span><span class="at"> demo-data/data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Keep <code>mode: production</code> to use all sites, ensemble members, and years in this small four-county dataset. By comparison, <code>demo</code> reads all sites for one member and the final year, while <code>dev</code> reads the first 10 sites and members for the final two years. The <code>inventory</code> scenario matches the downloaded <code>output_inventory/</code> directory. <code>outputs_to_extract</code> limits this walkthrough to <code>TotSoilCarb</code>. <code>run_dir</code> controls where results are written; the two input-directory keys identify the downloaded model outputs and data layers. Set <code>n_cores</code> to your allocated CPUs.</p>
+</section>
+<section id="prepare-inputs" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-inputs">Prepare inputs</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> prepare <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>copies ensemble output and data layers into <code>run_dir</code>, so the run is self-contained and can be archived or moved</li>
+<li>fails immediately if a scenario in your config has no matching <code>output_&lt;scenario&gt;/</code> directory, which is the usual sign the config and the ensemble disagree</li>
+</ul>
+</section>
+<section id="extract-sipnet-output" class="level2">
+<h2 class="anchored" data-anchor-id="extract-sipnet-output">Extract SIPNET output</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> extract <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The PEcAn workflow writes one NetCDF per site, per member, per year at sub-daily resolution. The <code>extract</code> step reads these, averages to monthly, and writes one long table in the EFI (Ecological Forecasting Initiative) standard format. Each value is a monthly mean for one site, ensemble member, scenario and variable. The subsequent RF fits select individual months from this table; they do not pool the monthly time series into one training set.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>ensemble_output.csv as written by <code>extract</code></caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">rows</th>
+<th style="text-align: right;">sites</th>
+<th style="text-align: right;">members</th>
+<th style="text-align: right;">months</th>
+<th style="text-align: left;">variables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">96,000</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: left;">TotSoilCarb</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>For a complete table with one scenario and every combination present, the row count is <code>sites x members x months x variables</code>. Check missing combinations and duplicate keys before interpreting a difference from that count.</p>
+<p>Values here are still in SIPNET units, kg C m<sup>-2</sup> for pools. Conversion to Mg C ha<sup>-1</sup> happens in the next step.</p>
+</section>
+<section id="downscale-to-fields" class="level2">
+<h2 class="anchored" data-anchor-id="downscale-to-fields">Downscale to fields</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> downscale <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For each PFT and carbon pool this:</p>
+<ul>
+<li>takes the design points that ran with that PFT as training data</li>
+<li>selects the final available month and fits one Random Forest per ensemble member, to that month’s mean model output</li>
+<li>predicts every field of that PFT, converts to reporting units, multiplies by area</li>
+<li>repeats for the first month so a change between the two monthly means can be formed</li>
+<li>aggregates to county and state</li>
+</ul>
+<p>Fitting one forest per member is what carries the ensemble’s parameter uncertainty through to the field level instead of collapsing it to a single number.</p>
+<p>For each ensemble member, soil carbon density is converted to a field total:</p>
+<p><code>total_per_field (Mg C) = density_per_ha (Mg C/ha) × area_ha (ha)</code>.</p>
+<p>Field totals are summed within each county and PFT. County density is the county total divided by represented field area. The mean and standard deviation are then computed across ensemble members.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output column</th>
+<th>Meaning for soil carbon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>density_per_ha</code></td>
+<td>Field soil carbon density, Mg C/ha</td>
+</tr>
+<tr class="even">
+<td><code>total_per_field</code></td>
+<td>Field soil carbon stock, Mg C</td>
+</tr>
+<tr class="odd">
+<td><code>mean_total_per_county</code></td>
+<td>Mean county stock across members, Mg C; the table below displays Gg C</td>
+</tr>
+<tr class="even">
+<td><code>mean_density_per_ha</code></td>
+<td>Mean across members of area-weighted county density, Mg C/ha</td>
+</tr>
+<tr class="odd">
+<td><code>mean_total_ha</code></td>
+<td>Mean represented field area across members, ha</td>
+</tr>
+<tr class="even">
+<td><code>sd_total_per_county</code></td>
+<td>Across-member SD of county stock, Mg C</td>
+</tr>
+<tr class="odd">
+<td><code>sd_density_per_ha</code></td>
+<td>Across-member SD of county density, Mg C/ha</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="analyze-and-view-results" class="level2">
+<h2 class="anchored" data-anchor-id="analyze-and-view-results">Analyze and view results</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./magic-downscaling</span> analyze <span class="at">--verbose</span> <span class="at">--config</span> config.yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>analyze</code> writes diagnostics and maps to <code>figures/</code>, including county and field maps, variable-importance summaries, and response curves for important predictors.</p>
+</section>
+<section id="field-results" class="level2">
+<h2 class="anchored" data-anchor-id="field-results">Field results</h2>
+<p>The maps show each predicted field’s mean soil carbon density across the 10 ensemble members.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="figures/demo_field_soc_regional.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown."><img src="figures/demo_field_soc_regional.webp" class="img-fluid figure-img" alt="Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown."></a></p>
+<figcaption>Ensemble-mean soil carbon density for annual-crop fields, in Mg C/ha. County names use leader lines; fields without covariates are not shown.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="figures/demo_field_soc_woody_regional.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."><img src="figures/demo_field_soc_woody_regional.webp" class="img-fluid figure-img" alt="Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale."></a></p>
+<figcaption>Ensemble-mean soil carbon density for woody-perennial fields, in Mg C/ha. County names use leader lines; both maps use the same color scale.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="county-results" class="level2">
+<h2 class="anchored" data-anchor-id="county-results">County results</h2>
+<p>County stock is the sum of predicted field stocks within each ensemble member and is then summarized across the 10 members.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="downscaling_inventory_files/figure-html/county-stock-plot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale."><img src="downscaling_inventory_files/figure-html/county-stock-plot-1.png" class="img-fluid figure-img" width="672" alt="Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale."></a></p>
+<figcaption>Points are mean county soil carbon stock in Gg C; bars show ±1 SD across 10 ensemble members. Both panels use the same scale.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><strong><a href="downloads/four_county_soil_carbon_by_county.csv" download="four_county_soil_carbon_by_county.csv">Download county statistics (CSV)</a></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Total soil carbon stock represented by predicted fields; modeled values use two significant figures.</caption>
+<colgroup>
+<col style="width: 18%">
+<col style="width: 22%">
+<col style="width: 10%">
+<col style="width: 25%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">County</th>
+<th style="text-align: left;">Crop type</th>
+<th style="text-align: left;">Fields</th>
+<th style="text-align: left;">Stock mean (Gg C)</th>
+<th style="text-align: left;">Stock SD (Gg C)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Contra Costa</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">1,183</td>
+<td style="text-align: left;">1,700</td>
+<td style="text-align: left;">170</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">4,554</td>
+<td style="text-align: left;">5,000</td>
+<td style="text-align: left;">520</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">3,547</td>
+<td style="text-align: left;">5,500</td>
+<td style="text-align: left;">630</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yolo</td>
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: left;">5,272</td>
+<td style="text-align: left;">8,200</td>
+<td style="text-align: left;">1,000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Contra Costa</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">646</td>
+<td style="text-align: left;">220</td>
+<td style="text-align: left;">38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sacramento</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">2,261</td>
+<td style="text-align: left;">1,600</td>
+<td style="text-align: left;">320</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solano</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">1,838</td>
+<td style="text-align: left;">1,300</td>
+<td style="text-align: left;">220</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yolo</td>
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: left;">3,428</td>
+<td style="text-align: left;">2,600</td>
+<td style="text-align: left;">410</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>SD describes spread across ensemble members; it is not a confidence interval.</p>
+</section>
+<section id="model-checks" class="level2">
+<h2 class="anchored" data-anchor-id="model-checks">Model checks</h2>
+<p>Use these checks to confirm field coverage and how well the Random Forests reproduce the SIPNET results at the design points.</p>
+<p><strong>Coverage.</strong> This run predicted 22,729 fields. Each field has values from all 10 ensemble members. Compare the range of predicted values with the SIPNET values used for training; values far outside that range need review.</p>
+<p><strong>Model fit.</strong> Out-of-bag (OOB) R<sup>2</sup> measures how well each forest predicts SIPNET values left out during fitting. Higher values are better. Zero is no better than using the average training value, and negative values are worse. This checks the Random Forest, not SIPNET or the inventory against field measurements.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Random Forest fit across the 10 ensemble members.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Crop type</th>
+<th style="text-align: right;">Members</th>
+<th style="text-align: right;">Median OOB R2</th>
+<th style="text-align: right;">Members below zero</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Annual crop</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Woody perennial</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="downscaling_inventory_files/figure-html/oob-plot-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero."><img src="downscaling_inventory_files/figure-html/oob-plot-1.png" class="img-fluid figure-img" width="672" alt="Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero."></a></p>
+<figcaption>Each point is one ensemble member. The dashed blue line is the PFT median; the solid gray line marks zero.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Median OOB R<sup>2</sup> is 0.41 for annual crops and 0.31 for woody perennial crops. One woody-perennial member falls below zero. These scores show how well the Random Forests copy SIPNET at the design points; they do not show whether modeled soil carbon agrees with measurements.</p>
+</section>
+<section id="scaling-beyond-the-demo" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-beyond-the-demo">Scaling beyond the demo</h2>
+<p>The same four commands can be used with a larger inventory. In the configuration, set <code>mode: production</code>, point <code>pecan_output_dir</code> and <code>data_layers_dir</code> to the full input directories using paths relative to the repository, and list the outputs to process. Set <code>n_cores</code> to the CPUs in the compute allocation.</p>
+<p>The four county demo used 10 ensemble members for 2016-2023. With 1 CPU and 28 GB of allocated memory, download and all four stages finished in under 15 minutes; Slurm recorded about 1.15 GiB peak memory.</p>
+<p>Treat these measurements as a starting point. Runtime and storage increase with the numbers of fields, ensemble members, variables, and scenarios. The <code>prepare</code> step also copies the input data into <code>run_dir</code>, so the run needs space for both the source data and the staged copy.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../docs/training/CARB-downscaling-setup.html" class="pagination-link" aria-label="Environment Setup">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Environment Setup</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../docs/workflow_documentation.html" class="pagination-link" aria-label="Workflow Documentation">
+        <span class="nav-page-text">Workflow Documentation</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
