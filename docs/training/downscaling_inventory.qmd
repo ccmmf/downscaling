@@ -158,11 +158,7 @@ inputs, extracting model output, downscaling, and analysis.
 ./magic-downscaling -h
 ```
 
-The commands are defined by the `steps` section of the workflow manifest:
-
-```bash
-less downscaling_manifest.yaml
-```
+The commands correspond to the workflow steps described below.
 
 Key points:
 
