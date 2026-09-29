@@ -308,61 +308,6 @@
     ]
   },
   {
-    "objectID": "reports/scenarios.html",
-    "href": "reports/scenarios.html",
-    "title": "Scenario-Based Analysis",
-    "section": "",
-    "text": "The scenario-based analysis compares four scenarios through December 2045. The reference uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to the reference.",
-    "crumbs": [
-      "Results",
-      "Scenario-Based Analysis"
-    ]
-  },
-  {
-    "objectID": "reports/scenarios.html#statewide-soil-carbon-response",
-    "href": "reports/scenarios.html#statewide-soil-carbon-response",
-    "title": "Scenario-Based Analysis",
-    "section": "Statewide soil-carbon response",
-    "text": "Statewide soil-carbon response\n\n\n\n\n\n\nFigure 1: Statewide soil-carbon response for the four scenarios. Points show ensemble means and bars show empirical member p05–p95.\n\n\n\n\n\n\nTable 2: Statewide December 2045 minus January 2024 soil-carbon stock response, Tg C.\n\n\n\n\n\nScenario\nMean\np05\np95\n\n\n\n\nReference\n-45.33\n-98.30\n17.90\n\n\nManagement\n-43.77\n-97.21\n20.86\n\n\nClimate model\n-45.74\n-95.60\n15.96\n\n\nPathway\n-49.04\n-100.55\n12.00\n\n\n\n\n\n\nAll four ensemble means are negative, indicating modeled soil-carbon stock loss over the period. The ensemble ranges are parameter-member spread, not observational confidence intervals.",
-    "crumbs": [
-      "Results",
-      "Scenario-Based Analysis"
-    ]
-  },
-  {
-    "objectID": "reports/scenarios.html#contrasts-against-the-reference",
-    "href": "reports/scenarios.html#contrasts-against-the-reference",
-    "title": "Scenario-Based Analysis",
-    "section": "Contrasts against the reference",
-    "text": "Contrasts against the reference\n\n\n\n\n\n\nFigure 2: County soil-carbon response contrasts against the reference scenario. The three panels share a signed color scale.\n\n\n\n\n\n\nTable 3: Statewide soil-carbon response contrasts, Tg C. Contrasts are calculated within original ensemble-member identity before summarization.\n\n\n\n\n\n\n\n\n\n\n\n\nContrast\nMean\np05\np95\nInterpretation\n\n\n\n\nManagement minus reference\n1.55\n-1.81\n3.86\nLess modeled stock loss on average\n\n\nClimate model minus reference\n-0.41\n-5.06\n3.84\nSimilar statewide mean, with regional differences\n\n\nPathway minus reference\n-3.71\n-6.16\n-1.31\nGreater modeled stock loss\n\n\n\n\n\n\nThe positive management contrast does not mean that statewide soil carbon increases. It means that the management scenario loses less soil carbon than the reference on average. The county maps show where each contrast contributes to the statewide result.",
-    "crumbs": [
-      "Results",
-      "Scenario-Based Analysis"
-    ]
-  },
-  {
-    "objectID": "reports/scenarios.html#annual-model-defined-n2o-n",
-    "href": "reports/scenarios.html#annual-model-defined-n2o-n",
-    "title": "Scenario-Based Analysis",
-    "section": "Annual model-defined N2O-N",
-    "text": "Annual model-defined N2O-N\n\n\n\n\n\n\nFigure 3: Annual model-defined N2O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95.\n\n\n\nAnnual N2O-N is integrated over each calendar year and reported as native nitrogen mass per represented hectare. This differs from the historical inventory’s annualized endpoint rate.\n\n\n\n\n\n\nFigure 4: Management-minus-reference annual N2O-N. Differences are calculated within original ensemble-member identity.\n\n\n\n\n\n\nTable 4: Selected annual N2O-N means, kg N ha-1 yr-1.\n\n\n\n\n\nYear\nReference\nManagement\nManagement minus reference\n\n\n\n\n2024\n23.71\n23.85\n0.14\n\n\n2030\n22.13\n22.47\n0.34\n\n\n2035\n21.54\n22.33\n0.79\n\n\n2040\n15.06\n15.54\n0.48\n\n\n2045\n20.94\n22.06\n1.11\n\n\n\n\n\n\nThe management mean is higher than the reference in most years, but the matched-member spread commonly crosses zero. These modeled differences do not establish an observed causal management effect.",
-    "crumbs": [
-      "Results",
-      "Scenario-Based Analysis"
-    ]
-  },
-  {
-    "objectID": "reports/scenarios.html#gas-reporting-boundary",
-    "href": "reports/scenarios.html#gas-reporting-boundary",
-    "title": "Scenario-Based Analysis",
-    "section": "Gas-reporting boundary",
-    "text": "Gas-reporting boundary\nAnnual native-N accounting is available for the reference and management scenarios. Corrected statewide methane and complete annual gas series for the climate-model and pathway scenarios are not shown. Soil-carbon stock changes and the available gas results are therefore reported separately rather than combined into an incomplete CO2-equivalent balance.",
-    "crumbs": [
-      "Results",
-      "Scenario-Based Analysis"
-    ]
-  },
-  {
     "objectID": "reports/atlas_model_drivers.html",
     "href": "reports/atlas_model_drivers.html",
     "title": "Model Drivers",
@@ -860,6 +805,72 @@
     "crumbs": [
       "Docs",
       "References"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html",
+    "href": "reports/scenarios.html",
+    "title": "Scenario-Based Analysis",
+    "section": "",
+    "text": "The scenario-based analysis compares four scenarios through December 2045. The reference uses business-as-usual management, CESM2 climate, and SSP370. Each alternative changes one dimension relative to the reference.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#soil-carbon-context",
+    "href": "reports/scenarios.html#soil-carbon-context",
+    "title": "Scenario-Based Analysis",
+    "section": "Soil-carbon context",
+    "text": "Soil-carbon context\n\n\n\nTable 2: Statewide soil-carbon stocks and changes, Tg C. The inventory and scenario values come from separate simulation periods and are shown as context rather than as a continuous time series.\n\n\n\n\n\n\n\n\n\n\n\nMeasure\nAnnual crops\nWoody perennial crops\nTotal\n\n\n\n\nInventory: December 2023 stock\n113.22\n87.93\n201.15\n\n\nInventory: January 2016 to December 2023 change\n-18.66\n-18.50\n-37.16\n\n\nReference scenario: January 2024 stock\n124.96\n95.84\n220.80\n\n\nReference scenario: January 2024 to December 2045 change\n-30.52\n-14.81\n-45.33\n\n\n\n\n\n\nThe negative reference-scenario change may include adjustment from a non-stable initial state. Scenario effects are therefore evaluated primarily as matched differences from the reference trajectory.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#scenario-effects-relative-to-the-reference",
+    "href": "reports/scenarios.html#scenario-effects-relative-to-the-reference",
+    "title": "Scenario-Based Analysis",
+    "section": "Scenario effects relative to the reference",
+    "text": "Scenario effects relative to the reference\n\n\n\nTable 3: Soil-carbon change relative to the reference, Tg C. Contrasts preserve original ensemble-member identity before summarization. Positive values indicate more soil carbon relative to the reference trajectory.\n\n\n\n\n\n\n\n\n\n\n\n\nContrast\nAnnual crops\nWoody perennial crops\nStatewide mean\nStatewide p05–p95\n\n\n\n\nManagement minus reference\n0.73\n0.83\n1.55\n-1.81 to 3.86\n\n\nClimate model minus reference\n0.36\n-0.77\n-0.41\n-5.06 to 3.84\n\n\nPathway minus reference\n-1.85\n-1.87\n-3.71\n-6.16 to -1.31\n\n\n\n\n\n\nManagement retains an average of 1.55 Tg C more than the reference trajectory by December 2045. Changing the climate model produces little change in the statewide mean but different annual- and woody-crop responses. SSP585 reduces soil carbon by an additional 3.71 Tg C relative to the reference.\n\n\n\n\n\n\nFigure 1: County soil-carbon change relative to the reference scenario. The three panels share a signed color scale.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#scenario-soil-carbon-responses",
+    "href": "reports/scenarios.html#scenario-soil-carbon-responses",
+    "title": "Scenario-Based Analysis",
+    "section": "Scenario soil-carbon responses",
+    "text": "Scenario soil-carbon responses\n\n\n\n\n\n\nFigure 2: Statewide soil-carbon change and matched scenario contrasts. Panel A connects each original ensemble member’s reference change to its change under management, the alternate climate model, and the alternate pathway; boxes show the median and interquartile range. Panel B shows the corresponding within-member differences on a tighter scale. Positive values in Panel B indicate more soil carbon relative to the reference trajectory, not necessarily an absolute stock gain.\n\n\n\n\n\n\nTable 4: Statewide December 2045 minus January 2024 soil-carbon stock, Tg C.\n\n\n\n\n\nScenario\nMean\np05\np95\n\n\n\n\nReference\n-45.33\n-98.26\n17.87\n\n\nManagement\n-43.77\n-97.21\n20.86\n\n\nClimate model\n-45.74\n-95.55\n15.98\n\n\nPathway\n-49.04\n-101.24\n11.96",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#annual-n2o-n",
+    "href": "reports/scenarios.html#annual-n2o-n",
+    "title": "Scenario-Based Analysis",
+    "section": "Annual N2O-N",
+    "text": "Annual N2O-N\n\n\n\n\n\n\nFigure 3: Annual N2O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95.\n\n\n\nScenario N2O-N is integrated over each calendar year and reported in kg N ha-1 yr-1. The current annual comparison covers the reference and management scenarios; it is an interim two-scenario result rather than the finalized four-scenario annual-gas product.\n\n\n\n\n\n\nFigure 4: Management-minus-reference annual N2O-N. Differences pair the same ensemble-member IDs across the two separately fitted downscaling models.\n\n\n\n\n\n\nTable 5: Selected annual N2O-N means, kg N ha-1 yr-1.\n\n\n\n\n\nYear\nReference\nManagement\nManagement minus reference\n\n\n\n\n2024\n23.71\n23.85\n0.14\n\n\n2030\n22.12\n22.46\n0.34\n\n\n2035\n21.55\n22.34\n0.79\n\n\n2040\n15.06\n15.55\n0.48\n\n\n2045\n20.95\n22.06\n1.11\n\n\n\n\n\n\nThe management mean is higher than the reference in most years, although the same-member range commonly crosses zero. Methane is not shown here; methane analysis will focus on crop fields with at least one rice season.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
+    ]
+  },
+  {
+    "objectID": "reports/scenarios.html#related-practice-change-benchmark",
+    "href": "reports/scenarios.html#related-practice-change-benchmark",
+    "title": "Scenario-Based Analysis",
+    "section": "Related practice-change benchmark",
+    "text": "Related practice-change benchmark\nA separate practice-change benchmark compares paired treatment and reference simulations at statewide design points with published synthesis estimates. Cover crops, reduced tillage, zero tillage, and organic amendment increased modeled soil carbon. The cover-crop and tillage effects were roughly half the synthesis estimates, while the organic-amendment effect was about one quarter. The design includes annual- and woody-crop systems, but uses one fixed parameterization for 2016–2023 and is distinct from both the inventory and the 2024–2045 ensemble scenario analysis reported here.",
+    "crumbs": [
+      "Results",
+      "Scenario-Based Analysis"
     ]
   }
 ]

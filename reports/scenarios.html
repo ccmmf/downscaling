@@ -8,7 +8,7 @@
 
 <meta name="author" content="David LeBauer">
 <meta name="author" content="Akash B V">
-<meta name="dcterms.date" content="2026-09-28">
+<meta name="dcterms.date" content="2026-09-29">
 
 <title>Scenario-Based Analysis – MAGiC Downscaling</title>
 <style>
@@ -136,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Historical Inventory</span></a>
+ <span class="menu-text">Inventory Results</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -244,10 +244,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#statewide-soil-carbon-response" id="toc-statewide-soil-carbon-response" class="nav-link active" data-scroll-target="#statewide-soil-carbon-response">Statewide soil-carbon response</a></li>
-  <li><a href="#contrasts-against-the-reference" id="toc-contrasts-against-the-reference" class="nav-link" data-scroll-target="#contrasts-against-the-reference">Contrasts against the reference</a></li>
-  <li><a href="#annual-model-defined-n2o-n" id="toc-annual-model-defined-n2o-n" class="nav-link" data-scroll-target="#annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</a></li>
-  <li><a href="#gas-reporting-boundary" id="toc-gas-reporting-boundary" class="nav-link" data-scroll-target="#gas-reporting-boundary">Gas-reporting boundary</a></li>
+  <li><a href="#soil-carbon-context" id="toc-soil-carbon-context" class="nav-link active" data-scroll-target="#soil-carbon-context">Soil-carbon context</a></li>
+  <li><a href="#scenario-effects-relative-to-the-reference" id="toc-scenario-effects-relative-to-the-reference" class="nav-link" data-scroll-target="#scenario-effects-relative-to-the-reference">Scenario effects relative to the reference</a></li>
+  <li><a href="#scenario-soil-carbon-responses" id="toc-scenario-soil-carbon-responses" class="nav-link" data-scroll-target="#scenario-soil-carbon-responses">Scenario soil-carbon responses</a></li>
+  <li><a href="#annual-n2o-n" id="toc-annual-n2o-n" class="nav-link" data-scroll-target="#annual-n2o-n">Annual N<sub>2</sub>O-N</a></li>
+  <li><a href="#related-practice-change-benchmark" id="toc-related-practice-change-benchmark" class="nav-link" data-scroll-target="#related-practice-change-benchmark">Related practice-change benchmark</a></li>
   </ul>
 </nav>
     </div>
@@ -275,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 28, 2026</p>
+      <p class="date">September 29, 2026</p>
     </div>
   </div>
   
@@ -345,22 +346,141 @@ Table&nbsp;1: Scenarios used in the 2024–2045 analysis.
 </div>
 </figure>
 </div>
-<section id="statewide-soil-carbon-response" class="level2">
-<h2 class="anchored" data-anchor-id="statewide-soil-carbon-response">Statewide soil-carbon response</h2>
-<div id="fig-scenario-soc-statewide" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway scenarios">
+<section id="soil-carbon-context" class="level2">
+<h2 class="anchored" data-anchor-id="soil-carbon-context">Soil-carbon context</h2>
+<div id="tbl-soc-context" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Statewide soil-carbon stocks and changes, Tg C. The inventory and scenario values come from separate simulation periods and are shown as context rather than as a continuous time series.
+</figcaption>
+<div aria-describedby="tbl-soc-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Measure</th>
+<th style="text-align: right;">Annual crops</th>
+<th style="text-align: right;">Woody perennial crops</th>
+<th style="text-align: right;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Inventory: December 2023 stock</td>
+<td style="text-align: right;">113.22</td>
+<td style="text-align: right;">87.93</td>
+<td style="text-align: right;">201.15</td>
+</tr>
+<tr class="even">
+<td>Inventory: January 2016 to December 2023 change</td>
+<td style="text-align: right;">-18.66</td>
+<td style="text-align: right;">-18.50</td>
+<td style="text-align: right;">-37.16</td>
+</tr>
+<tr class="odd">
+<td>Reference scenario: January 2024 stock</td>
+<td style="text-align: right;">124.96</td>
+<td style="text-align: right;">95.84</td>
+<td style="text-align: right;">220.80</td>
+</tr>
+<tr class="even">
+<td>Reference scenario: January 2024 to December 2045 change</td>
+<td style="text-align: right;">-30.52</td>
+<td style="text-align: right;">-14.81</td>
+<td style="text-align: right;">-45.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The negative reference-scenario change may include adjustment from a non-stable initial state. Scenario effects are therefore evaluated primarily as matched differences from the reference trajectory.</p>
+</section>
+<section id="scenario-effects-relative-to-the-reference" class="level2">
+<h2 class="anchored" data-anchor-id="scenario-effects-relative-to-the-reference">Scenario effects relative to the reference</h2>
+<div id="tbl-soc-contrasts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Soil-carbon change relative to the reference, Tg C. Contrasts preserve original ensemble-member identity before summarization. Positive values indicate more soil carbon relative to the reference trajectory.
+</figcaption>
+<div aria-describedby="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Contrast</th>
+<th style="text-align: right;">Annual crops</th>
+<th style="text-align: right;">Woody perennial crops</th>
+<th style="text-align: right;">Statewide mean</th>
+<th style="text-align: right;">Statewide p05–p95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Management minus reference</td>
+<td style="text-align: right;">0.73</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">1.55</td>
+<td style="text-align: right;">-1.81 to 3.86</td>
+</tr>
+<tr class="even">
+<td>Climate model minus reference</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-0.77</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">-5.06 to 3.84</td>
+</tr>
+<tr class="odd">
+<td>Pathway minus reference</td>
+<td style="text-align: right;">-1.85</td>
+<td style="text-align: right;">-1.87</td>
+<td style="text-align: right;">-3.71</td>
+<td style="text-align: right;">-6.16 to -1.31</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Management retains an average of 1.55 Tg C more than the reference trajectory by December 2045. Changing the climate model produces little change in the statewide mean but different annual- and woody-crop responses. SSP585 reduces soil carbon by an additional 3.71 Tg C relative to the reference.</p>
+<div id="fig-scenario-soc-contrasts" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference scenario">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/scenario-soc-contrasts.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: County soil-carbon change relative to the reference scenario. The three panels share a signed color scale."><img src="assets/carb-results/scenario-soc-contrasts.png" class="img-fluid figure-img" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference scenario"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: County soil-carbon change relative to the reference scenario. The three panels share a signed color scale.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="scenario-soil-carbon-responses" class="level2">
+<h2 class="anchored" data-anchor-id="scenario-soil-carbon-responses">Scenario soil-carbon responses</h2>
+<div id="fig-scenario-soc-statewide" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Two-panel statewide soil-carbon figure. Panel A contains three small multiples with twenty matched-member connectors between Reference and Scenario values for management, alternate climate model, and alternate pathway, using a shared absolute-change scale and a visible zero line. Panel B shows all twenty within-member differences for each comparison with median and interquartile-range boxplots and a visible zero line.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="assets/carb-results/scenario-soc-statewide.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Statewide soil-carbon response for the four scenarios. Points show ensemble means and bars show empirical member p05–p95."><img src="assets/carb-results/scenario-soc-statewide.png" class="img-fluid figure-img" alt="Horizontal interval plot showing statewide soil-carbon response for reference, management, climate-model, and pathway scenarios"></a>
+<a href="assets/carb-results/scenario-soc-statewide.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Statewide soil-carbon change and matched scenario contrasts. Panel A connects each original ensemble member’s reference change to its change under management, the alternate climate model, and the alternate pathway; boxes show the median and interquartile range. Panel B shows the corresponding within-member differences on a tighter scale. Positive values in Panel B indicate more soil carbon relative to the reference trajectory, not necessarily an absolute stock gain."><img src="assets/carb-results/scenario-soc-statewide.png" class="img-fluid figure-img" alt="Two-panel statewide soil-carbon figure. Panel A contains three small multiples with twenty matched-member connectors between Reference and Scenario values for management, alternate climate model, and alternate pathway, using a shared absolute-change scale and a visible zero line. Panel B shows all twenty within-member differences for each comparison with median and interquartile-range boxplots and a visible zero line."></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-statewide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Statewide soil-carbon response for the four scenarios. Points show ensemble means and bars show empirical member p05–p95.
+Figure&nbsp;2: Statewide soil-carbon change and matched scenario contrasts. Panel A connects each original ensemble member’s reference change to its change under management, the alternate climate model, and the alternate pathway; boxes show the median and interquartile range. Panel B shows the corresponding within-member differences on a tighter scale. Positive values in Panel B indicate more soil carbon relative to the reference trajectory, not necessarily an absolute stock gain.
 </figcaption>
 </figure>
 </div>
 <div id="tbl-soc-response" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Statewide December 2045 minus January 2024 soil-carbon stock response, Tg C.
+Table&nbsp;4: Statewide December 2045 minus January 2024 soil-carbon stock, Tg C.
 </figcaption>
 <div aria-describedby="tbl-soc-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -376,8 +496,8 @@ Table&nbsp;2: Statewide December 2045 minus January 2024 soil-carbon stock respo
 <tr class="odd">
 <td>Reference</td>
 <td style="text-align: right;">-45.33</td>
-<td style="text-align: right;">-98.30</td>
-<td style="text-align: right;">17.90</td>
+<td style="text-align: right;">-98.26</td>
+<td style="text-align: right;">17.87</td>
 </tr>
 <tr class="even">
 <td>Management</td>
@@ -388,113 +508,48 @@ Table&nbsp;2: Statewide December 2045 minus January 2024 soil-carbon stock respo
 <tr class="odd">
 <td>Climate model</td>
 <td style="text-align: right;">-45.74</td>
-<td style="text-align: right;">-95.60</td>
-<td style="text-align: right;">15.96</td>
+<td style="text-align: right;">-95.55</td>
+<td style="text-align: right;">15.98</td>
 </tr>
 <tr class="even">
 <td>Pathway</td>
 <td style="text-align: right;">-49.04</td>
-<td style="text-align: right;">-100.55</td>
-<td style="text-align: right;">12.00</td>
+<td style="text-align: right;">-101.24</td>
+<td style="text-align: right;">11.96</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>All four ensemble means are negative, indicating modeled soil-carbon stock loss over the period. The ensemble ranges are parameter-member spread, not observational confidence intervals.</p>
 </section>
-<section id="contrasts-against-the-reference" class="level2">
-<h2 class="anchored" data-anchor-id="contrasts-against-the-reference">Contrasts against the reference</h2>
-<div id="fig-scenario-soc-contrasts" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference scenario">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="assets/carb-results/scenario-soc-contrasts.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: County soil-carbon response contrasts against the reference scenario. The three panels share a signed color scale."><img src="assets/carb-results/scenario-soc-contrasts.png" class="img-fluid figure-img" alt="Three California county maps showing management, climate-model, and pathway soil-carbon contrasts against the reference scenario"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: County soil-carbon response contrasts against the reference scenario. The three panels share a signed color scale.
-</figcaption>
-</figure>
-</div>
-<div id="tbl-soc-contrasts" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Statewide soil-carbon response contrasts, Tg C. Contrasts are calculated within original ensemble-member identity before summarization.
-</figcaption>
-<div aria-describedby="tbl-soc-contrasts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 22%">
-<col style="width: 22%">
-<col style="width: 22%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Contrast</th>
-<th style="text-align: right;">Mean</th>
-<th style="text-align: right;">p05</th>
-<th style="text-align: right;">p95</th>
-<th>Interpretation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Management minus reference</td>
-<td style="text-align: right;">1.55</td>
-<td style="text-align: right;">-1.81</td>
-<td style="text-align: right;">3.86</td>
-<td>Less modeled stock loss on average</td>
-</tr>
-<tr class="even">
-<td>Climate model minus reference</td>
-<td style="text-align: right;">-0.41</td>
-<td style="text-align: right;">-5.06</td>
-<td style="text-align: right;">3.84</td>
-<td>Similar statewide mean, with regional differences</td>
-</tr>
-<tr class="odd">
-<td>Pathway minus reference</td>
-<td style="text-align: right;">-3.71</td>
-<td style="text-align: right;">-6.16</td>
-<td style="text-align: right;">-1.31</td>
-<td>Greater modeled stock loss</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-<p>The positive management contrast does not mean that statewide soil carbon increases. It means that the management scenario loses less soil carbon than the reference on average. The county maps show where each contrast contributes to the statewide result.</p>
-</section>
-<section id="annual-model-defined-n2o-n" class="level2">
-<h2 class="anchored" data-anchor-id="annual-model-defined-n2o-n">Annual model-defined N<sub>2</sub>O-N</h2>
-<div id="fig-scenario-n2o-annual" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management scenarios from 2024 to 2045">
+<section id="annual-n2o-n" class="level2">
+<h2 class="anchored" data-anchor-id="annual-n2o-n">Annual N<sub>2</sub>O-N</h2>
+<div id="fig-scenario-n2o-annual" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of annual nitrous-oxide nitrogen for reference and management scenarios from 2024 to 2045">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="assets/carb-results/scenario-n2o-annual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Annual model-defined N2O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95."><img src="assets/carb-results/scenario-n2o-annual.png" class="img-fluid figure-img" alt="Line chart of annual model-defined nitrous-oxide nitrogen for reference and management scenarios from 2024 to 2045"></a>
+<a href="assets/carb-results/scenario-n2o-annual.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Annual N2O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95."><img src="assets/carb-results/scenario-n2o-annual.png" class="img-fluid figure-img" alt="Line chart of annual nitrous-oxide nitrogen for reference and management scenarios from 2024 to 2045"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-annual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Annual model-defined N<sub>2</sub>O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95.
+Figure&nbsp;3: Annual N<sub>2</sub>O-N for the reference and management scenarios. Lines show ensemble means; ribbons show empirical member p05–p95.
 </figcaption>
 </figure>
 </div>
-<p>Annual N<sub>2</sub>O-N is integrated over each calendar year and reported as native nitrogen mass per represented hectare. This differs from the historical inventory’s annualized endpoint rate.</p>
-<div id="fig-scenario-n2o-contrast" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045">
+<p>Scenario N<sub>2</sub>O-N is integrated over each calendar year and reported in kg N ha<sup>-1</sup> yr<sup>-1</sup>. The current annual comparison covers the reference and management scenarios; it is an interim two-scenario result rather than the finalized four-scenario annual-gas product.</p>
+<div id="fig-scenario-n2o-contrast" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart of same-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="assets/carb-results/scenario-n2o-contrast.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Management-minus-reference annual N2O-N. Differences are calculated within original ensemble-member identity."><img src="assets/carb-results/scenario-n2o-contrast.png" class="img-fluid figure-img" alt="Line chart of matched-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045"></a>
+<a href="assets/carb-results/scenario-n2o-contrast.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Management-minus-reference annual N2O-N. Differences pair the same ensemble-member IDs across the two separately fitted downscaling models."><img src="assets/carb-results/scenario-n2o-contrast.png" class="img-fluid figure-img" alt="Line chart of same-member management-minus-reference annual nitrous-oxide nitrogen differences from 2024 to 2045"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scenario-n2o-contrast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Management-minus-reference annual N<sub>2</sub>O-N. Differences are calculated within original ensemble-member identity.
+Figure&nbsp;4: Management-minus-reference annual N<sub>2</sub>O-N. Differences pair the same ensemble-member IDs across the two separately fitted downscaling models.
 </figcaption>
 </figure>
 </div>
 <div id="tbl-annual-n2o" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<sup>-1</sup>.
+Table&nbsp;5: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<sup>-1</sup>.
 </figcaption>
 <div aria-describedby="tbl-annual-n2o-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -515,25 +570,25 @@ Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<su
 </tr>
 <tr class="even">
 <td style="text-align: right;">2030</td>
-<td style="text-align: right;">22.13</td>
-<td style="text-align: right;">22.47</td>
+<td style="text-align: right;">22.12</td>
+<td style="text-align: right;">22.46</td>
 <td style="text-align: right;">0.34</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2035</td>
-<td style="text-align: right;">21.54</td>
-<td style="text-align: right;">22.33</td>
+<td style="text-align: right;">21.55</td>
+<td style="text-align: right;">22.34</td>
 <td style="text-align: right;">0.79</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2040</td>
 <td style="text-align: right;">15.06</td>
-<td style="text-align: right;">15.54</td>
+<td style="text-align: right;">15.55</td>
 <td style="text-align: right;">0.48</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2045</td>
-<td style="text-align: right;">20.94</td>
+<td style="text-align: right;">20.95</td>
 <td style="text-align: right;">22.06</td>
 <td style="text-align: right;">1.11</td>
 </tr>
@@ -542,11 +597,11 @@ Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<su
 </div>
 </figure>
 </div>
-<p>The management mean is higher than the reference in most years, but the matched-member spread commonly crosses zero. These modeled differences do not establish an observed causal management effect.</p>
+<p>The management mean is higher than the reference in most years, although the same-member range commonly crosses zero. Methane is not shown here; methane analysis will focus on crop fields with at least one rice season.</p>
 </section>
-<section id="gas-reporting-boundary" class="level2">
-<h2 class="anchored" data-anchor-id="gas-reporting-boundary">Gas-reporting boundary</h2>
-<p>Annual native-N accounting is available for the reference and management scenarios. Corrected statewide methane and complete annual gas series for the climate-model and pathway scenarios are not shown. Soil-carbon stock changes and the available gas results are therefore reported separately rather than combined into an incomplete CO<sub>2</sub>-equivalent balance.</p>
+<section id="related-practice-change-benchmark" class="level2">
+<h2 class="anchored" data-anchor-id="related-practice-change-benchmark">Related practice-change benchmark</h2>
+<p>A separate <a href="https://github.com/ccmmf/calibration/pull/6">practice-change benchmark</a> compares paired treatment and reference simulations at statewide design points with published synthesis estimates. Cover crops, reduced tillage, zero tillage, and organic amendment increased modeled soil carbon. The cover-crop and tillage effects were roughly half the synthesis estimates, while the organic-amendment effect was about one quarter. The design includes annual- and woody-crop systems, but uses one fixed parameterization for 2016–2023 and is distinct from both the inventory and the 2024–2045 ensemble scenario analysis reported here.</p>
 
 
 </section>
@@ -954,8 +1009,8 @@ Table&nbsp;4: Selected annual N<sub>2</sub>O-N means, kg N ha<sup>-1</sup> yr<su
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Historical Inventory">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Historical Inventory</span>
+      <a href="../reports/downscaling_results.html" class="pagination-link" aria-label="Inventory Results">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Inventory Results</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
