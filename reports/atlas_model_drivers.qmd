@@ -10,7 +10,7 @@ format:
 lightbox: true
 ---
 
-The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at 100 anchor sites, then predicts to all ~132,000 cropland fields using eight predictors (seven environmental covariates plus field area). The diagnostic plots below reveal **which environmental factors drive the spatial variation** seen in the maps. See the [Scenario Definition Table](atlas_overview.qmd#tbl-scenario-def) for practice parameters and simulation details.
+The Random Forest downscaling model learns relationships between environmental site characteristics and SIPNET model outputs at selected design sites, then predicts to California crop fields using environmental covariates and field area. The diagnostic plots below reveal **which environmental factors drive the spatial variation** seen in the maps. See [Scenario-Based Analysis](scenarios.qmd#tbl-scenarios) for the scenario definitions.
 
 ::: {.callout-warning}
 ## Validation Status
@@ -182,4 +182,4 @@ Understanding what drives spatial variation is essential for targeting conservat
 2. **If climate dominates** (temp, vapr, precip) -- practice effects vary with regional climate, suggesting geographic targeting based on climate zones.
 3. **If the practice effect is uniform** regardless of drivers -- broad-scale adoption is efficient because benefits are not geographically restricted.
 
-The field-level difference maps in the [Soil Carbon Atlas](atlas_soil_carbon.qmd) and [GHG Emissions Atlas](atlas_ghg_emissions.qmd) show which pattern applies for each variable and scenario.
+The field- and county-level maps in [Inventory Results](downscaling_results.qmd) show the resulting spatial patterns by variable and crop class.

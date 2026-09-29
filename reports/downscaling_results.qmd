@@ -1,6 +1,6 @@
 ---
-title: "California Agricultural Carbon and Greenhouse Gas Results"
-subtitle: "Historical Inventory and Future Scenarios"
+title: "Inventory Results"
+subtitle: "California Agricultural Carbon and Greenhouse Gas Results, 2016–2023"
 date: today
 format:
   html:
@@ -9,48 +9,68 @@ format:
 lightbox: true
 ---
 
-This report summarizes the historical downscaling inventory and the future management and climate configurations. The historical inventory describes modeled conditions from January 2016 through December 2023. The scenario analysis compares four configurations from January 2024 through December 2045.
+The inventory summarizes modeled soil carbon, aboveground biomass, and annualized nitrous-oxide fluxes for California crop fields from January 2016 through December 2023. The analysis was stratified by annual crops and woody perennial crops from site selection through model fitting and downscaling.
 
-## Historical inventory summary
-
-The inventory covers annual crops and woody perennial crops under recorded historical inputs. Stock values are December 2023 monthly means. Nitrous-oxide and methane values are December 2023 annualized endpoint rates, not emissions integrated over 2016–2023.
+## Inventory summary
 
 | Outcome | Annual crops | Woody perennial crops | Unit and basis |
 |---|---:|---:|---|
 | Soil carbon | 113.22 (17.42) | 87.93 (16.56) | Tg C, December 2023 stock |
 | Aboveground biomass | 4.64 (5.91) | 1,147.70 (314.60) | Gg C, December 2023 stock |
-| N~2~O-N | 9.25 (8.28) | 9.06 (7.99) | Gg N yr^-1^, annualized endpoint rate |
-| CH~4~-C | 0.0366 (0.1329) | 0.0244 (0.1012) | Gg C yr^-1^, annualized endpoint rate |
+| N~2~O-N | 9.25 (8.28) | 9.06 (7.99) | Gg N yr^-1^, annualized December 2023 flux |
 
-: Ensemble mean with standard deviation in parentheses. Totals apply to represented agricultural fields, not all California land. {#tbl-inventory-summary}
+: Ensemble mean with standard deviation in parentheses. {#tbl-inventory-summary}
 
-Soil carbon is the largest reported carbon pool. County totals reflect both the modeled stock density and the agricultural area represented within each county; field-density maps separate the per-hectare pattern from area. Woody perennial crops contain much more standing aboveground biomass than annual crops at the December endpoint.
+Mean soil-carbon change from January 2016 to December 2023 was -18.66 Tg C for annual crops and -18.50 Tg C for woody perennial crops, or -37.16 Tg C across both crop classes.
 
-The inventory maps indicate net soil-carbon declines over much of the represented area from 2016 to 2023. These changes are stock differences between endpoint monthly means. They are not annualized sequestration rates.
+## Spatial context
 
-Nitrous-oxide results are reported in native nitrogen units. The maps show annualized December 2023 rates and changes in that endpoint rate. They should not be added directly to soil-carbon stock changes.
+![California annual-crop and woody-perennial fields included in the downscaling analysis.](assets/carb-results/inventory-spatial-context.webp){#fig-inventory-context .lightbox fig-alt="Map of California showing annual-crop and woody-perennial field locations included in the downscaling analysis"}
 
-## Future scenario summary
+## Soil carbon
 
-All four future configurations have a negative mean statewide soil-carbon response between January 2024 and December 2045. The management configuration has a mean response 1.55 Tg C higher than the reference, indicating less modeled stock loss rather than a net statewide stock gain. The SSP585 configuration has a mean response 3.71 Tg C lower than the reference.
+### County stocks
 
-| Configuration | Mean SOC response | Member p05–p95 | Unit |
-|---|---:|---:|---|
-| Reference: BAU / CESM2 / SSP370 | -45.33 | -98.30 to 17.90 | Tg C |
-| Management: NBS / CESM2 / SSP370 | -43.77 | -97.21 to 20.86 | Tg C |
-| Climate model: BAU / MPI-ESM1-2-HR / SSP370 | -45.74 | -95.60 to 15.96 | Tg C |
-| Pathway: BAU / CESM2 / SSP585 | -49.04 | -100.55 to 12.00 | Tg C |
+![December 2023 county soil-carbon stocks for annual crops and woody perennial crops.](assets/carb-results/inventory-soc-county.webp){#fig-inventory-soc-county .lightbox fig-alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops"}
 
-: December 2045 monthly-mean SOC minus January 2024 monthly-mean SOC. The p05–p95 range is empirical ensemble-member spread. {#tbl-scenario-summary}
+The largest county stocks occur where agricultural area coincides with moderate or high modeled stock density.
 
-Annual model-defined N~2~O-N is available for the reference and management configurations. The management mean is slightly higher than the reference in most years, although the matched-member spread commonly crosses zero. See [Future Management and Climate Scenarios](scenarios.qmd) for the full time series and county SOC contrasts.
+### Field density
 
-## Explore the results
+![December 2023 field soil-carbon density for annual crops and woody perennial crops.](assets/carb-results/inventory-soc-field.webp){#fig-inventory-soc-field .lightbox fig-alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops"}
 
-| Page | Content |
-|---|---|
-| [Map Atlas Overview](atlas_overview.qmd) | Scope, configuration definitions, and interpretation |
-| [Soil Carbon](atlas_soil_carbon.qmd) | County stocks, field densities, and historical change |
-| [GHG Emissions](atlas_ghg_emissions.qmd) | Historical N~2~O-N patterns and gas-reporting boundary |
-| [Aboveground Biomass](atlas_biomass.qmd) | County and field biomass results |
-| [Future Scenarios](scenarios.qmd) | Statewide SOC, county contrasts, and annual N~2~O-N |
+Field density reveals spatial variation within counties. Northern and coastal agricultural regions generally show higher modeled density than many southern and interior fields.
+
+### Change, 2016–2023
+
+![County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss.](assets/carb-results/inventory-soc-change.webp){#fig-inventory-soc-change .lightbox fig-alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023"}
+
+Modeled soil-carbon stocks decline across much of the inventory area. These values are endpoint stock differences in Gg C.
+
+## Nitrous oxide
+
+![December 2023 annualized N~2~O-N flux by county for annual crops and woody perennial crops.](assets/carb-results/inventory-n2o-county.webp){#fig-inventory-n2o-county .lightbox fig-alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen fluxes for annual and woody perennial crops"}
+
+Annual and woody perennial crops have similar statewide ensemble-mean N~2~O-N fluxes, with different spatial distributions. Values are reported as annualized native nitrogen fluxes at the December 2023 endpoint.
+
+## Aboveground biomass
+
+### County stocks
+
+![December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.](assets/carb-results/inventory-biomass-county.webp){#fig-inventory-biomass-county .lightbox fig-alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops"}
+
+Woody perennial biomass is concentrated in the Central Valley and other orchard-producing regions.
+
+### Field density
+
+![December 2023 field aboveground-biomass density for annual crops and woody perennial crops.](assets/carb-results/inventory-biomass-field.webp){#fig-inventory-biomass-field .lightbox fig-alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops"}
+
+Woody perennial fields have higher modeled biomass density than annual-crop fields across most regions.
+
+### Change, 2016–2023
+
+![County aboveground-biomass stock change from January 2016 to December 2023.](assets/carb-results/inventory-biomass-change.webp){#fig-inventory-biomass-change .lightbox fig-alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023"}
+
+Modeled aboveground biomass declines over much of the inventory period, particularly for woody perennial crops in parts of the Central Valley.
+
+See [Scenario-Based Analysis](scenarios.qmd) for the 2024–2045 management and climate comparisons.
