@@ -15,6 +15,7 @@ baseline combines BAU management, the Community Earth System Model version 2 (CE
 and Shared Socioeconomic Pathway 3-7.0 (SSP3-7.0). Each alternative changes one
 dimension relative to that baseline.
 
+::: {.table-responsive}
 | Scenario | Management | Climate model | Pathway | Purpose |
 |---|---|---|---|---|
 | `bau-cesm-ssp370` | BAU | CESM2 | SSP3-7.0 | Baseline |
@@ -23,6 +24,7 @@ dimension relative to that baseline.
 | `bau-cesm-ssp585` | BAU | CESM2 | SSP5-8.5 | Emissions-pathway comparison |
 
 : Scenarios used in the 2024–2045 analysis. {#tbl-scenarios}
+:::
 
 ## Soil-carbon context
 
@@ -32,6 +34,7 @@ The negative baseline change may include adjustment from a non-stable initial st
 
 ## Scenario effects relative to the baseline
 
+::: {.table-responsive}
 | Contrast | Annual crops | Woody perennial crops | Statewide mean | Statewide median | Statewide p05–p95 |
 |---|---:|---:|---:|---:|---:|
 | `nbs-cesm-ssp370` minus baseline | 0.73 | 0.83 | 1.6 | 1.4 | -1.8 to 3.9 |
@@ -39,6 +42,7 @@ The negative baseline change may include adjustment from a non-stable initial st
 | `bau-cesm-ssp585` minus baseline | -1.9 | -1.9 | -3.7 | -3.4 | -6.2 to -1.3 |
 
 : Soil-carbon change relative to the baseline, Tg C. Contrasts preserve original ensemble-member identity before summarization. Positive values indicate more soil carbon relative to the baseline trajectory. {#tbl-soc-contrasts}
+:::
 
 NBS retains an average of 1.6 Tg C more than the baseline trajectory by December 2045. Changing the climate model produces little change in the statewide mean but different annual- and woody-crop responses. SSP5-8.5 reduces soil carbon by an additional 3.7 Tg C relative to the baseline.
 
@@ -48,6 +52,7 @@ NBS retains an average of 1.6 Tg C more than the baseline trajectory by December
 
 ![Statewide soil-carbon change and matched scenario contrasts. Panel A shows the baseline once with the three alternatives. Panel B shows alternative-minus-baseline differences calculated for each original ensemble member.](assets/carb-results/scenario-soc-statewide.png){#fig-scenario-soc-statewide .lightbox fig-alt="Two horizontal panels showing statewide soil-carbon change for one baseline and three alternatives, followed by matched alternative-minus-baseline differences. Points show the twenty original ensemble members; boxplots show medians and interquartile ranges."}
 
+::: {.table-responsive}
 | Scenario | Mean | Median | p05 | p95 |
 |---|---:|---:|---:|---:|
 | `bau-cesm-ssp370` | -45 | -47 | -98 | 18 |
@@ -56,6 +61,7 @@ NBS retains an average of 1.6 Tg C more than the baseline trajectory by December
 | `bau-cesm-ssp585` | -49 | -52 | -100 | 12 |
 
 : Statewide December 2045 minus January 2024 soil-carbon stock, Tg C. {#tbl-soc-response}
+:::
 
 ## Inventory and scenario-based N~2~O-N
 
@@ -63,6 +69,7 @@ N~2~O-N is integrated over each calendar year and reported in kg N ha^-1^ yr^-1^
 
 ![Annual modeled N~2~O-N under BAU and NBS from 2025–2044 (left), and the NBS-minus-BAU difference matched by ensemble member (right). Both panels use the same year axis. Points and thin lines show annual medians across 20 members. Thick lines show centered five-year moving means calculated within each member before taking the median; they are unavailable for the first and last two years. The inventory values below come from a separate simulation and are not joined to this time series.](assets/carb-results/scenario-n2o-annual-v2.png){#fig-inventory-scenario-n2o .lightbox fig-alt="Side-by-side annual N2O-N plots on the same 2025–2044 axis: BAU and NBS medians at left, member-matched NBS-minus-BAU difference at right. Thick lines show centered five-year moving means."}
 
+::: {.table-responsive}
 | Inventory stratum | Mean | Median | p05–p95 |
 |---|---:|---:|---:|
 | Annual crops | 18 | 8.2 | 4.0 to 56 |
@@ -70,7 +77,9 @@ N~2~O-N is integrated over each calendar year and reported in kg N ha^-1^ yr^-1^
 | All crops | 19 | 8.0 | 3.9 to 60 |
 
 : Inventory mean annual N~2~O-N, 2016–2023, kg N ha^-1^ yr^-1^. Values retain the original member distributions and apply to the covered agricultural fields. {#tbl-inventory-n2o}
+:::
 
+::: {.table-responsive}
 | Period | Baseline mean | NBS mean | NBS minus baseline | Matched-member p05–p95 |
 |---|---:|---:|---:|---:|
 | 2025–2029 | 21 | 21 | 0.12 | -0.14 to 0.52 |
@@ -79,6 +88,7 @@ N~2~O-N is integrated over each calendar year and reported in kg N ha^-1^ yr^-1^
 | 2040–2044 | 19 | 20 | 0.43 | 0.06 to 1.7 |
 
 : Scenario mean annual N~2~O-N by five-year period, kg N ha^-1^ yr^-1^. Each member is averaged over the five years before ensemble means and matched-member ranges are calculated. {#tbl-annual-n2o}
+:::
 
 The NBS mean is higher than the baseline in each period, but the matched-member range
 spans zero through 2035–2039. The last period's range is entirely above zero.
@@ -93,6 +103,7 @@ measure changes in rice acreage.
 
 ![Annual NBS-minus-BAU methane flux at matched locations with rice history, 2025–2044. Points and thin lines show annual medians across 20 ensemble members; the thick line shows the median of centered five-year moving means calculated within members. Each annual member value is an unweighted mean across matched locations, not a statewide total. The first and last two years have no moving mean.](assets/carb-results/scenario-ch4-direct-paired-v2.png){#fig-scenario-ch4-direct .lightbox fig-alt="Annual NBS-minus-BAU methane flux at matched locations with rice history from 2025 to 2044, with a centered five-year moving mean."}
 
+::: {.table-responsive}
 | Period | Mean | Median | p05–p95 |
 |---|---:|---:|---:|
 | 2025–2029 | 0.052 | 0.045 | -0.024 to 0.15 |
@@ -101,6 +112,7 @@ measure changes in rice acreage.
 | 2040–2044 | 0.18 | 0.11 | 0.050 to 0.41 |
 
 : NBS-minus-baseline methane flux at matched locations with rice history, g CH~4~ ha^-1^ yr^-1^. Period summaries retain all 20 ensemble members. {#tbl-direct-ch4}
+:::
 
 These small per-hectare differences are not mapped or weighted by area and cannot be
 summed into a statewide methane total.
