@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David LeBauer">
+<meta name="author" content="Akash B V">
+<meta name="dcterms.date" content="2026-09-28">
+
+<title>Historical Inventory Results – MAGiC Downscaling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../reports/scenarios.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bcb4737e8fbcf1e9dfc00b59f8305558.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Results</a></li><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Historical Inventory</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">MAGiC Downscaling</a>
+        <div class="sidebar-tools-main">
+    <a href="" title="Status: Draft" class="quarto-navigation-tool px-1" aria-label="Status: Draft"><i class="bi bi-exclamation-octagon"></i></a>
+    <a href="https://github.com/ccmmf/downscaling" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container">
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Results</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a>
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../reports/downscaling_results.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Historical Inventory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../reports/scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scenario-Based Analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Methods and Evaluation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a>
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../reports/atlas_model_drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Drivers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../reports/design_point_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Design Point Validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../reports/variable_importance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downscaling Model Evaluation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Training</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a>
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/training/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/training/CARB-downscaling-setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment Setup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/training/downscaling_inventory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inventory Downscaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Docs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a>
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/workflow_documentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Technical Documentation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/mixed_system_prototype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixed System Prototype</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="../docs/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+
+  <ul>
+  <li><a href="#historical-inventory-summary" id="toc-historical-inventory-summary" class="nav-link active" data-scroll-target="#historical-inventory-summary">Historical inventory summary</a></li>
+  <li><a href="#spatial-context" id="toc-spatial-context" class="nav-link" data-scroll-target="#spatial-context">Spatial context</a></li>
+  <li><a href="#soil-carbon" id="toc-soil-carbon" class="nav-link" data-scroll-target="#soil-carbon">Soil carbon</a>
+  <ul class="collapse">
+  <li><a href="#county-soil-carbon-stocks" id="toc-county-soil-carbon-stocks" class="nav-link" data-scroll-target="#county-soil-carbon-stocks">County soil-carbon stocks</a></li>
+  <li><a href="#field-soil-carbon-density" id="toc-field-soil-carbon-density" class="nav-link" data-scroll-target="#field-soil-carbon-density">Field soil-carbon density</a></li>
+  <li><a href="#soil-carbon-change-20162023" id="toc-soil-carbon-change-20162023" class="nav-link" data-scroll-target="#soil-carbon-change-20162023">Soil-carbon change, 2016–2023</a></li>
+  </ul></li>
+  <li><a href="#nitrous-oxide-and-gas-accounting-scope" id="toc-nitrous-oxide-and-gas-accounting-scope" class="nav-link" data-scroll-target="#nitrous-oxide-and-gas-accounting-scope">Nitrous oxide and gas-accounting scope</a>
+  <ul class="collapse">
+  <li><a href="#nitrous-oxide-endpoint-rates" id="toc-nitrous-oxide-endpoint-rates" class="nav-link" data-scroll-target="#nitrous-oxide-endpoint-rates">Nitrous-oxide endpoint rates</a></li>
+  <li><a href="#change-in-endpoint-rate-20162023" id="toc-change-in-endpoint-rate-20162023" class="nav-link" data-scroll-target="#change-in-endpoint-rate-20162023">Change in endpoint rate, 2016–2023</a></li>
+  <li><a href="#methane-and-complete-gas-accounting" id="toc-methane-and-complete-gas-accounting" class="nav-link" data-scroll-target="#methane-and-complete-gas-accounting">Methane and complete gas accounting</a></li>
+  </ul></li>
+  <li><a href="#aboveground-biomass" id="toc-aboveground-biomass" class="nav-link" data-scroll-target="#aboveground-biomass">Aboveground biomass</a>
+  <ul class="collapse">
+  <li><a href="#county-aboveground-biomass" id="toc-county-aboveground-biomass" class="nav-link" data-scroll-target="#county-aboveground-biomass">County aboveground biomass</a></li>
+  <li><a href="#field-biomass-density" id="toc-field-biomass-density" class="nav-link" data-scroll-target="#field-biomass-density">Field biomass density</a></li>
+  <li><a href="#biomass-change-20162023" id="toc-biomass-change-20162023" class="nav-link" data-scroll-target="#biomass-change-20162023">Biomass change, 2016–2023</a></li>
+  </ul></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Results</a></li><li class="breadcrumb-item"><a href="../reports/downscaling_results.html">Historical Inventory</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Historical Inventory Results</h1>
+<p class="subtitle lead">California Agricultural Carbon and Greenhouse Gas Results, 2016–2023</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>David LeBauer </p>
+             <p>Akash B V </p>
+          </div>
+  </div>
+
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 28, 2026</p>
+    </div>
+  </div>
+
+
+  </div>
+
+
+
+</header>
+
+
+<p>The historical inventory describes modeled conditions for California agricultural fields under recorded inputs from January 2016 through December 2023. Results summarize the agricultural fields represented in the downscaling dataset; they are not totals for all California land. County maps show modeled totals over represented fields, while field maps show area-normalized values.</p>
+<p>These are model-derived results. The model has been minimally tested against site level observations and syntheses of available research.</p>
+<section id="historical-inventory-summary" class="level2">
+<h2 class="anchored" data-anchor-id="historical-inventory-summary">Historical inventory summary</h2>
+<p>The inventory covers annual crops and woody perennial crops under recorded historical inputs. Stock values are December 2023 monthly means. Nitrous-oxide and methane values are December 2023 annualized endpoint rates, not emissions integrated over 2016–2023.</p>
+<div id="tbl-inventory-summary" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-inventory-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Ensemble mean with standard deviation in parentheses. Totals apply to represented agricultural fields, not all California land.
+</figcaption>
+<div aria-describedby="tbl-inventory-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Outcome</th>
+<th style="text-align: right;">Annual crops</th>
+<th style="text-align: right;">Woody perennial crops</th>
+<th>Unit and basis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Soil carbon</td>
+<td style="text-align: right;">113.22 (17.42)</td>
+<td style="text-align: right;">87.93 (16.56)</td>
+<td>Tg C, December 2023 stock</td>
+</tr>
+<tr class="even">
+<td>Aboveground biomass</td>
+<td style="text-align: right;">4.64 (5.91)</td>
+<td style="text-align: right;">1,147.70 (314.60)</td>
+<td>Gg C, December 2023 stock</td>
+</tr>
+<tr class="odd">
+<td>N<sub>2</sub>O-N</td>
+<td style="text-align: right;">9.25 (8.28)</td>
+<td style="text-align: right;">9.06 (7.99)</td>
+<td>Gg N yr<sup>-1</sup>, annualized endpoint rate</td>
+</tr>
+<tr class="even">
+<td>CH<sub>4</sub>-C</td>
+<td style="text-align: right;">0.0366 (0.1329)</td>
+<td style="text-align: right;">0.0244 (0.1012)</td>
+<td>Gg C yr<sup>-1</sup>, annualized endpoint rate</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Soil carbon is the largest reported carbon pool. County totals reflect both the modeled stock density and the agricultural area represented within each county; field-density maps separate the per-hectare pattern from area. Woody perennial crops contain much more standing aboveground biomass than annual crops at the December endpoint.</p>
+<p>The inventory maps indicate net soil-carbon declines over much of the represented area from 2016 to 2023. These changes are stock differences between endpoint monthly means. They are not annualized sequestration rates.</p>
+<p>Nitrous-oxide results are reported in native nitrogen units. The maps show annualized December 2023 rates and changes in that endpoint rate. They should not be added directly to soil-carbon stock changes.</p>
+</section>
+<section id="spatial-context" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-context">Spatial context</h2>
+<div id="fig-inventory-context" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Map of California showing annual-crop and woody-perennial field locations represented in the downscaling analysis">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-spatial-context.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis."><img src="assets/carb-results/inventory-spatial-context.webp" class="img-fluid figure-img" alt="Map of California showing annual-crop and woody-perennial field locations represented in the downscaling analysis"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Agricultural fields represented in the historical inventory. Points show annual-crop and woody-perennial field locations included in the downscaling analysis.
+</figcaption>
+</figure>
+</div>
+<p>Annual crops and woody perennial crops are presented separately because their carbon stocks, biomass, and spatial distributions differ substantially.</p>
+</section>
+<section id="soil-carbon" class="level2">
+<h2 class="anchored" data-anchor-id="soil-carbon">Soil carbon</h2>
+<p>Soil carbon is reported as a stock. County maps sum modeled stocks across represented fields; field maps report carbon density per hectare. Historical changes compare January 2016 and December 2023 monthly means.</p>
+<section id="county-soil-carbon-stocks" class="level3">
+<h3 class="anchored" data-anchor-id="county-soil-carbon-stocks">County soil-carbon stocks</h3>
+<div id="fig-inventory-soc-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area."><img src="assets/carb-results/inventory-soc-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 soil-carbon stocks for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: December 2023 county soil-carbon stocks for annual crops and woody perennial crops. County totals combine modeled density and represented agricultural area.
+</figcaption>
+</figure>
+</div>
+<p>The largest county totals occur where substantial represented agricultural area coincides with moderate or high modeled stock density. The annual and woody maps use the same units but should be interpreted separately because the crop classes occupy different fields.</p>
+</section>
+<section id="field-soil-carbon-density" class="level3">
+<h3 class="anchored" data-anchor-id="field-soil-carbon-density">Field soil-carbon density</h3>
+<div id="fig-inventory-soc-field" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-field.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area."><img src="assets/carb-results/inventory-soc-field.webp" class="img-fluid figure-img" alt="Paired California field maps showing December 2023 soil-carbon density for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: December 2023 soil-carbon density at the field scale. Density maps show modeled carbon per hectare independently of field area.
+</figcaption>
+</figure>
+</div>
+<p>Field density reveals spatial variation that is obscured by county totals. Northern and coastal agricultural regions generally show higher modeled density than many southern and interior fields, although variation occurs within each crop class.</p>
+</section>
+<section id="soil-carbon-change-20162023" class="level3">
+<h3 class="anchored" data-anchor-id="soil-carbon-change-20162023">Soil-carbon change, 2016–2023</h3>
+<div id="fig-inventory-soc-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-soc-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-soc-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss."><img src="assets/carb-results/inventory-soc-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing soil-carbon stock changes between January 2016 and December 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-soc-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: County soil-carbon stock change from January 2016 to December 2023 for annual crops and woody perennial crops. Negative values indicate stock loss.
+</figcaption>
+</figure>
+</div>
+<p>Modeled soil-carbon stocks decline across much of the represented area over the historical period. The largest negative county changes occur in agricultural regions with substantial represented area. These values are endpoint stock differences in Gg C, not annualized rates or atmospheric removals.</p>
+</section>
+</section>
+<section id="nitrous-oxide-and-gas-accounting-scope" class="level2">
+<h2 class="anchored" data-anchor-id="nitrous-oxide-and-gas-accounting-scope">Nitrous oxide and gas-accounting scope</h2>
+<p>The historical inventory reports nitrous-oxide and methane outputs as annualized December endpoint rates. These rates describe the model state at the endpoint; they are not calendar-year integrals or cumulative emissions over 2016–2023.</p>
+<section id="nitrous-oxide-endpoint-rates" class="level3">
+<h3 class="anchored" data-anchor-id="nitrous-oxide-endpoint-rates">Nitrous-oxide endpoint rates</h3>
+<div id="fig-inventory-n2o-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen rates for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-n2o-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-n2o-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: December 2023 annualized N2O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year."><img src="assets/carb-results/inventory-n2o-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 annualized nitrous-oxide nitrogen rates for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-n2o-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: December 2023 annualized N<sub>2</sub>O-N rate by county for annual crops and woody perennial crops. Values are native nitrogen mass per year.
+</figcaption>
+</figure>
+</div>
+<p>County totals reflect both the modeled per-hectare rate and the represented agricultural area. The annual and woody crop classes have similar ensemble-mean totals at the December 2023 endpoint, but the spatial distributions differ.</p>
+</section>
+<section id="change-in-endpoint-rate-20162023" class="level3">
+<h3 class="anchored" data-anchor-id="change-in-endpoint-rate-20162023">Change in endpoint rate, 2016–2023</h3>
+<div id="fig-inventory-n2o-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing change in annualized nitrous-oxide nitrogen rate from 2016 to 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-n2o-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-n2o-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: Change in the annualized N2O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023."><img src="assets/carb-results/inventory-n2o-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing change in annualized nitrous-oxide nitrogen rate from 2016 to 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-n2o-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Change in the annualized N<sub>2</sub>O-N endpoint rate from January 2016 to December 2023. Positive values indicate a higher annualized endpoint rate in December 2023.
+</figcaption>
+</figure>
+</div>
+<p>Most represented counties show a higher modeled annualized endpoint rate in December 2023 than in January 2016. This is a change between two endpoint rates; it is not the total nitrogen emitted during the intervening years.</p>
+</section>
+<section id="methane-and-complete-gas-accounting" class="level3">
+<h3 class="anchored" data-anchor-id="methane-and-complete-gas-accounting">Methane and complete gas accounting</h3>
+<p>Historical methane endpoint estimates are small relative to ensemble variability and do not support a useful spatial map. Complete annual gas series are not presented, so gas results are not combined with soil-carbon stock changes or converted to a partial CO<sub>2</sub>-equivalent total.</p>
+</section>
+</section>
+<section id="aboveground-biomass" class="level2">
+<h2 class="anchored" data-anchor-id="aboveground-biomass">Aboveground biomass</h2>
+<p>Aboveground biomass is the modeled carbon stock in living plant material above the soil surface. December values are endpoint snapshots rather than annual production totals. Annual-crop biomass is small at the endpoint because harvest removes much of the standing crop; woody perennial crops retain substantially more biomass.</p>
+<section id="county-aboveground-biomass" class="level3">
+<h3 class="anchored" data-anchor-id="county-aboveground-biomass">County aboveground biomass</h3>
+<div id="fig-inventory-biomass-county" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-county.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;7: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-county.webp" class="img-fluid figure-img" alt="Paired California county maps showing December 2023 aboveground-biomass stocks for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: December 2023 county aboveground-biomass stocks for annual crops and woody perennial crops.
+</figcaption>
+</figure>
+</div>
+<p>Woody perennial biomass is concentrated in the Central Valley and other orchard-producing regions. Annual-crop endpoint totals are much smaller and should be interpreted as standing biomass at the December endpoint, not annual harvested production.</p>
+</section>
+<section id="field-biomass-density" class="level3">
+<h3 class="anchored" data-anchor-id="field-biomass-density">Field biomass density</h3>
+<div id="fig-inventory-biomass-field" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-field.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;8: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops."><img src="assets/carb-results/inventory-biomass-field.webp" class="img-fluid figure-img" alt="Paired California field maps showing December 2023 aboveground-biomass density for annual and woody perennial crops"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: December 2023 aboveground-biomass density at the field scale for annual crops and woody perennial crops.
+</figcaption>
+</figure>
+</div>
+<p>The field maps separate per-hectare modeled biomass from the amount of agricultural area within a county. Woody perennial fields have higher endpoint densities than annual-crop fields across most represented regions.</p>
+</section>
+<section id="biomass-change-20162023" class="level3">
+<h3 class="anchored" data-anchor-id="biomass-change-20162023">Biomass change, 2016–2023</h3>
+<div id="fig-inventory-biomass-change" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="assets/carb-results/inventory-biomass-change.webp" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;9: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint."><img src="assets/carb-results/inventory-biomass-change.webp" class="img-fluid figure-img" alt="Paired California county maps showing aboveground-biomass stock changes between January 2016 and December 2023"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-inventory-biomass-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: County aboveground-biomass stock change from January 2016 to December 2023. Negative values indicate lower modeled biomass at the December 2023 endpoint.
+</figcaption>
+</figure>
+</div>
+<p>The historical endpoint comparison is predominantly negative, particularly for woody perennial crops in parts of the Central Valley. These changes describe modeled endpoint stocks and should not be interpreted as harvested yield or cumulative production.</p>
+</section>
+</section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<p>Ensemble ranges describe variation among parameter ensemble members; they are not observational confidence intervals. Soil-carbon stocks and changes are reported separately from gas fluxes, and native carbon or nitrogen units are retained where complete CO<sub>2</sub>-equivalent accounting is not available.</p>
+<p>See <a href="../reports/scenarios.html">Scenario-Based Analysis</a> for the 2024–2045 management and climate comparisons.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button,
+          { trigger: "manual",
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined;
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              }
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            }
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="Home">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Home</span>
+      </a>
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../reports/scenarios.html" class="pagination-link" aria-label="Scenario-Based Analysis">
+        <span class="nav-page-text">Scenario-Based Analysis</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      }
+    });
+
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+
+  };
+
+})();
+          </script>
+
+
+
+
+</body></html>

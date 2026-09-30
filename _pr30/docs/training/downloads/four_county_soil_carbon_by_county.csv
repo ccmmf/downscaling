@@ -1,0 +1,9 @@
+scenario,model_output,crop_type,county,field_count,stock_mean_Gg_C,stock_sd_Gg_C
+inventory,TotSoilCarb,annual crop,Contra Costa,1183,1700,170
+inventory,TotSoilCarb,annual crop,Sacramento,4554,5000,520
+inventory,TotSoilCarb,annual crop,Solano,3547,5500,630
+inventory,TotSoilCarb,annual crop,Yolo,5272,8200,1000
+inventory,TotSoilCarb,woody perennial crop,Contra Costa,646,220,38
+inventory,TotSoilCarb,woody perennial crop,Sacramento,2261,1600,320
+inventory,TotSoilCarb,woody perennial crop,Solano,1838,1300,220
+inventory,TotSoilCarb,woody perennial crop,Yolo,3428,2600,410
