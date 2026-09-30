@@ -35,7 +35,7 @@ website:
           - href: reports/downscaling_results.qmd
             text: Inventory Results
           - href: reports/scenarios.qmd
-            text: Scenario-Based Analysis
+            text: Comparison of Future Scenarios
       - section: "Methods and Evaluation"
         contents:
           - href: reports/atlas_model_drivers.qmd
@@ -61,8 +61,6 @@ website:
           - href: docs/references.md
             text: References
     tools:
-      - icon: exclamation-octagon
-        text: "Status: Draft"
       - icon: github
         href: https://github.com/ccmmf/downscaling
 
